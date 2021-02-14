@@ -3,7 +3,7 @@ import LL from 'leaflet.markercluster';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
-import './style/markerLayer.scss'; 
+import './style/markerLayer.scss';
 import * as d3 from "d3";
 import MarkerLayerToolTabControl from './sidebar/MarkerLayerToolTabControl';
 import MarkerLayerToolDefaults from './MarkerLayerToolDefaults';
@@ -13,11 +13,12 @@ import AbstractLayerTool from '../abstract/AbstractLayerTool';
 import ThemesToolEvent from '../../themes/model/event/ThemesToolEvent';
 import SelectionToolEvent from '../../selection/model/event/SelectionToolEvent';
 import DataChangeEvent from '../../../model/event/basic/DataChangeEvent';
+import TimeChangeEvent from "../../timeline/model/TimeChangeEvent";
 
 /**
  * This class represents custom div icon which is used to mark center of countries.
  * It overrides L.DivIcon.
- * 
+ *
  * @author Jiri Hynek
  * @override {L.DivIcon}
  */
@@ -112,7 +113,7 @@ var CountryIcon = L.DivIcon.extend({
         var level = this.getLevel(options.values.value);
 
         var divContent = div.appendChild(document.createElement('div'));
-        divContent.classList.value = 
+        divContent.classList.value =
             "leaflet-marker-level" + level // level
             + (options.isGroup ? " leaflet-marker-group" : "") // group of several markers
         ;
@@ -195,15 +196,15 @@ var CountryIcon = L.DivIcon.extend({
 
 /**
  * This class represents Marker layer. It works with geojson polygons representing countries.
- * 
+ *
  * @author Jiri Hynek
  */
 class MarkerLayerTool extends AbstractLayerTool {
 
     /**
      * It creates a new tool with respect to the props.
-     * 
-     * @param {*} props 
+     *
+     * @param {*} props
      */
     constructor(props) {
         super(props);
@@ -213,7 +214,7 @@ class MarkerLayerTool extends AbstractLayerTool {
      * A unique string of the tool type.
      */
     static TYPE() {
-        return "geovisto-tool-layer-marker"; 
+        return "geovisto-tool-layer-marker";
     }
 
     /**
@@ -280,7 +281,7 @@ class MarkerLayerTool extends AbstractLayerTool {
                     }
                 }
                 // create custom icon
-                return new CountryIcon( { 
+                return new CountryIcon( {
                     countryName: "<Group>",
                     values: data,
                     isGroup: true,
@@ -308,7 +309,7 @@ class MarkerLayerTool extends AbstractLayerTool {
         for(let i = 0; i < markers.length; i++) {
             layer.removeLayer(markers[i]);
         }
-        
+
         this.getState().setMarkers([]);
     }
 
@@ -417,9 +418,9 @@ class MarkerLayerTool extends AbstractLayerTool {
 
     /**
      * It creates one marker with respect to the given centroid and data.
-     * 
-     * @param {*} centroid 
-     * @param {*} data 
+     *
+     * @param {*} centroid
+     * @param {*} data
      */
     createMarker(centroid, data) {
         function thousands_separator(num)
@@ -438,11 +439,11 @@ class MarkerLayerTool extends AbstractLayerTool {
 
         // create marker
         let point = L.marker([centroid.lat, centroid.long], {
-            // create basic icon 
+            // create basic icon
             id: centroid.name,
             icon: new CountryIcon( {
                 values: data
-            } ) 
+            } )
         }).bindPopup(popupMsg);
         return point;
     }
@@ -468,18 +469,20 @@ class MarkerLayerTool extends AbstractLayerTool {
 
     /**
      * This function is called when a custom event is invoked.
-     * 
-     * @param {AbstractEvent} event 
+     *
+     * @param {AbstractEvent} event
      */
     handleEvent(event) {
-        if(event.getType() == DataChangeEvent.TYPE()) {
+        if(event.getType() === DataChangeEvent.TYPE()) {
             // data change
             this.redraw();
-        } else if(event.getType() == SelectionToolEvent.TYPE()) {
+        } else if(event.getType() === SelectionToolEvent.TYPE()) {
             this.redraw();
             // TODO
-        } else if(event.getType() == ThemesToolEvent.TYPE()) {
+        } else if(event.getType() === ThemesToolEvent.TYPE()) {
             // theme change
+            // TODO
+        } else if (event.getType() === TimeChangeEvent.TYPE()) {
             // TODO
         }
     }

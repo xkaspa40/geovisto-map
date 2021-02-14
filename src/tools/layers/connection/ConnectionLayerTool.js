@@ -1,18 +1,19 @@
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import * as d3 from "d3";
-import rfdc from 'rfdc';
-import './style/connectionLayer.scss';
-import ConnectionLayerToolTabControl from './sidebar/ConnectionLayerToolTabControl';
-import ConnectionLayerToolState from './ConnectionLayerToolState';
-import ConnectionLayerToolDefaults from './ConnectionLayerToolDefaults';
-import SelectionTool from '../../selection/SelectionTool';
-import AbstractLayerTool from '../abstract/AbstractLayerTool';
-import DataChangeEvent from '../../../model/event/basic/DataChangeEvent';
-import SelectionToolEvent from '../../selection/model/event/SelectionToolEvent';
-import ThemesToolEvent from '../../themes/model/event/ThemesToolEvent';
-import D3PathForceSimulator from './util/D3PathForceSimulator';
-import ProjectionUtil from './util/ProjectionUtil';
+import rfdc from "rfdc";
+import "./style/connectionLayer.scss";
+import ConnectionLayerToolTabControl from "./sidebar/ConnectionLayerToolTabControl";
+import ConnectionLayerToolState from "./ConnectionLayerToolState";
+import ConnectionLayerToolDefaults from "./ConnectionLayerToolDefaults";
+import SelectionTool from "../../selection/SelectionTool";
+import AbstractLayerTool from "../abstract/AbstractLayerTool";
+import DataChangeEvent from "../../../model/event/basic/DataChangeEvent";
+import SelectionToolEvent from "../../selection/model/event/SelectionToolEvent";
+import ThemesToolEvent from "../../themes/model/event/ThemesToolEvent";
+import D3PathForceSimulator from "./util/D3PathForceSimulator";
+import ProjectionUtil from "./util/ProjectionUtil";
+import TimeChangeEvent from "../../timeline/model/TimeChangeEvent";
 
 /**
  * This class represents Connection layer tool. It uses SVG layer and D3 to draw the lines.
@@ -281,6 +282,7 @@ class ConnectionLayerTool extends AbstractLayerTool {
      */
     handleEvent(event) {
         if(event.getType() == DataChangeEvent.TYPE()) {
+            if (event.getSource() === "timeline") return;
             // data change
             this.redraw();
         } else if(event.getType() == SelectionToolEvent.TYPE()) {
@@ -289,6 +291,42 @@ class ConnectionLayerTool extends AbstractLayerTool {
         } else if(event.getType() == ThemesToolEvent.TYPE()) {
             // theme change
             // TODO
+        } else if (event.getType() === TimeChangeEvent.TYPE()) {
+            this.onTimeChange(event.getObject());
+        }
+    }
+
+    onTimeChange(data) {
+        let layer = this.getState().getLayer();
+        if(layer != undefined && layer._container != undefined) {
+            // get overleay pane, svg g element and paths
+            let paths = d3.select(layer._map.getPanes().overlayPane)
+                .select("svg")
+                .select("g")
+                .selectAll("path");
+
+            const fromPath = this.getState().getDataMapping()[this.getDefaults().getDataMappingModel().from.name];
+            const toPath = this.getState().getDataMapping()[this.getDefaults().getDataMappingModel().to.name];
+
+            const getPath = (obj, pathString) => pathString.split('.').reduce((o, i) => o[i], obj);
+
+            if(data && data.length > 0) {
+                // process all paths and find the affected ones
+                paths.each((path) => {
+                    const from = path[0].id;
+                    const to = path[path.length - 1].id;
+                    if(data.some(
+                        (item) => from === getPath(item, fromPath) && to === getPath(item, toPath)
+                    )) {
+                        paths.attr("class", "leaflet-layer-connection-other");
+                    } else {
+                        paths.attr("class", "leaflet-layer-connection");
+                    }
+                });
+            } else {
+                // set the default path style
+                paths.attr("class", "leaflet-layer-connection");
+            }
         }
     }
 

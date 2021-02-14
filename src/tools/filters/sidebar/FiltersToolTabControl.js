@@ -11,21 +11,21 @@ import AbstractTabControl from "../../sidebar/model/control/AbstractTabControl";
 
 /**
  * This class provides controls for management of filters sidebar tabs.
- * 
+ *
  * TODO: exclude defaults and state variables
- * 
+ *
  * @author Jiri Hynek
  */
 class FiltersToolTabControl extends AbstractTabControl {
 
     constructor(props) {
         super(props);
-        
+
         // help variables (TODO: move to the tab control state)
         this.mapData = this.getTool().getMap().getState().getMapData();
         this.data = this.mapData.getData();
         this.dataDomainLabels = this.mapData.getDataDomainLabels();
-        
+
         this.filterManager = this.getTool().getState().getFiltersManager();
         this.operationLabels = this.filterManager.getOperationLabels();
 
@@ -51,7 +51,7 @@ class FiltersToolTabControl extends AbstractTabControl {
 
     /**
      * It returns tab content.
-     * 
+     *
      */
     getTabContent() {
         if(this.tabContent == undefined) {
@@ -80,22 +80,22 @@ class FiltersToolTabControl extends AbstractTabControl {
 
     /**
      * Help static function which adds new select item to the filter sidebar tab.
-     * 
-     * @param {*} _this 
+     *
+     * @param {*} _this
      */
     static addSelectItem(_this) {
         // div container
         let div = _this.tabContent.insertBefore(document.createElement('div'), _this.btnGroup);
         div.classList.add(_this.getDefaults().getFilterRuleElementClass());
-        
-        var minusButton = TabDOMUtil.createButton("<i class=\"fa fa-minus-circle\"></i>", function(e) { FiltersToolTabControl.removeSelectItem(e, _this) }, "minusBtn");        
+
+        var minusButton = TabDOMUtil.createButton("<i class=\"fa fa-minus-circle\"></i>", function(e) { FiltersToolTabControl.removeSelectItem(e, _this) }, "minusBtn");
         div.appendChild(minusButton);
 
         /**
          * Help function which is invoked when the data domain input is changed.
          * It changes possible options of the operation and value inputs.
-         * 
-         * @param {*} e 
+         *
+         * @param {*} e
          */
         let updateValueOptions = function(e) {
             // find the input item
@@ -110,14 +110,14 @@ class FiltersToolTabControl extends AbstractTabControl {
 
             // get selected value of the data domain input
             let dataDomain = e.target.value;
-            
+
             // test if defined
             if(dataDomain != undefined && dataDomain != "") {
                 if(input != undefined) {
                     // enable operation and value inputs
                     input.opInput.setDisabled(false);
                     input.valInput.setDisabled(false);
-                    
+
                     // find possible values of selected data domain
                     let values = _this.mapData.getValues(_this.mapData.getDataDomain(dataDomain));
 
@@ -129,7 +129,7 @@ class FiltersToolTabControl extends AbstractTabControl {
                 input.opInput.setDisabled(true);
                 input.opInput.setValue("");
                 input.valInput.setDisabled(true);
-                input.valInput.setValue("");   
+                input.valInput.setValue("");
             }
         }
 
@@ -165,8 +165,8 @@ class FiltersToolTabControl extends AbstractTabControl {
 
     /**
      * Help static function which removes item from the filter sidebar tab.
-     * 
-     * @param {*} _this 
+     *
+     * @param {*} _this
      */
     static removeSelectItem(e, _this) {
         // get div
@@ -184,7 +184,7 @@ class FiltersToolTabControl extends AbstractTabControl {
 
     /**
      * It changes state to enabled/disabled.
-     * 
+     *
      * @param {*} enabled
      */
     setContentState(enabled) {
@@ -220,7 +220,11 @@ class FiltersToolTabControl extends AbstractTabControl {
 
             if(dataDomain != undefined) {
                 // new filter rule
-                let filterRule = this.filterManager.createRule(this.mapData.getDataDomain(value.data), value.op, value.val);
+                let filterRule = this.filterManager.createRule({
+                    dataDomain: this.mapData.getDataDomain(value.data),
+                    label: value.op,
+                    pattern: value.val
+                });
                 if(filterRule != undefined) {
                     filterRules.push(filterRule);
                 }
@@ -231,8 +235,8 @@ class FiltersToolTabControl extends AbstractTabControl {
 
     /**
      * It updates input fileds according to the given filter rules.
-     * 
-     * @param {*} filterRules 
+     *
+     * @param {*} filterRules
      */
     setFilterRules(filterRules) {
         // clear inputs

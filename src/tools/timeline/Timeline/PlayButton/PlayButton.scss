@@ -1,0 +1,13 @@
+.play-button {
+  background: none;
+  border-radius: 50%;
+  border: none;
+  font-size: 30px;
+  color: rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  transition: 0.5s;
+
+  &:hover {
+    color: rgba(0, 0, 0, 0.8);
+  }
+}

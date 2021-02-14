@@ -1,6 +1,6 @@
 /**
  * This class wraps a filter operation.
- * 
+ *
  * @author Jiri Hynek
  */
 class AbstractFilterOperation {
@@ -20,12 +20,13 @@ class AbstractFilterOperation {
 
     /**
      * It performs the filter operation which compare a value with a pattern.
-     * 
-     * @param {any} value 
-     * @param {any} pattern 
+     *
+     * @param {any} value
+     * @param {any} pattern
      */
     match(value, pattern) {
         return false;
     }
 }
+
 export default AbstractFilterOperation;

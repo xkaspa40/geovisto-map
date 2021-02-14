@@ -1,15 +1,16 @@
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import './style/choroplethLayer.scss'
-import AbstractLayerTool from '../abstract/AbstractLayerTool';
-import ChoroplethLayerToolState from './ChoroplethLayerToolState';
-import ChoroplethLayerToolDefaults from './ChoroplethLayerToolDefaults';
-import ChoropolethLayerToolTabControl from './sidebar/ChoroplethLayerToolTabControl';
-import ThemesToolEvent from '../../themes/model/event/ThemesToolEvent';
-import SelectionToolEvent from '../../selection/model/event/SelectionToolEvent';
-import DataChangeEvent from '../../../model/event/basic/DataChangeEvent';
-import MapSelection from '../../selection/model/item/generic/MapSelection';
-import SelectionTool from '../../selection/SelectionTool';
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import "./style/choroplethLayer.scss"
+import AbstractLayerTool from "../abstract/AbstractLayerTool";
+import ChoroplethLayerToolState from "./ChoroplethLayerToolState";
+import ChoroplethLayerToolDefaults from "./ChoroplethLayerToolDefaults";
+import ChoropolethLayerToolTabControl from "./sidebar/ChoroplethLayerToolTabControl";
+import ThemesToolEvent from "../../themes/model/event/ThemesToolEvent";
+import SelectionToolEvent from "../../selection/model/event/SelectionToolEvent";
+import DataChangeEvent from "../../../model/event/basic/DataChangeEvent";
+import MapSelection from "../../selection/model/item/generic/MapSelection";
+import SelectionTool from "../../selection/SelectionTool";
+import TimeChangeEvent from "../../timeline/model/TimeChangeEvent";
 
 // TODO: move to defaults
 const COLOR_orange = ['#8c8c8c','#ffffcc','#ffff99','#ffcc99','#ff9966','#ff6600','#ff0000','#cc0000'];
@@ -19,16 +20,17 @@ const COLOR_blue = ['#8c8c8c','#edf8b1','#c7e9b4','#7fcdbb','#41b6c4','#1d91c0',
 const SCALE = [1, 100, 1000, 10000, 100000, 1000000, 10000000];
 
 /**
- * This class represents Choropleth layer tool. It works with geojson polygons representing countries.
- * 
+ * This class represents Choropleth layer tool. It works with geojson polygons representing
+ * countries.
+ *
  * @author Jiri Hynek
  */
 class ChoroplethLayerTool extends AbstractLayerTool {
 
     /**
      * It creates a new tool with respect to the props.
-     * 
-     * @param {*} props 
+     *
+     * @param {*} props
      */
     constructor(props) {
         super(props);
@@ -38,7 +40,7 @@ class ChoroplethLayerTool extends AbstractLayerTool {
      * A unique string of the tool type.
      */
     static TYPE() {
-        return "geovisto-tool-layer-choropleth"; 
+        return "geovisto-tool-layer-choropleth";
     }
 
     /**
@@ -95,7 +97,7 @@ class ChoroplethLayerTool extends AbstractLayerTool {
             num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
             return num_parts.join(".");
         }
-       
+
         let mouseOver = function(e) {
             let layerItem = e.target;
             _this.getState().setHoveredItem(layerItem.feature.id);
@@ -117,23 +119,32 @@ class ChoroplethLayerTool extends AbstractLayerTool {
                 }
             }
             e.target.bindTooltip(popup,{className: 'leaflet-popup-content', sticky: true}).openTooltip();
-        
+
             if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
                 layerItem.bringToFront();
             }
         }
-    
+
         let mouseOut = function(e) {
             let layerItem = e.target;
             _this.getState().setHoveredItem(undefined);
             _this.updateItemStyle(layerItem);
             _this.getState().getLayerPopup().update();
 
+            this.closeTooltip();
+
+            // TODO Rkala - solve the outline
+            // let selection = _this.getSelectionTool() ? _this.getSelectionTool().getState().getSelection() : undefined;
+            // let selectedIds = selection.getIds();
+            // if (selection && selectedIds.length > 0 && selectedIds.includes(layerItem.id)) {
+            //     return;
+            // }
+
             if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
                 layerItem.bringToBack();
             }
         }
-    
+
         let click = function(e) {
             //_this.getMap().getState().getLeafletMap().fitBounds(e.target.getBounds());
             //console.log("fire click event");
@@ -149,7 +160,7 @@ class ChoroplethLayerTool extends AbstractLayerTool {
                 }
             }
         }
-    
+
         let onEachFeature = function(feature, layer) {
             layer.on({
                 mouseover: mouseOver,
@@ -157,10 +168,9 @@ class ChoroplethLayerTool extends AbstractLayerTool {
                 click: click
             });
         }
-    
+
         // combine geo with data
-        this.updatePolygons(this);
-    
+        this.updatePolygons(this.getMap().getState().getCurrentData());
         var paneId = this.getId();
         let pane = this.getMap().getState().getLeafletMap().createPane(paneId);
         pane.style.zIndex = this.getState().getZIndex();
@@ -170,16 +180,16 @@ class ChoroplethLayerTool extends AbstractLayerTool {
             pane: paneId
         });
         //layer._layerComponent = this;
-    
+
         // create info control that shows country info on hover
         let layerPopup = L.control();
-    
+
         layerPopup.onAdd = function (map) {
             this._div = L.DomUtil.create('div', 'info');
             this.update();
             return this._div;
         };
-    
+
         layerPopup.update = function (props) {
             this.innerHTML =  (props ?
                 '<b>' + props.name + '</b><br />' + props.value + '</sup>'
@@ -189,14 +199,14 @@ class ChoroplethLayerTool extends AbstractLayerTool {
         // update state
         this.getState().setLayer(layer);
         this.getState().setLayerPopup(layerPopup);
-    
+
         return [ layer, layerPopup ];
     }
 
     /**
      * It updates polygons so they represent current data.
      */
-    updatePolygons() {
+    updatePolygons(data) {
         //console.log("updating map data", this);
 
         // delete the 'value' property of every geo feature object if defined
@@ -208,7 +218,6 @@ class ChoroplethLayerTool extends AbstractLayerTool {
 
         // set a new value of the 'value' property of every geo feature
         let geoCountry;
-        let data = this.getMap().getState().getCurrentData();
         let dataLen = data.length;
         let mapData = this.getMap().getState().getMapData();
         let dataMappingModel = this.getDefaults().getDataMappingModel();
@@ -246,7 +255,7 @@ class ChoroplethLayerTool extends AbstractLayerTool {
                         geoCountry.value++;
                     }
                 }
-            }   
+            }
         }
     }
 
@@ -274,20 +283,25 @@ class ChoroplethLayerTool extends AbstractLayerTool {
 
     /**
      * This function is called when a custom event is invoked.
-     * 
-     * @param {AbstractEvent} event 
+     *
+     * @param {AbstractEvent} event
      */
     handleEvent(event) {
-        if(event.getType() == DataChangeEvent.TYPE()) {
-            // data change
-            this.redraw();
-        } else if(event.getType() == SelectionToolEvent.TYPE()) {
-            // selection change
-            this.redraw(true);
-        } else if(event.getType() == ThemesToolEvent.TYPE()) {
-            // theme change
-            this.redraw(true);
+        const EventHandler = {
+            [DataChangeEvent.TYPE()]: () => {
+                if (event.getSource() !== "timeline") {
+                    this.updatePolygons(event.getObject());
+                    this.updateStyle();
+                }
+            },
+            [SelectionToolEvent.TYPE()]: () => this.updateStyle(),
+            [ThemesToolEvent.TYPE()]: () => this.updateStyle(),
+            [TimeChangeEvent.TYPE()]: () => {
+                this.updatePolygons(event.getObject());
+                this.updateStyle();
+            },
         }
+        EventHandler[event.getType()].call();
     }
 
     // ----------------- TODO: refactorization needed
@@ -301,7 +315,7 @@ class ChoroplethLayerTool extends AbstractLayerTool {
 
     /**
      * It returns color style for the current template.
-     * 
+     *
      * @deprecated
      */
     getColors() {
@@ -317,7 +331,7 @@ class ChoroplethLayerTool extends AbstractLayerTool {
 
     /**
      * It returns color value for the current template and given value.
-     * 
+     *
      * @deprecated
      */
     computeColor(val) {
@@ -350,10 +364,10 @@ class ChoroplethLayerTool extends AbstractLayerTool {
 
     /**
      * It returns style for the current template and given feature.
-     * 
+     *
      * @deprecated
      */
-    computeStyle(item) {       
+    computeStyle(item) {
         let feature = item.feature;
         let hoveredItem = this.getState().getHoveredItem();
         let selection = this.getSelectionTool() ? this.getSelectionTool().getState().getSelection() : undefined;
@@ -423,10 +437,7 @@ class ChoroplethLayerTool extends AbstractLayerTool {
      */
     updateStyle() {
         if(this.getState().getLayer()) {
-            var _this = this;
-            this.getState().getLayer().eachLayer(function(item) {
-                _this.updateItemStyle(item);
-            });
+            this.getState().getLayer().eachLayer((item) => this.updateItemStyle(item));
         }
     }
 

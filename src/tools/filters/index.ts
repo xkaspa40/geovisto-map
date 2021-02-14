@@ -7,6 +7,9 @@ export { default as AbstractFiltersManager } from './model/abstract/AbstractFilt
 export { default as EqFilterOperation } from './model/basic/EqFilterOperation';
 export { default as NeqFilterOperation } from './model/basic/NeqFilterOperation';
 export { default as RegFilterOperation } from './model/basic/RegFilterOperation';
+export { default as GreaterThanEqualFilterOperation } from './model/basic/GreaterThanEqualFilterOperation';
+export { default as GreaterThanFilterOperation } from './model/basic/GreaterThanFilterOperation';
+export { default as LessThanFilterOperation } from './model/basic/LessThanFilterOperation';
 export { default as FilterOperation } from './model/generic/FilterOperation';
 export { default as FilterRule } from './model/generic/FilterRule';
 export { default as FiltersManager } from './model/generic/FiltersManager';

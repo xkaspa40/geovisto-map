@@ -56,6 +56,12 @@
                 "checkButton": true
             },
             {
+                "tool": "geovisto-tool-timeline",
+                "enabled": true,
+                "name": "Timeline",
+                "checkButton": true
+            },
+            {
                 "tool": "geovisto-tool-layer-connection",
                 "enabled": true,
                 "name": "Connection layer settings",
@@ -124,7 +130,12 @@
             "from": "",
             "to": ""
             }
+        },
+        {
+            "type": "geovisto-tool-timeline",
+            "id": "geovisto-tool-timeline",
+            "enabled": true,
+            "layerName": "Timeline"
         }
     ]
 }
-  

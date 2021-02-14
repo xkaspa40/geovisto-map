@@ -8,3 +8,4 @@ export * from './layers/connection';
 export * from './layers/map';
 export * from './layers/marker';
 export * from './themes';
+export * from './timeline';
