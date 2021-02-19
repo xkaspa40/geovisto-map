@@ -1,4 +1,4 @@
-import AbstractMapDataDomain from '../AbstractMapDataDomain';
+import AbstractMapDataDomain from '../abstract/AbstractMapDataDomain';
 
 /**
  * The class wraps meta data path used to find data.

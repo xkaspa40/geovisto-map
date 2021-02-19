@@ -1,4 +1,4 @@
-import AbstractMapObjectDefaults from "../../../../model/object/abstract/AbstractMapObjectDefaults";
+import AbstractMapObjectDefaults from "../../../../model/object/generic/MapObjectDefaults";
 
 /**
  * This class provide functions which return the default state values.

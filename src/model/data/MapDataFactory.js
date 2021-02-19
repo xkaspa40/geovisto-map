@@ -1,5 +1,5 @@
 import FlattenedMapData from './basic/FlattenedMapData';
-import AbstractMapData from './AbstractMapData';
+import AbstractMapData from './abstract/AbstractMapData';
 
 /**
  * Factory for map data objects.

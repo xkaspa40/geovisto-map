@@ -1,7 +1,7 @@
 import AbstractToolsManager from "../model/tool/abstract/AbstractToolsManager";
-import AbstractMapData from "../model/data/AbstractMapData";
-import AbstractMapObjectState from "../model/object/abstract/AbstractMapObjectState";
-import AbstractMapConfig from "../model/config/AbstractMapConfig";
+import AbstractMapData from "../model/data/abstract/AbstractMapData";
+import AbstractMapObjectState from "../model/object/generic/MapObjectState";
+import AbstractMapConfig from "../model/config/abstract/IMapConfigManager";
 
 /**
  * This class manages state of the map.

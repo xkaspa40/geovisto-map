@@ -1,4 +1,4 @@
-import GenericObjectEvent from "../../../../model/event/generic/GenericObjectEvent";
+import GenericObjectEvent from "../../../../model/event/generic/MapChangeEvent";
 
 
 /**

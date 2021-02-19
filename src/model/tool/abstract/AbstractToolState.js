@@ -1,4 +1,4 @@
-import AbstractMapObjectState from '../../object/abstract/AbstractMapObjectState';
+import AbstractMapObjectState from '../../object/generic/MapObjectState';
 
 /**
  * This class manages state of the tool.

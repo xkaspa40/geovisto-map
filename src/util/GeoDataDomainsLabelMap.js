@@ -1,4 +1,4 @@
-import AbstractGeoDataDomain from "../model/data/AbstractMapDataDomain";
+import AbstractGeoDataDomain from "../model/data/abstract/AbstractMapDataDomain";
 
 /**
  * Help class which provides mapping between GeoDataDomains and their labels.

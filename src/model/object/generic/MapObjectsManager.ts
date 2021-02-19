@@ -1,39 +1,41 @@
-import AbstractMapObject from "./AbstractMapObject";
+import IMapObject from "../abstract/IMapObject";
+import IMapObjectsManager from "../abstract/IMapObjectsManager";
 
 /**
  * This class provide functions for using map objects which can be identified by uniquie string.
  * 
  * @author Jiri Hynek
  */
-class AbstractMapObjectsManager {
+class MapObjectsManager implements IMapObjectsManager {
+    
+    private objects: IMapObject[];
 
     /**
      * It initializes a map objects manager.
      */
-    constructor() {
+    constructor(objects: IMapObject[] | undefined) {
+        this.objects = objects ? objects : [];
     }
 
     /**
      * The function returns available map objects.
-     * 
-     * Override this function.
      */
-    getObjects() {
-        return [];
+    public getObjects(): IMapObject[] {
+        return this.objects;
     }
 
     /**
-     * The function returns the number of objects.
+     * The function returns number of objects.
      */
-    size() {
-        return this.getObjects().length;
+    public size(): number {
+        return this.objects.length;
     }
 
     /**
      * The function returns true if size() is 0.
      */
-    isEmpty() {
-        return this.getObjects().length == 0;
+    public isEmpty(): boolean {
+        return this.objects.length == 0;
     }
 
     /**
@@ -41,19 +43,19 @@ class AbstractMapObjectsManager {
      * 
      * Override this function.
      * 
-     * @param {AbstractMapObject} object 
+     * @param {IMapObject} object 
      */
-    add(object) {
+    public add(object: IMapObject): void {
+        this.objects.push(object);
     }
 
     /**
      * It removes object from the list of objects.
      * 
-     * Override this function.
-     * 
-     * @param {AbstractMapObject} object 
+     * @param {IMapObject} object 
      */
-    remove(object) {
+    public remove(object: IMapObject): void {
+        this.objects = this.objects.filter(item => item != object);
     }
 
     /**
@@ -63,13 +65,14 @@ class AbstractMapObjectsManager {
      * 
      * @param {string} id 
      */
-    removeById(id) {
+    removeById(id: string): void {
+        this.objects = this.objects.filter(item => item.getId() != id);
     }
-
+    
     /**
      * Help function which returns the list of object string labels (object types).
      */
-    getTypes() {
+    public getTypes(): string[] {
         let types = [];
         let objects = this.getObjects();
         if(objects != undefined) {
@@ -83,7 +86,7 @@ class AbstractMapObjectsManager {
     /**
      * Help function which returns the list of object string labels (object types).
      */
-    getIds() {
+    public getIds(): string[] {
         let types = [];
         let objects = this.getObjects();
         if(objects != undefined) {
@@ -99,9 +102,9 @@ class AbstractMapObjectsManager {
      * 
      * @param {string} type
      */
-    getByType(type) {
+    public getByType(type: string): IMapObject[] {
         let objects = this.getObjects();
-        let resultObjects = [];
+        let resultObjects: IMapObject[] = [];
         if(objects != undefined) {
             for(let i = 0; i < objects.length; i++) {
                 if(objects[i].getType() == type) {
@@ -117,7 +120,7 @@ class AbstractMapObjectsManager {
      * 
      * @param {string} id
      */
-    getById(id) {
+    public getById(id: string): IMapObject | undefined {
         let objects = this.getObjects();
         if(objects != undefined) {
             for(let i = 0; i < objects.length; i++) {
@@ -129,4 +132,4 @@ class AbstractMapObjectsManager {
         return undefined;
     }
 }
-export default AbstractMapObjectsManager;
+export default MapObjectsManager;

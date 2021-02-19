@@ -1,7 +1,7 @@
 import AbstractFilterOperation from "../abstract/AbstractFilterOperation";
 import AbstractFiltersManager from "../abstract/AbstractFiltersManager";
 import FilterRule from "./FilterRule";
-import AbstractMapData from "../../../../model/data/AbstractMapData";
+import AbstractMapData from "../../../../model/data/abstract/AbstractMapData";
 
 /**
  * This class provide functions for using filters.

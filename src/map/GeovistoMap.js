@@ -1,7 +1,7 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../styles/common.scss';
-import AbstractMapObject from "../model/object/abstract/AbstractMapObject";
+import AbstractMapObject from "../model/object/generic/AbstractMapObject";
 import AbstractEvent from '../model/event/abstract/AbstractEvent';
 import DataChangeEvent from '../model/event/basic/DataChangeEvent';
 import GeovistoMapDefaults from './GeovistoMapDefaults';

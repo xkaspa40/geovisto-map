@@ -1,6 +1,6 @@
 import AbstractToolState from "./AbstractToolState";
 import AbstractEvent from "../../event/abstract/AbstractEvent";
-import AbstractMapObject from "../../object/abstract/AbstractMapObject";
+import AbstractMapObject from "../../object/generic/AbstractMapObject";
 import AbstractToolDefaults from "./AbstractToolDefaults";
 
 /**

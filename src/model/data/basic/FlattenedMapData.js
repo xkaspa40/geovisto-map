@@ -1,6 +1,6 @@
 import rfdc from 'rfdc';
 import FlattenedMapDataDomain from './FlattenedMapDataDomain';
-import AbstractMapData from '../AbstractMapData';
+import AbstractMapData from '../abstract/AbstractMapData';
 
 /**
  * Example of a data wrapper which provides a basic flattening.
