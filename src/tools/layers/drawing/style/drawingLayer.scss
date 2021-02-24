@@ -1,0 +1,67 @@
+.hide {
+  display: none !important;
+}
+
+.drawingtoolbar {
+  margin-left: 0 !important;
+}
+
+.edit-toolbar {
+  border: none;
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: 2px;
+  padding: 10px;
+  & > *:not(:last-child) {
+    margin-bottom: 10px;
+  }
+  & &__color {
+    display: flex;
+    width: 100%;
+    &-option {
+      cursor: pointer;
+      width: 100%;
+      max-width: 25%;
+      min-width: 20px;
+      height: 20px;
+    }
+  }
+  &__brush {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  &__erase {
+    background-color: #333 !important;
+    color: aliceblue !important;
+    border-radius: 2px !important;
+    margin: 10px auto;
+    width: 100% !important;
+    cursor: pointer;
+  }
+  &__iconSrc {
+    display: flex;
+    width: 100%;
+    &-option {
+      cursor: pointer;
+      display: block;
+      width: 24px;
+      height: 24px;
+    }
+  }
+  &__colorIndicator {
+    margin: 0 auto;
+    min-width: 50px;
+    height: 50px;
+  }
+  &__transform {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    & > .editBtn {
+      max-width: 45%;
+      margin-right: 5%;
+      margin-top: 5px;
+      text-transform: capitalize;
+    }
+  }
+}
