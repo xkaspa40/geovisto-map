@@ -15,6 +15,7 @@ import MapLayerTool from "../tools/layers/map/MapLayerTool";
 import ChoroplethLayerTool from "../tools/layers/choropleth/ChoroplethLayerTool";
 import MarkerLayerTool from "../tools/layers/marker/MarkerLayerTool";
 import ConnectionLayerTool from "../tools/layers/connection/ConnectionLayerTool";
+import DrawingLayerTool from "../tools/layers/drawing/DrawingLayerTool";
 import Dark1Theme from "../tools/themes/model/theme/basic/dark1/Dark1Theme";
 import Dark2Theme from "../tools/themes/model/theme/basic/dark2/Dark2Theme";
 import Dark3Theme from "../tools/themes/model/theme/basic/dark3/Dark3Theme";
@@ -243,6 +244,7 @@ class Demo extends Component {
               new ChoroplethLayerTool({ id: "geovisto-tool-layer-choropleth" }),
               new MarkerLayerTool({ id: "geovisto-tool-layer-marker" }),
               new ConnectionLayerTool({ id: "geovisto-tool-layer-connection" }),
+              new DrawingLayerTool({ id: "geovisto-tool-layer-drawing" }),
             ])}
           />
         </div>

@@ -61,6 +61,13 @@
           "name": "Connection layer settings",
           "icon": "<i class=\"fa fa-road\"></i>",
           "checkButton": true
+        },
+        {
+          "tool": "geovisto-tool-layer-drawing",
+          "enabled": true,
+          "name": "Drawing layer settings",
+          "icon": "<i class=\"fa fa-pencil\"></i>",
+          "checkButton": true
         }
       ]
     },
