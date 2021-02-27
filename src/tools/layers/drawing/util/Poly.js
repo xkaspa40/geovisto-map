@@ -1,29 +1,29 @@
-import L from "leaflet";
-import "leaflet-path-drag";
+import L from 'leaflet';
+import 'leaflet-path-drag';
 
-import "leaflet/dist/leaflet.css";
+import 'leaflet/dist/leaflet.css';
 
-export const polygonClick = (map) => {
+export const polygonClick = (map, sidebar) => {
   const x = new L.Draw.Polygon(map, {
     allowIntersection: false,
     drawError: {
-      color: "#e1e100",
-      message: "<strong>You cannot draw that!<strong>",
+      color: '#e1e100',
+      message: '<strong>You cannot draw that!<strong>',
     },
     shapeOptions: {
-      color: "#08aa51", // container.getSelectedColor(),
-      weight: 3, // container.getSelectedStroke(),
+      color: sidebar.getState().getSelectedColor(),
+      weight: sidebar.getState().getSelectedStroke(),
       draggable: true,
     },
   });
   x.enable();
 };
 
-export const polylineClick = (map) => {
+export const polylineClick = (map, sidebar) => {
   const x = new L.Draw.Polyline(map, {
     shapeOptions: {
-      color: "#08aa51", // container.getSelectedColor(),
-      weight: 3, // container.getSelectedStroke(),
+      color: sidebar.getState().getSelectedColor(),
+      weight: sidebar.getState().getSelectedStroke(),
       draggable: true,
     },
   });

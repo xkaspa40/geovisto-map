@@ -1,8 +1,8 @@
-import React from "react";
-import L, { popup } from "leaflet";
-import "leaflet-path-drag";
+import React from 'react';
+import L, { popup } from 'leaflet';
+import 'leaflet-path-drag';
 
-import "leaflet/dist/leaflet.css";
+import 'leaflet/dist/leaflet.css';
 
 export const iconStarter = {
   shadowUrl: null,
@@ -10,14 +10,10 @@ export const iconStarter = {
   iconSize: new L.Point(24, 24),
 };
 
-export const DEF_MARKER =
-  "https://upload.wikimedia.org/wikipedia/commons/0/0a/Marker_location.png";
-
-export const markerClick = (map, connectClick = false) => {
+export const markerClick = (map, sidebar) => {
   const iconOptions = {
     ...iconStarter,
-    iconUrl: DEF_MARKER, // container.getSelectedIconSrc(),
-    connectClick,
+    iconUrl: sidebar.getState().getSelectedIcon(),
   };
   // define custom marker
   let MyCustomMarker = L.Icon.extend({

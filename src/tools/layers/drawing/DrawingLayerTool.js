@@ -1,12 +1,11 @@
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-import AbstractLayerTool from "../abstract/AbstractLayerTool";
-import DrawingLayerToolState from "./DrawingLayerToolState";
-import DrawingLayerToolDefaults from "./DrawingLayerToolDefaults";
-import DrawingLayerToolTabControl from "./sidebar/DrawingLayerToolTabControl";
-import useDrawingToolbar from "./components/useDrawingToolbar";
-import "./style/drawingLayer.scss";
-import useEditToolbar from "./components/useEditToolbar";
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import AbstractLayerTool from '../abstract/AbstractLayerTool';
+import DrawingLayerToolState from './DrawingLayerToolState';
+import DrawingLayerToolDefaults from './DrawingLayerToolDefaults';
+import DrawingLayerToolTabControl from './sidebar/DrawingLayerToolTabControl';
+import useDrawingToolbar from './components/useDrawingToolbar';
+import './style/drawingLayer.scss';
 
 /**
  * This class represents Drawing layer tool.
@@ -21,16 +20,16 @@ class DrawingLayerTool extends AbstractLayerTool {
    */
   constructor(props) {
     super(props);
+    this.currEl = null;
     this.editableLayers = new L.FeatureGroup();
     useDrawingToolbar();
-    useEditToolbar();
   }
 
   /**
    * A unique string of the tool type.
    */
   static TYPE() {
-    return "geovisto-tool-layer-drawing";
+    return 'geovisto-tool-layer-drawing';
   }
 
   /**
@@ -64,6 +63,11 @@ class DrawingLayerTool extends AbstractLayerTool {
     return this.tabControl;
   }
 
+  redrawSidebarTabControl(layerType) {
+    if (this.tabControl == undefined) return;
+    this.tabControl.redrawTabContent(layerType);
+  }
+
   /**
    * It creates new tab control.
    */
@@ -77,10 +81,9 @@ class DrawingLayerTool extends AbstractLayerTool {
   createLayerItems() {
     const combinedMap = this.getMap();
     const map = combinedMap.state.map;
-    map.addControl(L.control.drawingToolbar());
-    map.addControl(L.control.editToolbar());
+    map.addControl(L.control.drawingToolbar({ tool: this }));
     // * eventlistener for when object is created
-    map.on("draw:created", (e) => {
+    map.on('draw:created', (e) => {
       let layer = e.layer;
       layer.layerType = e.layerType;
 
