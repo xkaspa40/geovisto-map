@@ -108,7 +108,7 @@ export default function useDrawingToolbar() {
     },
 
     setCurrEl: function (el) {
-      this.options.tool.currEl = el;
+      this.options.tool.getState().currEl = el;
     },
   });
 

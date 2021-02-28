@@ -20,8 +20,6 @@ class DrawingLayerTool extends AbstractLayerTool {
    */
   constructor(props) {
     super(props);
-    this.currEl = null;
-    this.editableLayers = new L.FeatureGroup();
     useDrawingToolbar();
   }
 
@@ -87,10 +85,10 @@ class DrawingLayerTool extends AbstractLayerTool {
       let layer = e.layer;
       layer.layerType = e.layerType;
 
-      this.editableLayers.addLayer(layer);
+      this.getState().editableLayers.addLayer(layer);
     });
 
-    return [this.editableLayers];
+    return [this.getState().editableLayers];
   }
 
   /**
@@ -101,7 +99,9 @@ class DrawingLayerTool extends AbstractLayerTool {
   /**
    * It reloads data and redraw the layer.
    */
-  redraw(onlyStyle) {}
+  redraw(onlyStyle) {
+    console.log({ onlyStyle });
+  }
 
   /**
    * This function is called when a custom event is invoked.

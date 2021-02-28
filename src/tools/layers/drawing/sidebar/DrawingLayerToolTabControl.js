@@ -140,9 +140,12 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
   };
 
   changeDescriptionAction = (e) => {
+    this.changeDesc(e.target.value);
+  };
+
+  changeDesc = (inputText) => {
     const currEl = this._getCurrEl();
 
-    let inputText = e.target.value;
     let popup1 = currEl.getPopup();
     if (popup1) {
       popup1.setContent(inputText);
@@ -162,22 +165,28 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     if (currEl?.setStyle) currEl.setStyle({ weight });
   };
 
+  changeIdentifierAction = (e) => {
+    const id = e.target.value;
+    const currEl = this._getCurrEl();
+    if (currEl) currEl.identifier = id;
+    const data = this.getTool()?.getState()?.map?.state?.data;
+
+    const found = data.find(({ identifier }) => identifier === id);
+    let popupText = '';
+    Object.keys(found).forEach((key) => {
+      popupText += `${key}: ${found[key]}<br />`;
+    });
+    this.changeDesc(popupText);
+  };
+
   _getCurrEl() {
-    return this.getTool().currEl;
+    return this.getTool().getState().currEl;
   }
 
   /**
    * It returns the sidebar tab pane.
    */
   getTabContent(layerType = null) {
-    // event handler: change dimension action
-    let changeDimensionAction = (e) => {
-      // get selected values and update layer's data mapping
-      // this.getTool().updateDataMapping();
-      const inputValues = this.getInputValues();
-      const currEl = this.getTool().currEl;
-    };
-
     // tab content
     let tab = document.createElement('div');
     let elem = tab.appendChild(document.createElement('div'));
@@ -190,8 +199,8 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     // textfield Identifier
     this.inputId = SidebarInputFactory.createSidebarInput(model.identifier.input, {
       label: model.identifier.label,
-      action: changeDimensionAction,
-      value: 'Hello',
+      action: this.changeIdentifierAction,
+      value: this._getCurrEl()?.identifier,
     });
     elem.appendChild(this.inputId.create());
 
