@@ -6,6 +6,7 @@ import DrawingLayerToolDefaults from './DrawingLayerToolDefaults';
 import DrawingLayerToolTabControl from './sidebar/DrawingLayerToolTabControl';
 import useDrawingToolbar from './components/useDrawingToolbar';
 import './style/drawingLayer.scss';
+import union from '@turf/union';
 
 /**
  * This class represents Drawing layer tool.
@@ -73,6 +74,46 @@ class DrawingLayerTool extends AbstractLayerTool {
     return new DrawingLayerToolTabControl({ tool: this });
   }
 
+  createdListener = (e) => {
+    let layer = e.layer;
+    layer.layerType = e.layerType;
+
+    let geoFeature = layer.toGeoJSON();
+    let feature = geoFeature.type === 'FeatureCollection' ? geoFeature.features[0] : geoFeature;
+    let featureType = feature ? feature.geometry.type.toLowerCase() : '';
+
+    let isFeaturePoly = featureType === 'polygon' || featureType === 'multipolygon';
+
+    if (isFeaturePoly) {
+      if (this.getState().prevPolyFeature) {
+        let unifiedFeature = union(feature, this.getState().prevPolyFeature);
+        let result = new L.GeoJSON(unifiedFeature, {
+          ...layer.options,
+        });
+        layer = result;
+        layer.layerType = 'polygon';
+        this.getState().prevPolyFeature = unifiedFeature;
+      } else {
+        this.getState().prevPolyFeature = feature;
+      }
+    }
+
+    let layerObjectToIterateThrough = this.getState().getEditableLayer()._layers || {};
+    let prevPolyLayer = Object.values(layerObjectToIterateThrough).find(
+      (l) => l.layerType === 'polygon',
+    );
+    this.getState().getEditableLayer().addLayer(layer);
+    this.getState().setCurrEl(layer);
+    layer.on('click', (e) => {
+      let drawObject = e.target;
+      this.getState().setCurrEl(drawObject);
+      this.redrawSidebarTabControl(e.target.layerType);
+    });
+    if (prevPolyLayer && isFeaturePoly)
+      this.getState().getEditableLayer().removeLayer(prevPolyLayer);
+    console.log({ group: this.getState().featureGroupArray });
+  };
+
   /**
    * It creates layer items.
    */
@@ -81,14 +122,9 @@ class DrawingLayerTool extends AbstractLayerTool {
     const map = combinedMap.state.map;
     map.addControl(L.control.drawingToolbar({ tool: this }));
     // * eventlistener for when object is created
-    map.on('draw:created', (e) => {
-      let layer = e.layer;
-      layer.layerType = e.layerType;
+    map.on('draw:created', this.createdListener);
 
-      this.getState().editableLayers.addLayer(layer);
-    });
-
-    return [this.getState().editableLayers];
+    return this.getState().featureGroupArray;
   }
 
   /**
@@ -100,7 +136,10 @@ class DrawingLayerTool extends AbstractLayerTool {
    * It reloads data and redraw the layer.
    */
   redraw(onlyStyle) {
-    console.log({ onlyStyle });
+    console.log('...redrawing');
+
+    this.hideLayerItems();
+    this.showLayerItems();
   }
 
   /**
