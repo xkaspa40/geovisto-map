@@ -15,6 +15,7 @@ import MapLayerTool from "../tools/layers/map/MapLayerTool";
 import ChoroplethLayerTool from "../tools/layers/choropleth/ChoroplethLayerTool";
 import MarkerLayerTool from "../tools/layers/marker/MarkerLayerTool";
 import ConnectionLayerTool from "../tools/layers/connection/ConnectionLayerTool";
+import DotLayerTool from "../tools/layers/dot/DotLayerTool";
 import Dark1Theme from "../tools/themes/model/theme/basic/dark1/Dark1Theme";
 import Dark2Theme from "../tools/themes/model/theme/basic/dark2/Dark2Theme";
 import Dark3Theme from "../tools/themes/model/theme/basic/dark3/Dark3Theme";
@@ -49,7 +50,7 @@ class Demo extends Component {
     this.centroids = require("/static/geo/country_centroids.json");
 
     // // implicit file
-    const jsonData = require('/static/data/demo1.json');
+    const jsonData = require('/static/data/coordinatesDemo.json');
 
     // // implicit config
     const jsonConfig = require('/static/config/config.json');
@@ -190,6 +191,7 @@ class Demo extends Component {
         <div className="demo-toolbar">
           <span>Data file: </span>
           <select id={C_ID_select_data}>
+            <option value="coordinatesDemo.json">coordinates.json</option>
             <option value="demo1.json">demo1.json</option>
             <option value="demo2.json">demo2.json</option>
             <option disabled></option>
@@ -243,6 +245,7 @@ class Demo extends Component {
               new ChoroplethLayerTool({ id: "geovisto-tool-layer-choropleth" }),
               new MarkerLayerTool({ id: "geovisto-tool-layer-marker" }),
               new ConnectionLayerTool({ id: "geovisto-tool-layer-connection" }),
+              new DotLayerTool({id: "geovisto-tool-layer-dot"})
             ])}
           />
         </div>

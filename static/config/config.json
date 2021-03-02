@@ -61,6 +61,13 @@
                 "name": "Connection layer settings",
                 "icon": "<i class=\"fa fa-road\"></i>",
                 "checkButton": true
+            },
+            {
+                "tool": "geovisto-tool-layer-dot",
+                "enabled": true,
+                "name": "Dot layer settings",
+                "icon": "<i class=\"fa fa-dot-circle-o\"></i>",
+                "checkButton": true
             }
             ]
         },
@@ -123,6 +130,17 @@
             "data": {
             "from": "",
             "to": ""
+            }
+        },
+        {
+            "type": "geovisto-tool-layer-dot",
+            "id": "geovisto-tool-layer-dot",
+            "enabled": true,
+            "layerName": "Dot layer",
+            "data": {
+                "latitude": "",
+                "longitude": "",
+                "category": ""
             }
         }
     ]

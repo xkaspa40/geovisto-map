@@ -1,0 +1,17 @@
+[
+  {
+    "lat": 50.025,
+    "long": 15.065,
+    "status": "recovered"
+  },
+  {
+    "lat": 32.032,
+    "long": 15.065,
+    "status": "sick"
+  },
+  {
+    "lat": 50.0,
+    "long": 16.0,
+    "status": "deceased"
+  }
+]
