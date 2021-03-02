@@ -2,8 +2,8 @@ import AbstractTabFragment from '../../sidebar/model/fragment/AbstractTabFragmen
 import SettingsTool from '../../settings/SettingsTool';
 import ThemesToolTabFragmentDefaults from './ThemesToolTabFragmentDefaults';
 import ThemesToolTabFragmentState from './ThemesToolTabFragmentState';
-import AutocompleteSidebarInput from '../../../inputs/input/AutocompleteSidebarInput';
-import SidebarInputFactory from '../../../inputs/SidebarInputFactory';
+import AutocompleteFormInput from '../../../model/inputs/labeled/autocomplete/AutocompleteFormInput';
+import SidebarInputFactory from '../../../model/inputs/SidebarInputFactory';
 
 /**
  * This class represents tab fragment for Themes tool.
@@ -72,7 +72,7 @@ class ThemesToolTabFragment extends AbstractTabFragment {
                 tool.setTheme(newTheme[0]);
             }
         }
-        let themeInput = SidebarInputFactory.createSidebarInput(AutocompleteSidebarInput.ID(), { label: "Theme", options: themesManager.getThemeLabels(), action: changeTheme });
+        let themeInput = SidebarInputFactory.createSidebarInput(AutocompleteFormInput.ID(), { label: "Theme", options: themesManager.getThemeLabels(), action: changeTheme });
         this.tabContent.appendChild(themeInput.create());
         themeInput.setValue(tool.getState().getTheme().getType());
     }

@@ -1,6 +1,6 @@
 import ChoroplethLayerTool from "./ChoroplethLayerTool";
 import AbstractLayerToolDefaults from "../abstract/AbstractLayerToolDefaults";
-import AutocompleteSidebarInput from "../../../inputs/input/AutocompleteSidebarInput";
+import AutocompleteFormInput from "../../../model/inputs/labeled/autocomplete/AutocompleteFormInput";
 
 /**
  * TODO: refactorization needed!
@@ -17,27 +17,27 @@ const MAPPING_MODEL = {
         id: INPUT_ID_PREFIX + "-country",
         name: "country",
         label: "Country",
-        input: AutocompleteSidebarInput.ID()
+        input: AutocompleteFormInput.ID()
     },
     value: {
         id: INPUT_ID_PREFIX + "-value",
         name: "value",
         label: "Value",
-        input: AutocompleteSidebarInput.ID()
+        input: AutocompleteFormInput.ID()
     },
     aggregation: {
         id: INPUT_ID_PREFIX + "-aggregation",
         name: "aggregation",
         label: "Agregation",
         options: [ "count", "sum" ],
-        input: AutocompleteSidebarInput.ID()
+        input: AutocompleteFormInput.ID()
     },
     color: {
         id: INPUT_ID_PREFIX + "-color",
         name: "color",
         label: "Color",
         options: [ "orange", "blue", "red" ],
-        input: AutocompleteSidebarInput.ID()
+        input: AutocompleteFormInput.ID()
     }
 }
 

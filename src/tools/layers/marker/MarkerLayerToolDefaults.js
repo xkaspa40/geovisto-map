@@ -1,6 +1,6 @@
 import MarkerLayerTool from "./MarkerLayerTool";
 import AbstractLayerToolDefaults from "../abstract/AbstractLayerToolDefaults";
-import AutocompleteSidebarInput from "../../../inputs/input/AutocompleteSidebarInput";
+import AutocompleteFormInput from "../../../model/inputs/labeled/autocomplete/AutocompleteFormInput";
 
 /**
  * TODO: refactorization needed!
@@ -17,26 +17,26 @@ const MAPPING_MODEL = {
         id: INPUT_ID_PREFIX + "-input-country",
         name: "country",
         label: "Country",
-        input: AutocompleteSidebarInput.ID()
+        input: AutocompleteFormInput.ID()
     },
     value: {
         id: INPUT_ID_PREFIX + "-input-value",
         name: "value",
         label: "Value",
-        input: AutocompleteSidebarInput.ID()
+        input: AutocompleteFormInput.ID()
     },
     aggregation: {
         id: INPUT_ID_PREFIX + "-input-aggregation",
         name: "aggregation",
         label: "Agregation",
         options: [ "count", "sum" ],
-        input: AutocompleteSidebarInput.ID()
+        input: AutocompleteFormInput.ID()
     },
     category: {
         id: INPUT_ID_PREFIX + "-input-category",
         name: "category",
         label: "Category",
-        input: AutocompleteSidebarInput.ID()
+        input: AutocompleteFormInput.ID()
     }
 }
 

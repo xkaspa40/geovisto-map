@@ -1,7 +1,7 @@
 import ConnectionLayerToolTabControlDefaults from "./ConnectionLayerToolTabControlDefaults";
 import ConnectionLayerToolTabControlState from "./ConnectionLayerToolTabControlState";
 import AbstractLayerToolTabControl from "../../abstract/sidebar/AbstractLayerToolTabControl";
-import SidebarInputFactory from "../../../../inputs/SidebarInputFactory";
+import SidebarInputFactory from "../../../../model/inputs/SidebarInputFactory";
 
 /**
  * This class provides controls for management of the layer sidebar tab.

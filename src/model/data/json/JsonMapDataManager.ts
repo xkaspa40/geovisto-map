@@ -1,18 +1,31 @@
 import rfdc from 'rfdc';
-import FlattenedMapDataDomain from './FlattenedMapDataDomain';
-import AbstractMapData from '../abstract/AbstractMapData';
+import FlattenedMapDataDomain from './JsonMapDataDomain';
+import IMapDataDomain from '../abstract/IMapDataDomain';
+import JsonMapDataDomain from './JsonMapDataDomain';
+import AbstractMapDataManager from '../abstract/AbstractMapDataManager';
+import IMapDataManager from '../abstract/IMapDataManager';
 
 /**
- * Example of a data wrapper which provides a basic flattening.
+ * A data wrapper which provides a basic flattening of JSON data structure.
  * 
  * @author Jiri Hynek
  */
-class FlattenedMapData extends AbstractMapData {
+class JsonMapDataManager extends AbstractMapDataManager implements IMapDataManager {
+    
+    /**
+     * The list is initialized when required.
+     */
+    private dataRecords: object[];
 
-    constructor(data) {
+    /**
+     * The list is initialized when required.
+     */
+    private dataDomains: IMapDataDomain[];
+
+    constructor(data: object) {
         super(data);
-        this.flattenedData = undefined;
-        this.dataDomains = undefined;
+        this.dataRecords = [];
+        this.dataDomains = [];
     }
 
     /**
@@ -23,7 +36,17 @@ class FlattenedMapData extends AbstractMapData {
     }
 
     /**
-     * It returns list of data domains (FlattenedMapDataDomain) representing data dimensions e. g.:
+     * It returns preprocessed flattened data.
+     */
+    getDataRecords() {
+        if(this.dataRecords == undefined) {
+            this.dataRecords = this.createDataRecords(this.getOriginalData());
+        }
+        return this.dataRecords;
+    }
+
+    /**
+     * It returns list of data domains (IMapDataDomain) representing data dimensions e. g.:
      * [
      *   [ 'value' ],
      *   [ 'source', 'ip' ],
@@ -33,9 +56,9 @@ class FlattenedMapData extends AbstractMapData {
      * ]
      * 
      */
-    getDataDomains() {
+    getDataDomains(): IMapDataDomain[] {
         if(this.dataDomains == undefined) {
-            this.createDataDomains();
+            this.dataDomains = this.createDataDomains();
         }
 
         return this.dataDomains;
@@ -44,36 +67,22 @@ class FlattenedMapData extends AbstractMapData {
     /**
      * It returns the data domain which corresponds to the given string.
      * 
-     * @param {string} label 
+     * If data domain does not exists it creates a new one (to avoid undefined return value)
+     * 
+     * @param {string} name 
      */
-    getDataDomain(label) {
-        let dataDomains = this.getDataDomains();
-        for(let i = 0; i < dataDomains.size; i++) {
-            if(dataDomains[i].toString == label) {
-                return dataDomains[i];
-            }
-        }
-        return new FlattenedMapDataDomain(label.split('.'));
-    }
-
-    /**
-     * It returns preprocessed flattened data.
-     */
-    getData() {
-        if(this.flattenedData == undefined) {
-            this.flattenArrays();
-        }
-        return this.flattenedData;
+    getDataDomain(name: string): IMapDataDomain {
+        let dataDomain: IMapDataDomain | undefined = super.getDataDomain(name)
+        return dataDomain ? dataDomain : new JsonMapDataDomain(name.split('.'));
     }
 
     /**
      * It returns list of all values of the selected data domain.
      * 
-     * @param {AbstractMapDataDomain} dataDomain 
-     * @returns {[String]}
+     * @param {IMapDataDomain} dataDomain
      */
-    getValues(dataDomain) {
-        return this.getDataValues(dataDomain, this.getData());
+    getValues(dataDomain: IMapDataDomain): string[] {
+        return this.getDataRecordsValues(dataDomain, this.getDataRecords());
     }
 
     /**
@@ -81,16 +90,15 @@ class FlattenedMapData extends AbstractMapData {
      * for the given subset of data.
      * 
      * @param {AbstractMapDataDomain} dataDomain 
-     * @param {any} data 
-     * @returns {[String]}
+     * @param {object[]} dataRecords 
      */
-    getDataValues(dataDomain, data) {
-        let result = [];
+    getDataRecordsValues(dataDomain: IMapDataDomain, dataRecords: object[]): string[] {
+        let result: string[] = [];
 
-        if(data != undefined) {
-            for(let i = 0; i < data.length; i++) {
-                let actResult = [];
-                FlattenedMapData.processDataDomainDescription(actResult, data[i], dataDomain.getDomainDescription(), 0);
+        if(dataRecords != undefined) {
+            for(let i = 0; i < dataRecords.length; i++) {
+                let actResult: string[] = [];
+                this.processDataDomainDescription(actResult, dataRecords[i], dataDomain.getOriginal(), 0);
                 // add only unique results
                 for(let j = 0; j < actResult.length; j++) {
                     if(!result.includes(actResult[j])) {
@@ -104,17 +112,16 @@ class FlattenedMapData extends AbstractMapData {
     }
 
     /**
-     * It returns values stored in the given item of the selected data domain.
+     * It returns values stored of the selected data domain stored in the given data record.
      * 
-     * @param {AbstractMapDataDomain} dataDomain 
-     * @param {any} item 
-     * @returns {[String]}
+     * @param {IMapDataDomain} dataDomain
+     * @param {object} dataRecord
      */
-    getItemValues(dataDomain, item) {
-        let result = [];
+    getDataRecordValues(dataDomain: IMapDataDomain, dataRecord: object) {
+        let result: string[] = [];
 
-        if(item != undefined) {
-            FlattenedMapData.processDataDomainDescription(result, item, dataDomain.getDomainDescription(), 0);
+        if(dataRecord != undefined) {
+            this.processDataDomainDescription(result, dataRecord, dataDomain.getOriginal(), 0);
         }
 
         return result;
@@ -123,14 +130,14 @@ class FlattenedMapData extends AbstractMapData {
     /**
      * Help function which analyzes data and creates its metedata description.
      */
-    createDataDomains() {
+    protected createDataDomains(): IMapDataDomain[] {
         /*
          * Tests if an array contains an item
          */
-        let contains = function(dataDomains, dataDomain) {
-            let dataDomainLabel = dataDomain.toString()
+        let contains = function(dataDomains: IMapDataDomain[], dataDomain: IMapDataDomain) {
+            let dataDomainLabel = dataDomain.getName()
             for(let i = 0; i < dataDomains.length; i++) {
-                if(dataDomains[i].toString() == dataDomainLabel) {
+                if(dataDomains[i].getName() == dataDomainLabel) {
                     return true;
                 }
             }
@@ -142,27 +149,27 @@ class FlattenedMapData extends AbstractMapData {
          *
          * TODO: optimize
          */
-        let processDataDomain = function(dataDomains, dataDomain, actValue) {
-            if(typeof actValue == "object" && actValue != null) {
+        let processDataDomain = function(dataDomains: IMapDataDomain[], dataDomainValues: any[], actValue: any) {
+            if(typeof actValue == "object") {
                 // object
                 if(Array.isArray(actValue)) {
                     // array - in the case that the data are not flattened
-                    dataDomain.push("[]");
+                    dataDomainValues.push("[]");
                     for(let i = 0; i < actValue.length; i++) {
-                        processDataDomain(dataDomains, dataDomain, actValue[i]);
+                        processDataDomain(dataDomains, dataDomainValues, actValue[i]);
                     }
                 } else {
                     // structure (key, value)
                     let actKeys = Object.keys(actValue);
                     for(let j = 0; j < actKeys.length; j++) {
-                        let dataDomainCopy = [...dataDomain];
+                        let dataDomainCopy = [...dataDomainValues];
                         dataDomainCopy.push(actKeys[j]);
                         processDataDomain(dataDomains, dataDomainCopy, actValue[actKeys[j]]);
                     }
                 }
             } else {
                 // simple value
-                let newMapDataDomain = new FlattenedMapDataDomain(dataDomain);
+                let newMapDataDomain = new FlattenedMapDataDomain(dataDomainValues);
                 if(!contains(dataDomains, newMapDataDomain)) {
                     dataDomains.push(newMapDataDomain);
                 }
@@ -170,59 +177,63 @@ class FlattenedMapData extends AbstractMapData {
         }
 
         // process data -> builing list of data domains (simplified scheme)
-        this.dataDomains = [];
-        let dataDomain;
+        let dataDomains: IMapDataDomain[] = [];
+        let dataDomainValues: any[] = [];
         let actKeys;
-        let data = this.getData(); // get flattened data
+        let data: any[] = this.getDataRecords(); // get flattened data
         for (var i = 0; i < data.length; i++) {
             actKeys = Object.keys(data[i]);
             for(let j = 0; j < actKeys.length; j++) {
-                dataDomain = [ actKeys[j] ];
-                processDataDomain(this.dataDomains, dataDomain, data[i][actKeys[j]]);
+                dataDomainValues = [ actKeys[j] ];
+                processDataDomain(dataDomains, dataDomainValues, data[i][actKeys[j]]);
             }
         }
-        console.log("data domains:", this.dataDomains);
+        console.log("data domains:", dataDomains);
+
+        return dataDomains;
     }
 
     /**
      * Help function which converts data to the flat structure.
+     * 
+     * TODO: rewrite to typescript
      */
-    flattenArrays() { 
+    protected createDataRecords(data: any) { 
 
         /*
          * *Recursive* flattening of data
          *
          * TODO: optimize
          */
-        let transformObject = function(actValue) {
-            let result;
-            let clone = new rfdc();
+        let transformObject = function(actValue: any): object[] | null {
+            let result: any[] | null;
+            let clone = rfdc;
             if(typeof actValue == "object") {
                 // object
                 if(Array.isArray(actValue)) {
                     // array
-                    let transformedChildren = [];
-                    let transformedChild;
+                    let transformedChildren: object[] = [];
+                    let transformedChild: object[] | null;
                     for(let i = 0; i < actValue.length; i++) {
                         transformedChild = transformObject(actValue[i]);
                         if(Array.isArray(transformedChild)) {
                             transformedChildren = transformedChildren.concat(transformedChild);
-                        } else {
+                        } else if (transformedChild != null) {
                             transformedChildren.push(transformedChild);
                         }
                     }
                     result = transformedChildren;
                 } else {
                     // structure (key, value)
-                    let transformedChild;
-                    let actKeys = Object.keys(actValue);
+                    let transformedChild: object[] | null;
+                    let actKeys: string[] = Object.keys(actValue);
                     result = [{}];
                     for(let i = 0; i < actKeys.length; i++) {
                         transformedChild = transformObject(actValue[actKeys[i]]);
                         if(Array.isArray(transformedChild)) {
                             // wee need to duplicate actual results
-                            let newResults = [];
-                            let copy;
+                            let newResults: object[] = [];
+                            let copy: any;
                             for(let j = 0; j < result.length; j++) {
                                 for(let k = 0; k < transformedChild.length; k++) {
                                     copy = clone(result[j]);
@@ -231,7 +242,7 @@ class FlattenedMapData extends AbstractMapData {
                                 }
                             }
                             result = newResults;
-                        } else {
+                        } else if (transformedChild != null) {
                             for(let j = 0; j < result.length; j++) {
                                 result[j][actKeys[i]] = transformedChild;
                             }
@@ -251,46 +262,50 @@ class FlattenedMapData extends AbstractMapData {
             return result;
         }
         
-        this.flattenedData = transformObject(this.data);
-        console.log("flattened data: ", this.data);
+        let result: object[] | null = transformObject(data);
+        let dataRecords = result != null ? result : [];
+        console.log("flattened data: ", dataRecords);
+
+        return dataRecords;
     }
 
     /**
-     * Static help function represenets a step of recursive data processing searching data items.
+     * Static help function represenets a step of recursive data processing searching data items.7
+     * 
+     * TODO: rewrite to typescript
      * 
      * @param {*} result 
      * @param {*} actValue 
      * @param {*} dataDomain 
      * @param {*} i 
      */
-    static processDataDomainDescription(result, actValue, domainDescription, i) {
+    protected processDataDomainDescription(result: string[], actValue: any, domainDescription: any, i: number) {
 
         if(actValue != undefined && actValue != null) {
             if(i == domainDescription.length) {
                 // reached the value
                 if(typeof actValue != "object") {
                     result.push(actValue);
-                } else {
-                    result.push(null);
                 }
             } else {
                 // act value needs to be type of object
+                // TODO reqrite to TypeScript
                 if(typeof actValue == "object") {
                     let dataDomainPart = domainDescription[i];
                     if(dataDomainPart == "[]") {
                         // act value needs to be type of array
                         if(Array.isArray(actValue)) {
                             for(let j = 0; j < actValue.length; j++) {
-                                FlattenedMapData.processDataDomainDescription(result, actValue[j], domainDescription, i+1);
+                                this.processDataDomainDescription(result, actValue[j], domainDescription, i+1);
                             }
                         }
                     } else {
                         // act value is structure
-                        FlattenedMapData.processDataDomainDescription(result, actValue[dataDomainPart], domainDescription, i+1);
+                        this.processDataDomainDescription(result, actValue[dataDomainPart], domainDescription, i+1);
                     }
                 }
             }
         }
     }
 }
-export default FlattenedMapData
+export default JsonMapDataManager

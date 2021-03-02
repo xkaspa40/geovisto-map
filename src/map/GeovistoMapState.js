@@ -1,5 +1,5 @@
 import AbstractToolsManager from "../model/tool/abstract/AbstractToolsManager";
-import AbstractMapData from "../model/data/abstract/AbstractMapData";
+import AbstractMapData from "../model/data/abstract/AbstractMapDataManager";
 import AbstractMapObjectState from "../model/object/generic/MapObjectState";
 import AbstractMapConfig from "../model/config/abstract/IMapConfigManager";
 

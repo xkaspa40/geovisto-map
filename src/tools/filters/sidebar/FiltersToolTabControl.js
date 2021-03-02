@@ -3,8 +3,8 @@ import "./styles/style.scss";
 
 import TabDOMUtil from "../../../util/TabDOMUtil";
 //import FilterSelectSidebarInput from "../../inputs/filter/FilterSelectSidebarInput";
-import FilterAutocompleteSidebarInput from "../../../inputs/filter/FilterAutocompleteSidebarInput";
-import SidebarInputFactory from "../../../inputs/SidebarInputFactory";
+import FilterAutocompleteFormInput from "../../../model/inputs/filter/autocomplete/FilterAutocompleteFormInput";
+import SidebarInputFactory from "../../../model/inputs/SidebarInputFactory";
 import FiltersToolTabControlDefaults from "./FiltersToolTabControlDefaults";
 import FiltersToolTabControlState from "./FiltersToolTabControlState";
 import AbstractTabControl from "../../sidebar/model/control/AbstractTabControl";
@@ -134,7 +134,7 @@ class FiltersToolTabControl extends AbstractTabControl {
         }
 
         // inputs
-        let input = SidebarInputFactory.createSidebarInput(FilterAutocompleteSidebarInput.ID(), {
+        let input = SidebarInputFactory.createSidebarInput(FilterAutocompleteFormInput.ID(), {
             data: {
                 options: _this.dataDomainLabels,
                 action: updateValueOptions

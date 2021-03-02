@@ -1,6 +1,6 @@
 import ConnectionLayerTool from "./ConnectionLayerTool";
 import AbstractLayerToolDefaults from "../abstract/AbstractLayerToolDefaults";
-import AutocompleteSidebarInput from "../../../inputs/input/AutocompleteSidebarInput";
+import AutocompleteFormInput from "../../../model/inputs/labeled/autocomplete/AutocompleteFormInput";
 
 /**
  * TODO: refactorization needed!
@@ -17,13 +17,13 @@ const MAPPING_MODEL = {
         id: INPUT_ID_PREFIX + "-from",
         name: "from",
         label: "From",
-        input: AutocompleteSidebarInput.ID()
+        input: AutocompleteFormInput.ID()
     },
     to: {
         id: INPUT_ID_PREFIX + "-to",
         name: "to",
         label: "To",
-        input: AutocompleteSidebarInput.ID()
+        input: AutocompleteFormInput.ID()
     }
 }
 

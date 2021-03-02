@@ -14,10 +14,10 @@ export { default as MapConfigFactory } from './model/config/MapConfigFactory';
 export { default as BasicMapConfig } from './model/config/basic/MapConfigManager';
 
 // model/data
-export { default as AbstractMapData } from './model/data/abstract/AbstractMapData';
+export { default as AbstractMapData } from './model/data/abstract/AbstractMapDataManager';
 export { default as AbstractMapDataDomain } from './model/data/abstract/AbstractMapDataDomain';
 export { default as MapDataFactory } from './model/data/MapDataFactory';
-export { default as FlattenedMapData } from './model/data/basic/FlattenedMapData';
+export { default as FlattenedMapData } from './model/data/json/JsonMapDataManager';
 
 // model/dimension
 export { default as AbstractDimension } from './model/dimension/AbstractDimension';

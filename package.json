@@ -71,6 +71,6 @@
     "leaflet": "^1.7.1",
     "leaflet-sidebar-v2": "3.2.2",
     "leaflet.markercluster": "^1.4.1",
-    "rfdc": "^1.1.4"
+    "@types/rfdc": "^1.1.0"
   }
 }

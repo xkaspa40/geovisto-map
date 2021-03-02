@@ -37,19 +37,19 @@ interface IMapObjectsManager {
     remove(object: IMapObject): void;
 
     /**
-     * It removes object from the list of objects.
+     * It removes object of the given id from the list of objects.
      * 
      * @param {string} id 
      */
     removeById(id: string): void;
 
     /**
-     * Help function which returns the list of object string labels (object types).
+     * Help function which returns the list of object string types.
      */
     getTypes(): string[];
 
     /**
-     * Help function which returns the list of object string labels (object types).
+     * Help function which returns the list of object string identifiers.
      */
     getIds(): string[];
 
