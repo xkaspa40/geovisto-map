@@ -104,15 +104,15 @@
             "enabled": true,
             "layerName": "Choropleth layer",
             "data": {
-            "country": "",
-            "value": "",
-            "aggregation": ""
+                "country": "okres",
+                "value": "pocet_nakazenych",
+                "aggregation": "sum"
             }
         },
         {
             "type": "geovisto-tool-layer-marker",
             "id": "geovisto-tool-layer-marker",
-            "enabled": true,
+            "enabled": false,
             "layerName": "Marker layer",
             "data": {
             "country": "",
@@ -124,12 +124,9 @@
         {
             "type": "geovisto-tool-layer-connection",
             "id": "geovisto-tool-layer-connection",
-            "enabled": true,
+            "enabled": false,
             "layerName": "Connection layer",
-            "data": {
-            "from": "",
-            "to": ""
-            }
+            "data": {}
         },
         {
             "type": "geovisto-tool-timeline",
