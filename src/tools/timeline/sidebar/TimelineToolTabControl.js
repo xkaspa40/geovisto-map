@@ -1,9 +1,9 @@
-import TimelineLayerToolTabControlDefaults from './TimelineLayerToolTabControlDefaults';
-import TimelineToolTabControlState from './TimelineToolTabControlState';
-import AbstractLayerToolTabControl from '../../layers/abstract/sidebar/AbstractLayerToolTabControl';
-import SidebarInputFactory from '../../../inputs/SidebarInputFactory';
-import TabDOMUtil from '../../../util/TabDOMUtil';
-import { isValid } from 'date-fns';
+import TimelineLayerToolTabControlDefaults from "./TimelineLayerToolTabControlDefaults";
+import TimelineToolTabControlState from "./TimelineToolTabControlState";
+import AbstractLayerToolTabControl from "../../layers/abstract/sidebar/AbstractLayerToolTabControl";
+import SidebarInputFactory from "../../../inputs/SidebarInputFactory";
+import TabDOMUtil from "../../../util/TabDOMUtil";
+import { isValid } from "date-fns";
 
 /**
  * This class provides controls for management of the layer sidebar tab.
@@ -41,6 +41,8 @@ class TimelineToolTabControl extends AbstractLayerToolTabControl {
         // create new selection
         const dataMapping = {
             [model.timePath.name]: this.timePathInput.getValue(),
+            [model.stepTimeLength.name]: parseInt(this.stepTimeLengthInput.getValue()),
+            [model.transitionTimeLength.name]: parseInt(this.transitionTimeLengthInput.getValue()),
             [model.realTimeEnabled.name]: this.realTimeCheckbox.getValue(),
             [model.granularity.name]: this.granularityInput.getValue(),
             [model.chartEnabled.name]: this.chartEnabledCheckbox.getValue(),
@@ -62,6 +64,8 @@ class TimelineToolTabControl extends AbstractLayerToolTabControl {
 
         // update inputs
         this.timePathInput.setValue(dataMapping[model.timePath.name]);
+        this.stepTimeLengthInput.setValue(dataMapping[model.stepTimeLength.name]);
+        this.transitionTimeLengthInput.setValue(dataMapping[model.transitionTimeLength.name]);
         this.realTimeCheckbox.setValue(dataMapping[model.realTimeEnabled.name]);
         this.granularityInput.setValue(dataMapping[model.granularity.name]);
         this.chartEnabledCheckbox.setValue(dataMapping[model.chartEnabled.name]);
@@ -74,8 +78,8 @@ class TimelineToolTabControl extends AbstractLayerToolTabControl {
      */
     getTabContent() {
         // tab content
-        const tabElement = document.createElement('div');
-        const formElement = tabElement.appendChild(document.createElement('form'));
+        const tabElement = document.createElement("div");
+        const formElement = tabElement.appendChild(document.createElement("form"));
 
         // get data mapping model
         const model = this.getDefaults().getDataMappingModel();
@@ -90,6 +94,14 @@ class TimelineToolTabControl extends AbstractLayerToolTabControl {
         this.timePathInput = SidebarInputFactory.createSidebarInput(
             model.timePath.input,
             { label: model.timePath.label, options: this.getTimePaths(), action: updateFields }
+        );
+        this.stepTimeLengthInput = SidebarInputFactory.createSidebarInput(
+            model.stepTimeLength.input,
+            { label: model.stepTimeLength.label, type: "number" }
+        );
+        this.transitionTimeLengthInput = SidebarInputFactory.createSidebarInput(
+            model.transitionTimeLength.input,
+            { label: model.transitionTimeLength.label, type: "number" }
         );
         this.realTimeCheckbox = SidebarInputFactory.createSidebarInput(
             model.realTimeEnabled.input,
@@ -120,12 +132,14 @@ class TimelineToolTabControl extends AbstractLayerToolTabControl {
             }
         );
         this.submitButton = TabDOMUtil.createButton(
-            'Apply',
+            "Apply",
             () => this.onSubmitClick(),
-            'timeline-apply-button',
+            "timeline-apply-button",
         );
 
         formElement.appendChild(this.timePathInput.create());
+        formElement.appendChild(this.stepTimeLengthInput.create());
+        formElement.appendChild(this.transitionTimeLengthInput.create());
         formElement.appendChild(this.realTimeCheckbox.create());
         formElement.appendChild(this.granularityInput.create());
         formElement.appendChild(this.chartEnabledCheckbox.create());
@@ -133,7 +147,7 @@ class TimelineToolTabControl extends AbstractLayerToolTabControl {
         formElement.appendChild(this.chartAggregationFnInput.create());
         formElement.appendChild(this.submitButton);
 
-        formElement.addEventListener('change', this.updateFields.bind(this))
+        formElement.addEventListener("change", this.updateFields.bind(this))
 
         this.setInputValues(this.getTool().getState().getDataMapping());
         this.updateFields();
@@ -145,7 +159,7 @@ class TimelineToolTabControl extends AbstractLayerToolTabControl {
         const data = this.getTool().getMap().getState().getMapData().getOriginalData();
         const metaPaths = this.getTool().getMap().getState().getMapData().getDataDomainLabels();
         let timePaths = [];
-        const path = (pathString, obj) => pathString.split('.').reduce((o, i) => o[i], obj);
+        const path = (pathString, obj) => pathString.split(".").reduce((o, i) => o[i], obj);
 
         for (let row = 0; row < data.length; row += 1) {
             timePaths = metaPaths.reduce(
@@ -170,6 +184,8 @@ class TimelineToolTabControl extends AbstractLayerToolTabControl {
         const {
             realTimeEnabled,
             timePath,
+            stepTimeLength,
+            transitionTimeLength,
             chartEnabled,
             chartValuePath,
             granularity,
@@ -180,6 +196,8 @@ class TimelineToolTabControl extends AbstractLayerToolTabControl {
         this.chartValuePathInput.setDisabled(!chartEnabled);
         this.chartAggregationFnInput.setDisabled(!chartEnabled);
         this.submitButton.disabled = !timePath ||
+            !stepTimeLength || stepTimeLength <= 0 ||
+            !transitionTimeLength || transitionTimeLength <= 0 ||
             (chartEnabled && (!chartValuePath || !chartAggregationFn)) ||
             (realTimeEnabled && !granularity);
     }

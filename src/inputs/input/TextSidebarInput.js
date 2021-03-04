@@ -4,13 +4,14 @@ const ID = "geovisto-input-text";
 
 /**
  * This class represents basic text sidebar input.
- * 
+ *
  * @author Jiri Hynek
  */
 class TextSidebarInput extends AbstractSidebarInput {
 
     constructor(settings) {
         super(settings);
+        this.inputType = settings.type || "text";
     }
 
     /**
@@ -26,7 +27,7 @@ class TextSidebarInput extends AbstractSidebarInput {
     create() {
         if(this.input == undefined) {
             this.input = document.createElement("input");
-            this.input.setAttribute("type", "text");
+            this.input.setAttribute("type", this.inputType);
             this.input.onchange = this.action;
         }
         return this.input;
@@ -41,8 +42,8 @@ class TextSidebarInput extends AbstractSidebarInput {
 
     /**
      * It sets value of the input element.
-     * 
-     * @param {*} value 
+     *
+     * @param {*} value
      */
     setValue(value) {
         this.input.value = value;

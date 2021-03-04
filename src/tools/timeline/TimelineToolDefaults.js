@@ -2,6 +2,7 @@ import TimelineTool from './TimelineTool';
 import AutocompleteSidebarInput from '../../inputs/input/AutocompleteSidebarInput';
 import CheckboxSidebarInput from '../../inputs/input/CheckboxSidebarInput';
 import { AbstractLayerToolDefaults } from '../layers/abstract';
+import LabeledTextSidebarInput from "../../inputs/input/LabeledTextSidebarInput";
 
 /**
  * TODO: refactorization needed!
@@ -17,8 +18,20 @@ const MAPPING_MODEL = {
     timePath: {
         id: `${INPUT_ID_PREFIX}-time_path`,
         name: "timePath",
-        label: "Time path *",
+        label: "Time path*",
         input: AutocompleteSidebarInput.ID()
+    },
+    stepTimeLength: {
+        id: `${INPUT_ID_PREFIX}-step_time`,
+        name: "stepTimeLength",
+        label: "Step time (ms)*",
+        input: LabeledTextSidebarInput.ID()
+    },
+    transitionTimeLength: {
+        id: `${INPUT_ID_PREFIX}-transition_time`,
+        name: "transitionTimeLength",
+        label: "Transition time (ms)*",
+        input: LabeledTextSidebarInput.ID()
     },
     realTimeEnabled: {
         id: `${INPUT_ID_PREFIX}-real_time`,
@@ -91,6 +104,8 @@ class TimelineToolDefaults extends AbstractLayerToolDefaults {
         let dataMappingModel = this.getDataMappingModel();
 
         dataMapping[dataMappingModel.timePath.name] = null;
+        dataMapping[dataMappingModel.stepTimeLength.name] = 1000;
+        dataMapping[dataMappingModel.transitionTimeLength.name] = 2500;
         dataMapping[dataMappingModel.realTimeEnabled.name] = false;
         dataMapping[dataMappingModel.granularity.name] = null;
         dataMapping[dataMappingModel.chartEnabled.name] = false;

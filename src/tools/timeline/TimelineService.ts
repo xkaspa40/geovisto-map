@@ -1,6 +1,5 @@
 import { Subject } from "./Subject";
 
-const TIMEOUT = 3000;
 const START_INDEX = 0;
 
 type State = {
@@ -32,12 +31,15 @@ export class TimelineService {
 
     private readonly times: Date[];
     private readonly data: TimeData;
+    private readonly stepTimeLength: number;
+    private readonly transitionTimeLength: number;
     private story: Map<Date, StoryState | undefined> = new Map();
     private _currentTimeIndex = START_INDEX;
     private _startTimeIndex = START_INDEX;
     private _endTimeIndex = START_INDEX;
     private _isPlaying = false;
     private interval: NodeJS.Timeout | null = null;
+    private timeout: NodeJS.Timeout | null = null;
 
     private set isPlaying(value: boolean) {
         if (this._isPlaying !== value) {
@@ -74,23 +76,35 @@ export class TimelineService {
         }
     }
 
-    private constructor(times: Date[], data: TimeData) {
+    private constructor(stepTimeLength: number, transitionTimeLength: number, times: Date[], data: TimeData) {
         this.times = times;
+        this.stepTimeLength = stepTimeLength;
+        this.transitionTimeLength = transitionTimeLength;
         this.endTimeIndex = times.length - 1;
         this.data = data;
     }
 
-    static create(times: Date[], data: TimeData): TimelineService {
-        return new TimelineService(times, data);
+    static create(stepTimeLength: number,
+        transitionTimeLength: number,
+        times: Date[],
+        data: TimeData): TimelineService {
+        return new TimelineService(stepTimeLength, transitionTimeLength, times, data);
     }
 
-    private tick() {
-        if (this.currentTimeIndex < this._endTimeIndex) {
-            this.currentTimeIndex += 1;
-        } else {
-            this.isPlaying = false;
-            this.clearInterval();
-        }
+    private nextTick() {
+        const tick = () => {
+            if (this.currentTimeIndex < this._endTimeIndex) {
+                this.currentTimeIndex += 1;
+                this.nextTick.call(this);
+            } else {
+                this.isPlaying = false;
+                this.clearTimeout();
+            }
+        };
+        this.timeout = setTimeout(
+            tick.bind(this),
+            this.stepTimeLength + (this.story.has(this.times[this.currentTimeIndex]) ? this.transitionTimeLength : 0),
+        );
     }
 
     private clearInterval() {
@@ -98,17 +112,19 @@ export class TimelineService {
         this.interval = null;
     }
 
+    private clearTimeout() {
+        this.timeout && clearTimeout(this.timeout);
+        this.timeout = null;
+    }
+
     private play() {
         this.isPlaying = true;
-        if (!this.interval) {
-            this.interval = setInterval(() => this.tick(), TIMEOUT);
-        }
+        this.nextTick();
     }
 
     private pause() {
         this.isPlaying = false;
-        this.interval && clearInterval(this.interval);
-        this.interval = null;
+        this.clearTimeout();
     }
 
     togglePlay(): void {

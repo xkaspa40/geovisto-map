@@ -11,6 +11,7 @@ import DataChangeEvent from "../../../model/event/basic/DataChangeEvent";
 import MapSelection from "../../selection/model/item/generic/MapSelection";
 import SelectionTool from "../../selection/SelectionTool";
 import TimeChangeEvent from "../../timeline/model/TimeChangeEvent";
+import TimeInitializedEvent from "../../timeline/model/TimeInitializedEvent";
 
 // TODO: move to defaults
 const COLOR_orange = ['#8c8c8c','#ffffcc','#ffff99','#ffcc99','#ff9966','#ff6600','#ff0000','#cc0000'];
@@ -132,13 +133,6 @@ class ChoroplethLayerTool extends AbstractLayerTool {
             _this.getState().getLayerPopup().update();
 
             this.closeTooltip();
-
-            // TODO Rkala - solve the outline
-            // let selection = _this.getSelectionTool() ? _this.getSelectionTool().getState().getSelection() : undefined;
-            // let selectedIds = selection.getIds();
-            // if (selection && selectedIds.length > 0 && selectedIds.includes(layerItem.id)) {
-            //     return;
-            // }
 
             if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
                 layerItem.bringToBack();
@@ -274,7 +268,7 @@ class ChoroplethLayerTool extends AbstractLayerTool {
     redraw(onlyStyle) {
         if(!onlyStyle) {
             // combine geo with data
-            this.updatePolygons();
+            this.updatePolygons(this.getMap().getState().getCurrentData());
         }
 
         // update style
@@ -300,6 +294,17 @@ class ChoroplethLayerTool extends AbstractLayerTool {
                 this.updatePolygons(event.getObject());
                 this.updateStyle();
             },
+            [TimeInitializedEvent.TYPE()]: () => {
+                const { stepTimeLength } = event.getObject();
+
+                if (this.getState().getLayer()) {
+                    this.getState().getLayer().eachLayer((item) => {
+                        if (item._path != undefined) {
+                            item._path.style.transitionDuration = `${stepTimeLength / 2 < 500 ? stepTimeLength / 2 : stepTimeLength}ms`
+                        }
+                    });
+                }
+            }
         }
         EventHandler[event.getType()].call();
     }

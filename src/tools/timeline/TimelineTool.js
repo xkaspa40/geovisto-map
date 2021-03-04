@@ -17,6 +17,7 @@ import {
 } from "../filters";
 import TimeChangeEvent from "./model/TimeChangeEvent";
 import { LatLng } from "leaflet";
+import TimeInitializedEvent from "./model/TimeInitializedEvent";
 
 
 export class TimelineTool extends AbstractLayerTool {
@@ -141,7 +142,7 @@ export class TimelineTool extends AbstractLayerTool {
             leafletMap.flyTo(
                 new LatLng(state.latitude, state.longitude),
                 state.zoom,
-                { duration: 1.5 }
+                { duration: this.formState.transitionTimeLength / 1000 }
             );
             setTimeout(() => {
                 this.getMap()
@@ -149,7 +150,7 @@ export class TimelineTool extends AbstractLayerTool {
                 // create and dispatch event
                 this.getMap()
                     .dispatchEvent(new TimeChangeEvent(this.data.values.get(this.times[currentTimeIndex])));
-            }, 1750);
+            }, this.formState.transitionTimeLength);
         } else {
             this.getMap()
                 .updateData(this.data.values.get(this.times[currentTimeIndex]), "timeline");
@@ -233,7 +234,12 @@ export class TimelineTool extends AbstractLayerTool {
         this.formState = formState;
         this.times = this.calculateTimes();
         this.data = this.createData(this.times);
-        this.timelineService = TimelineService.create(this.times, this.data)
+        this.timelineService = TimelineService.create(
+            this.formState.stepTimeLength,
+            this.formState.transitionTimeLength,
+            this.times,
+            this.data
+        )
         this.timelineService.onCurrentTimeIndexChanged.subscribe(this.onCurrentTimeChange.bind(
             this));
         if (!this.timelineControl) {
@@ -251,6 +257,8 @@ export class TimelineTool extends AbstractLayerTool {
             )
                 .addTo(this.getMap().getState().getLeafletMap());
         }
+        this.getMap()
+            .dispatchEvent(new TimeInitializedEvent({ stepTimeLength: this.formState.stepTimeLength }));
     }
 
     desctructTimeline() {
