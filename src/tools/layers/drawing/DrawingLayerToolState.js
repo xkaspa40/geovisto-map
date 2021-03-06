@@ -16,6 +16,7 @@ class DrawingLayerToolState extends AbstractLayerToolState {
     this.prevPolyFeature = null;
     this.featureGroupArray = [new L.FeatureGroup()];
     this.activeIndex = 0;
+    this.selecting = false;
   }
 
   setActiveIndex(idx) {
@@ -52,6 +53,14 @@ class DrawingLayerToolState extends AbstractLayerToolState {
 
   setCurrEl(val) {
     this.currEl = val;
+  }
+
+  setSelecting(is) {
+    this.selecting = is;
+  }
+
+  getSelecting() {
+    return this.selecting;
   }
 
   serialize(defaults) {

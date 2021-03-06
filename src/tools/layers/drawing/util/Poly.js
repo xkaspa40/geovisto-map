@@ -3,7 +3,10 @@ import 'leaflet-path-drag';
 
 import 'leaflet/dist/leaflet.css';
 
-export const polygonClick = (map, sidebar) => {
+export const highlightStyles = { fillOpacity: 0.5, opacity: 0.2 };
+export const normalStyles = { fillOpacity: 0.2, opacity: 0.5 };
+
+export const polygonCreate = (map, sidebar) => {
   const x = new L.Draw.Polygon(map, {
     allowIntersection: false,
     drawError: {
@@ -19,7 +22,7 @@ export const polygonClick = (map, sidebar) => {
   x.enable();
 };
 
-export const polylineClick = (map, sidebar) => {
+export const polylineCreate = (map, sidebar) => {
   const x = new L.Draw.Polyline(map, {
     shapeOptions: {
       color: sidebar.getState().getSelectedColor(),

@@ -19,7 +19,6 @@ class SidebarInputFactory {
    * @param {*} id
    */
   static createSidebarInput(id, settings) {
-    console.log({ settings });
     let element = null;
     if (id == TextSidebarInput.ID()) {
       element = new TextSidebarInput(settings);

@@ -5,15 +5,16 @@ import 'leaflet/dist/leaflet.css';
 
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
-import { polygonClick, polylineClick } from '../util/Poly';
-import { markerClick } from '../util/Marker';
+import { polygonCreate, polylineCreate } from '../util/Poly';
+import { markerCreate } from '../util/Marker';
+
+import '../style/drawingLayer.scss';
 
 export default function useDrawingToolbar() {
   L.Control.DrawingToolbar = L.Control.extend({
     options: {
       position: 'topleft',
       drawingBtns: {},
-      functionBtns: {},
     },
     initialize: function (options) {
       if (options) {
@@ -47,6 +48,13 @@ export default function useDrawingToolbar() {
         'fa fa-star',
       );
 
+      this.options.drawingBtns.selectBtn = this.createToolbarBtn(
+        'selectBtn',
+        toolContainer,
+        'Select',
+        'fa fa-mouse-pointer',
+      );
+
       this.addEventListeners();
       L.DomEvent.disableClickPropagation(topContainer);
       return topContainer;
@@ -55,48 +63,16 @@ export default function useDrawingToolbar() {
     onRemove: function (map) {},
 
     addEventListeners: function () {
-      const { lineBtn, markerBtn, polygonBtn } = this.options.drawingBtns;
+      const { lineBtn, markerBtn, polygonBtn, selectBtn } = this.options.drawingBtns;
       const map = this.options.map;
       const sidebar = this.options.tool.getSidebarTabControl();
 
-      L.DomEvent.on(lineBtn, 'click', () => polylineClick(map, sidebar), this);
+      L.DomEvent.on(lineBtn, 'click', () => polylineCreate(map, sidebar), this);
       L.DomEvent.on(markerBtn, 'click', L.DomEvent.stopPropagation)
         .on(markerBtn, 'click', L.DomEvent.preventDefault)
-        .on(markerBtn, 'click', () => markerClick(map, sidebar), this);
-      L.DomEvent.on(polygonBtn, 'click', () => polygonClick(map, sidebar), this);
-
-      this.addLeafletDrawEvents();
-    },
-
-    addLeafletDrawEvents: function () {
-      if (!L.Control.DrawingToolbar) {
-        return;
-      }
-      const map = this.options.map;
-      L.DomEvent.on(map, 'layeradd', this.onLayerAdd, this);
-      L.DomEvent.on(map, L.Draw.Event.CREATED, this.onLayerCreated, this);
-    },
-
-    onLayerAdd: function (layer) {
-      console.log('added layer');
-    },
-
-    onLayerCreated: function (e) {
-      this.setCurrEl(e.layer);
-      this.options.tool.redrawSidebarTabControl(e.layerType);
-      this.applyEventListenerForStyleChange(e.layer);
-      // console.log(e);
-    },
-
-    applyEventListenerForStyleChange: function (layer) {
-      let evt = L.DomEvent.on(layer, 'click', this.initChangeStyle, this);
-      // this.showEditToolbar();
-    },
-
-    initChangeStyle: function (e) {
-      const drawObject = e.target;
-      this.setCurrEl(drawObject);
-      this.options.tool.redrawSidebarTabControl(e.target.layerType);
+        .on(markerBtn, 'click', () => markerCreate(map, sidebar), this);
+      L.DomEvent.on(polygonBtn, 'click', () => polygonCreate(map, sidebar), this);
+      L.DomEvent.on(selectBtn, 'click', () => this.setSelecting(true), this);
     },
 
     createToolbarBtn: function (className, btnContainer, title, icon) {
@@ -107,8 +83,8 @@ export default function useDrawingToolbar() {
       return returnBtn;
     },
 
-    setCurrEl: function (el) {
-      this.options.tool.getState().currEl = el;
+    setSelecting: function (is) {
+      this.options.tool.getState().setSelecting(is);
     },
   });
 

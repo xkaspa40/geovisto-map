@@ -1,12 +1,14 @@
 import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
 import AbstractLayerTool from '../abstract/AbstractLayerTool';
 import DrawingLayerToolState from './DrawingLayerToolState';
 import DrawingLayerToolDefaults from './DrawingLayerToolDefaults';
 import DrawingLayerToolTabControl from './sidebar/DrawingLayerToolTabControl';
 import useDrawingToolbar from './components/useDrawingToolbar';
-import './style/drawingLayer.scss';
 import union from '@turf/union';
+import { highlightStyles, normalStyles } from './util/Poly';
+
+import 'leaflet/dist/leaflet.css';
+import './style/drawingLayer.scss';
 
 /**
  * This class represents Drawing layer tool.
@@ -74,6 +76,12 @@ class DrawingLayerTool extends AbstractLayerTool {
     return new DrawingLayerToolTabControl({ tool: this });
   }
 
+  applyEventListeners(layer) {
+    layer.on('click', this.initChangeStyle, this);
+    layer.on('mouseover', this.hightlightPoly, this);
+    layer.on('mouseout', this.normalizePoly, this);
+  }
+
   createdListener = (e) => {
     let layer = e.layer;
     layer.layerType = e.layerType;
@@ -104,11 +112,7 @@ class DrawingLayerTool extends AbstractLayerTool {
     );
     this.getState().getEditableLayer().addLayer(layer);
     this.getState().setCurrEl(layer);
-    layer.on('click', (e) => {
-      let drawObject = e.target;
-      this.getState().setCurrEl(drawObject);
-      this.redrawSidebarTabControl(e.target.layerType);
-    });
+    this.applyEventListeners(layer);
     if (prevPolyLayer && isFeaturePoly)
       this.getState().getEditableLayer().removeLayer(prevPolyLayer);
     console.log({ group: this.getState().featureGroupArray });
@@ -125,6 +129,31 @@ class DrawingLayerTool extends AbstractLayerTool {
     map.on('draw:created', this.createdListener);
 
     return this.getState().featureGroupArray;
+  }
+
+  hightlightPoly(e) {
+    if (!this.getState().getSelecting()) return;
+    if (e.target._icon) {
+      L.DomUtil.addClass(e.target._icon, 'highlight-marker');
+    } else {
+      e.target.setStyle(highlightStyles);
+    }
+  }
+
+  normalizePoly(e) {
+    if (!this.getState().getSelecting()) return;
+    if (e.target._icon) {
+      L.DomUtil.removeClass(e.target._icon, 'highlight-marker');
+    } else {
+      e.target.setStyle(normalStyles);
+    }
+  }
+
+  initChangeStyle(e) {
+    const drawObject = e.target;
+    this.getState().setCurrEl(drawObject);
+    this.redrawSidebarTabControl(e.target.layerType);
+    this.getState().setSelecting(!this.getState().getSelecting());
   }
 
   /**

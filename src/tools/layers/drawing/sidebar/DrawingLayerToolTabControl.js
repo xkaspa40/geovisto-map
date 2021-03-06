@@ -3,6 +3,8 @@ import DrawingLayerToolTabControlState from './DrawingLayerToolTabControlState';
 import AbstractLayerToolTabControl from '../../abstract/sidebar/AbstractLayerToolTabControl';
 import SidebarInputFactory from '../../../../inputs/SidebarInputFactory';
 
+import '../style/drawingLayer.scss';
+
 const C_sidebar_tab_content_class = 'leaflet-sidebar-tab-content';
 
 /**
@@ -38,6 +40,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     inputPalette.appendChild(wrapper);
     opts.forEach((opt, idx) => {
       let elem = document.createElement('div');
+      elem.style.boxSizing = 'border-box';
       elem.style.background = img ? `url(${opt})` : opt;
       elem.style.backgroundRepeat = 'no-repeat';
       elem.style.backgroundPosition = 'center';
@@ -190,6 +193,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     // tab content
     let tab = document.createElement('div');
     let elem = tab.appendChild(document.createElement('div'));
+    elem.classList.add('drawing-sidebar');
 
     // get data mapping model
     let model = this.getDefaults().getDataMappingModel();

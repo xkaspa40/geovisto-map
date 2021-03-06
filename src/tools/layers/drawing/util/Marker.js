@@ -10,7 +10,7 @@ export const iconStarter = {
   iconSize: new L.Point(24, 24),
 };
 
-export const markerClick = (map, sidebar) => {
+export const markerCreate = (map, sidebar) => {
   const iconOptions = {
     ...iconStarter,
     iconUrl: sidebar.getState().getSelectedIcon(),
