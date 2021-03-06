@@ -241,10 +241,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     this.inputFinish = document.createElement('button');
     this.inputFinish.innerText = 'Finish';
     this.inputFinish.addEventListener('click', () => {
-      this.getTool().getState().increaseActiveIndex();
-      this.getTool().getState().addEditableLayer();
       this.getTool().getState().clearPrevPolyFeature();
-      this.getTool().redraw();
     });
     elem.appendChild(this.inputFinish);
 

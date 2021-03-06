@@ -14,9 +14,12 @@ class DrawingLayerToolState extends AbstractLayerToolState {
     super();
     this.currEl = null;
     this.prevPolyFeature = null;
-    this.featureGroupArray = [new L.FeatureGroup()];
+    this.featureGroup = new L.FeatureGroup();
     this.activeIndex = 0;
+    // * for knowing if we are using select tool
     this.selecting = false;
+    // * for knowing if we already selected layer
+    this.selectedLayer = null;
   }
 
   setActiveIndex(idx) {
@@ -29,22 +32,6 @@ class DrawingLayerToolState extends AbstractLayerToolState {
 
   getActiveIndex() {
     return this.activeIndex;
-  }
-
-  /**
-   * Returns feature group with elements defined in it
-   * You can call it without parameter to simply get last one
-   *
-   * @param {number} idx
-   */
-  getEditableLayer(idx) {
-    const featureArrLen = this.featureGroupArray.length;
-    const index = idx === undefined ? featureArrLen - 1 : idx;
-    return this.featureGroupArray[index];
-  }
-
-  addEditableLayer() {
-    this.featureGroupArray.push(new L.FeatureGroup());
   }
 
   clearPrevPolyFeature() {
@@ -61,6 +48,22 @@ class DrawingLayerToolState extends AbstractLayerToolState {
 
   getSelecting() {
     return this.selecting;
+  }
+
+  addLayer(layer) {
+    this.featureGroup.addLayer(layer);
+  }
+
+  removeLayer(layer) {
+    this.featureGroup.removeLayer(layer);
+  }
+
+  setSelectedLayer(layer) {
+    this.selectedLayer = layer;
+  }
+
+  clearSelectedLayer() {
+    this.selectedLayer = null;
   }
 
   serialize(defaults) {

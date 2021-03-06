@@ -82,40 +82,39 @@ class DrawingLayerTool extends AbstractLayerTool {
     layer.on('mouseout', this.normalizePoly, this);
   }
 
+  getGeoJSONFeatureFromLayer(layer) {
+    let geoFeature = layer.toGeoJSON();
+    let feature = geoFeature.type === 'FeatureCollection' ? geoFeature.features[0] : geoFeature;
+    return feature;
+  }
+
   createdListener = (e) => {
     let layer = e.layer;
     layer.layerType = e.layerType;
 
-    let geoFeature = layer.toGeoJSON();
-    let feature = geoFeature.type === 'FeatureCollection' ? geoFeature.features[0] : geoFeature;
+    let feature = this.getGeoJSONFeatureFromLayer(layer);
     let featureType = feature ? feature.geometry.type.toLowerCase() : '';
 
     let isFeaturePoly = featureType === 'polygon' || featureType === 'multipolygon';
+    let selectedLayer = this.getState().selectedLayer;
 
-    if (isFeaturePoly) {
-      if (this.getState().prevPolyFeature) {
-        let unifiedFeature = union(feature, this.getState().prevPolyFeature);
-        let result = new L.GeoJSON(unifiedFeature, {
-          ...layer.options,
-        });
-        layer = result;
-        layer.layerType = 'polygon';
-        this.getState().prevPolyFeature = unifiedFeature;
-      } else {
-        this.getState().prevPolyFeature = feature;
-      }
+    if (isFeaturePoly && Boolean(selectedLayer)) {
+      let selectedFeature = this.getGeoJSONFeatureFromLayer(selectedLayer);
+      let unifiedFeature = union(feature, selectedFeature);
+      let result = new L.GeoJSON(unifiedFeature, {
+        ...layer.options,
+      });
+      layer = result;
+      layer.layerType = 'polygon';
     }
 
-    let layerObjectToIterateThrough = this.getState().getEditableLayer()._layers || {};
-    let prevPolyLayer = Object.values(layerObjectToIterateThrough).find(
-      (l) => l.layerType === 'polygon',
-    );
-    this.getState().getEditableLayer().addLayer(layer);
+    this.getState().addLayer(layer);
     this.getState().setCurrEl(layer);
     this.applyEventListeners(layer);
-    if (prevPolyLayer && isFeaturePoly)
-      this.getState().getEditableLayer().removeLayer(prevPolyLayer);
-    console.log({ group: this.getState().featureGroupArray });
+    if (selectedLayer && isFeaturePoly) {
+      this.getState().removeLayer(selectedLayer);
+      this.getState().clearSelectedLayer();
+    }
   };
 
   /**
@@ -128,7 +127,7 @@ class DrawingLayerTool extends AbstractLayerTool {
     // * eventlistener for when object is created
     map.on('draw:created', this.createdListener);
 
-    return this.getState().featureGroupArray;
+    return [this.getState().featureGroup];
   }
 
   hightlightPoly(e) {
@@ -151,6 +150,9 @@ class DrawingLayerTool extends AbstractLayerTool {
 
   initChangeStyle(e) {
     const drawObject = e.target;
+    if (this.getState().getSelecting()) {
+      this.getState().setSelectedLayer(drawObject);
+    }
     this.getState().setCurrEl(drawObject);
     this.redrawSidebarTabControl(e.target.layerType);
     this.getState().setSelecting(!this.getState().getSelecting());
@@ -166,9 +168,6 @@ class DrawingLayerTool extends AbstractLayerTool {
    */
   redraw(onlyStyle) {
     console.log('...redrawing');
-
-    this.hideLayerItems();
-    this.showLayerItems();
   }
 
   /**
