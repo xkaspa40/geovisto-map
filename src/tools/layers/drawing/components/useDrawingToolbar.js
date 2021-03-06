@@ -55,6 +55,13 @@ export default function useDrawingToolbar() {
         'fa fa-mouse-pointer',
       );
 
+      this.options.drawingBtns.transformBtn = this.createToolbarBtn(
+        'transformBtn',
+        toolContainer,
+        'Transform',
+        'fa fa-arrows-alt',
+      );
+
       this.addEventListeners();
       L.DomEvent.disableClickPropagation(topContainer);
       return topContainer;
@@ -63,7 +70,7 @@ export default function useDrawingToolbar() {
     onRemove: function (map) {},
 
     addEventListeners: function () {
-      const { lineBtn, markerBtn, polygonBtn, selectBtn } = this.options.drawingBtns;
+      const { lineBtn, markerBtn, polygonBtn, selectBtn, transformBtn } = this.options.drawingBtns;
       const map = this.options.map;
       const sidebar = this.options.tool.getSidebarTabControl();
 
@@ -73,6 +80,18 @@ export default function useDrawingToolbar() {
         .on(markerBtn, 'click', () => markerCreate(map, sidebar), this);
       L.DomEvent.on(polygonBtn, 'click', () => polygonCreate(map, sidebar), this);
       L.DomEvent.on(selectBtn, 'click', () => this.setSelecting(true), this);
+      L.DomEvent.on(transformBtn, 'click', this.initTransform, this);
+    },
+
+    initTransform: function () {
+      const layer = this.options.tool.getState().currEl;
+      if (layer?.transform) {
+        if (layer.transform._enabled) {
+          layer.transform.disable();
+        } else {
+          layer.transform.enable({ rotation: true, scaling: true });
+        }
+      }
     },
 
     createToolbarBtn: function (className, btnContainer, title, icon) {
@@ -81,6 +100,10 @@ export default function useDrawingToolbar() {
       returnBtn.innerHTML = `<i class="${icon}" aria-hidden="true"></i>`;
       returnBtn.role = 'button';
       return returnBtn;
+    },
+
+    setCurrEl: function (el) {
+      this.options.tool.getState().setCurrEl(el);
     },
 
     setSelecting: function (is) {

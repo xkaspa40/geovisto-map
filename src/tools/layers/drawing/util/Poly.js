@@ -1,5 +1,6 @@
 import L from 'leaflet';
 import 'leaflet-path-drag';
+import 'leaflet-path-transform';
 
 import 'leaflet/dist/leaflet.css';
 
@@ -17,6 +18,7 @@ export const polygonCreate = (map, sidebar) => {
       color: sidebar.getState().getSelectedColor(),
       weight: sidebar.getState().getSelectedStroke(),
       draggable: true,
+      transform: true,
     },
   });
   x.enable();
@@ -28,6 +30,7 @@ export const polylineCreate = (map, sidebar) => {
       color: sidebar.getState().getSelectedColor(),
       weight: sidebar.getState().getSelectedStroke(),
       draggable: true,
+      transform: true,
     },
   });
   x.enable();
