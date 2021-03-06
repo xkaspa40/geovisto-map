@@ -1,4 +1,4 @@
-import AbstractToolState from "../../model/tool/abstract/AbstractToolState";
+import MapToolState from "../../model/tool/generic/MapToolState";
 import AbstractTheme from "./model/theme/abstract/AbstractTheme";
 import ThemesToolDefaults from "./ThemesToolDefaults";
 
@@ -7,7 +7,7 @@ import ThemesToolDefaults from "./ThemesToolDefaults";
  * 
  * @author Jiri Hynek
  */
-class ThemesToolState extends AbstractToolState {
+class ThemesToolState extends MapToolState {
 
     /**
      * It creates a tool state.

@@ -8,5 +8,7 @@ import IMapObjectConfig from "../../object/abstract/IMapObjectConfig";
  * @author Jiri Hynek
  */
 interface IMapToolConfig extends IMapObjectConfig {
+    type: string | undefined;
+    enabled: boolean | undefined;
 }
 export default IMapToolConfig;

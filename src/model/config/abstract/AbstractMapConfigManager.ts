@@ -1,4 +1,4 @@
-import IMapConfig from "../../../map/abstract/IMapConfig";
+import IMapConfig from "../../map/abstract/IMapConfig";
 import IMapToolConfig from "../../tool/abstract/IMapToolConfig";
 
 /**
@@ -39,21 +39,21 @@ abstract class AbstractMapConfigManager {
     /**
      * It returns the original config.
      */
-    getOriginalConfig(): any {
+    public getOriginalConfig(): any {
         return this.originalConfig;
     }
 
     /**
      * It returns the map config
      */
-    getMapConfig(): IMapConfig {
+    public getMapConfig(): IMapConfig {
         return this.config;
     }
 
     /**
      * It returns the list of all config records for the tools.
      */
-    getToolsConfigs(): IMapToolConfig[] {
+    public getToolsConfigs(): IMapToolConfig[] {
         return this.config.tools;
     }
 
@@ -62,7 +62,7 @@ abstract class AbstractMapConfigManager {
      * 
      * @param {string} toolId 
      */
-    getToolConfig(toolId: string): IMapToolConfig | undefined {
+    public getToolConfig(toolId: string): IMapToolConfig | undefined {
         let tools = this.config.tools
         let tool = undefined;
         if(tools != undefined && Array.isArray(tools)) {

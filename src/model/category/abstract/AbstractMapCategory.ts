@@ -15,7 +15,7 @@ abstract class AbstractMapCategory implements IMapCategory {
     /**
      * The string representation is equal to the name of the category.
      */
-    toString() {
+    public toString() {
         return this.getName();
     }
 }

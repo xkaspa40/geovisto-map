@@ -1,6 +1,7 @@
 import IMapObjectDefaults from "./IMapObjectDefaults";
 import IMapObjectState from "./IMapObjectState";
 import IMapObjectProps from "./IMapObjectProps";
+import IMapObjectConfig from "./IMapObjectConfig";
 
 /**
  * This class provide functions for using map object which can be identified by uniquie string.
@@ -10,7 +11,7 @@ import IMapObjectProps from "./IMapObjectProps";
 interface IMapObject {
 
     /**
-     * Help function which returns the props given by the programmer.
+     * It returns the props given by the programmer.
      */
     getProps(): IMapObjectProps;
 
@@ -20,7 +21,7 @@ interface IMapObject {
     getDefaults(): IMapObjectDefaults;
 
     /**
-     * It returns the tool state.
+     * It returns the map object state.
      */
     getState(): IMapObjectState;
 
@@ -33,5 +34,12 @@ interface IMapObject {
      * Help function which returns the id of the object.
      */
     getId(): string;
+
+    /**
+     * It sets the config of the object.
+     * 
+     * @param config 
+     */
+    setConfig(config: IMapObjectConfig): void
 }
 export default IMapObject;

@@ -1,4 +1,4 @@
-import IMapConfig from "../../../map/abstract/IMapConfig";
+import IMapConfig from "../../map/abstract/IMapConfig";
 import IMapToolConfig from "../../tool/abstract/IMapToolConfig";
 
 /**

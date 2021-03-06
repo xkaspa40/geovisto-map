@@ -1,8 +1,8 @@
 import IMapObjectConfig from "./IMapObjectConfig";
 
 /**
- * This class manages state of the tool.
- * It wraps the state since the tool can work with state objects which needs to be explicitly serialized.
+ * This class manages state of a map object.
+ * It wraps the state since the map object can work with state objects which needs to be explicitly serialized.
  * 
  * @author Jiri Hynek
  */
@@ -21,24 +21,24 @@ interface IMapObjectState {
     deserialize(config: IMapObjectConfig): void;
 
     /**
-     * The method serializes the tool state. Optionally, a serialed value can be let undefined if it equals the default value.
+     * The method serializes the map object state. Optionally, a serialed value can be let undefined if it equals the default value.
      * 
-     * @param {boolean} useDefaults 
+     * @param {boolean} filterDefaults 
      */
-    serialize(useDefaults: boolean): IMapObjectConfig;
+    serialize(filterDefaults: boolean | undefined): IMapObjectConfig;
 
     /**
-     * It returns the type property of the tool state.
+     * It returns the type property of the map object state.
      */
     getType(): string;
 
     /**
-     * It returns the id property of the tool state.
+     * It returns the id property of the map object state.
      */
     getId(): string;
 
     /**
-     * It sets the id property of the tool state.
+     * It sets the id property of the map object state.
      * It can be set only once.
      * 
      * @param {string} id 

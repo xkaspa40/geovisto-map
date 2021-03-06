@@ -1,4 +1,4 @@
-import AbstractToolState from "../../model/tool/abstract/AbstractToolState";
+import MapToolState from "../../model/tool/generic/MapToolState";
 import FiltersToolDefaults from "./FiltersToolDefaults";
 import AbstractFiltersManager from "./model/abstract/AbstractFiltersManager";
 import AbstractFilterRule from "./model/abstract/AbstractFilterRule";
@@ -8,7 +8,7 @@ import AbstractFilterRule from "./model/abstract/AbstractFilterRule";
  * 
  * @author Jiri Hynek
  */
-class FiltersToolState extends AbstractToolState {
+class FiltersToolState extends MapToolState {
 
     /**
      * It creates a tool state.

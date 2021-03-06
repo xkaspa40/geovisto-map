@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import '../styles/common.scss';
-import GeovistoMap from "../map/GeovistoMap";
+import GeovistoMap from "../model/map/geovisto/GeovistoMap";
 
 /**
  * React component which wraps Geovisto map.
@@ -65,7 +65,7 @@ class ReactGeovistoMap extends Component {
      */
     render() {
         return <div id={this.props.id} className={this.getDefaultClass()} />;
-    };
+    }
 };
 
 export default ReactGeovistoMap;

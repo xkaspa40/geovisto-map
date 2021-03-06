@@ -1,6 +1,7 @@
 import IMapObjectDefaults from "../abstract/IMapObjectDefaults";
 import IMapObject from "../abstract/IMapObject";
 import IMapObjectProps from "../abstract/IMapObjectProps";
+import IMapObjectConfig from "../abstract/IMapObjectConfig";
 
 /**
  * This class provide functions which return the default state values.
@@ -37,6 +38,16 @@ class AbstractMapObjectDefaults implements IMapObjectDefaults {
     public getProps(): IMapObjectProps {
         return {
             id: this.getId()
+        };
+    }
+
+    /**
+     * It returns a default config if no config is given.
+     */
+    public getConfig(): IMapObjectConfig {
+        return {
+            type: undefined,
+            id: undefined
         };
     }
 

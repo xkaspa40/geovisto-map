@@ -27,7 +27,7 @@ class AbstractMapObjectState implements IMapObjectState {
         this.type = (this.getDefaults().getType());
 
         // set the id of the object (can be set only once in constructor)
-        this.id! = (this.getProps().id != undefined ? this.getDefaults().getId() : ((String) (this.getProps().id)));
+        this.id = (this.getProps().id != undefined ? this.getDefaults().getId() : ((String) (this.getProps().id)));
     }
 
     /**
@@ -62,9 +62,9 @@ class AbstractMapObjectState implements IMapObjectState {
     /**
      * The method serializes the tool state. Optionally, a serialed value can be let undefined if it equals the default value.
      * 
-     * @param {boolean} defaults 
+     * @param {boolean} filterDefaults 
      */
-    public serialize(useDefaults : boolean): IMapObjectConfig {
+    public serialize(filterDefaults : boolean | undefined): IMapObjectConfig {
         return {
             type: this.getType(),
             id: this.getId(),

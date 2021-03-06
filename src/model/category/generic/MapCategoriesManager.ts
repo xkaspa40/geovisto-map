@@ -65,7 +65,7 @@ class MapCategoriesManager implements IMapCategoriesManager {
      * 
      * @param {string} id 
      */
-    removeByName(id: string): void {
+    public removeByName(id: string): void {
         this.categories = this.categories.filter(item => item.getName() != id);
     }
     

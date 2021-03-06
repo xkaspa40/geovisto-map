@@ -4,6 +4,7 @@ import IMapObjectProps from "../abstract/IMapObjectProps";
 import IMapObjectState from "../abstract/IMapObjectState";
 import IMapObjectDefaults from "../abstract/IMapObjectDefaults";
 import AbstractMapObjectState from "./MapObjectState";
+import IMapObjectConfig from "../abstract/IMapObjectConfig";
 
 /**
  * This class provide functions for using map object which can be identified by uniquie string.
@@ -85,6 +86,16 @@ class MapObject implements IMapObject {
      */
     public getId() {
         return this.state.getId();
+    }
+    
+    /**
+     * It sets a config
+     * 
+     * @param {IMapObjectConfig} config 
+     */
+    public setConfig(config: IMapObjectConfig): void {
+        // override state by the config if specified in argument
+        this.getState().deserialize(config);
     }
 }
 export default MapObject;

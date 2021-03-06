@@ -1,12 +1,12 @@
 import SidebarToolDefaults from "./SidebarToolDefaults";
-import AbstractToolState from "../../model/tool/abstract/AbstractToolState";
+import MapToolState from "../../model/tool/generic/MapToolState";
 
 /**
  * This class provide sidebar tool model.
  * 
  * @author Jiri Hynek
  */
-class SidebarToolState extends AbstractToolState {
+class SidebarToolState extends MapToolState {
 
     /**
      * It creates a tool state.

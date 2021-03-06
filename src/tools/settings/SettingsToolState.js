@@ -1,4 +1,4 @@
-import AbstractToolState from "../../model/tool/abstract/AbstractToolState";
+import MapToolState from "../../model/tool/generic/MapToolState";
 import SelectionToolDefaults from "../selection/SelectionToolDefaults";
 
 /**
@@ -6,7 +6,7 @@ import SelectionToolDefaults from "../selection/SelectionToolDefaults";
  * 
  * @author Jiri Hynek
  */
-class SettingsToolState extends AbstractToolState {
+class SettingsToolState extends MapToolState {
 
     /**
      * It creates a tool state.

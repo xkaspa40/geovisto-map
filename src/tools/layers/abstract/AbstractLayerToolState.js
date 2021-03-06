@@ -1,4 +1,4 @@
-import AbstractToolState from "../../../model/tool/abstract/AbstractToolState";
+import MapToolState from "../../../model/tool/generic/MapToolState";
 import LayerToolDefaults from "./AbstractLayerToolDefaults";
 
 /**
@@ -6,7 +6,7 @@ import LayerToolDefaults from "./AbstractLayerToolDefaults";
  * 
  * @author Jiri Hynek
  */
-class AbstractLayerToolState extends AbstractToolState {
+class AbstractLayerToolState extends MapToolState {
 
     /**
      * It creates a tool state.

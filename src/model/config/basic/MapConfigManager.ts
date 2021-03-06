@@ -1,4 +1,4 @@
-import IMapConfig from "../../../map/abstract/IMapConfig";
+import IMapConfig from "../../map/abstract/IMapConfig";
 import AbstractMapConfigManager from "../abstract/AbstractMapConfigManager";
 import IMapConfigManager from "../abstract/IMapConfigManager";
 
@@ -19,6 +19,12 @@ class MapConfigManager extends AbstractMapConfigManager implements IMapConfigMan
         super(config);
     }
 
+    /**
+     * It converts given config to the internal map config structure.
+     * It keeps the config structure.
+     * 
+     * @param {any} mapConfing 
+     */
     protected import(config: any): IMapConfig {
         return config;
     }
