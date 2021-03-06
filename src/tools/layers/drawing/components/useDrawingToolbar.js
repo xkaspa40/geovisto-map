@@ -9,6 +9,7 @@ import { polygonCreate, polylineCreate } from '../util/Poly';
 import { markerCreate } from '../util/Marker';
 
 import '../style/drawingLayer.scss';
+import paintPoly from './paintPoly';
 
 export default function useDrawingToolbar() {
   L.Control.DrawingToolbar = L.Control.extend({
@@ -28,6 +29,7 @@ export default function useDrawingToolbar() {
     createUi: function (map) {
       const topContainer = L.DomUtil.create('div', 'drawingtoolbar');
       const toolContainer = L.DomUtil.create('div', 'leaflet-bar leaflet-control', topContainer);
+      toolContainer.style.cursor = 'pointer';
 
       this.options.drawingBtns.lineBtn = this.createToolbarBtn(
         'lineBtn',
@@ -61,6 +63,12 @@ export default function useDrawingToolbar() {
         'Transform',
         'fa fa-arrows-alt',
       );
+
+      this.options.drawingBtns.paintBtn = paintPoly({
+        className: 'drawingtoolbar__paintPolyBtn',
+        btnContainer: toolContainer,
+        map: this.options.map,
+      });
 
       this.addEventListeners();
       L.DomEvent.disableClickPropagation(topContainer);
