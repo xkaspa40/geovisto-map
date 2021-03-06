@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import AbstractMapObject from "../../../../model/object/generic/AbstractMapObject";
+import AbstractMapObject from "../../../../model/internal/object/generic/AbstractMapObject";
 import AbstractTabControlState from "./AbstractTabControlState";
 import AbstractTabControlDefaults from "./AbstractTabControlDefaults";
 

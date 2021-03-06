@@ -8,7 +8,7 @@ import ConnectionLayerToolState from './ConnectionLayerToolState';
 import ConnectionLayerToolDefaults from './ConnectionLayerToolDefaults';
 import SelectionTool from '../../selection/SelectionTool';
 import AbstractLayerTool from '../abstract/AbstractLayerTool';
-import DataChangeEvent from '../../../model/event/basic/DataChangeEvent';
+import DataChangeEvent from '../../../model/internal/event/data/DataChangeEvent';
 import SelectionToolEvent from '../../selection/model/event/SelectionToolEvent';
 import ThemesToolEvent from '../../themes/model/event/ThemesToolEvent';
 import D3PathForceSimulator from './util/D3PathForceSimulator';

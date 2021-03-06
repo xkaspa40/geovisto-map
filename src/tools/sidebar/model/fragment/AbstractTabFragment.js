@@ -1,4 +1,4 @@
-import AbstractMapObject from "../../../../model/object/generic/AbstractMapObject";
+import AbstractMapObject from "../../../../model/internal/object/generic/AbstractMapObject";
 import AbstractTabFragmentState from "./AbstractTabFragmentState";
 import AbstractTabFragmentDefaults from "./AbstractTabFragmentDefaults";
 

@@ -1,4 +1,4 @@
-import GenericObjectEvent from "../../../../model/event/generic/MapChangeEvent";
+import GenericObjectEvent from "../../../../model/internal/event/generic/MapChangeEvent";
 
 /**
  * This class provides the map selection change event.

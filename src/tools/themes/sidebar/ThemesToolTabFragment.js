@@ -2,8 +2,8 @@ import AbstractTabFragment from '../../sidebar/model/fragment/AbstractTabFragmen
 import SettingsTool from '../../settings/SettingsTool';
 import ThemesToolTabFragmentDefaults from './ThemesToolTabFragmentDefaults';
 import ThemesToolTabFragmentState from './ThemesToolTabFragmentState';
-import AutocompleteFormInput from '../../../model/inputs/labeled/autocomplete/AutocompleteFormInput';
-import SidebarInputFactory from '../../../model/inputs/SidebarInputFactory';
+import AutocompleteFormInput from '../../../model/internal/inputs/labeled/autocomplete/AutocompleteFormInput';
+import SidebarInputFactory from '../../../model/internal/inputs/SidebarInputFactory';
 
 /**
  * This class represents tab fragment for Themes tool.

@@ -3,8 +3,8 @@ import "./styles/style.scss";
 
 import TabDOMUtil from "../../../util/TabDOMUtil";
 //import FilterSelectSidebarInput from "../../inputs/filter/FilterSelectSidebarInput";
-import FilterAutocompleteFormInput from "../../../model/inputs/filter/autocomplete/FilterAutocompleteFormInput";
-import SidebarInputFactory from "../../../model/inputs/SidebarInputFactory";
+import FilterAutocompleteFormInput from "../../../model/internal/inputs/filter/autocomplete/FilterAutocompleteFormInput";
+import SidebarInputFactory from "../../../model/internal/inputs/SidebarInputFactory";
 import FiltersToolTabControlDefaults from "./FiltersToolTabControlDefaults";
 import FiltersToolTabControlState from "./FiltersToolTabControlState";
 import AbstractTabControl from "../../sidebar/model/control/AbstractTabControl";

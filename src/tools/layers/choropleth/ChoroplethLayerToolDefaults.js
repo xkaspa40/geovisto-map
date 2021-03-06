@@ -1,6 +1,6 @@
 import ChoroplethLayerTool from "./ChoroplethLayerTool";
 import AbstractLayerToolDefaults from "../abstract/AbstractLayerToolDefaults";
-import AutocompleteFormInput from "../../../model/inputs/labeled/autocomplete/AutocompleteFormInput";
+import AutocompleteFormInput from "../../../model/internal/inputs/labeled/autocomplete/AutocompleteFormInput";
 
 /**
  * TODO: refactorization needed!

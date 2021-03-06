@@ -1,4 +1,4 @@
-import AbstractMapObjectState from "../../../../model/object/generic/MapObjectState";
+import AbstractMapObjectState from "../../../../model/internal/object/MapObjectState";
 
 /**
  * This class manages the state of the sidebar fragment.

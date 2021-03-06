@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import '../styles/common.scss';
-import GeovistoMap from "../model/map/geovisto/GeovistoMap";
+import GeovistoMap from "../model/internal/map/GeovistoMap";
 
 /**
  * React component which wraps Geovisto map.

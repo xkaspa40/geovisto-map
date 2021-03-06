@@ -12,7 +12,7 @@ import SelectionTool from '../../selection/SelectionTool';
 import AbstractLayerTool from '../abstract/AbstractLayerTool';
 import ThemesToolEvent from '../../themes/model/event/ThemesToolEvent';
 import SelectionToolEvent from '../../selection/model/event/SelectionToolEvent';
-import DataChangeEvent from '../../../model/event/basic/DataChangeEvent';
+import DataChangeEvent from '../../../model/internal/event/data/DataChangeEvent';
 
 /**
  * This class represents custom div icon which is used to mark center of countries.

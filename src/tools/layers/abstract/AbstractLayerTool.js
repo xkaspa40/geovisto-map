@@ -1,4 +1,4 @@
-import AbstractEvent from "../../../model/event/abstract/AbstractEvent";
+import AbstractEvent from "../../../model/internal/event/abstract/AbstractEvent";
 import AbstractTool from "../../../model/tool/abstract/AbstractTool";
 import LayerTabControl from "./sidebar/AbstractLayerToolTabControl";
 import LayerToolDefaults from "./AbstractLayerToolDefaults";

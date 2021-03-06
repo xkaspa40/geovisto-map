@@ -1,7 +1,7 @@
 import MarkerLayerToolTabControlDefaults from "./MarkerLayerToolTabControlDefaults";
 import MarkerLayerToolTabControlState from "./MarkerLayerToolTabControlState";
 import AbstractLayerToolTabControl from "../../abstract/sidebar/AbstractLayerToolTabControl";
-import SidebarInputFactory from "../../../../model/inputs/SidebarInputFactory";
+import SidebarInputFactory from "../../../../model/internal/inputs/SidebarInputFactory";
 
 /**
  * This class provides controls for management of the layer sidebar tab.
