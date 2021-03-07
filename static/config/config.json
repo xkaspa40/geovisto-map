@@ -132,7 +132,20 @@
             "type": "geovisto-tool-timeline",
             "id": "geovisto-tool-timeline",
             "enabled": true,
-            "layerName": "Timeline"
+            "layerName": "Timeline",
+            "stories": [
+                {
+                  "name": "covid story",
+                  "config": [
+                    {
+                      "time": "2020-03-24",
+                      "zoom": 4,
+                      "latitude": 1000,
+                      "longitude": 1500
+                    }
+                  ]
+                }
+            ]
         }
     ]
 }

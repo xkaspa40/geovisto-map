@@ -1,30 +1,21 @@
-import { add as addTime, compareAsc } from "date-fns";
-// import FiltersUtil, { FilterFunction } from '../../util/FilterUtil';
-import { IntervalFunction, TimeInterval } from "./contants";
+import { compareAsc } from "date-fns";
+import { IntervalFunction } from "./contants";
 import { TimelineService } from "./TimelineService";
 import { TimelineControl } from "./TimelineControl";
 import AbstractLayerTool from "../layers/abstract/AbstractLayerTool";
 import TimelineToolTabControl from "./sidebar/TimelineToolTabControl";
 import TimelineToolDefaults from "./TimelineToolDefaults";
 import TimelineToolState from "./TimelineToolState";
-import {
-    EqFilterOperation,
-    FiltersManager,
-    FiltersTool,
-    GreaterThanEqualFilterOperation,
-    GreaterThanFilterOperation,
-    LessThanFilterOperation
-} from "../filters";
+import { FiltersTool } from "../filters";
 import TimeChangeEvent from "./model/TimeChangeEvent";
 import { LatLng } from "leaflet";
 import TimeInitializedEvent from "./model/TimeInitializedEvent";
+import DataChangeEvent from "../../model/event/basic/DataChangeEvent";
 
 
 export class TimelineTool extends AbstractLayerTool {
     constructor(props, container, config) {
         super(props);
-        // this.container = container;
-        // this.config = config;
 
         this.tabControl = undefined;
         this.timeline = undefined;
@@ -115,25 +106,25 @@ export class TimelineTool extends AbstractLayerTool {
                 this.container.filterData([]);
                 this.container.getMap().removeControl(this.timelineControl);
                 this.timelineControl = null;
-                this.getMap().updateData(this.unfilteredActData);
+                // this.getMap().updateData(this.unfilteredActData);
             }
             this.enabled = enabled;
         }
     }
 
     calculateTimes() {
-        const data = this.getMap().getState().getMapData().getOriginalData();
+        const data = this.getMap().getState().getCurrentData();
         const { timePath, realTimeEnabled, granularity } = this.formState;
         let times = data.map(record => record[timePath]);
         times = [...new Set(times)];
         times = times.map(time => new Date(time));
         times = times.sort(compareAsc);
 
-        if (!realTimeEnabled) return times;
+        if (!realTimeEnabled) return times.map(d => d.getTime());
 
         const getEachTimeOfInterval = IntervalFunction[granularity];
         const interval = getEachTimeOfInterval({ start: times[0], end: times[times.length - 1] });
-        return interval;
+        return interval.map(d => d.getTime());
     }
 
     onCurrentTimeChange({ currentTimeIndex, state }) {
@@ -174,51 +165,26 @@ export class TimelineTool extends AbstractLayerTool {
         return this.filtersTool;
     }
 
-    getFilteredData(currentTimeIndex) {
-        const { timePath, realTimeEnabled, granularity } = this.formState;
-        const currentTime = this.times[currentTimeIndex];
-        const filterManager = new FiltersManager([
-            new GreaterThanEqualFilterOperation(),
-            new GreaterThanFilterOperation(),
-            new LessThanFilterOperation(),
-            new EqFilterOperation(),
-        ])
-        const dataDomain = this.getMap().getState().getMapData().getDataDomain(timePath)
-        const filterRules = [
-            ...this.getFiltersTool().getState().getFilterRules(),
-            ...realTimeEnabled ?
-                [
-                    filterManager.createRule({
-                        dataDomain,
-                        label: ">=",
-                        pattern: currentTime,
-                        transformValue: (value) => new Date(value),
-                    }),
-                    filterManager.createRule({
-                        dataDomain,
-                        label: "<",
-                        pattern: addTime(currentTime, { [TimeInterval[granularity]]: 1 }),
-                        transformValue: (value) => new Date(value),
-                    }),
-                ] :
-                [
-                    filterManager.createRule({
-                        dataDomain,
-                        label: "==",
-                        pattern: currentTime.getTime(),
-                        transformValue: (value) => (new Date(value)).getTime(),
-                    }),
-                ],
-        ]
+    createData() {
+        const values = new Map(this.times.map((time) => [time, []]));
 
-        let mapData = this.getMap().getState().getMapData();
-        const filteredData = filterManager.filterData(mapData, mapData.getData(), filterRules);
-        return filteredData;
-    }
+        const getTimeStamp = (time) => {
+            const timeStamp = new Date(time).getTime()
+            if (this.times.includes(timeStamp)) return timeStamp;
 
-    createData(times) {
+            return this.times.find((time, index) => {
+                if (index === this.times.length - 1) return true;
+                return timeStamp > time && timeStamp < this.times[index + 1]
+            });
+        }
+        console.log(this.getMap().getState().getCurrentData());
+        this.getMap().getState().getCurrentData().forEach((item) => {
+            const timeStamp = getTimeStamp(item[this.formState.timePath]);
+            values.set(timeStamp, [...values.get(timeStamp), item]);
+        });
+
         return {
-            values: new Map(times.map((time, index) => [time, this.getFilteredData(index)])),
+            values,
             charts: this.formState.chartEnabled ?
                 [
                     {
@@ -230,16 +196,28 @@ export class TimelineTool extends AbstractLayerTool {
         };
     }
 
+    onStoryChange(storyConfig) {
+        this.getState().saveStory({
+            name: this.formState.story.name,
+            config: [...storyConfig.keys()].map(key => ({
+                time: new Date(key).toISOString(),
+                ...storyConfig.get(key),
+            }))
+        })
+    }
+
     initializeTimeline(formState) {
         this.formState = formState;
         this.times = this.calculateTimes();
-        this.data = this.createData(this.times);
-        this.timelineService = TimelineService.create(
-            this.formState.stepTimeLength,
-            this.formState.transitionTimeLength,
-            this.times,
-            this.data
-        )
+        this.data = this.createData();
+        this.timelineService = new TimelineService({
+            stepTimeLength: this.formState.stepTimeLength,
+            transitionTimeLength: this.formState.storyEnabled ?
+                this.formState.transitionTimeLength :
+                null,
+            times: this.times,
+            data: this.data,
+        })
         this.timelineService.onCurrentTimeIndexChanged.subscribe(this.onCurrentTimeChange.bind(
             this));
         if (!this.timelineControl) {
@@ -248,7 +226,6 @@ export class TimelineTool extends AbstractLayerTool {
                 this.getMap().getState().getLeafletMap()
             )
                 .addTo(this.getMap().getState().getLeafletMap());
-            this.getMap().dispatchEvent(new TimeChangeEvent(this.data.values.get(this.times[0])));
         } else {
             this.timelineControl.remove();
             this.timelineControl = TimelineControl.create(
@@ -257,8 +234,18 @@ export class TimelineTool extends AbstractLayerTool {
             )
                 .addTo(this.getMap().getState().getLeafletMap());
         }
+        if (this.formState.storyEnabled) {
+            this.timelineService.setStory(
+                new Map(this.formState.story.config.map(({
+                    time,
+                    ...config
+                }) => [new Date(time).getTime(), config]))
+            );
+        }
+        this.timelineService.onStoryChanged.subscribe(this.onStoryChange.bind(this));
         this.getMap()
             .dispatchEvent(new TimeInitializedEvent({ stepTimeLength: this.formState.stepTimeLength }));
+        this.getMap().dispatchEvent(new TimeChangeEvent(this.data.values.get(this.times[0])));
     }
 
     desctructTimeline() {
@@ -271,6 +258,15 @@ export class TimelineTool extends AbstractLayerTool {
             .getFiltersManager()
             .filterData(mapData, mapData.getData(), this.filtersTool.getState().getFilterRules())
         this.getMap().updateData(filteredData);
+    }
+
+    handleEvent(event) {
+        if (!this.timelineControl) return;
+
+        if (event.getType() === DataChangeEvent.TYPE()) {
+            if (event.getSource() === "timeline") return;
+            this.initializeTimeline(this.formState)
+        }
     }
 }
 

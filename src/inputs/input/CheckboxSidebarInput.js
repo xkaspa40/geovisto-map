@@ -38,10 +38,7 @@ class CheckboxSidebarInput extends AbstractSidebarInput {
     }
 
     createLabel() {
-        const labelElement = document.createElement('div');
-        labelElement.setAttribute('class', 'ElementDescription');
-        labelElement.innerHTML = this.label;
-        return labelElement;
+        return document.createTextNode(this.label);
     }
 
     createCheckbox() {
@@ -59,10 +56,6 @@ class CheckboxSidebarInput extends AbstractSidebarInput {
 
     setValue(checked) {
         this.input.checked = checked;
-    }
-
-    setDisabled(disabled) {
-        this.input.disabled = disabled;
     }
 }
 

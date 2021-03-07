@@ -201,8 +201,6 @@ class ChoroplethLayerTool extends AbstractLayerTool {
      * It updates polygons so they represent current data.
      */
     updatePolygons(data) {
-        //console.log("updating map data", this);
-
         // delete the 'value' property of every geo feature object if defined
         let polygons = this.getState().getPolygons();
         // TODO create new map and do not modify polygons structure
@@ -281,32 +279,35 @@ class ChoroplethLayerTool extends AbstractLayerTool {
      * @param {AbstractEvent} event
      */
     handleEvent(event) {
-        const EventHandler = {
-            [DataChangeEvent.TYPE()]: () => {
-                if (event.getSource() !== "timeline") {
-                    this.updatePolygons(event.getObject());
-                    this.updateStyle();
-                }
-            },
-            [SelectionToolEvent.TYPE()]: () => this.updateStyle(),
-            [ThemesToolEvent.TYPE()]: () => this.updateStyle(),
-            [TimeChangeEvent.TYPE()]: () => {
+        if (event.getType() === DataChangeEvent.TYPE()) {
+            if (event.getSource() !== "timeline") {
                 this.updatePolygons(event.getObject());
                 this.updateStyle();
-            },
-            [TimeInitializedEvent.TYPE()]: () => {
-                const { stepTimeLength } = event.getObject();
-
-                if (this.getState().getLayer()) {
-                    this.getState().getLayer().eachLayer((item) => {
-                        if (item._path != undefined) {
-                            item._path.style.transitionDuration = `${stepTimeLength / 2 < 500 ? stepTimeLength / 2 : stepTimeLength}ms`
-                        }
-                    });
-                }
             }
         }
-        EventHandler[event.getType()].call();
+        if (event.getType() === SelectionToolEvent.TYPE()) {
+            this.updateStyle();
+        }
+        if (event.getType() === ThemesToolEvent.TYPE()) {
+            this.updateStyle();
+        }
+        if (event.getType() === TimeChangeEvent.TYPE()) {
+            this.updatePolygons(event.getObject());
+            this.updateStyle();
+        }
+        if (event.getType() === TimeInitializedEvent.TYPE()) {
+            const { stepTimeLength } = event.getObject();
+
+            if (this.getState().getLayer()) {
+                this.getState().getLayer().eachLayer((item) => {
+                    if (item._path != undefined) {
+                        item._path.style.transitionDuration = `${stepTimeLength / 2 < 500 ?
+                            stepTimeLength / 2 :
+                            stepTimeLength}ms`
+                    }
+                });
+            }
+        }
     }
 
     // ----------------- TODO: refactorization needed

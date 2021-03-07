@@ -27,11 +27,23 @@ const MAPPING_MODEL = {
         label: "Step time (ms)*",
         input: LabeledTextSidebarInput.ID()
     },
+    storyEnabled: {
+        id: `${INPUT_ID_PREFIX}-story_enabled`,
+        name: "storyEnabled",
+        label: "Story",
+        input: CheckboxSidebarInput.ID()
+    },
     transitionTimeLength: {
         id: `${INPUT_ID_PREFIX}-transition_time`,
         name: "transitionTimeLength",
         label: "Transition time (ms)*",
         input: LabeledTextSidebarInput.ID()
+    },
+    story: {
+        id: `${INPUT_ID_PREFIX}-story`,
+        name: "story",
+        label: "Story",
+        input: AutocompleteSidebarInput.ID()
     },
     realTimeEnabled: {
         id: `${INPUT_ID_PREFIX}-real_time`,
@@ -105,7 +117,9 @@ class TimelineToolDefaults extends AbstractLayerToolDefaults {
 
         dataMapping[dataMappingModel.timePath.name] = null;
         dataMapping[dataMappingModel.stepTimeLength.name] = 1000;
+        dataMapping[dataMappingModel.storyEnabled.name] = false;
         dataMapping[dataMappingModel.transitionTimeLength.name] = 2500;
+        dataMapping[dataMappingModel.story.name] = null;
         dataMapping[dataMappingModel.realTimeEnabled.name] = false;
         dataMapping[dataMappingModel.granularity.name] = null;
         dataMapping[dataMappingModel.chartEnabled.name] = false;
@@ -120,20 +134,6 @@ class TimelineToolDefaults extends AbstractLayerToolDefaults {
      */
     getDataMappingModel() {
         return MAPPING_MODEL;
-    }
-
-    /**
-     * It returns default centroids.
-     */
-    getPolygons() {
-        return this.getMapObject().getMap().getState().getPolygons();
-    }
-
-    /**
-     * It returns preferred z index for the choropoleth layer
-     */
-    getZIndex() {
-        return 350;
     }
 }
 export default TimelineToolDefaults;

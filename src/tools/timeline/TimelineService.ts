@@ -9,7 +9,7 @@ type State = {
 };
 
 export type TimeData = {
-    values: Map<Date, Record<string, unknown>[]>;
+    values: Map<number, Record<string, unknown>[]>;
     charts?: null | Array<{
         path: string;
         aggregationFn: "sum" | "average";
@@ -27,18 +27,18 @@ export class TimelineService {
     onStartTimeIndexChanged = new Subject<number>();
     onEndTimeIndexChanged = new Subject<number>();
     onIsPlayingChanged = new Subject<boolean>();
-    onStoryChanged = new Subject<Map<Date, StoryState | undefined>>();
+    onStoryChanged = new Subject<Map<number, StoryState | undefined>>();
 
     private readonly times: Date[];
     private readonly data: TimeData;
     private readonly stepTimeLength: number;
     private readonly transitionTimeLength: number;
-    private story: Map<Date, StoryState | undefined> = new Map();
+    private onStoryChange: () => void;
+    private story: Map<number, StoryState | undefined>;
     private _currentTimeIndex = START_INDEX;
     private _startTimeIndex = START_INDEX;
     private _endTimeIndex = START_INDEX;
     private _isPlaying = false;
-    private interval: NodeJS.Timeout | null = null;
     private timeout: NodeJS.Timeout | null = null;
 
     private set isPlaying(value: boolean) {
@@ -57,7 +57,7 @@ export class TimelineService {
             this._currentTimeIndex = currentTimeIndex;
             this.onCurrentTimeIndexChanged.notify({
                 currentTimeIndex,
-                state: this.story.get(this.times[currentTimeIndex]),
+                state: this.story ? this.story.get(this.times[currentTimeIndex]) : null,
             });
         }
     }
@@ -76,19 +76,17 @@ export class TimelineService {
         }
     }
 
-    private constructor(stepTimeLength: number, transitionTimeLength: number, times: Date[], data: TimeData) {
+    private constructor({
+        stepTimeLength,
+        transitionTimeLength = 0,
+        times,
+        data,
+    }: { stepTimeLength: number, transitionTimeLength: number, times: Date[], data: TimeData }) {
         this.times = times;
         this.stepTimeLength = stepTimeLength;
         this.transitionTimeLength = transitionTimeLength;
         this.endTimeIndex = times.length - 1;
         this.data = data;
-    }
-
-    static create(stepTimeLength: number,
-        transitionTimeLength: number,
-        times: Date[],
-        data: TimeData): TimelineService {
-        return new TimelineService(stepTimeLength, transitionTimeLength, times, data);
     }
 
     private nextTick() {
@@ -103,13 +101,8 @@ export class TimelineService {
         };
         this.timeout = setTimeout(
             tick.bind(this),
-            this.stepTimeLength + (this.story.has(this.times[this.currentTimeIndex]) ? this.transitionTimeLength : 0),
+            this.stepTimeLength + (this.story && this.story.has(this.times[this.currentTimeIndex]) ? this.transitionTimeLength : 0),
         );
-    }
-
-    private clearInterval() {
-        this.interval && clearInterval(this.interval);
-        this.interval = null;
     }
 
     private clearTimeout() {
@@ -133,6 +126,11 @@ export class TimelineService {
         } else {
             this.play();
         }
+    }
+
+    setStory(story: Map<number, StoryState | undefined>): void {
+        this.story = story;
+        this.onStoryChanged.notify(this.story);
     }
 
     recordState({ zoom, latitude, longitude }: StoryState): void {

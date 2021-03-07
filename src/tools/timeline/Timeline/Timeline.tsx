@@ -63,8 +63,12 @@ export const Timeline: FC<TimelineProps> = ({
                             onCurrentTimeIndexChange={onCurrentTimeIndexChange}
                             story={story}
                         />
-                        <button onClick={onRecordClick}><i className="fa fa-save"/></button>
-                        <button onClick={onRecordDeleteClick}><i className="fa fa-trash"/></button>
+                        {story && (
+                            <>
+                                <button onClick={onRecordClick}><i className="fa fa-save"/></button>
+                                <button onClick={onRecordDeleteClick}><i className="fa fa-trash"/></button>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

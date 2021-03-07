@@ -1,4 +1,4 @@
-import { AbstractLayerToolState } from '../layers/abstract';
+import { AbstractLayerToolState } from "../layers/abstract";
 
 /**
  * This class provide functions for using the state of the layer tool.
@@ -15,7 +15,8 @@ class TimelineToolState extends AbstractLayerToolState {
     }
 
     /**
-     * It resets state with respect to initial props. Optionally, defaults can be set if property is undefined.
+     * It resets state with respect to initial props. Optionally, defaults can be set if property
+     * is undefined.
      *
      * @param {TimelineToolDefaults} defaults
      */
@@ -34,7 +35,8 @@ class TimelineToolState extends AbstractLayerToolState {
         super.resetMapVariables(map, defaults);
 
         // let props = this.getProps();
-        // this.setPolygons(props.polygons == undefined && defaults && map ? defaults.getPolygons() : props.polygons);
+        // this.setPolygons(props.polygons == undefined && defaults && map ? defaults.getPolygons()
+        // : props.polygons);
     }
 
     /**
@@ -44,105 +46,63 @@ class TimelineToolState extends AbstractLayerToolState {
      */
     deserialize(config) {
         super.deserialize(config);
-
         // the layer tool config
-        // TODO
+        if (config.stories) {
+            this.stories = config.stories.map(story => ({
+                ...story,
+                config: story.config.map(storyConfig => ({
+                    ...storyConfig,
+                    time: new Date(storyConfig.time).getTime(),
+                }))
+            }));
+        }
     }
 
     /**
-     * The method serializes the tool state. Optionally, defaults can be set if property is undefined.
+     * The method serializes the tool state. Optionally, defaults can be set if property is
+     * undefined.
      *
      * @param {TimelineToolDefaults} defaults
      */
     serialize(defaults) {
-        let config = super.serialize(defaults);
-
-        // serialize the layer tool properties
-        // TODO
-
+        const config = {
+            ...super.serialize(defaults),
+            // TODO serialize form data
+            stories: this.stories.map(story => ({
+                ...story,
+                config: story.config.map(storyConfig => ({
+                    ...storyConfig,
+                    time: new Date(storyConfig.time).toISOString(),
+                }))
+            }))
+        }
         return config;
     }
 
-    /**
-     * It returns a Leaflet geoJSON layer.
-     */
-    getLayer() {
-        return this.layer;
+    getStories() {
+        return this.stories;
     }
 
-    /**
-     * It sets a Leaflet geoJSON layer.
-     *
-     * @param {L.svg} layer
-     */
-    setLayer(layer) {
-        this.layer = layer;
+    setStories(stories) {
+        this.stories = stories;
     }
 
-    /**
-     * It returns a Leaflet popup control.
-     */
-    getLayerPopup() {
-        return this.popup;
+    saveStory(story) {
+        this.setStories([
+            ...this.getStories().filter(({ name }) => name !== story.name),
+            story
+        ])
     }
 
-    /**
-     * It sets a Leaflet popup control.
-     *
-     * @param {L.control} popup
-     */
-    setLayerPopup(popup) {
-        this.popup = popup;
+    getStoryByName(name) {
+        if (!this.stories || this.stories.length === 0) return null;
+
+        return this.stories.find(({ name: storyName }) => storyName === name);
     }
 
-    /**
-     * It returns the polygons.
-     */
-    getPolygons() {
-        return this.polygons;
+    createStory(name) {
+        this.saveStory({ name, config: [] })
     }
-
-    /**
-     * It sets the polygons.
-     *
-     * @param {*} polygons
-     */
-    setPolygons(polygons) {
-        this.polygons = polygons;
-    }
-
-    /**
-     * It returns the hovered item.
-     */
-    getHoveredItem() {
-        return this.hoveredItem;
-    }
-
-    /**
-     * It sets the hovered item.
-     *
-     * @param {*} hoveredItem
-     */
-    setHoveredItem(hoveredItem) {
-        this.hoveredItem = hoveredItem;
-    }
-
-    /**
-     * It returns the z index.
-     */
-    getZIndex() {
-        return this.zindex;
-    }
-
-    /**
-     * It sets the z index.
-     *
-     * @param {*} zindex
-     */
-    setZIndex(zindex) {
-        this.zindex = zindex;
-    }
-
-    // TODO
 }
+
 export default TimelineToolState;
