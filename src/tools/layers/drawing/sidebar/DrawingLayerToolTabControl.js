@@ -216,7 +216,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     });
     elem.appendChild(this.inputDesc.create());
 
-    if (layerType === 'polyline' || layerType === 'polygon') {
+    if (layerType === 'polyline' || layerType === 'polygon' || layerType === 'painted') {
       // palette Colors
       this.inputColor = this.createColorPalette();
       elem.appendChild(this.inputColor);
@@ -237,13 +237,6 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
       this.inputIcon = this.createIconPalette();
       elem.appendChild(this.inputIcon);
     }
-
-    this.inputFinish = document.createElement('button');
-    this.inputFinish.innerText = 'Finish';
-    this.inputFinish.addEventListener('click', () => {
-      this.getTool().getState().clearPrevPolyFeature();
-    });
-    elem.appendChild(this.inputFinish);
 
     // this.setInputValues(this.getTool().getState().getDataMapping());
 

@@ -11,6 +11,8 @@ import { markerCreate } from '../util/Marker';
 import '../style/drawingLayer.scss';
 import paintPoly from './paintPoly';
 
+const UNABLE_TO_CLICK_DISABLE = ['lineBtn', 'markerBtn', 'polygonBtn'];
+
 export default function useDrawingToolbar() {
   L.Control.DrawingToolbar = L.Control.extend({
     options: {
@@ -64,8 +66,10 @@ export default function useDrawingToolbar() {
         'fa fa-arrows-alt',
       );
 
-      this.options.drawingBtns.paintBtn = paintPoly({
-        className: 'drawingtoolbar__paintPolyBtn',
+      const sidebar = this.options.tool.getSidebarTabControl();
+
+      this.options.drawingBtns.paintBtn = sidebar.getState().paintPoly.renderButton({
+        className: 'paintBtn',
         btnContainer: toolContainer,
         map: this.options.map,
       });
@@ -77,10 +81,27 @@ export default function useDrawingToolbar() {
 
     onRemove: function (map) {},
 
+    _dispatchClickEvent: function (btn, sidebar) {
+      let enabled = sidebar.getState().enabledEl;
+      if (enabled) {
+        enabled.disable();
+      } else if (this.lastClickedBtn && btn !== this.lastClickedBtn) {
+        let className = this.lastClickedBtn.className;
+        if (!UNABLE_TO_CLICK_DISABLE.includes(className))
+          this.lastClickedBtn.dispatchEvent(new Event('click'));
+      }
+      this.lastClickedBtn = btn;
+    },
+
     addEventListeners: function () {
       const { lineBtn, markerBtn, polygonBtn, selectBtn, transformBtn } = this.options.drawingBtns;
       const map = this.options.map;
       const sidebar = this.options.tool.getSidebarTabControl();
+
+      const btnsArr = Object.values(this.options.drawingBtns);
+      btnsArr.forEach((btn) => {
+        L.DomEvent.on(btn, 'click', () => this._dispatchClickEvent(btn, sidebar), this);
+      });
 
       L.DomEvent.on(lineBtn, 'click', () => polylineCreate(map, sidebar), this);
       L.DomEvent.on(markerBtn, 'click', L.DomEvent.stopPropagation)

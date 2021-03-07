@@ -5,7 +5,7 @@ import DrawingLayerToolDefaults from './DrawingLayerToolDefaults';
 import DrawingLayerToolTabControl from './sidebar/DrawingLayerToolTabControl';
 import useDrawingToolbar from './components/useDrawingToolbar';
 import union from '@turf/union';
-import { highlightStyles, normalStyles } from './util/Poly';
+import { getGeoJSONFeatureFromLayer, highlightStyles, normalStyles } from './util/Poly';
 
 import 'leaflet/dist/leaflet.css';
 import './style/drawingLayer.scss';
@@ -82,24 +82,23 @@ class DrawingLayerTool extends AbstractLayerTool {
     layer.on('mouseout', this.normalizePoly, this);
   }
 
-  getGeoJSONFeatureFromLayer(layer) {
-    let geoFeature = layer.toGeoJSON();
-    let feature = geoFeature.type === 'FeatureCollection' ? geoFeature.features[0] : geoFeature;
-    return feature;
-  }
-
   createdListener = (e) => {
     let layer = e.layer;
     layer.layerType = e.layerType;
 
-    let feature = this.getGeoJSONFeatureFromLayer(layer);
+    let prevLayer = this.getState().getPrevLayer();
+    if (prevLayer?.layerType !== e.layerType) this.redrawSidebarTabControl(e.layerType);
+    this.getSidebarTabControl().getState().setEnabledEl(null);
+
+    let feature = getGeoJSONFeatureFromLayer(layer);
+    // console.log({ layer, feature });
     let featureType = feature ? feature.geometry.type.toLowerCase() : '';
 
     let isFeaturePoly = featureType === 'polygon' || featureType === 'multipolygon';
     let selectedLayer = this.getState().selectedLayer;
 
     if (isFeaturePoly && Boolean(selectedLayer)) {
-      let selectedFeature = this.getGeoJSONFeatureFromLayer(selectedLayer);
+      let selectedFeature = getGeoJSONFeatureFromLayer(selectedLayer);
       let unifiedFeature = union(feature, selectedFeature);
       let result = new L.GeoJSON(unifiedFeature, {
         ...layer.options,
@@ -108,10 +107,14 @@ class DrawingLayerTool extends AbstractLayerTool {
       layer.layerType = 'polygon';
     }
 
+    let paintPoly = this.getSidebarTabControl().getState().paintPoly;
+    paintPoly.setAccShapes(e?.keyIndex, layer);
+
     this.getState().addLayer(layer);
     this.getState().setCurrEl(layer);
     this.applyEventListeners(layer);
     if (selectedLayer && isFeaturePoly) {
+      console.log({ selectedLayer });
       this.getState().removeLayer(selectedLayer);
       this.getState().clearSelectedLayer();
     }

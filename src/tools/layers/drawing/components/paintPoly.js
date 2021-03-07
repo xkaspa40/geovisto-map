@@ -5,138 +5,170 @@ import 'leaflet/dist/leaflet.css';
 import circle from '@turf/circle';
 import union from '@turf/union';
 import difference from '@turf/difference';
+import { getGeoJSONFeatureFromLayer } from '../util/Poly';
 
-const paintPoly = (options = {}) => {
-  const _map = options.map;
-  const paintBtn = L.DomUtil.create('a', options.className || '', options.btnContainer || '');
-  paintBtn.title = 'Paint';
-  paintBtn.innerHTML = '<i class="fa fa-paint-brush" aria-hidden="true"></i>';
-  paintBtn.role = 'button';
+const DEFAULT_COLOR = '#333333';
 
-  let _action = null;
-  let _circle = null;
-  let _mouseDown = false;
-  let _latlng = [0, 0];
-  let _circleRadius = 30;
+class PaintPoly {
+  constructor(props) {
+    console.log({ props });
+    this._map = null;
+    this.tabState = props.tabState;
 
-  let _accumulatedCircles = {};
-  let _coloredLayers = {};
+    this._action = null;
+    this._circle = null;
+    this._mouseDown = false;
+    this._latlng = [0, 0];
+    this._circleRadius = 30;
 
-  const stop = () => {
-    _action = null;
-    if (_circle) {
-      _circle.remove();
+    this.keyIndex = 0;
+
+    this._accumulatedShapes = {};
+    this._coloredLayers = {};
+  }
+
+  stop = () => {
+    this._action = null;
+    if (this._circle) {
+      this._circle.remove();
     }
-    _removeMouseListener();
+    this._removeMouseListener();
   };
 
-  const startPaint = () => {
-    stop();
-    _action = 'draw';
-    _addMouseListener();
-    _circle = L.circleMarker(_latlng, { color: '#333333' }).setRadius(_circleRadius).addTo(_map);
+  startPaint = () => {
+    this.stop();
+    this._action = 'draw';
+    this._addMouseListener();
+    this._circle = L.circleMarker(this._latlng, {
+      color: this.tabState.getSelectedColor() || DEFAULT_COLOR,
+    })
+      .setRadius(this._circleRadius)
+      .addTo(this._map);
+  };
+
+  setAccShapes = (kIdx, layer) => {
+    if (kIdx === undefined) return;
+
+    let feat = getGeoJSONFeatureFromLayer(layer);
+    const x = this._accumulatedShapes[this.keyIndex];
+    // this._accumulatedShapes[this.keyIndex] = feat;
+    console.log({ feat, layer, x });
+    // this._accumulatedShapes[this.keyIndex].properties = { fill: layer.options.color };
   };
 
   // taken from https://stackoverflow.com/questions/27545098/leaflet-calculating-meters-per-pixel-at-zoom-level
-  const _pixelsToMeters = () => {
+  _pixelsToMeters = () => {
     const metersPerPixel =
-      (40075016.686 * Math.abs(Math.cos((_latlng.lat * Math.PI) / 180))) /
-      Math.pow(2, _map.getZoom() + 8);
+      (40075016.686 * Math.abs(Math.cos((this._latlng.lat * Math.PI) / 180))) /
+      Math.pow(2, this._map.getZoom() + 8);
 
-    return _circleRadius * metersPerPixel;
+    return this._circleRadius * metersPerPixel;
   };
 
-  const drawCircle = () => {
-    const turfCircle = circle([_latlng.lng, _latlng.lat], _pixelsToMeters(), {
+  drawCircle = () => {
+    const brushColor = this.tabState.getSelectedColor() || DEFAULT_COLOR;
+    const turfCircle = circle([this._latlng.lng, this._latlng.lat], this._pixelsToMeters(), {
       steps: 128,
       units: 'meters',
     });
 
-    const brushColor = '#333333';
-
-    if (!_accumulatedCircles[brushColor]) {
-      _accumulatedCircles[brushColor] = turfCircle;
+    if (!this._accumulatedShapes[this.keyIndex]) {
+      this._accumulatedShapes[this.keyIndex] = turfCircle;
     } else {
-      _accumulatedCircles[brushColor] = union(_accumulatedCircles[brushColor], turfCircle);
-      Object.keys(_accumulatedCircles).forEach((key) => {
-        if (key !== brushColor && _accumulatedCircles[key]) {
-          _accumulatedCircles[key] = difference(_accumulatedCircles[key], turfCircle);
+      this._accumulatedShapes[this.keyIndex] = union(
+        this._accumulatedShapes[this.keyIndex],
+        turfCircle,
+      );
+      Object.keys(this._accumulatedShapes).forEach((key) => {
+        if (key != this.keyIndex && this._accumulatedShapes[key]) {
+          this._accumulatedShapes[key] = difference(this._accumulatedShapes[key], turfCircle);
         }
       });
     }
 
-    // console.log({ acc: _accumulatedCircles[brushColor], turfCircle });
+    this._accumulatedShapes[this.keyIndex].properties = { fill: brushColor };
 
-    Object.keys(_accumulatedCircles).forEach((key) => {
-      // console.log({ _accumulatedCircles });
-      let result = new L.GeoJSON(_accumulatedCircles[key], {
-        color: key,
+    Object.keys(this._accumulatedShapes).forEach((key) => {
+      let result = new L.GeoJSON(this._accumulatedShapes[key], {
+        color: this._accumulatedShapes[key]?.properties?.fill || DEFAULT_COLOR,
       });
 
-      if (_coloredLayers[key] !== undefined) {
-        _coloredLayers[key].remove();
+      if (this._coloredLayers[key] !== undefined) {
+        this._coloredLayers[key].remove();
       }
 
-      _coloredLayers[key] = result.addTo(_map);
-      _map.fire(L.Draw.Event.CREATED, {
-        layer: _coloredLayers[key],
+      this._coloredLayers[key] = result.addTo(this._map);
+
+      this._map.fire(L.Draw.Event.CREATED, {
+        layer: this._coloredLayers[key],
         layerType: 'painted',
-        feature: _accumulatedCircles[key],
+        feature: this._accumulatedShapes[key],
+        keyIndex: this.keyIndex,
       });
     });
   };
 
   // ================= EVENT LISTENERS =================
-  const _addMouseListener = () => {
-    _map.on('mousemove', _onMouseMove);
-    _map.on('mousedown', _onMouseDown);
-    _map.on('mouseup', _onMouseUp);
+  _addMouseListener = () => {
+    this._map.on('mousemove', this._onMouseMove);
+    this._map.on('mousedown', this._onMouseDown);
+    this._map.on('mouseup', this._onMouseUp);
   };
-  const _removeMouseListener = () => {
-    _map.off('mousemove', _onMouseMove);
-    _map.off('mousedown', _onMouseDown);
-    _map.off('mouseup', _onMouseUp);
+  _removeMouseListener = () => {
+    this._map.off('mousemove', this._onMouseMove);
+    this._map.off('mousedown', this._onMouseDown);
+    this._map.off('mouseup', this._onMouseUp);
   };
-  const _onMouseDown = (event) => {
-    _map.dragging.disable();
-    _mouseDown = true;
-    _onMouseMove(event);
+  _onMouseDown = (event) => {
+    this._map.dragging.disable();
+    this._mouseDown = true;
+    this._onMouseMove(event);
   };
-  const _onMouseUp = (event) => {
-    _map.dragging.enable();
-    _mouseDown = false;
+  _onMouseUp = (event) => {
+    this._map.dragging.enable();
+    this._mouseDown = false;
+    this.keyIndex += 1;
   };
-  const _onMouseMove = (event) => {
-    _setLatLng(event.latlng);
-    if (_mouseDown) {
-      drawCircle();
+  _onMouseMove = (event) => {
+    this._setLatLng(event.latlng);
+    if (this._mouseDown) {
+      this.drawCircle();
     }
   };
   // ================= EVENT LISTENERS END =================
 
-  const _setLatLng = (latlng) => {
+  _setLatLng = (latlng) => {
     if (latlng !== undefined) {
-      _latlng = latlng;
+      this._latlng = latlng;
     }
-    if (_circle) {
-      _circle.setLatLng(_latlng);
+    if (this._circle) {
+      this._circle.setLatLng(this._latlng);
     }
   };
 
-  const _clickDraw = (event) => {
-    if (event.type == 'mousedown') {
-      L.DomEvent.stop(event);
-      return;
-    }
-    if (_action == 'draw') {
-      stop();
+  _clickDraw = (event) => {
+    if (this._action == 'draw') {
+      this.stop();
     } else {
-      startPaint();
+      this.startPaint();
     }
   };
 
-  L.DomEvent.on(paintBtn, 'click mousedown', _clickDraw);
-  return paintBtn;
-};
+  _mousedownStop = (event) => {
+    L.DomEvent.stop(event);
+    return;
+  };
 
-export default paintPoly;
+  renderButton = (options = {}) => {
+    this._map = options.map;
+    const paintBtn = L.DomUtil.create('a', options.className || '', options.btnContainer || '');
+    paintBtn.title = 'Paint';
+    paintBtn.innerHTML = '<i class="fa fa-paint-brush" aria-hidden="true"></i>';
+    paintBtn.role = 'button';
+    L.DomEvent.on(paintBtn, 'click', this._clickDraw);
+    L.DomEvent.on(paintBtn, 'mousedown', this._mousedownStop);
+    return paintBtn;
+  };
+}
+
+export default PaintPoly;

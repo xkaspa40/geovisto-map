@@ -23,7 +23,9 @@ export const markerCreate = (map, sidebar) => {
   const x = new L.Draw.Marker(map, {
     icon: new MyCustomMarker(),
     draggable: true,
+    transform: true,
   });
   x.enable();
+  sidebar.getState().setEnabledEl(x);
   return x;
 };

@@ -12,8 +12,9 @@ class DrawingLayerToolState extends AbstractLayerToolState {
    */
   constructor() {
     super();
+    // * element/layer that was created
     this.currEl = null;
-    this.prevPolyFeature = null;
+
     this.featureGroup = new L.FeatureGroup();
     this.activeIndex = 0;
     // * for knowing if we are using select tool
@@ -34,8 +35,10 @@ class DrawingLayerToolState extends AbstractLayerToolState {
     return this.activeIndex;
   }
 
-  clearPrevPolyFeature() {
-    this.prevPolyFeature = null;
+  getPrevLayer() {
+    let layersObj = this.featureGroup._layers;
+    let layersArr = [...Object.values(layersObj)];
+    return layersArr.pop();
   }
 
   setCurrEl(val) {

@@ -1,10 +1,32 @@
 import AbstractLayerToolTabControlState from '../../abstract/sidebar/AbstractLayerToolTabControlState';
+import PaintPoly from '../components/paintPoly';
 
 const ICON_SRCS = [
   'https://upload.wikimedia.org/wikipedia/commons/0/0a/Marker_location.png',
   'https://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Flag-1-Right-Azure-icon.png',
 ];
-const COLORS = ['#2ecc71', '#3498db', '#e74c3c', '#f1c40f'];
+const COLORS = [
+  '#1ABC9C',
+  '#16A085',
+  '#2ECC71',
+  '#27AE60',
+  '#3498DB',
+  '#2980B9',
+  '#9B59B6',
+  '#8E44AD',
+  '#34495E',
+  '#2C3E50',
+  '#F1C40F',
+  '#F39C12',
+  '#E67E22',
+  '#D35400',
+  '#E74C3C',
+  '#C0392B',
+  '#ECF0F1',
+  '#BDC3C7',
+  '#95A5A6',
+  '#7F8C8D',
+];
 const STROKES = [
   { label: 'thin', value: 3 },
   { label: 'medium', value: 5, selected: true },
@@ -32,6 +54,16 @@ class DrawingLayerToolTabControlState extends AbstractLayerToolTabControlState {
 
     this.iconSrcs = ICON_SRCS;
     this.selectedIcon = ICON_SRCS[0];
+
+    // * element/layer that was enabled and not created yet
+    this.enabledEl = null;
+
+    this.paintPoly = new PaintPoly({
+      tabState: this,
+    });
+  }
+  setEnabledEl(val) {
+    this.enabledEl = val;
   }
 
   getSelectedColor() {

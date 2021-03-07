@@ -21,7 +21,9 @@ export const polygonCreate = (map, sidebar) => {
       transform: true,
     },
   });
+  sidebar.getState().setEnabledEl(x);
   x.enable();
+  return x;
 };
 
 export const polylineCreate = (map, sidebar) => {
@@ -34,4 +36,12 @@ export const polylineCreate = (map, sidebar) => {
     },
   });
   x.enable();
+  sidebar.getState().setEnabledEl(x);
+  return x;
+};
+
+export const getGeoJSONFeatureFromLayer = (layer) => {
+  let geoFeature = layer.toGeoJSON();
+  let feature = geoFeature.type === 'FeatureCollection' ? geoFeature.features[0] : geoFeature;
+  return feature;
 };
