@@ -1,7 +1,7 @@
 import IMapEvent from "./IMapEvent";
 
 /**
- * This class provides abstract map event change object.
+ * This interface declares abstract map event change object.
  * 
  * @author Jiri Hynek
  */

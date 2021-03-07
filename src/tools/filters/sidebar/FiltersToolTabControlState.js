@@ -1,4 +1,4 @@
-import AbstractTabControlState from "../../sidebar/model/control/AbstractTabControlState";
+import AbstractTabControlState from "../../sidebar/model/internal/control/AbstractTabControlState";
 
 /**
  * This class manages the state of the sidebar tab.

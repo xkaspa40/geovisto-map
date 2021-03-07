@@ -6,7 +6,7 @@ import IMapProps from "./IMapProps";
 import IMapState from "./IMapState";
 
 /**
- * Representation of map wrapper which handles map inputs (data, props, config), map tools and other map objects.
+ * Declaration of map wrapper which handles map inputs (data, props, config), map tools and other map objects.
  * 
  * @author Jiri Hynek
  */
@@ -18,19 +18,9 @@ interface IMap extends IMapObject {
     getDefaults(): IMapDefaults;
 
     /**
-     * It creates new defaults of the object.
-     */
-    createDefaults(): IMapDefaults;
-
-    /**
      * It returns object state as the map state.
      */
     getState(): IMapState;
-
-    /**
-     * It creates new state if the object.
-     */
-    createState(): IMapState;
 
     /**
      * The function draws a new map.

@@ -1,4 +1,4 @@
-import AbstractTabControl from "../../sidebar/model/control/AbstractTabControl";
+import AbstractTabControl from "../../../../sidebar/model/internal/control/AbstractTabControl";
 import SettingsToolTabControlDefaults from "./SettingsToolTabControlDefaults";
 import SettingsToolTabControlState from "./SettingsToolTabControlState";
 

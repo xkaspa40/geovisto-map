@@ -1,7 +1,7 @@
 import IMapDataDomain from "./IMapDataDomain";
 
 /**
- * The class wraps data used by the map, its metadata and functions to acquire data items.
+ * The interface declares data used by the map, its metadata and functions to acquire data items.
  * 
  * @author Jiri Hynek
  */

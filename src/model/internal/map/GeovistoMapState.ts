@@ -98,7 +98,7 @@ class GeovistoMapState extends MapObjectState implements IMapState {
     }
 
     /**
-     * It takes config and desrializes the values.
+     * It takes config and deserializes the values.
      * 
      * @param {IMapConfig} config
      */
@@ -113,7 +113,7 @@ class GeovistoMapState extends MapObjectState implements IMapState {
     /**
      * It serializes the map state. Optionally, a serialed value can be let undefined if it equals the default value.
      * 
-     * @param {*} filterDefaults 
+     * @param {boolean} filterDefaults 
      */
     public serialize(filterDefaults: boolean | undefined): IMapConfig {
         let defaults = <IMapDefaults> this.getDefaults();

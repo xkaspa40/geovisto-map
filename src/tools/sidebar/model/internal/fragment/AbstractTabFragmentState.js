@@ -1,4 +1,4 @@
-import AbstractMapObjectState from "../../../../model/internal/object/MapObjectState";
+import AbstractMapObjectState from "../../../../../model/internal/object/MapObjectState";
 
 /**
  * This class manages the state of the sidebar fragment.
@@ -41,7 +41,7 @@ class AbstractTabFragmentState extends AbstractMapObjectState {
     }
 
     /**
-     * The metod takes config and desrializes the values.
+     * The metod takes config and deserializes the values.
      * 
      * @param {*} config 
      */

@@ -5,7 +5,7 @@ import IMapDataManager from "../data/IMapDataManager";
 import IMapConfigManager from "../config/IMapConfigManager";
 
 /**
- * This class manages state of the map.
+ * This interface declares the state of the map.
  * It wraps the state since the map can work with state objects which needs to be explicitly serialized.
  * 
  * @author Jiri Hynek
@@ -13,7 +13,7 @@ import IMapConfigManager from "../config/IMapConfigManager";
 interface IMapState extends IMapObjectState {
 
     /**
-     * It takes config and desrializes the values.
+     * It takes config and deserializes the values.
      * 
      * @param {IMapConfig} config
      */

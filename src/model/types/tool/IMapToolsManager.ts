@@ -2,7 +2,7 @@ import IMapObjectsManager from "../object/IMapObjectsManager";
 import IMapTool from "./IMapTool";
 
 /**
- * This class provide functions for using tools.
+ * This interface declares functions for using tools.
  * 
  * @author Jiri Hynek
  */

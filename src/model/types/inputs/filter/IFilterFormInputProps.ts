@@ -1,7 +1,7 @@
 import IMapFormInputProps from "../IMapFormInputProps";
 
 /**
- * This class provide specification of form input props model.
+ * This interface declares specification of form input props model.
  * 
  * @author Jiri Hynek
  */

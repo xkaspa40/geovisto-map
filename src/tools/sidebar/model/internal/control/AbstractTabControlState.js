@@ -1,4 +1,4 @@
-import AbstractMapObjectState from "../../../../model/internal/object/MapObjectState";
+import AbstractMapObjectState from "../../../../../model/internal/object/MapObjectState";
 import AbstractTabControlDefaults from "./AbstractTabControlDefaults";
 
 /**
@@ -48,7 +48,7 @@ class AbstractTabControlState extends AbstractMapObjectState {
     }
 
     /**
-     * The function takes config and desrializes the values.
+     * The function takes config and deserializes the values.
      * 
      * @param {*} tabControl 
      * @param {*} config 

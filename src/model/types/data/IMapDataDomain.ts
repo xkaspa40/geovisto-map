@@ -1,7 +1,7 @@
 import IMapCategory from "../category/IMapCategory";
 
 /**
- * The class wraps meta data path used to find data.
+ * The interface declares meta data path used to find data.
  * 
  * @author Jiri Hynek
  */

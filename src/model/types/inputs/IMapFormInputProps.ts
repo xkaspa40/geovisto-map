@@ -1,5 +1,5 @@
 /**
- * This class provide specification of input props model.
+ * This interface provides specification of input props model.
  * 
  * @author Jiri Hynek
  */

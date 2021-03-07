@@ -1,7 +1,7 @@
 import ITextFormInputProps from "../../basic/text/ITextFormInputProps";
 
 /**
- * This class provide specification of a form input props model.
+ * This interface declares specification of a form input props model.
  * 
  * @author Jiri Hynek
  */

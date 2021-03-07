@@ -51,7 +51,7 @@ class AbstractMapObjectState implements IMapObjectState {
     }
 
     /**
-     * The metod takes config and desrializes the values.
+     * The metod takes config and deserializes the values.
      * 
      * @param {IMapObjectConfig} config 
      */

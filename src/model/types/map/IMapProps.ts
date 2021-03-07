@@ -5,7 +5,7 @@ import IMapDataManager from "../data/IMapDataManager";
 import IMapToolsManager from "../tool/IMapToolsManager";
 
 /**
- * This class provide specification of map props model.
+ * This interface provide specification of map props model.
  * 
  * @author Jiri Hynek
  */

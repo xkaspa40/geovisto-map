@@ -2,7 +2,7 @@ import IMapObjectProps from "./IMapObjectProps";
 import IMapObjectConfig from "./IMapObjectConfig";
 
 /**
- * This class provide functions which return the default state values.
+ * This interface declares functions which return the default state values.
  * 
  * @author Jiri Hynek
  */

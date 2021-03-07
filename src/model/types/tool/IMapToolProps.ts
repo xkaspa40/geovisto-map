@@ -1,7 +1,7 @@
 import IMapObjectProps from "../object/IMapObjectProps";
 
 /**
- * This class provide specification of map tool props model.
+ * This interface provide specification of map tool props model.
  * 
  * @author Jiri Hynek
  */

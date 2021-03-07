@@ -2,7 +2,7 @@ import IMapConfig from "../map/IMapConfig";
 import IMapToolConfig from "../tool/IMapToolConfig";
 
 /**
- * The class wraps config used by the map and functions to acquire config items.
+ * The interface declares config used by the map and functions to acquire config items.
  * 
  * @author Jiri Hynek
  */

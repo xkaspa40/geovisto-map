@@ -1,4 +1,4 @@
-import AbstractTabFragmentState from "../../sidebar/model/fragment/AbstractTabFragmentState";
+import AbstractTabFragmentState from "../../sidebar/model/internal/fragment/AbstractTabFragmentState";
 
 /**
  * This class manages the state of the sidebar fragment.

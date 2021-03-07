@@ -1,7 +1,7 @@
 import IMapObject from "./IMapObject";
 
 /**
- * This class provide functions for using map objects which can be identified by uniquie string.
+ * This interface declares functions for using map objects which can be identified by uniquie string.
  * 
  * @author Jiri Hynek
  */

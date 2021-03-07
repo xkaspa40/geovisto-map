@@ -44,7 +44,7 @@ class MapToolState extends MapObjectState implements IMapToolState {
     }
 
     /**
-     * The metod takes config and desrializes the values.
+     * The metod takes config and deserializes the values.
      * 
      * @param {IMapToolConfig} config 
      */

@@ -1,5 +1,5 @@
 /**
- * This class provide specification of map global constants model.
+ * This interface provides specification of map global constants model.
  * 
  * @author Jiri Hynek
  */

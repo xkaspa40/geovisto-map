@@ -1,5 +1,5 @@
-import AbstractTabFragment from '../../sidebar/model/fragment/AbstractTabFragment';
-import SettingsTool from '../../settings/SettingsTool';
+import AbstractTabFragment from '../../sidebar/model/internal/fragment/AbstractTabFragment';
+import SettingsTool from '../../settings/model/internal/tool/SettingsTool';
 import ThemesToolTabFragmentDefaults from './ThemesToolTabFragmentDefaults';
 import ThemesToolTabFragmentState from './ThemesToolTabFragmentState';
 import AutocompleteFormInput from '../../../model/internal/inputs/labeled/autocomplete/AutocompleteFormInput';

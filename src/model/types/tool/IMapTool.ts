@@ -7,7 +7,7 @@ import IMapEvent from "../event/IMapEvent";
 import IMapToolProps from "./IMapToolProps";
 
 /**
- * This class provide functions for using map tool which can be identified by uniquie string.
+ * This interface declares functions for using map tool which can be identified by uniquie string.
  * 
  * @author Jiri Hynek
  */

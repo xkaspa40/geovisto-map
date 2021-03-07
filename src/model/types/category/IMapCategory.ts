@@ -1,5 +1,5 @@
 /**
- * This class provide functions for using map object which can be identified by uniquie string.
+ * This interface declares functions for using map object which can be identified by uniquie string.
  * 
  * @author Jiri Hynek
  */

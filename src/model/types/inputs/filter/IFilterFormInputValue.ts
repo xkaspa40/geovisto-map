@@ -1,5 +1,5 @@
 /**
- * This class provide specification of the filter form input value.
+ * This interface declares specification of the filter form input value.
  * 
  * @author Jiri Hynek
  */

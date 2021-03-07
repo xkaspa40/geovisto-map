@@ -9,9 +9,9 @@ import IMapGlobals from "../../types/map/IMapGlobals";
 
 import MapObjectDefaults from "../object/MapObjectDefaults";
 import MapToolsManager from "../tool/MapToolsManager";
-import SidebarTool from "../../../tools/sidebar/SidebarTool";
+import SidebarTool from "../../../tools/sidebar/model/internal/tool/SidebarTool";
 import FiltersTool from "../../../tools/filters/FiltersTool";
-import SettingsTool from "../../../tools/settings/SettingsTool";
+import SettingsTool from "../../../tools/settings/model/internal/tool/SettingsTool";
 import MapConfigManager from "../config/basic/MapConfigManager";
 import MapLayerTool from "../../../tools/layers/map/MapLayerTool";
 import ChoroplethLayerTool from "../../../tools/layers/choropleth/ChoroplethLayerTool";

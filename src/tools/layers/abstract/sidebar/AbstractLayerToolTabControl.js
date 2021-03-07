@@ -1,4 +1,4 @@
-import AbstractTabControl from "../../../sidebar/model/control/AbstractTabControl";
+import AbstractTabControl from "../../../sidebar/model/internal/control/AbstractTabControl";
 import AbstractLayerToolTabControlDefaults from "./AbstractLayerToolTabControlDefaults";
 import AbstractLayerToolTabControlState from "./AbstractLayerToolTabControlState";
 

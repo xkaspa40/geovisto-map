@@ -1,5 +1,5 @@
 import AbstractTool from '../../model/tool/abstract/AbstractTool';
-import SettingsToolTabControl from "./sidebar/SettingsToolTabControl";
+import SettingsToolTabControl from "../sidebar/SettingsToolTabControl";
 import SettingsToolDefaults from './SettingsToolDefaults';
 import SettingsToolState from './SettingsToolState';
 

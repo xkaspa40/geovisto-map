@@ -1,9 +1,9 @@
 import IMapObjectConfig from "../object/IMapObjectConfig";
 
 /**
- * This class provide specification of map tool config model.
+ * This interface provides specification of map tool config model.
  * 
- * It contains only basic data types
+ * It contains only basic data types.
  * 
  * @author Jiri Hynek
  */

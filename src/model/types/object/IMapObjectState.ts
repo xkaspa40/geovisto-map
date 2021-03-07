@@ -1,7 +1,7 @@
 import IMapObjectConfig from "./IMapObjectConfig";
 
 /**
- * This class manages state of a map object.
+ * This interface declares the state of a map object.
  * It wraps the state since the map object can work with state objects which needs to be explicitly serialized.
  * 
  * @author Jiri Hynek
@@ -14,7 +14,7 @@ interface IMapObjectState {
     reset(): void;
 
     /**
-     * The metod takes config and desrializes the values.
+     * The metod takes config and deserializes the values.
      * 
      * @param {IMapObjectConfig} config 
      */

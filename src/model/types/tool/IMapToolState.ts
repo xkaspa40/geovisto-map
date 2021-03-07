@@ -3,7 +3,7 @@ import IMapToolConfig from "./IMapToolConfig";
 import IMap from "../map/IMap";
 
 /**
- * This class manages state of the map tool.
+ * This interface declares the state of the map tool.
  * It wraps the state since the map tool can work with state objects which needs to be explicitly serialized.
  * 
  * @author Jiri Hynek
@@ -11,7 +11,7 @@ import IMap from "../map/IMap";
 interface IMapToolState extends IMapObjectState {
 
     /**
-     * The metod takes config and desrializes the values.
+     * The metod takes config and deserializes the values.
      * 
      * @param {IMapToolConfig} config 
      */
@@ -20,9 +20,9 @@ interface IMapToolState extends IMapObjectState {
     /**
      * The method serializes the map tool state. Optionally, a serialed value can be let undefined if it equals the default value.
      * 
-     * @param {boolean} useDefaults 
+     * @param {boolean} filterDefaults 
      */
-    serialize(useDefaults: boolean | undefined): IMapToolConfig;
+    serialize(filterDefaults: boolean | undefined): IMapToolConfig;
 
     /**
      * It returns the enabled property of the tool state.

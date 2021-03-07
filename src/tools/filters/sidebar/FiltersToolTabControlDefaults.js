@@ -1,4 +1,4 @@
-import AbstractTabControlDefaults from "../../sidebar/model/control/AbstractTabControlDefaults";
+import AbstractTabControlDefaults from "../../sidebar/model/internal/control/AbstractTabControlDefaults";
 
 /**
  * This class provide functions which return the default state values.

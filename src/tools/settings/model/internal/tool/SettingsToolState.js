@@ -1,5 +1,5 @@
 import MapToolState from "../../model/tool/generic/MapToolState";
-import SelectionToolDefaults from "../selection/SelectionToolDefaults";
+import SelectionToolDefaults from "../../../../selection/SelectionToolDefaults";
 
 /**
  * This class provide functions for using selections.
@@ -25,7 +25,7 @@ class SettingsToolState extends MapToolState {
     }
 
     /**
-     * The metod takes config and desrializes the values.
+     * The metod takes config and deserializes the values.
      * 
      * @param {*} config 
      */

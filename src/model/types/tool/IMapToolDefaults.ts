@@ -2,7 +2,7 @@ import IMapObjectDefaults from "../object/IMapObjectDefaults";
 import IMapToolConfig from "./IMapToolConfig";
 
 /**
- * This class provide functions which return the default state values.
+ * This interface declares functions which return the default state values.
  * 
  * @author Jiri Hynek
  */

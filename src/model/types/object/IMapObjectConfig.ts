@@ -1,7 +1,7 @@
 /**
- * This class provide specification of map object config model.
+ * This interface provides specification of map object config model.
  * 
- * It contains only basic data types
+ * It contains only basic data types.
  * 
  * @author Jiri Hynek
  */

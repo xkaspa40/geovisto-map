@@ -1,4 +1,4 @@
-import AbstractTabFragmentDefaults from "../../sidebar/model/fragment/AbstractTabFragmentDefaults";
+import AbstractTabFragmentDefaults from "../../sidebar/model/internal/fragment/AbstractTabFragmentDefaults";
 
 /**
  * This class provide functions which return the default state values.

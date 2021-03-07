@@ -1,7 +1,7 @@
 import IMapToolsManager from "../tool/IMapToolsManager";
 
 /**
- * This class provide specification of map templates model.
+ * This interface provides specification of map templates model.
  * 
  * @author Jiri Hynek
  */

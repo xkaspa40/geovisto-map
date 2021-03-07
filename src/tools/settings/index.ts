@@ -1,6 +1,6 @@
-export { default as SettingsTool } from './SettingsTool';
-export { default as SettingsToolDefaults } from './SettingsToolDefaults';
-export { default as SettingsToolState } from './SettingsToolState';
-export { default as SettingsToolTabControl } from './sidebar/SettingsToolTabControl';
-export { default as SettingsToolTabDefaults } from './sidebar/SettingsToolTabControlDefaults';
-export { default as SettingsToolTabState } from './sidebar/SettingsToolTabControlState';
+export { default as SettingsTool } from './model/internal/tool/SettingsTool';
+export { default as SettingsToolDefaults } from './model/internal/tool/SettingsToolDefaults';
+export { default as SettingsToolState } from './model/internal/tool/SettingsToolState';
+export { default as SettingsToolTabControl } from './model/internal/sidebar/SettingsToolTabControl';
+export { default as SettingsToolTabDefaults } from './model/internal/sidebar/SettingsToolTabControlDefaults';
+export { default as SettingsToolTabState } from './model/internal/sidebar/SettingsToolTabControlState';

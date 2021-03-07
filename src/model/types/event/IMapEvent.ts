@@ -1,7 +1,7 @@
 import IMapObject from "../object/IMapObject";
 
 /**
- * This class provides abstract map event object.
+ * This interface declares abstract map event object.
  * 
  * @author Jiri Hynek
  */

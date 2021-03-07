@@ -1,5 +1,5 @@
-import AbstractTabFragment from '../../sidebar/model/fragment/AbstractTabFragment';
-import SettingsTool from '../../settings/SettingsTool';
+import AbstractTabFragment from '../../sidebar/model/internal/fragment/AbstractTabFragment';
+import SettingsTool from '../../settings/model/internal/tool/SettingsTool';
 import SelectionToolTabFragmentDefaults from './SelectionToolTabFragmentDefaults';
 import SelectionToolTabFragmentState from './SelectionToolTabFragmentState';
 

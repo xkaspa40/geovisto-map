@@ -1,7 +1,7 @@
 import IMapCategory from "./IMapCategory";
 
 /**
- * This class provide functions for using map categories which can be identified by uniquie string.
+ * This interface declares functions for using map categories which can be identified by uniquie string.
  * 
  * @author Jiri Hynek
  */
