@@ -91,7 +91,6 @@ class DrawingLayerTool extends AbstractLayerTool {
     this.getSidebarTabControl().getState().setEnabledEl(null);
 
     let feature = getGeoJSONFeatureFromLayer(layer);
-    // console.log({ layer, feature });
     let featureType = feature ? feature.geometry.type.toLowerCase() : '';
 
     let isFeaturePoly = featureType === 'polygon' || featureType === 'multipolygon';
@@ -114,9 +113,11 @@ class DrawingLayerTool extends AbstractLayerTool {
     this.getState().setCurrEl(layer);
     this.applyEventListeners(layer);
     if (selectedLayer && isFeaturePoly) {
-      console.log({ selectedLayer });
       this.getState().removeLayer(selectedLayer);
-      this.getState().clearSelectedLayer();
+      this.getState().setSelectedLayer(layer);
+      if (layer?.dispatchEvent) layer.dispatchEvent(new Event('click'));
+      console.log({ fg: this.getState().featureGroup });
+      // this.getState().clearSelectedLayer();
     }
   };
 

@@ -24,7 +24,7 @@ class PaintPoly {
     this.keyIndex = 0;
 
     this._accumulatedShapes = {};
-    this._coloredLayers = {};
+    this._shapeLayers = {};
   }
 
   stop = () => {
@@ -51,9 +51,14 @@ class PaintPoly {
 
     let feat = getGeoJSONFeatureFromLayer(layer);
     const x = this._accumulatedShapes[this.keyIndex];
-    // this._accumulatedShapes[this.keyIndex] = feat;
-    console.log({ feat, layer, x });
-    // this._accumulatedShapes[this.keyIndex].properties = { fill: layer.options.color };
+    if (this._shapeLayers[this.keyIndex]) {
+      this._map.removeLayer(this._shapeLayers[this.keyIndex]);
+      delete this._shapeLayers[this.keyIndex];
+    }
+    this._accumulatedShapes[this.keyIndex] = feat;
+    // console.log({ feat, layer, x, shapeLayers: this._shapeLayers });
+    if (this._accumulatedShapes[this.keyIndex])
+      this._accumulatedShapes[this.keyIndex].properties = { fill: layer.options.color };
   };
 
   // taken from https://stackoverflow.com/questions/27545098/leaflet-calculating-meters-per-pixel-at-zoom-level
@@ -87,20 +92,25 @@ class PaintPoly {
     }
 
     this._accumulatedShapes[this.keyIndex].properties = { fill: brushColor };
+    console.log({
+      accShapes: this._accumulatedShapes,
+      shape: this._accumulatedShapes[this.keyIndex],
+      kIdx: this.keyIndex,
+    });
 
     Object.keys(this._accumulatedShapes).forEach((key) => {
       let result = new L.GeoJSON(this._accumulatedShapes[key], {
         color: this._accumulatedShapes[key]?.properties?.fill || DEFAULT_COLOR,
       });
 
-      if (this._coloredLayers[key] !== undefined) {
-        this._coloredLayers[key].remove();
+      if (this._shapeLayers[key] !== undefined) {
+        this._shapeLayers[key].remove();
       }
 
-      this._coloredLayers[key] = result.addTo(this._map);
+      this._shapeLayers[key] = result.addTo(this._map);
 
       this._map.fire(L.Draw.Event.CREATED, {
-        layer: this._coloredLayers[key],
+        layer: this._shapeLayers[key],
         layerType: 'painted',
         feature: this._accumulatedShapes[key],
         keyIndex: this.keyIndex,
@@ -147,6 +157,10 @@ class PaintPoly {
   };
 
   _clickDraw = (event) => {
+    if (event.type == 'mousedown') {
+      L.DomEvent.stop(event);
+      return;
+    }
     if (this._action == 'draw') {
       this.stop();
     } else {
@@ -165,8 +179,7 @@ class PaintPoly {
     paintBtn.title = 'Paint';
     paintBtn.innerHTML = '<i class="fa fa-paint-brush" aria-hidden="true"></i>';
     paintBtn.role = 'button';
-    L.DomEvent.on(paintBtn, 'click', this._clickDraw);
-    L.DomEvent.on(paintBtn, 'mousedown', this._mousedownStop);
+    L.DomEvent.on(paintBtn, 'click mousedown', this._clickDraw);
     return paintBtn;
   };
 }
