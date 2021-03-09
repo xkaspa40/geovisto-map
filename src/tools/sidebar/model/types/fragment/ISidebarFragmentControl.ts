@@ -7,11 +7,11 @@ import ISidebarFragment from "./ISidebarFragment";
  * 
  * @author Jiri Hynek
  */
-interface ISidebarTabControl {
+interface ISidebarFragmentControl {
 
     /**
      * It returns a sidebar fragment.
      */
     getSidebarTabFragment(): ISidebarFragment;
 }
-export default ISidebarTabControl;
+export default ISidebarFragmentControl;

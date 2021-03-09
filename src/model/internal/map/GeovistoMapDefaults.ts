@@ -10,15 +10,15 @@ import IMapGlobals from "../../types/map/IMapGlobals";
 import MapObjectDefaults from "../object/MapObjectDefaults";
 import MapToolsManager from "../tool/MapToolsManager";
 import SidebarTool from "../../../tools/sidebar/model/internal/tool/SidebarTool";
-import FiltersTool from "../../../tools/filters/FiltersTool";
+import FiltersTool from "../../../tools/filters/model/internal/tool/FiltersTool";
 import SettingsTool from "../../../tools/settings/model/internal/tool/SettingsTool";
 import MapConfigManager from "../config/basic/MapConfigManager";
 import MapLayerTool from "../../../tools/layers/map/MapLayerTool";
 import ChoroplethLayerTool from "../../../tools/layers/choropleth/ChoroplethLayerTool";
 import MarkerLayerTool from "../../../tools/layers/marker/MarkerLayerTool";
 import ConnectionLayerTool from "../../../tools/layers/connection/ConnectionLayerTool";
-import ThemesTool from "../../../tools/themes/ThemesTool";
-import SelectionTool from "../../../tools/selection/SelectionTool";
+import ThemesTool from "../../../tools/themes/model/internal/tool/ThemesTool";
+import SelectionTool from "../../../tools/selection/model/internal/tool/SelectionTool";
 import GeovistoMap from "./GeovistoMap";
 import JsonMapDataManager from "../data/json/JsonMapDataManager";
 

@@ -1,5 +1,5 @@
 import MapToolState from "../../model/tool/generic/MapToolState";
-import SelectionToolDefaults from "../../../../selection/SelectionToolDefaults";
+import SelectionToolDefaults from "../../../../selection/model/internal/tool/SelectionToolDefaults";
 
 /**
  * This class provide functions for using selections.

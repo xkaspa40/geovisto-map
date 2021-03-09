@@ -1,0 +1,51 @@
+import IMapToolState from "../../../../../model/types/tool/IMapToolState";
+import IThemesToolConfig from "./IThemesToolConfig";
+import IMapThemesManager from "../theme/IMapThemesManager";
+import IMapTheme from "../theme/IMapTheme";
+
+/**
+ * This interface declares functions for using themes.
+ * 
+ * @author Jiri Hynek
+ */
+interface IThemesToolState extends IMapToolState {
+
+    /**
+     * The metod takes config and deserializes the values.
+     * 
+     * @param {IThemesToolConfig} config 
+     */
+    deserialize(config: IThemesToolConfig): void;
+
+    /**
+     * The method serializes the tool state. Optionally, defaults can be set if property is undefined.
+     * 
+     * @param {boolean} defaults
+     */
+    serialize(filterDefaults: boolean): IThemesToolConfig;
+
+    /**
+     * It returns themes manager.
+     */
+    getThemesManager(): IMapThemesManager
+
+    /**
+     * It sets themes manager.
+     * 
+     * @param {IMapThemesManager} manager 
+     */
+    setThemesManager(manager: IMapThemesManager): void;
+
+    /**
+     * It returns the theme property of the tool state.
+     */
+    getTheme(): IMapTheme;
+
+    /**
+     * It sets the theme property of the tool state.
+     * 
+     * @param {IMapTheme} theme 
+     */
+    setTheme(theme: IMapTheme): void;
+}
+export default IThemesToolState;

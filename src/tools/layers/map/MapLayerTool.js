@@ -4,7 +4,7 @@ import MapLayerToolDefaults from './MapLayerToolDefaults';
 import MapLayerToolState from './MapLayerToolState';
 import MapLayerToolTabControl from './sidebar/MapLayerToolTabControl';
 import AbstractLayerTool from '../abstract/AbstractLayerTool';
-import ThemesToolEvent from '../../themes/model/event/ThemesToolEvent';
+import ThemesToolEvent from '../../themes/model/internal/event/ThemesToolEvent';
 
 /**
  * This class represents Map layer tool. It use tile layer and OSM maps.

@@ -1,7 +1,7 @@
 import IMapToolConfig from "../../../../../model/types/tool/IMapToolConfig";
 
 /**
- * This interface provides specification of settings tool config model.
+ * This interface provides specification of the settings tool config model.
  * 
  * It contains only basic data types.
  * 

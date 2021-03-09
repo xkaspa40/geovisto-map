@@ -10,7 +10,7 @@ interface IMapCategoriesManager {
     /**
      * The function returns available map categories.
      */
-    getCategories(): IMapCategory[]
+    getCategories(): IMapCategory[];
 
     /**
      * The function returns the number of categories.

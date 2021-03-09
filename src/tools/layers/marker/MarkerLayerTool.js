@@ -8,10 +8,10 @@ import * as d3 from "d3";
 import MarkerLayerToolTabControl from './sidebar/MarkerLayerToolTabControl';
 import MarkerLayerToolDefaults from './MarkerLayerToolDefaults';
 import MarkerLayerToolState from './MarkerLayerToolState';
-import SelectionTool from '../../selection/SelectionTool';
+import SelectionTool from '../../selection/model/internal/tool/SelectionTool';
 import AbstractLayerTool from '../abstract/AbstractLayerTool';
-import ThemesToolEvent from '../../themes/model/event/ThemesToolEvent';
-import SelectionToolEvent from '../../selection/model/event/SelectionToolEvent';
+import ThemesToolEvent from '../../themes/model/internal/event/ThemesToolEvent';
+import SelectionToolEvent from '../../selection/model/internal/event/SelectionToolEvent';
 import DataChangeEvent from '../../../model/internal/event/data/DataChangeEvent';
 
 /**

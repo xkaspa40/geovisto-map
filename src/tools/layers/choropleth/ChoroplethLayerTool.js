@@ -5,11 +5,11 @@ import AbstractLayerTool from '../abstract/AbstractLayerTool';
 import ChoroplethLayerToolState from './ChoroplethLayerToolState';
 import ChoroplethLayerToolDefaults from './ChoroplethLayerToolDefaults';
 import ChoropolethLayerToolTabControl from './sidebar/ChoroplethLayerToolTabControl';
-import ThemesToolEvent from '../../themes/model/event/ThemesToolEvent';
-import SelectionToolEvent from '../../selection/model/event/SelectionToolEvent';
+import ThemesToolEvent from '../../themes/model/internal/event/ThemesToolEvent';
+import SelectionToolEvent from '../../selection/model/internal/event/SelectionToolEvent';
 import DataChangeEvent from '../../../model/internal/event/data/DataChangeEvent';
-import MapSelection from '../../selection/model/item/generic/MapSelection';
-import SelectionTool from '../../selection/SelectionTool';
+import MapSelection from '../../selection/model/internal/selection/generic/MapSelection';
+import SelectionTool from '../../selection/model/internal/tool/SelectionTool';
 
 // TODO: move to defaults
 const COLOR_orange = ['#8c8c8c','#ffffcc','#ffff99','#ffcc99','#ff9966','#ff6600','#ff0000','#cc0000'];
