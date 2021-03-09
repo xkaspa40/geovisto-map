@@ -27,6 +27,10 @@ class PaintPoly {
     this._shapeLayers = {};
   }
 
+  getMouseDown = () => {
+    return this._mouseDown;
+  };
+
   stop = () => {
     this._action = null;
     if (this._circle) {
@@ -46,19 +50,14 @@ class PaintPoly {
       .addTo(this._map);
   };
 
-  setAccShapes = (kIdx, layer) => {
+  clearPaintedPolys = (kIdx) => {
     if (kIdx === undefined) return;
 
-    let feat = getGeoJSONFeatureFromLayer(layer);
-    const x = this._accumulatedShapes[this.keyIndex];
-    if (this._shapeLayers[this.keyIndex]) {
-      this._map.removeLayer(this._shapeLayers[this.keyIndex]);
-      delete this._shapeLayers[this.keyIndex];
+    if (this._shapeLayers[kIdx]) {
+      this._map.removeLayer(this._shapeLayers[kIdx]);
+      delete this._shapeLayers[kIdx];
     }
-    this._accumulatedShapes[this.keyIndex] = feat;
-    // console.log({ feat, layer, x, shapeLayers: this._shapeLayers });
-    if (this._accumulatedShapes[this.keyIndex])
-      this._accumulatedShapes[this.keyIndex].properties = { fill: layer.options.color };
+    delete this._accumulatedShapes[kIdx];
   };
 
   // taken from https://stackoverflow.com/questions/27545098/leaflet-calculating-meters-per-pixel-at-zoom-level
@@ -166,11 +165,6 @@ class PaintPoly {
     } else {
       this.startPaint();
     }
-  };
-
-  _mousedownStop = (event) => {
-    L.DomEvent.stop(event);
-    return;
   };
 
   renderButton = (options = {}) => {

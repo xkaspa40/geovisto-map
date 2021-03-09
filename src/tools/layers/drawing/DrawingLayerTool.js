@@ -96,7 +96,9 @@ class DrawingLayerTool extends AbstractLayerTool {
     let isFeaturePoly = featureType === 'polygon' || featureType === 'multipolygon';
     let selectedLayer = this.getState().selectedLayer;
 
-    if (isFeaturePoly && Boolean(selectedLayer)) {
+    let join = isFeaturePoly && Boolean(selectedLayer);
+
+    if (join) {
       let selectedFeature = getGeoJSONFeatureFromLayer(selectedLayer);
       let unifiedFeature = union(feature, selectedFeature);
       let result = new L.GeoJSON(unifiedFeature, {
@@ -104,18 +106,16 @@ class DrawingLayerTool extends AbstractLayerTool {
       });
       layer = result;
       layer.layerType = 'polygon';
+      let paintPoly = this.getSidebarTabControl().getState().paintPoly;
+      paintPoly.clearPaintedPolys(e?.keyIndex);
     }
-
-    let paintPoly = this.getSidebarTabControl().getState().paintPoly;
-    paintPoly.setAccShapes(e?.keyIndex, layer);
 
     this.getState().addLayer(layer);
     this.getState().setCurrEl(layer);
     this.applyEventListeners(layer);
-    if (selectedLayer && isFeaturePoly) {
+    if (join) {
       this.getState().removeLayer(selectedLayer);
       this.getState().setSelectedLayer(layer);
-      if (layer?.dispatchEvent) layer.dispatchEvent(new Event('click'));
       console.log({ fg: this.getState().featureGroup });
       // this.getState().clearSelectedLayer();
     }
