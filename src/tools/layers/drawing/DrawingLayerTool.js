@@ -77,7 +77,7 @@ class DrawingLayerTool extends AbstractLayerTool {
   }
 
   applyEventListeners(layer) {
-    layer.on('click', this.initChangeStyle, this);
+    layer.on('click', L.DomEvent.stopPropagation).on('click', this.initChangeStyle, this);
     layer.on('mouseover', this.hightlightPoly, this);
     layer.on('mouseout', this.normalizePoly, this);
   }
@@ -116,7 +116,8 @@ class DrawingLayerTool extends AbstractLayerTool {
     if (join) {
       this.getState().removeLayer(selectedLayer);
       this.getState().setSelectedLayer(layer);
-      console.log({ fg: this.getState().featureGroup });
+      this.getState().setSelecting(false);
+      layer.setStyle(highlightStyles);
       // this.getState().clearSelectedLayer();
     }
   };

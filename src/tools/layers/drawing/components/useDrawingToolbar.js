@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css';
 
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
-import { polygonCreate, polylineCreate } from '../util/Poly';
+import { normalStyles, polygonCreate, polylineCreate } from '../util/Poly';
 import { markerCreate } from '../util/Marker';
 
 import '../style/drawingLayer.scss';
@@ -108,8 +108,25 @@ export default function useDrawingToolbar() {
         .on(markerBtn, 'click', L.DomEvent.preventDefault)
         .on(markerBtn, 'click', () => markerCreate(map, sidebar), this);
       L.DomEvent.on(polygonBtn, 'click', () => polygonCreate(map, sidebar), this);
-      L.DomEvent.on(selectBtn, 'click', () => this.setSelecting(true), this);
+      L.DomEvent.on(selectBtn, 'click', this.initSelecting, this);
       L.DomEvent.on(transformBtn, 'click', this.initTransform, this);
+    },
+
+    initSelecting: function () {
+      const selecting = this.getSelecting();
+      this.setSelecting(!selecting);
+      if (!selecting) document.querySelector('.leaflet-container').style.cursor = 'crosshair';
+      else document.querySelector('.leaflet-container').style.cursor = '';
+
+      this.options.map.on('click', () => {
+        let selected = this.options.tool.getState().selectedLayer;
+        if (selected) {
+          selected.setStyle(normalStyles);
+          this.options.tool.getState().clearSelectedLayer();
+          document.querySelector('.leaflet-container').style.cursor = '';
+          this.setSelecting(false);
+        }
+      });
     },
 
     initTransform: function () {
@@ -137,6 +154,10 @@ export default function useDrawingToolbar() {
 
     setSelecting: function (is) {
       this.options.tool.getState().setSelecting(is);
+    },
+
+    getSelecting: function (is) {
+      return this.options.tool.getState().getSelecting();
     },
   });
 
