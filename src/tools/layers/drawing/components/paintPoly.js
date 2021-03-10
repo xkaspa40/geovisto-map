@@ -11,7 +11,6 @@ const DEFAULT_COLOR = '#333333';
 
 class PaintPoly {
   constructor(props) {
-    console.log({ props });
     this._map = null;
     this.tabState = props.tabState;
 
@@ -44,7 +43,7 @@ class PaintPoly {
     this._action = 'draw';
     this._addMouseListener();
     this._circle = L.circleMarker(this._latlng, {
-      color: this.tabState.getSelectedColor() || DEFAULT_COLOR,
+      color: DEFAULT_COLOR,
     })
       .setRadius(this._circleRadius)
       .addTo(this._map);
@@ -91,11 +90,11 @@ class PaintPoly {
     }
 
     this._accumulatedShapes[this.keyIndex].properties = { fill: brushColor };
-    console.log({
-      accShapes: this._accumulatedShapes,
-      shape: this._accumulatedShapes[this.keyIndex],
-      kIdx: this.keyIndex,
-    });
+    // console.log({
+    //   accShapes: this._accumulatedShapes,
+    //   shape: this._accumulatedShapes[this.keyIndex],
+    //   kIdx: this.keyIndex,
+    // });
 
     Object.keys(this._accumulatedShapes).forEach((key) => {
       let result = new L.GeoJSON(this._accumulatedShapes[key], {

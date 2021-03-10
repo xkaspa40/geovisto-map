@@ -87,8 +87,15 @@ export default function useDrawingToolbar() {
         enabled.disable();
       } else if (this.lastClickedBtn && btn !== this.lastClickedBtn) {
         let className = this.lastClickedBtn.className;
-        if (!UNABLE_TO_CLICK_DISABLE.includes(className))
-          this.lastClickedBtn.dispatchEvent(new Event('click'));
+        if (UNABLE_TO_CLICK_DISABLE.includes(className)) {
+          this.lastClickedBtn = btn;
+          return;
+        }
+        if (className === 'selectBtn' && !this.getSelecting()) {
+          this.lastClickedBtn = btn;
+          return;
+        }
+        this.lastClickedBtn.dispatchEvent(new Event('click'));
       }
       this.lastClickedBtn = btn;
     },
@@ -119,12 +126,13 @@ export default function useDrawingToolbar() {
       else document.querySelector('.leaflet-container').style.cursor = '';
 
       this.options.map.on('click', () => {
+        const sidebar = this.options.tool.getSidebarTabControl();
+        if (Boolean(sidebar.getState().enabledEl) || !this.getSelecting()) return;
         let selected = this.options.tool.getState().selectedLayer;
         if (selected) {
           selected.setStyle(normalStyles);
           this.options.tool.getState().clearSelectedLayer();
           document.querySelector('.leaflet-container').style.cursor = '';
-          this.setSelecting(false);
         }
       });
     },

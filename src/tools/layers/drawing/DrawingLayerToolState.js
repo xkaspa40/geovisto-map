@@ -1,5 +1,6 @@
 import { AbstractLayerToolState } from '../abstract';
 import L from 'leaflet';
+import { highlightStyles } from './util/Poly';
 
 /**
  * This class provide functions for using the state of the layer tool.
@@ -63,10 +64,13 @@ class DrawingLayerToolState extends AbstractLayerToolState {
 
   setSelectedLayer(layer) {
     this.selectedLayer = layer;
+    this.selecting = false;
+    layer.setStyle(highlightStyles);
   }
 
   clearSelectedLayer() {
     this.selectedLayer = null;
+    this.selecting = false;
   }
 
   serialize(defaults) {

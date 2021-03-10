@@ -9,6 +9,7 @@ import { getGeoJSONFeatureFromLayer, highlightStyles, normalStyles } from './uti
 
 import 'leaflet/dist/leaflet.css';
 import './style/drawingLayer.scss';
+import difference from '@turf/difference';
 
 /**
  * This class represents Drawing layer tool.
@@ -110,15 +111,30 @@ class DrawingLayerTool extends AbstractLayerTool {
       paintPoly.clearPaintedPolys(e?.keyIndex);
     }
 
+    let fgLayers = this.getState().featureGroup._layers;
+    let layerFeature = getGeoJSONFeatureFromLayer(layer);
+    Object.values(fgLayers).forEach((l) => {
+      let feature = getGeoJSONFeatureFromLayer(l);
+      let featureType = feature ? feature.geometry.type.toLowerCase() : '';
+      let isFeaturePoly = featureType === 'polygon' || featureType === 'multipolygon';
+      if (isFeaturePoly && l?._leaflet_id !== selectedLayer?._leaflet_id) {
+        let diffFeature = difference(feature, layerFeature);
+        let result = new L.GeoJSON(diffFeature, {
+          ...l.options,
+        });
+        result.layerType = 'polygon';
+        this.getState().removeLayer(l);
+        this.getState().addLayer(result);
+        this.applyEventListeners(result);
+      }
+    });
+
     this.getState().addLayer(layer);
     this.getState().setCurrEl(layer);
     this.applyEventListeners(layer);
     if (join) {
       this.getState().removeLayer(selectedLayer);
       this.getState().setSelectedLayer(layer);
-      this.getState().setSelecting(false);
-      layer.setStyle(highlightStyles);
-      // this.getState().clearSelectedLayer();
     }
   };
 
@@ -156,11 +172,15 @@ class DrawingLayerTool extends AbstractLayerTool {
   initChangeStyle(e) {
     const drawObject = e.target;
     if (this.getState().getSelecting()) {
+      let fgLayers = this.getState().featureGroup._layers;
+      Object.values(fgLayers).forEach((_) => {
+        _.setStyle(normalStyles);
+      });
       this.getState().setSelectedLayer(drawObject);
     }
     this.getState().setCurrEl(drawObject);
     this.redrawSidebarTabControl(e.target.layerType);
-    this.getState().setSelecting(!this.getState().getSelecting());
+    document.querySelector('.leaflet-container').style.cursor = '';
   }
 
   /**
