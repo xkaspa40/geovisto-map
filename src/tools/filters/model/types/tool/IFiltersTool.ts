@@ -1,118 +1,43 @@
-import AbstractTool from "../../model/tool/abstract/AbstractTool";
-import FiltersToolTabControl from "../sidebar/FiltersToolTabControl";
-import FiltersToolDefaults from "./IFiltersToolDefaults";
-import FiltersToolState from "./IFiltersToolState";
+import IMapTool from "../../../../../model/types/tool/IMapTool";
+import ISidebarTabControl from "../../../../sidebar/model/types/tab/ISidebarTabControl";
+import IFiltersToolProps from "./IFiltersToolProps";
+import IFiltersToolDefaults from "./IFiltersToolDefaults";
+import IFiltersToolState from "./IFiltersToolState";
+import IMapFilterRule from "../filter/IMapFilterRule";
 
 /**
- * This class wraps filters, sidebar tab and state. It provides methods for filters management.
+ * This interface declares the  filter tool.
+ * It provides methods for filters management.
  * 
  * @author Jiri Hynek
  */
-class FiltersTool extends AbstractTool {
-
-    /**
-     * It creates a new tool with respect to the props.
-     * 
-     * @param {*} props 
-     */
-    constructor(props) {
-        super(props);
-
-        // the tab control for a sidebar will be created only if needed
-        this.tabControl = undefined;
-    }
-
-    /**
-     * A unique string of the tool type.
-     */
-    static TYPE() {
-        return "geovisto-tool-filters";
-    }
+interface IFiltersTool extends IMapTool, ISidebarTabControl {
 
     /**
      * It creates a copy of the uninitialized tool.
      */
-    copy() {
-        return new FiltersTool(this.getProps());
-    }
+    copy(): IFiltersTool;
 
     /**
-     * It creates new defaults of the tool.
+     * It returns the props given by the programmer.
      */
-    createDefaults() {
-        return new FiltersToolDefaults();
-    }
+    getProps(): IFiltersToolProps;
 
     /**
-     * It returns default tool state.
+     * It returns default values of the state properties.
      */
-    createState() {
-        return new FiltersToolState();
-    }
+    getDefaults(): IFiltersToolDefaults;
 
     /**
-     * It creates new filter tool.
+     * It returns the sidebar tool state.
      */
-    create() {
-        // set filter rules
-        this.setFilterRules(this.getState().getFilterRules());
-    }
+    getState(): IFiltersToolState;
 
     /**
-     * It returns a tab control.
-     */
-    getSidebarTabControl() {
-        if(this.tabControl == undefined) {
-            this.tabControl = this.createSidebarTabControl();
-        }
-        return this.tabControl;
-    }
-
-    /**
-     * It creates new tab control.
-     */
-    createSidebarTabControl() {
-        return new FiltersToolTabControl({ tool: this });
-    }
-
-    /**
+     * It updates filter rules and notifies listeners.
      * 
-     * @param {*} filterRules 
+     * @param {IMapFilterRule[]} filterRules 
      */
-    setFilterRules(filterRules) {
-        if(filterRules != undefined) {
-            // if the filter tool is enabled, update map data
-            if(this.isEnabled()) {
-                let mapData = this.getMap().getState().getMapData();
-                this.getMap().updateData(this.getState().getFiltersManager().filterData(mapData, mapData.getData(), filterRules));
-            }
-
-            // update filter rules
-            this.getState().setFilterRules(filterRules);
-        }
-    }
-
-    /**
-     * It changes filters state to enabled/disabled.
-     * 
-     * @param {*} enabled
-     */
-    setEnabled(enabled) {
-        if(enabled != this.isEnabled()) {
-            // update state
-            this.getState().setEnabled(enabled);
-
-            // the Geovisto map stores the current data and works as the event dispatcher
-            let map = this.getMap();
-
-            // apply filter rules if enabled, else use empty list of filters (use the initial data)
-            if(enabled) {
-                let mapData = this.getMap().getState().getMapData();
-                map.updateData(this.getState().getFiltersManager().filterData(mapData, mapData.getData(), this.getState().getFilterRules()));
-            } else {
-                map.updateData(map.getState().getMapData().getData());
-            }
-        }
-    }
+    setFilterRules(filterRules: IMapFilterRule[]): void;
 }
-export default FiltersTool;
+export default IFiltersTool;

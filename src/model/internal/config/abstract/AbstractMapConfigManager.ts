@@ -53,7 +53,7 @@ abstract class AbstractMapConfigManager {
     /**
      * It returns the list of all config records for the tools.
      */
-    public getToolsConfigs(): IMapToolConfig[] {
+    public getToolsConfigs(): IMapToolConfig[] | undefined {
         return this.config.tools;
     }
 

@@ -14,7 +14,7 @@ interface ISidebarFragmentDefaults extends IMapObjectDefaults {
     getConfig(): ISidebarFragmentConfig;
 
     /**
-     * It returns whether the sidebar fragment is enabled.
+     * It returns a logical value whether the sidebar fragment is enabled.
      */
     isEnabled(): boolean;
 }

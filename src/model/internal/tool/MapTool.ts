@@ -61,7 +61,7 @@ class MapTool extends MapObject implements IMapTool {
     /**
      * It returns default state of the tool which is used when no state is specified.
      */
-    protected createState() {
+    protected createState(): IMapToolState {
         return new MapToolState(this);
     }
 

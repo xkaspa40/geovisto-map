@@ -1,4 +1,4 @@
-import AbstractTabFragmentState from "../../../../sidebar/model/internal/fragment/AbstractTabFragmentState";
+import SidebarFragmentState from "../../../../sidebar/model/internal/fragment/SidebarTabFragmentState";
 
 /**
  * This class manages the state of the sidebar fragment.
@@ -6,7 +6,7 @@ import AbstractTabFragmentState from "../../../../sidebar/model/internal/fragmen
  * 
  * @author Jiri Hynek
  */
-class SelectionToolTabFragmentState extends AbstractTabFragmentState {
+class SelectionToolTabFragmentState extends SidebarFragmentState {
 
     /**
      * It creates a tab fragment state.

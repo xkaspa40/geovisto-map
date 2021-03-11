@@ -9,7 +9,7 @@ import IMapObjectConfig from "./IMapObjectConfig";
 interface IMapObjectState {
 
     /**
-     * It resets the state to the initial props. Optionally, defaults can be set if property is undefined.
+     * It resets the state to the initial props.
      */
     reset(): void;
 
@@ -23,7 +23,7 @@ interface IMapObjectState {
     /**
      * The method serializes the map object state. Optionally, a serialed value can be let undefined if it equals the default value.
      * 
-     * @param {boolean} filterDefaults 
+     * @param {boolean | undefined} filterDefaults 
      */
     serialize(filterDefaults: boolean | undefined): IMapObjectConfig;
 

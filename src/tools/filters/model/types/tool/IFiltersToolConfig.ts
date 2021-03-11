@@ -7,6 +7,6 @@ import IMapToolConfig from "../../../../../model/types/tool/IMapToolConfig";
  * 
  * @author Jiri Hynek
  */
-interface ISettingsToolConfig extends IMapToolConfig {
+interface IFiltersToolConfig extends IMapToolConfig {
 }
-export default ISettingsToolConfig;
+export default IFiltersToolConfig;

@@ -23,6 +23,8 @@ class MapToolState extends MapObjectState implements IMapToolState {
 
     /**
      * It creates a map object state.
+     * 
+     * @param tool 
      */
     constructor(tool : IMapTool) {
         super(tool);
@@ -31,7 +33,7 @@ class MapToolState extends MapObjectState implements IMapToolState {
     }
 
     /**
-     * It resets the state to the initial props. Optionally, defaults can be set if property is undefined.
+     * It resets the state to the initial props.
      */
     public reset(): void {
         super.reset();
@@ -58,7 +60,7 @@ class MapToolState extends MapObjectState implements IMapToolState {
     /**
      * The method serializes the tool state. Optionally, a serialed value can be let undefined if it equals the default value.
      * 
-     * @param {boolean} filterDefaults 
+     * @param {boolean | undefined} filterDefaults 
      */
     public serialize(filterDefaults : boolean | undefined): IMapToolConfig {
         let config: IMapToolConfig = <IMapToolConfig> super.serialize(filterDefaults);

@@ -1,54 +1,28 @@
-import FiltersManager from "../filter/generic/FiltersManager";
-import EqFilterOperation from "../filter/basic/EqFilterOperation";
-import NeqFilterOperation from "../filter/basic/NeqFilterOperation";
-import RegFilterOperation from "../filter/basic/RegFilterOperation";
-import AbstractToolDefaults from "../../model/tool/abstract/AbstractToolDefaults";
-import FiltersTool from "./IFiltersTool";
+import IMapToolDefaults from "../../../../../model/types/tool/IMapToolDefaults";
+import IFiltersToolConfig from "./IFiltersToolConfig";
+import IMapFiltersManager from "../filter/IMapFilterManager";
+import IMapFilterRule from "../filter/IMapFilterRule";
 
 /**
- * This class provide functions which return the default state values.
+ * This interface declares functions which return the default state values.
  * 
  * @author Jiri Hynek
  */
-class FiltersToolDefaults extends AbstractToolDefaults {
+interface IFiltersToolDefaults extends IMapToolDefaults {
 
     /**
-     * It creates tool defaults.
+     * It returns default config if no config is given.
      */
-    constructor() {
-        super();
-    }
-
-    /**
-     * Only one filter tool should be present in the Geovisto map.
-     */
-    isSingleton() {
-       return true; 
-    }
-
-    /**
-     * It returns a unique string of the tool type.
-     */
-    getType() {
-        return FiltersTool.TYPE();
-    }
+    getConfig(): IFiltersToolConfig;
 
     /**
      * It returns default filters manager.
      */
-    getFiltersManager() {
-        return new FiltersManager([
-            new EqFilterOperation(),
-            new NeqFilterOperation(),
-            new RegFilterOperation()
-        ]);
-    }
+    getFiltersManager(): IMapFiltersManager;
 
     /**
      * It returns default filter rules.
      */
-    getFilterRules() {
-        return [];
-    }
+    getFilterRules(): IMapFilterRule[];
 }
-export default FiltersToolDefaults;
+export default IFiltersToolDefaults;

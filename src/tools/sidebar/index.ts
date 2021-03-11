@@ -1,9 +1,9 @@
 export { default as SidebarTool } from './model/internal/tool/SidebarTool';
 export { default as SidebarToolDefaults } from './model/internal/tool/SidebarToolDefaults';
 export { default as SidebarToolState } from './model/internal/tool/SidebarToolState';
-export { default as AbstractTabControl } from './model/internal/control/AbstractTabControl';
-export { default as AbstractTabControlDefaults } from './model/internal/control/AbstractTabControlDefaults';
-export { default as AbstractTabControlState } from './model/internal/control/AbstractTabControlState';
-export { default as AbstractTabFragment } from './model/internal/fragment/AbstractTabFragment';
-export { default as AbstractTabFragmentDefaults } from './model/internal/fragment/AbstractTabFragmentDefaults';
-export { default as AbstractTabFragmentState } from './model/internal/fragment/AbstractTabFragmentState';
+export { default as AbstractSidebarTab } from './model/internal/tab/AbstractSidebarTab';
+export { default as AbstractTabControlDefaults } from './model/internal/tab/ISidebarTabDefaults';
+export { default as SidebarTabState } from './model/internal/tab/SidebarTabState';
+export { default as AbstractSidebarFragment } from './model/internal/fragment/AbstractSidebarFragment';
+export { default as SidebarFragmentDefaults } from './model/internal/fragment/SidebarFragmentDefaults';
+export { default as SidebarFragmentState } from './model/internal/fragment/SidebarTabFragmentState';

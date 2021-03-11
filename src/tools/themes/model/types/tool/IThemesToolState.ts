@@ -20,9 +20,9 @@ interface IThemesToolState extends IMapToolState {
     /**
      * The method serializes the tool state. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {boolean} defaults
+     * @param {boolean | undefined} filterDefaults
      */
-    serialize(filterDefaults: boolean): IThemesToolConfig;
+    serialize(filterDefaults: boolean | undefined): IThemesToolConfig;
 
     /**
      * It returns themes manager.

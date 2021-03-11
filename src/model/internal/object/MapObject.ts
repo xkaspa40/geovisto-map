@@ -1,4 +1,4 @@
-import AbstractMapObjectDefaults from "./MapObjectDefaults";
+import MapObjectDefaults from "./MapObjectDefaults";
 import IMapObject from "../../types/object/IMapObject";
 import IMapObjectProps from "../../types/object/IMapObjectProps";
 import IMapObjectState from "../../types/object/IMapObjectState";
@@ -53,7 +53,7 @@ class MapObject implements IMapObject {
      * This function can be overriden.
      */
     protected createDefaults(): IMapObjectDefaults {
-        return new AbstractMapObjectDefaults(this);
+        return new MapObjectDefaults(this);
     }
 
     /**

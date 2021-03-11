@@ -5,12 +5,12 @@ import IMapObject from "./IMapObject";
  * 
  * @author Jiri Hynek
  */
-interface IMapObjectsManager {
+interface IMapObjectsManager<T extends IMapObject> {
 
     /**
      * The function returns available map objects.
      */
-    getObjects(): IMapObject[]
+    getObjects(): T[]
 
     /**
      * The function returns the number of objects.
@@ -25,16 +25,16 @@ interface IMapObjectsManager {
     /**
      * It adds object to the list of objects.
      * 
-     * @param {IMapObject} object 
+     * @param {T} object 
      */
-    add(object: IMapObject): void;
+    add(object: T): void;
 
     /**
      * It removes object from the list of objects.
      * 
-     * @param {IMapObject} object 
+     * @param {T} object 
      */
-    remove(object: IMapObject): void;
+    remove(object: T): void;
 
     /**
      * It removes object of the given id from the list of objects.
@@ -58,13 +58,13 @@ interface IMapObjectsManager {
      * 
      * @param {string} type
      */
-    getByType(type: string): IMapObject[];
+    getByType(type: string): T[];
 
     /**
      * The function returns map object of given unique identifier.
      * 
      * @param {string} id
      */
-    getById(id: string): IMapObject | undefined;
+    getById(id: string): T | undefined;
 }
 export default IMapObjectsManager;

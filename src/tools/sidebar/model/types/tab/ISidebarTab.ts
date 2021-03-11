@@ -4,6 +4,8 @@ import ISidebarTabConfig from "./ISidebarTabConfig";
 import ISidebarTabDefaults from "./ISidebarTabDefaults";
 import ISidebarTabProps from "./ISidebarTabProps";
 import ISidebarTabState from "./ISidebarTabState";
+import { Control } from "leaflet";
+import ISidebarFragment from "../fragment/ISidebarFragment";
 
 /**
  * This interface declares functions for the sidebar tab.
@@ -35,13 +37,11 @@ interface ISidebarTab extends IMapObject {
 
     /**
      * It initializes the sidebar tab.
-     * 
-     * TODO: define type of sidebar
      *
-     * @param {any} sidebar
+     * @param {Control.Sidebar} sidebar
      * @param {ISidebarTabConfig} config
      */
-    initialize(sidebar: any, config: ISidebarTabConfig): void;
+    initialize(sidebar: Control.Sidebar, config: ISidebarTabConfig | undefined): void;
 
     /**
      * Creates sidebar tab.
@@ -49,31 +49,15 @@ interface ISidebarTab extends IMapObject {
     create(): void;
 
     /**
-     * It returns the sidebar tab structure defined with respect to the leaflet-sidebar-v2 plug-in.
-     *
-     * See: https://github.com/noerw/leaflet-sidebar-v2
-     *
-     * This function can be extended.
-     * 
-     * TODO: define the return type.
-     */
-    getTabStructure(): any;
-
-    /**
-     * It creates the remaining parts of the sidebar tab after the sidebar tab is rendered.
-     */
-    postCreate(): any;
-
-    /**
-     * It returns tab pane which will be placed in sidebar tab.
-     */
-    getTabContent(): HTMLElement;
-
-    /**
      * Functions changes layer state to enabled/disabled.
      *
      * @param {boolean} checked
      */
     setChecked(checked: boolean): void;
+
+    /**
+     * It returns the fragments property of the sidebar tab state.
+     */
+    getFragments(): ISidebarFragment[] | undefined;
 }
 export default ISidebarTab;

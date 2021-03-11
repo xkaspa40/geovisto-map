@@ -22,7 +22,7 @@ interface IMapState extends IMapObjectState {
     /**
      * It serializes the map state. Optionally, a serialed value can be let undefined if it equals the default value.
      * 
-     * @param {boolean} filterDefaults 
+     * @param {boolean | undefined} filterDefaults 
      */
     serialize(filterDefaults: boolean | undefined): IMapConfig
 

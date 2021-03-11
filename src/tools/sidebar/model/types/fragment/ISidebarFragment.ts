@@ -30,22 +30,22 @@ interface ISidebarFragment extends IMapObject {
     /**
      * The function returns true if the sidebar fragment should be included in the sidebar tab.
      * 
-     * @param {*} sidebarTab 
+     * @param {ISidebarTab} sidebarTab 
      */
     isChild(sidebarTab: ISidebarTab): boolean
 
     /**
      * It initializes the sidebar fragment.
      * 
-     * @param {*} sidebarTab 
-     * @param {*} config 
+     * @param {ISidebarTab} sidebarTab 
+     * @param {ISidebarFragmentConfig} config 
      */
-    initialize(sidebarTab: ISidebarTab, config: ISidebarFragmentConfig): void;
+    initialize(sidebarTab: ISidebarTab, config: ISidebarFragmentConfig | undefined): void;
 
     /**
-     * It returns fragment of tab pane which will be placed in sidebar tab.
+     * It returns the HTML content of the sidebar fragment.
      */
-    getTabContent(): HTMLElement;
+    getContent(): HTMLElement;
 
     /**
      * This function is called after the sidebar tab is rendered in sidebar.

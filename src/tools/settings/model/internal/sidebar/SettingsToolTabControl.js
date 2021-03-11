@@ -1,4 +1,4 @@
-import AbstractTabControl from "../../../../sidebar/model/internal/control/AbstractTabControl";
+import AbstractSidebarTab from "../../../../sidebar/model/internal/tab/AbstractSidebarTab";
 import SettingsToolTabControlDefaults from "./SettingsToolTabControlDefaults";
 import SettingsToolTabControlState from "./SettingsToolTabControlState";
 
@@ -7,7 +7,7 @@ import SettingsToolTabControlState from "./SettingsToolTabControlState";
  * 
  * @author Jiri Hynek
  */
-class SettingsTabControl extends AbstractTabControl {
+class SettingsTabControl extends AbstractSidebarTab {
 
     constructor(props) {
         super(props);

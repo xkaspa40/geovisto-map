@@ -1,4 +1,4 @@
-import AbstractTabControl from "../../../sidebar/model/internal/control/AbstractTabControl";
+import AbstractSidebarTab from "../../../sidebar/model/internal/tab/AbstractSidebarTab";
 import AbstractLayerToolTabControlDefaults from "./AbstractLayerToolTabControlDefaults";
 import AbstractLayerToolTabControlState from "./AbstractLayerToolTabControlState";
 
@@ -7,7 +7,7 @@ import AbstractLayerToolTabControlState from "./AbstractLayerToolTabControlState
  * 
  * @author Jiri Hynek
  */
-class AbstractLayerToolTabControl extends AbstractTabControl {
+class AbstractLayerToolTabControl extends AbstractSidebarTab {
 
     constructor(tool) {
         super(tool);

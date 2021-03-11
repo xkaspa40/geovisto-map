@@ -31,21 +31,28 @@ class AbstractMapObjectState implements IMapObjectState {
     }
 
     /**
-     * It makes props visible to extended classes.
+     * It makes the map object visible to extended classes.
+     */
+    protected getMapObject() {
+        return this.mapObject;
+    }
+
+    /**
+     * It makes the props visible to extended classes.
      */
     protected getProps(): IMapObjectProps {
         return this.mapObject.getProps();
     }
 
     /**
-     * It makes defaults visible to extended classes.
+     * It makes the defaults visible to extended classes.
      */
     protected getDefaults(): IMapObjectDefaults {
         return this.mapObject.getDefaults();
     }
 
     /**
-     * It resets the state to the initial props. Optionally, defaults can be set if property is undefined.
+     * It resets the state to the initial props.
      */
     public reset(): void {
     }
@@ -62,7 +69,7 @@ class AbstractMapObjectState implements IMapObjectState {
     /**
      * The method serializes the tool state. Optionally, a serialed value can be let undefined if it equals the default value.
      * 
-     * @param {boolean} filterDefaults 
+     * @param {boolean | undefined} filterDefaults 
      */
     public serialize(filterDefaults : boolean | undefined): IMapObjectConfig {
         return {
@@ -88,7 +95,7 @@ class AbstractMapObjectState implements IMapObjectState {
     /**
      * It sets the id property of the tool state.
      * 
-     * @param {*} id 
+     * @param {string} id 
      */
     public setId(id : string): void {
        this.id = id;

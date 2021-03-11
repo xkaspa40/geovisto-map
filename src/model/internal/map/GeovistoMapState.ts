@@ -68,7 +68,7 @@ class GeovistoMapState extends MapObjectState implements IMapState {
     }
 
     /**
-     * It resets state with respect to initial props. Optionally, defaults can be set if property is undefined.
+     * It resets state with respect to initial props.
      */
     public reset(): void {
         super.reset();
@@ -113,7 +113,7 @@ class GeovistoMapState extends MapObjectState implements IMapState {
     /**
      * It serializes the map state. Optionally, a serialed value can be let undefined if it equals the default value.
      * 
-     * @param {boolean} filterDefaults 
+     * @param {boolean | undefined} filterDefaults 
      */
     public serialize(filterDefaults: boolean | undefined): IMapConfig {
         let defaults = <IMapDefaults> this.getDefaults();

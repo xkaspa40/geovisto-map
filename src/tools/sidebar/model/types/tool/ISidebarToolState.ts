@@ -2,6 +2,7 @@ import IMapToolState from "../../../../../model/types/tool/IMapToolState";
 import ISidebarToolConfig from "./ISidebarToolConfig";
 import ISidebarTab from "../tab/ISidebarTab";
 import ISidebarTabConfig from "../tab/ISidebarTabConfig";
+import { Control } from "leaflet";
 
 /**
  * This interface declares sidebar tool model.
@@ -20,28 +21,26 @@ interface ISidebarToolState extends IMapToolState {
     /**
      * The method serializes the tool configuration. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {ISidebarToolConfig} defaults
+     * @param {boolean | undefined} filterDefaults
      */
     serialize(filterDefaults: boolean | undefined): ISidebarToolConfig;
 
     /**
      * It returns the tabs configs.
      */
-    getTabsConfigs(): ISidebarTabConfig[];
+    getTabsConfigs(): ISidebarTabConfig[] | undefined;
 
     /**
      * It returns the sidebar.
-     * 
-     * TODO: define type
      */
-    getSidebar(): any;
+    getSidebar(): Control.Sidebar | null;
 
     /**
      * It sets sidebar.
      * 
-     * @param {any} sidebar 
+     * @param {Control.Sidebar} sidebar 
      */
-    setSidebar(sidebar: any): void;
+    setSidebar(sidebar: Control.Sidebar): void;
 
     /**
      * It returns the tabs controls.

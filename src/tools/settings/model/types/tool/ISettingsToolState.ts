@@ -18,8 +18,8 @@ interface ISettingsToolState extends IMapToolState {
     /**
      * The method serializes the tool state. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {boolean} filterDefaults
+     * @param {boolean | undefined} filterDefaults
      */
-    serialize(filterDefaults: boolean): ISettingsToolConfig;
+    serialize(filterDefaults: boolean | undefined): ISettingsToolConfig;
 }
 export default ISettingsToolState;

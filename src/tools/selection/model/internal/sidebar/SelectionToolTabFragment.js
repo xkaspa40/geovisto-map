@@ -1,4 +1,4 @@
-import AbstractTabFragment from '../../../../sidebar/model/internal/fragment/AbstractTabFragment';
+import AbstractSidebarFragment from '../../../../sidebar/model/internal/fragment/AbstractSidebarFragment';
 import SettingsTool from '../../../../settings/model/internal/tool/SettingsTool';
 import SelectionToolTabFragmentDefaults from './SelectionToolTabFragmentDefaults';
 import SelectionToolTabFragmentState from './SelectionToolTabFragmentState';
@@ -8,7 +8,7 @@ import SelectionToolTabFragmentState from './SelectionToolTabFragmentState';
  * 
  * @author Jiri Hynek
  */
-class SelectionToolTabFragment extends AbstractTabFragment {
+class SelectionToolTabFragment extends AbstractSidebarFragment {
 
     constructor(props) {
         super(props);

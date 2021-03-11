@@ -114,7 +114,7 @@ class GeovistoMap extends MapObject implements IMap {
     /**
      * Resets variables.
      */
-    protected initialize(mapConfig: IMapConfigManager) {
+    protected initialize(mapConfig: IMapConfigManager | undefined) {
         mapConfig = mapConfig == undefined ? this.getDefaults().getConfigManager() : mapConfig;
         this.getState().setMapConfig(mapConfig);
 
@@ -258,7 +258,7 @@ class GeovistoMap extends MapObject implements IMap {
      */
     protected createTools(): IMapTool[] {
         // create tools
-        let tools = this.getState().getTools().getObjects();
+        let tools: IMapTool[] = this.getState().getTools().getObjects();
         for(let i = 0; i < tools.length; i++) {
             // create tool
             tools[i].create();

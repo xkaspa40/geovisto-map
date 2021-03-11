@@ -5,6 +5,6 @@ import IMapToolProps from "../../../../../model/types/tool/IMapToolProps";
  * 
  * @author Jiri Hynek
  */
-interface ISettingsToolProps extends IMapToolProps {
+interface IFiltersToolProps extends IMapToolProps {
 }
-export default ISettingsToolProps;
+export default IFiltersToolProps;

@@ -22,9 +22,9 @@ interface ISidebarFragmentState extends IMapObjectState {
      * The method serializes the sidebar tab fragment configuration.
      * Optionally, a serialed value can be let undefined if it equals the default value.
      * 
-     * @param {boolean} filterDefaults 
+     * @param {boolean | undefined} filterDefaults 
      */
-    serialize(filterDefaults: boolean): ISidebarFragmentConfig;
+    serialize(filterDefaults: boolean | undefined): ISidebarFragmentConfig;
 
     /**
      * It returns the tool property of the sidebar tab fragment state.
@@ -53,7 +53,7 @@ interface ISidebarFragmentState extends IMapObjectState {
     /**
      * It returns the sidenar tab property of the sidebar fragment state.
      */
-    getSidebarTab(): ISidebarTab;
+    getSidebarTab(): ISidebarTab | null;
 
     /**
      * It sets the sidebar tab property of the sidebar tab contrfragmentol state.
@@ -65,7 +65,7 @@ interface ISidebarFragmentState extends IMapObjectState {
     /**
      * It returns the content property of the sidebar tab framgent state.
      */
-    getContent(): HTMLElement;
+    getContent(): HTMLElement | null;
 
     /**
      * It sets the content property of the sidebar fragmemt tab state.

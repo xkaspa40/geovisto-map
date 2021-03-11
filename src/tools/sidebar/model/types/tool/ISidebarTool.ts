@@ -2,6 +2,7 @@ import IMapTool from '../../../../../model/types/tool/IMapTool';
 import ISidebarToolDefaults from './ISidebarToolDefaults';
 import ISidebarToolProps from './ISidebarToolProps';
 import ISidebarToolState from "./ISidebarToolState";
+import ISidebarTab from '../tab/ISidebarTab';
 
 /**
  * This class provides the sidebar tool.
@@ -29,5 +30,10 @@ interface ISidebarTool extends IMapTool {
      * It returns the sidebar tool state.
      */
     getState(): ISidebarToolState;
+
+    /**
+     * Help function which returns sidebar tabs of the tool state.
+     */
+    getTabs(): ISidebarTab[]
 }
 export default ISidebarTool;

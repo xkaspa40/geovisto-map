@@ -2,6 +2,7 @@ import IMapObjectState from "../../../../../model/types/object/IMapObjectState";
 import ISidebarTabConfig from "./ISidebarTabConfig";
 import IMapTool from "../../../../../model/types/tool/IMapTool";
 import ISidebarFragment from "../fragment/ISidebarFragment";
+import { Control } from "leaflet";
 
 /**
  * This interface declares the state of the sidebar tab.
@@ -22,9 +23,9 @@ interface ISidebarTabState extends IMapObjectState {
      * The method serializes the sidebar tab configuration.
      * Optionally, a serialed value can be let undefined if it equals the default value.
      * 
-     * @param {boolean} filterDefaults 
+     * @param {boolean | undefined} filterDefaults 
      */
-    serialize(filterDefaults: boolean): ISidebarTabConfig;
+    serialize(filterDefaults: boolean | undefined): ISidebarTabConfig;
 
     /**
      * It returns the tool property of the sidebar tab state.
@@ -88,42 +89,38 @@ interface ISidebarTabState extends IMapObjectState {
 
     /**
      * It returns the sidebar property of the sidebar tab state.
-     * 
-     * TODO: set type
      */
-    getSidebar(): any;
+    getSidebar(): Control.Sidebar | null;
 
     /**
      * It sets the sidebar property of the sidebar tab state.
      * 
-     * TODO: set type
-     * 
-     * @param {any} sidebar 
+     * @param {Control.Sidebar} sidebar 
      */
-    setSidebar(sidebar: any): void;
+    setSidebar(sidebar: Control.Sidebar): void;
 
     /**
      * It returns the tabPane property of the sidebar tab state.
      */
-    getTabPane(): HTMLElement;
+    getContent(): HTMLElement | null;
 
     /**
      * It sets the tabPane property of the sidebar tab state.
      * 
-     * @param {HTMLElement} tabPane 
+     * @param {HTMLElement} content 
      */
-    setTabPane(tabPane: HTMLElement): void;
+    setContent(content: HTMLElement): void;
 
     /**
-     * It returns the fragments property of the tool state.
+     * It returns the fragments property of the sidebar tab state.
      */
-    getTabFragments(): ISidebarFragment[];
+    getFragments(): ISidebarFragment[] | undefined;
 
     /**
-     * It sets the fragments property of the tool state.
+     * It sets the fragments property of the sidebar tab state.
      * 
      * @param {ISidebarFragment[]} fragments 
      */
-    setTabFragments(fragments: ISidebarFragment[]): void;
+    setFragments(fragments: ISidebarFragment[]): void;
 }
 export default ISidebarTabState;

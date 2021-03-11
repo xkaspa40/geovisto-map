@@ -1,11 +1,11 @@
-import AbstractTabFragmentDefaults from "../../../../sidebar/model/internal/fragment/AbstractTabFragmentDefaults";
+import SidebarFragmentDefaults from "../../../../sidebar/model/internal/fragment/SidebarFragmentDefaults";
 
 /**
  * This class provide functions which return the default state values.
  * 
  * @author Jiri Hynek
  */
-class ThemesToolTabFragmentDefaults extends AbstractTabFragmentDefaults {
+class ThemesToolTabFragmentDefaults extends SidebarFragmentDefaults {
 
     /**
      * It creates sidebar tab fragment defaults.

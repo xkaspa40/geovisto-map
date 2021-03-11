@@ -1,4 +1,4 @@
-import AbstractTabFragment from '../../../../sidebar/model/internal/fragment/AbstractTabFragment';
+import AbstractSidebarFragment from '../../../../sidebar/model/internal/fragment/AbstractSidebarFragment';
 import SettingsTool from '../../../../settings/model/internal/tool/SettingsTool';
 import ThemesToolTabFragmentDefaults from './ThemesToolTabFragmentDefaults';
 import ThemesToolTabFragmentState from './ThemesToolTabFragmentState';
@@ -12,7 +12,7 @@ import SidebarInputFactory from '../../../model/internal/inputs/SidebarInputFact
  * 
  * @author Jiri Hynek
  */
-class ThemesToolTabFragment extends AbstractTabFragment {
+class ThemesToolTabFragment extends AbstractSidebarFragment {
 
     constructor(props) {
         super(props);

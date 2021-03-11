@@ -13,9 +13,9 @@ interface IMapFiltersManager extends IMapCategoriesManager {
     /**
      * The function creates a new filter rule using given operation label.
      * 
-     * @param {*} dataDomain 
-     * @param {*} label 
-     * @param {*} pattern 
+     * @param {IMapDataDomain} dataDomain 
+     * @param {IMapFilterOperation} operation 
+     * @param {string} pattern 
      */
     createRule(dataDomain: IMapDataDomain, operation: IMapFilterOperation, pattern: string): IMapFilterRule;
 

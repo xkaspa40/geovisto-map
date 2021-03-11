@@ -12,6 +12,6 @@ interface ISidebarFragmentControl {
     /**
      * It returns a sidebar fragment.
      */
-    getSidebarTabFragment(): ISidebarFragment;
+    getSidebarFragment(): ISidebarFragment;
 }
 export default ISidebarFragmentControl;

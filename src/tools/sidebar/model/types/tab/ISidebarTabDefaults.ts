@@ -14,7 +14,7 @@ interface ISidebarTabDefaults extends IMapObjectDefaults {
     getConfig(): ISidebarTabConfig;
 
     /**
-     * It returns whether the sidebar tab is enabled.
+     * It returns whether the default value the sidebar tab is enabled.
      */
     isEnabled(): boolean;
 
@@ -31,6 +31,6 @@ interface ISidebarTabDefaults extends IMapObjectDefaults {
     /**
      * It returns a logical value whether the sidebar tab contains a check button used to enable/disable the tool.
      */
-    getCheckButton(): boolean
+    hasCheckButton(): boolean
 }
 export default ISidebarTabDefaults;

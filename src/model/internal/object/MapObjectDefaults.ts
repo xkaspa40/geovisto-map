@@ -8,7 +8,7 @@ import IMapObjectConfig from "../../types/object/IMapObjectConfig";
  * 
  * @author Jiri Hynek
  */
-class AbstractMapObjectDefaults implements IMapObjectDefaults {
+class MapObjectDefaults implements IMapObjectDefaults {
 
     protected static id: number;
     protected idString : string | undefined;
@@ -72,11 +72,11 @@ class AbstractMapObjectDefaults implements IMapObjectDefaults {
      * It returns identifier which is used when no identifier is specified.
      */
     protected generateId(): string {
-        if(AbstractMapObjectDefaults.id == undefined) {
-            AbstractMapObjectDefaults.id = 0;
+        if(MapObjectDefaults.id == undefined) {
+            MapObjectDefaults.id = 0;
         }
-        AbstractMapObjectDefaults.id++;
-        return this.getType() + "-" + AbstractMapObjectDefaults.id;
+        MapObjectDefaults.id++;
+        return this.getType() + "-" + MapObjectDefaults.id;
     }
 }
-export default AbstractMapObjectDefaults;
+export default MapObjectDefaults;

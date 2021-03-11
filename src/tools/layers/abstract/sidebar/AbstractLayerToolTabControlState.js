@@ -1,4 +1,4 @@
-import AbstractTabControlState from "../../../sidebar/model/internal/control/AbstractTabControlState";
+import SidebarTabState from "../../../sidebar/model/internal/tab/SidebarTabState";
 
 /**
  * This class manages the state of the sidebar tab.
@@ -6,7 +6,7 @@ import AbstractTabControlState from "../../../sidebar/model/internal/control/Abs
  * 
  * @author Jiri Hynek
  */
-class AbstractLayerToolTabControlState extends AbstractTabControlState {
+class AbstractLayerToolTabControlState extends SidebarTabState {
 
     /**
      * It creates a tab control state.

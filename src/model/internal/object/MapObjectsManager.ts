@@ -6,21 +6,21 @@ import IMapObjectsManager from "../../types/object/IMapObjectsManager";
  * 
  * @author Jiri Hynek
  */
-class MapObjectsManager implements IMapObjectsManager {
+class MapObjectsManager<T extends IMapObject> implements IMapObjectsManager<T> {
     
-    private objects: IMapObject[];
+    private objects: T[];
 
     /**
      * It initializes a map objects manager.
      */
-    constructor(objects: IMapObject[] | undefined) {
+    constructor(objects: T[] | undefined) {
         this.objects = objects ? objects : [];
     }
 
     /**
      * The function returns available map objects.
      */
-    public getObjects(): IMapObject[] {
+    public getObjects(): T[] {
         return this.objects;
     }
 
@@ -43,18 +43,18 @@ class MapObjectsManager implements IMapObjectsManager {
      * 
      * Override this function.
      * 
-     * @param {IMapObject} object 
+     * @param {T} object 
      */
-    public add(object: IMapObject): void {
+    public add(object: T): void {
         this.objects.push(object);
     }
 
     /**
      * It removes object from the list of objects.
      * 
-     * @param {IMapObject} object 
+     * @param {T} object 
      */
-    public remove(object: IMapObject): void {
+    public remove(object: T): void {
         this.objects = this.objects.filter(item => item != object);
     }
 
@@ -102,9 +102,9 @@ class MapObjectsManager implements IMapObjectsManager {
      * 
      * @param {string} type
      */
-    public getByType(type: string): IMapObject[] {
+    public getByType(type: string): T[] {
         let objects = this.getObjects();
-        let resultObjects: IMapObject[] = [];
+        let resultObjects: T[] = [];
         if(objects != undefined) {
             for(let i = 0; i < objects.length; i++) {
                 if(objects[i].getType() == type) {
@@ -120,7 +120,7 @@ class MapObjectsManager implements IMapObjectsManager {
      * 
      * @param {string} id
      */
-    public getById(id: string): IMapObject | undefined {
+    public getById(id: string): T | undefined {
         let objects = this.getObjects();
         if(objects != undefined) {
             for(let i = 0; i < objects.length; i++) {

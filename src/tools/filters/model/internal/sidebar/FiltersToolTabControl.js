@@ -7,7 +7,7 @@ import FilterAutocompleteFormInput from "../../../../../model/internal/inputs/fi
 import SidebarInputFactory from "../../../model/internal/inputs/SidebarInputFactory";
 import FiltersToolTabControlDefaults from "./FiltersToolTabControlDefaults";
 import FiltersToolTabControlState from "./FiltersToolTabControlState";
-import AbstractTabControl from "../../../../sidebar/model/internal/control/AbstractTabControl";
+import AbstractSidebarTab from "../../../../sidebar/model/internal/tab/AbstractSidebarTab";
 
 /**
  * This class provides controls for management of filters sidebar tabs.
@@ -16,7 +16,7 @@ import AbstractTabControl from "../../../../sidebar/model/internal/control/Abstr
  * 
  * @author Jiri Hynek
  */
-class FiltersToolTabControl extends AbstractTabControl {
+class FiltersToolTabControl extends AbstractSidebarTab {
 
     constructor(props) {
         super(props);

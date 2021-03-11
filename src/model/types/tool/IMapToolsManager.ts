@@ -6,12 +6,7 @@ import IMapTool from "./IMapTool";
  * 
  * @author Jiri Hynek
  */
-interface IMapToolsManager extends IMapObjectsManager {
-
-    /**
-     * The function returns available map tools.
-     */
-    getObjects(): IMapTool[]
+interface IMapToolsManager extends IMapObjectsManager<IMapTool> {
 
     /**
      * It returns copy of the tools manager with copies of tools.
