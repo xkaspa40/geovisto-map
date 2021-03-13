@@ -52,7 +52,7 @@ class Demo extends Component {
 
     // initialize geo objects
     this.polygons = require("/static/geo/okresy_polygons.json");
-    this.centroids = require("/static/geo/okresy_centroids.json");
+    this.centroids = require("/static/geo/districts_centroids.json");
 
     // // implicit file
     const jsonData = require("/static/data/covidOkresyCRcumulative.json");
