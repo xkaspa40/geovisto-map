@@ -45,6 +45,7 @@
     "css-loader": "^5.0.1",
     "eslint": "^7.17.0",
     "font-awesome": "^4.7.0",
+    "json-loader": "^0.5.7",
     "node-sass": "^5.0.0",
     "postcss-copy": "^7.1.0",
     "prop-types": "^15.7.2",

@@ -1,6 +1,6 @@
 import { AbstractLayerToolState } from '../abstract';
 import L from 'leaflet';
-import { highlightStyles } from './util/Poly';
+import { highlightStyles, normalStyles } from './util/Poly';
 
 /**
  * This class provide functions for using the state of the layer tool.
@@ -78,38 +78,47 @@ class DrawingLayerToolState extends AbstractLayerToolState {
 
     const exportSettings = [];
 
-    // this.editableLayers.eachLayer((layer) => {
-    //   const { layerType, popupContent = '' } = layer;
-    //   if (layerType === 'marker') {
-    //     exportSettings.push({
-    //       layerType,
-    //       options: layer.markerOptions,
-    //       latlngs: layer._latlng,
-    //       popupContent,
-    //     });
-    //   } else {
-    //     const { options, _latlngs: latlngs } = layer;
-    //     exportSettings.push({
-    //       layerType,
-    //       options,
-    //       latlngs,
-    //       popupContent,
-    //     });
-    //   }
-    // });
+    const pushPolygon = (layer) => {
+      const { options, _latlngs: latlngs, layerType, popupContent = '' } = layer;
+      exportSettings.push({
+        layerType,
+        options: { ...options, normalStyles },
+        latlngs,
+        popupContent,
+      });
+    };
 
-    // config.data = exportSettings;
+    this.featureGroup.eachLayer((layer) => {
+      const { layerType, popupContent = '' } = layer;
+      if (layerType === 'marker') {
+        exportSettings.push({
+          layerType,
+          options: layer.markerOptions,
+          latlngs: layer._latlng,
+          popupContent,
+        });
+      } else {
+        if (layer._layers) {
+          layer.eachLayer((l) => {
+            pushPolygon(l);
+          });
+        } else {
+          pushPolygon(layer);
+        }
+      }
+    });
+
+    config.data = exportSettings;
     return config;
   }
 
-  deserialize(config) {
+  deserialize(config, map) {
+    // TODO: deserialize config
     super.deserialize(config);
 
     const { data = [] } = config;
 
-    const map = this.map.state;
-
-    console.log({ map });
+    console.log({ map, data });
 
     if (!map) return;
 

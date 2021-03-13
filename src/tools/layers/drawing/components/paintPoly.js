@@ -53,7 +53,7 @@ class PaintPoly {
     if (kIdx === undefined) return;
 
     if (this._shapeLayers[kIdx]) {
-      this._map.removeLayer(this._shapeLayers[kIdx]);
+      this._shapeLayers[kIdx].remove();
       delete this._shapeLayers[kIdx];
     }
     delete this._accumulatedShapes[kIdx];
@@ -82,11 +82,12 @@ class PaintPoly {
         this._accumulatedShapes[this.keyIndex],
         turfCircle,
       );
-      Object.keys(this._accumulatedShapes).forEach((key) => {
-        if (key != this.keyIndex && this._accumulatedShapes[key]) {
-          this._accumulatedShapes[key] = difference(this._accumulatedShapes[key], turfCircle);
-        }
-      });
+      // * DIFFERENCE
+      // Object.keys(this._accumulatedShapes).forEach((key) => {
+      //   if (key != this.keyIndex && this._accumulatedShapes[key]) {
+      //     this._accumulatedShapes[key] = difference(this._accumulatedShapes[key], turfCircle);
+      //   }
+      // });
     }
 
     this._accumulatedShapes[this.keyIndex].properties = { fill: brushColor };
@@ -95,7 +96,10 @@ class PaintPoly {
     //   shape: this._accumulatedShapes[this.keyIndex],
     //   kIdx: this.keyIndex,
     // });
+    this._redrawShapes();
+  };
 
+  _redrawShapes = () => {
     Object.keys(this._accumulatedShapes).forEach((key) => {
       let result = new L.GeoJSON(this._accumulatedShapes[key], {
         color: this._accumulatedShapes[key]?.properties?.fill || DEFAULT_COLOR,
@@ -106,12 +110,15 @@ class PaintPoly {
       }
 
       this._shapeLayers[key] = result.addTo(this._map);
+    });
+  };
 
+  _fireCreatedShapes = () => {
+    Object.keys(this._shapeLayers).forEach((key) => {
       this._map.fire(L.Draw.Event.CREATED, {
         layer: this._shapeLayers[key],
         layerType: 'painted',
-        feature: this._accumulatedShapes[key],
-        keyIndex: this.keyIndex,
+        keyIndex: key,
       });
     });
   };
@@ -136,6 +143,7 @@ class PaintPoly {
     this._map.dragging.enable();
     this._mouseDown = false;
     this.keyIndex += 1;
+    this._fireCreatedShapes();
   };
   _onMouseMove = (event) => {
     this._setLatLng(event.latlng);

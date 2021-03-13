@@ -37,6 +37,8 @@ const C_ID_check_data = "leaflet-combined-map-check-data";
 const C_ID_input_data = "leaflet-combined-map-input-data";
 const C_ID_check_config = "leaflet-combined-map-check-config";
 const C_ID_input_config = "leaflet-combined-map-input-config";
+const C_ID_check_geojson = "leaflet-combined-map-check-geojson";
+const C_ID_input_geojson = "leaflet-combined-map-input-geojson";
 const C_ID_input_import = "leaflet-combined-map-input-import";
 const C_ID_input_export = "leaflet-combined-map-input-export";
 
@@ -91,6 +93,13 @@ class Demo extends Component {
     }
     document.getElementById(C_ID_input_config).setAttribute("disabled", "disabled");
     document.getElementById(C_ID_check_config).onchange = enableConfigInput;
+    
+    // enable geojson check box
+    const enableGeojsonInput = function(e) {
+      enableInput(e.target.checked, C_ID_input_geojson);
+    }
+    document.getElementById(C_ID_input_geojson).setAttribute("disabled", "disabled");
+    document.getElementById(C_ID_check_geojson).onchange = enableGeojsonInput;
 
     // ------ process files ------ //
 
@@ -130,6 +139,16 @@ class Demo extends Component {
       pathSubmitted(this.files[0], config);
     }
     document.getElementById(C_ID_input_config).addEventListener('change', configPathSubmitted, false);
+    
+    // process geojson path
+    const geo = {
+      json: undefined
+    };
+    const geoPathSubmitted = function(e) {
+      console.log(this.files);
+      pathSubmitted(this.files[0], geo);
+    }
+    document.getElementById(C_ID_input_geojson).addEventListener('change', geoPathSubmitted, false);
 
     // ------ import ------ //
 
@@ -139,6 +158,7 @@ class Demo extends Component {
       console.log(e);
       console.log("data: ", data);
       console.log("config: ", config);
+      console.log("geo: ", geo);
 
       // process data json
       if(!document.getElementById(C_ID_check_data).checked || data.json == undefined) {
@@ -151,11 +171,17 @@ class Demo extends Component {
       if(!document.getElementById(C_ID_check_config).checked || config.json == undefined) {
         config.json = require('/static/config/config.json');
       }
+      
+      // process geojson
+      if(!document.getElementById(C_ID_check_geojson).checked || geo.json == undefined) {
+        config.json = require('/static/geo/map.json');
+      }
 
       // update state
       _this.setState({
         data: data.json,
-        config: config.json
+        config: config.json,
+        geo: geo.json
       });
     }
     document.getElementById(C_ID_input_import).addEventListener('click', importAction);
@@ -183,6 +209,18 @@ class Demo extends Component {
     document.getElementById(C_ID_input_export).addEventListener('click', exportAction);
   }
 
+  exportGeoJSON = (evt) => {
+    const config = JSON.stringify(this.map.current.getMap().exportGeoJSON(), null, 2);
+    // download file
+    const element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(config));
+    element.setAttribute('download', "map.json");
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  }
+
   render() {
     console.log("rendering...");
     return (
@@ -202,9 +240,15 @@ class Demo extends Component {
           <input id={C_ID_check_config} type="checkbox"/>
           <span> Configuration file: </span>
           <input id={C_ID_input_config} type="file" accept=".json" size='3'/>
+          
+          <input id={C_ID_check_geojson} type="checkbox"/>
+          <span> GeoJSON file: </span>
+          <input id={C_ID_input_geojson} type="file" accept=".json" size='3'/>
 
           <input id={C_ID_input_import} type="submit" value="import"/>
           <input id={C_ID_input_export} type="submit" value="export"/>
+          
+          <input type="submit" value="geoExport" onClick={this.exportGeoJSON}/>
         </div>
         <div className="demo-map">
           <ReactGeovistoMap
@@ -214,6 +258,7 @@ class Demo extends Component {
             centroids={this.centroids}
             data={new FlattenedMapData(this.state.data)}
             config={new BasicMapConfig(this.state.config)}
+            geojson={this.state.geo}
             globals={undefined}
             tools={new ToolsManager([
               new SidebarTool({ id: "geovisto-tool-sidebar" }),

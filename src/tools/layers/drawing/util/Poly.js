@@ -45,3 +45,16 @@ export const getGeoJSONFeatureFromLayer = (layer) => {
   let feature = geoFeature.type === 'FeatureCollection' ? geoFeature.features[0] : geoFeature;
   return feature;
 };
+
+export const featureToLeafletCoordinates = (featureCoordinates) => {
+  let point;
+  for (let i = 0; i < featureCoordinates.length; i++) {
+    for (let j = 0; j < featureCoordinates[i].length; j++) {
+      point = L.latLng(featureCoordinates[i][j]);
+      if (point) {
+        featureCoordinates[i][j] = [point.lng, point.lat];
+      }
+    }
+  }
+  return featureCoordinates;
+};
