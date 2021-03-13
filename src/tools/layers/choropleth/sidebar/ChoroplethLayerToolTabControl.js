@@ -53,7 +53,7 @@ class ChoropolethLayerToolTabControl extends AbstractLayerToolTabControl {
     /**
      * It updates selected input values according to the given data mapping.
      * 
-     * @param {*} dataMapping 
+     * @param dataMapping 
      */
     setInputValues(dataMapping) {
         // get data model
@@ -70,20 +70,20 @@ class ChoropolethLayerToolTabControl extends AbstractLayerToolTabControl {
     /**
      * It returns the sidebar tab pane.
      */
-    getTabContent() {
+    getContent() {
         var _this = this;
 
         // event handler: change color action
         let changeColorAction = function(e) {
            // get selected values and update layer's data mapping
            _this.getTool().updateDataMapping(_this.getInputValues(), true);
-        }
+        };
 
         // event handler: change dimension action
         let changeDimensionAction = function(e) {
             // get selected values and update layer's data mapping
             _this.getTool().updateDataMapping(_this.getInputValues());
-        }
+        };
         
         // tab content
         let tab = document.createElement('div');

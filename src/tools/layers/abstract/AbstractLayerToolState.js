@@ -18,7 +18,7 @@ class AbstractLayerToolState extends MapToolState {
     /**
      * It resets state with respect to initial props. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {LayerToolDefaults} defaults 
+     * @param defaults 
      */
     reset(defaults) {
         super.reset(defaults);
@@ -42,7 +42,7 @@ class AbstractLayerToolState extends MapToolState {
     /**
      * The metod takes config and deserializes the values.
      * 
-     * @param {*} config 
+     * @param config 
      */
     deserialize(config) {
         super.deserialize(config);
@@ -56,7 +56,7 @@ class AbstractLayerToolState extends MapToolState {
     /**
      * The method serializes the tool state. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {LayerToolDefaults} defaults
+     * @param defaults
      */
     serialize(defaults) {
         let config = super.serialize(defaults);
@@ -79,7 +79,7 @@ class AbstractLayerToolState extends MapToolState {
     /**
      * It sets the layer name property of the tool state.
      * 
-     * @param {string} layerName 
+     * @param layerName 
      */
     setLayerName(layerName) {
        this.layerName = layerName;
@@ -95,7 +95,7 @@ class AbstractLayerToolState extends MapToolState {
     /**
      * It sets the data mapping property of tool state.
      * 
-     * @param {*} dataMapping 
+     * @param dataMapping 
      */
     setDataMapping(dataMapping) {
        this.dataMapping = dataMapping;

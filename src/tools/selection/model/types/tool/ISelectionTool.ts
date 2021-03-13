@@ -35,7 +35,7 @@ interface ISelectionTool extends IMapTool, ISidebarFragmentControl {
     /**
      * It updates selection and notifies listeners.
      * 
-     * @param {IMapSelection} selection 
+     * @param
      */
     setSelection(selection: IMapSelection): void;
 }

@@ -1,4 +1,5 @@
-import AbstractTheme from '../../abstract/AbstractTheme';
+import IMapTheme from '../../../../types/theme/IMapTheme';
+import BasicTheme from '../../basic/BasicTheme';
 
 import './style.scss';
 
@@ -7,7 +8,7 @@ import './style.scss';
  * 
  * @author Jiri Hynek
  */
-class Light3Theme extends AbstractTheme {
+class Light3Theme extends BasicTheme implements IMapTheme {
 
     /**
      * It initializes the light theme.
@@ -19,15 +20,8 @@ class Light3Theme extends AbstractTheme {
     /**
      * It returns the theme type.
      */
-    getType() {
+    public getName(): string {
         return "light3";
-    }
-
-    /**
-     * It returns the preferred base map.
-     */
-    getBaseMap() {
-        return 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
     }
 }
 export default Light3Theme;

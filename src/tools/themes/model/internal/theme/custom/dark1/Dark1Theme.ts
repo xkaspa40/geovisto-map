@@ -1,13 +1,14 @@
-import AbstractTheme from '../../abstract/AbstractTheme';
+import IMapTheme from '../../../../types/theme/IMapTheme';
+import BasicTheme from '../../basic/BasicTheme';
 
 import './style.scss';
 
 /**
- * This class wraps a filter operation.
+ * This class defines a custom theme.
  * 
  * @author Jiri Hynek
  */
-class Dark2Theme extends AbstractTheme {
+class Dark1Theme extends BasicTheme implements IMapTheme {
 
     /**
      * It initializes the dark theme.
@@ -19,22 +20,22 @@ class Dark2Theme extends AbstractTheme {
     /**
      * It returns the theme type.
      */
-    getType() {
-        return "dark2";
+    public getName(): string {
+        return "dark1";
     }
 
     /**
      * This theme prefers dark colors.
      */
-    isDark() {
+    public isDark(): boolean {
         return true;
     }
 
     /**
      * It returns the preferred base map.
      */
-    getBaseMap() {
+    public getBaseMap(): string {
         return 'https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png';
     }
 }
-export default Dark2Theme;
+export default Dark1Theme;

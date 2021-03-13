@@ -9,9 +9,9 @@ class FilterRule extends AbstractFilterRule {
 
     /**
      * 
-     * @param {*} dataDomain 
-     * @param {*} operation 
-     * @param {*} pattern 
+     * @param dataDomain 
+     * @param operation 
+     * @param pattern 
      */
     constructor(dataDomain, operation, pattern) {
         super();

@@ -1,14 +1,11 @@
+import IMapCategory from "../../../../../model/types/category/IMapCategory";
+
 /**
  * This interface declares a map theme API.
  * 
  * @author Jiri Hynek
  */
-interface IMapTheme {
-
-    /**
-     * It returns the theme type.
-     */
-    getType(): string;
+interface IMapTheme extends IMapCategory {
 
     /**
      * It returns the url of the preferred base map.

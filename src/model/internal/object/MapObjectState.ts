@@ -60,7 +60,7 @@ class AbstractMapObjectState implements IMapObjectState {
     /**
      * The metod takes config and deserializes the values.
      * 
-     * @param {IMapObjectConfig} config 
+     * @param config 
      */
     public deserialize(config : IMapObjectConfig) : void {
         if(config.id != undefined) this.setId(config.id);
@@ -69,7 +69,7 @@ class AbstractMapObjectState implements IMapObjectState {
     /**
      * The method serializes the tool state. Optionally, a serialed value can be let undefined if it equals the default value.
      * 
-     * @param {boolean | undefined} filterDefaults 
+     * @param filterDefaults 
      */
     public serialize(filterDefaults : boolean | undefined): IMapObjectConfig {
         return {
@@ -95,7 +95,7 @@ class AbstractMapObjectState implements IMapObjectState {
     /**
      * It sets the id property of the tool state.
      * 
-     * @param {string} id 
+     * @param id 
      */
     public setId(id : string): void {
        this.id = id;

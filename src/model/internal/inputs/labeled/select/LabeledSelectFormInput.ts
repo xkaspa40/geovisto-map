@@ -35,15 +35,15 @@ class LabeledSelectFormInput extends SelectFormInput implements IMapFormInput {
     public create(): HTMLElement {
         if(this.div == undefined) {
             // create select element
-            let input: HTMLSelectElement = <HTMLSelectElement> super.create();
+            const input: HTMLSelectElement = <HTMLSelectElement> super.create();
 
             // create div block
             this.div = document.createElement("div");
 
             // append label
-            let props = <ILabeledSelectFormInputProps> this.getProps();
+            const props = <ILabeledSelectFormInputProps> this.getProps();
             if(props.label != undefined) {
-                this.div.appendChild(document.createTextNode(props.label + ": "))
+                this.div.appendChild(document.createTextNode(props.label + ": "));
             }
 
             // append select element

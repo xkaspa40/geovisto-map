@@ -37,7 +37,7 @@ class FilterAutocompleteFormInput extends AbstractMapFormInput {
             data: undefined,
             op: undefined,
             val: undefined,
-        }
+        };
     } 
 
     /**
@@ -57,7 +57,7 @@ class FilterAutocompleteFormInput extends AbstractMapFormInput {
             this.inputDiv.classList.add(COMPONENT_DIV_CLASS);
 
             // initialize filter inputs
-            let props = <IFilterFormInputProps> this.getProps();
+            const props = <IFilterFormInputProps> this.getProps();
             this.input.val = new AutocompleteFormInput({ label: "Value", options: [], onChangeAction: props.vals.onChangeAction });
             this.input.op = new AutocompleteFormInput({ label: "Operation", options: props.ops.options, onChangeAction: props.ops.onChangeAction });                        
             this.input.data = new AutocompleteFormInput({ label: "Data", options: props.data.options, onChangeAction: props.data.onChangeAction });
@@ -85,7 +85,7 @@ class FilterAutocompleteFormInput extends AbstractMapFormInput {
     /**
      * It sets values of the inputs.
      * 
-     * @param {IFilterFormInputValue} value 
+     * @param value 
      */
     public setValue(value: IFilterFormInputValue): void {
         if(this.input.data && this.input.op && this.input.val) {
@@ -95,4 +95,4 @@ class FilterAutocompleteFormInput extends AbstractMapFormInput {
         }
     }
 }
-export default FilterAutocompleteFormInput
+export default FilterAutocompleteFormInput;

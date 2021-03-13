@@ -31,8 +31,8 @@ class SidebarFragmentState extends MapObjectState implements ISidebarFragmentSta
     constructor(sidebarFragment: ISidebarFragment) {
         super(sidebarFragment);
 
-        let props = <ISidebarFragmentProps> this.getProps();
-        let defaults = <ISidebarFragmentDefaults> this.getDefaults();
+        const props = <ISidebarFragmentProps> this.getProps();
+        const defaults = <ISidebarFragmentDefaults> this.getDefaults();
         
         // store the tool which provides this sidebar fragment
         // props.tool should not be undefined
@@ -50,8 +50,8 @@ class SidebarFragmentState extends MapObjectState implements ISidebarFragmentSta
     public reset(): void {
         super.reset();
 
-        let props = <ISidebarFragmentProps> this.getProps();
-        let defaults = <ISidebarFragmentDefaults> this.getDefaults();
+        const props = <ISidebarFragmentProps> this.getProps();
+        const defaults = <ISidebarFragmentDefaults> this.getDefaults();
 
         // set remaining properties if not set
         this.setEnabled(props.enabled == undefined ? defaults.isEnabled() : props.enabled);
@@ -63,7 +63,7 @@ class SidebarFragmentState extends MapObjectState implements ISidebarFragmentSta
     /**
      * The metod takes config and deserializes the values.
      * 
-     * @param {ISidebarFragmentConfig} config 
+     * @param config 
      */
     public deserialize(config: ISidebarFragmentConfig): void {
         if(config.enabled != undefined) this.setEnabled(config.enabled);
@@ -73,16 +73,16 @@ class SidebarFragmentState extends MapObjectState implements ISidebarFragmentSta
      * The method serializes the sidebar tab fragment configuration.
      * Optionally, a serialed value can be let undefined if it equals the default value.
      * 
-     * @param {boolean | undefined} filterDefaults 
+     * @param filterDefaults 
      */
     public serialize(filterDefaults: boolean | undefined): ISidebarFragmentConfig {
-        let defaults = <ISidebarFragmentDefaults> this.getDefaults();
+        const defaults = <ISidebarFragmentDefaults> this.getDefaults();
         return {
             id: undefined,
             type: undefined,
             tool: this.getTool().getId(),
             enabled: filterDefaults && this.isEnabled() == defaults.isEnabled() ? undefined : this.isEnabled(),
-        }
+        };
     }
 
     /**
@@ -95,9 +95,9 @@ class SidebarFragmentState extends MapObjectState implements ISidebarFragmentSta
     /**
      * It sets the tool property of the sidebar tab fragment state.
      * 
-     * @param {IMapTool} tool 
+     * @param tool 
      */
-    public setTool(tool: IMapTool) {
+    public setTool(tool: IMapTool): void {
        this.tool = tool;
     }
 
@@ -111,9 +111,9 @@ class SidebarFragmentState extends MapObjectState implements ISidebarFragmentSta
     /**
      * It sets the enabled property of the sidebar fragment state.
      * 
-     * @param {boolean} enabled 
+     * @param enabled 
      */
-    public setEnabled(enabled: boolean) {
+    public setEnabled(enabled: boolean): void {
        this.enabled = enabled;
     }
 
@@ -127,9 +127,9 @@ class SidebarFragmentState extends MapObjectState implements ISidebarFragmentSta
     /**
      * It sets the sidebar tab property of the sidebar fragment state.
      * 
-     * @param {ISidebarTab} sidebarTab 
+     * @param sidebarTab 
      */
-    public setSidebarTab(sidebarTab: ISidebarTab) {
+    public setSidebarTab(sidebarTab: ISidebarTab): void {
        this.sidebarTab = sidebarTab;
     }
 
@@ -143,9 +143,9 @@ class SidebarFragmentState extends MapObjectState implements ISidebarFragmentSta
     /**
      * It sets the content property of the sidebar tab control state.
      * 
-     * @param {HTMLElement} content 
+     * @param content 
      */
-    public setContent(content: HTMLElement) {
+    public setContent(content: HTMLElement): void {
        this.content = content;
     }
 }

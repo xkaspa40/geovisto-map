@@ -86,7 +86,7 @@ class GeovistoMapDefaults extends MapObjectDefaults implements IMapDefaults {
     /**
      * It returns a default tools manager containing used tools.
      */
-    getToolTemplates(): MapToolsManager {
+    public getToolTemplates(): MapToolsManager {
         return new MapToolsManager([
             new SidebarTool(),
             new SettingsTool(),
@@ -103,14 +103,14 @@ class GeovistoMapDefaults extends MapObjectDefaults implements IMapDefaults {
     /**
      * It returns a default tools manager containing used tools.
      */
-    getTools(): IMapToolsManager {
+    public getTools(): IMapToolsManager {
         return new MapToolsManager([]);
     }
 
     /**
      * It returns default map data manager.
      */
-    getMapData(): IMapDataManager {
+    public getMapData(): IMapDataManager {
         return new JsonMapDataManager([]);
     }
 
@@ -119,7 +119,7 @@ class GeovistoMapDefaults extends MapObjectDefaults implements IMapDefaults {
      * 
      * TODO: provide a GeoJSON manager.
      */
-    getPolygons(): object {
+    public getPolygons(): any {
         if(!this.polygons) {
             this.polygons = countryPolygons;
         }
@@ -131,7 +131,7 @@ class GeovistoMapDefaults extends MapObjectDefaults implements IMapDefaults {
      * 
      * TODO: provide a GeoJSON manager.
      */
-    getCentroids(): object {
+    public getCentroids(): any {
         if(!this.centroids) {
             this.centroids = countryCentroids;
         }
@@ -141,7 +141,7 @@ class GeovistoMapDefaults extends MapObjectDefaults implements IMapDefaults {
     /**
      * It returns default global state variables.
      */
-    getGlobals(): IMapGlobals {
+    public getGlobals(): IMapGlobals {
         return {
             zoom: this.getZoom(),
             mapCenter: this.getMapCenter(),
@@ -152,14 +152,14 @@ class GeovistoMapDefaults extends MapObjectDefaults implements IMapDefaults {
     /**
      * It returns default zoom level.
      */
-    getZoom(): number {
+    public getZoom(): number {
         return 2;
     }
 
     /**
      * It returns default center coordinates in Leaflet map.
      */
-    getMapCenter(): { lat: number, lng: number } {
+    public getMapCenter(): { lat: number, lng: number } {
         return {
             lat: 50,
             lng: -0.1
@@ -169,7 +169,7 @@ class GeovistoMapDefaults extends MapObjectDefaults implements IMapDefaults {
     /**
      * It returns the map structure defined with respect to the leaflet library.
      */
-    getMapStructure(): { maxZoom: number, maxBounds: [[ number,number ],[ number,number ]] } {
+    public getMapStructure(): { maxZoom: number, maxBounds: [[ number,number ],[ number,number ]] } {
         return {
             maxZoom: 10,
             maxBounds: [[-100,-400],[2000,400]]

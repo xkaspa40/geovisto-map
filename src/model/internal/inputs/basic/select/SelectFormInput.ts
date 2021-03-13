@@ -31,13 +31,13 @@ class SelectFormInput extends AbstractFormInput {
      */
     public create(): HTMLElement {
         if(this.element == undefined) {
-            let props = (<ISelectFormInputProps> this.getProps());
+            const props = (<ISelectFormInputProps> this.getProps());
             // create select element
             this.element = document.createElement('select');
             this.element.onchange = props.onChangeAction;
             // append options
             let option: HTMLOptionElement;
-            let options: string[] = props.options;
+            const options: string[] = props.options;
             for(let i = 0; i < options.length; i++) {
                 option = this.element.appendChild(document.createElement("option"));
                 option.setAttribute("value", options[i]);
@@ -57,7 +57,7 @@ class SelectFormInput extends AbstractFormInput {
     /**
      * It sets value of the select element.
      * 
-     * @param {string} value 
+     * @param value 
      */
     public setValue(value: string): void {
         if(this.element) {

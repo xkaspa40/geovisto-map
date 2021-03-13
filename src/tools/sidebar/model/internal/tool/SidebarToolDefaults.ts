@@ -22,7 +22,7 @@ class SidebarToolDefaults extends MapToolDefaults implements ISidebarToolDefault
      * It returns the default config.
      */
     public getConfig(): ISidebarToolConfig {
-        let config = <ISidebarToolConfig> super.getConfig();
+        const config = <ISidebarToolConfig> super.getConfig();
         config.tabs = undefined;
         return config;
     }

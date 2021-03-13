@@ -27,14 +27,14 @@ interface IMapSelection {
     /**
      * It compares two selections.
      * 
-     * @param {IMapSelection} selection 
+     * @param
      */
     equals(selection: IMapSelection): boolean;
 
     /**
      * It adds geographical items.
      * 
-     * @param {string[]} ids 
+     * @param
      */
     addIds(ids: string[]): void;
 }

@@ -34,7 +34,7 @@ class AbstractMapSelection {
     /**
      * It compares two selections.
      * 
-     * @param {AbstractSelection} selection 
+     * @param selection 
      */
     equals(selection) {
         return false;
@@ -43,7 +43,7 @@ class AbstractMapSelection {
     /**
      * It adds geographical items.
      * 
-     * @param {*} ids 
+     * @param ids 
      */
     addIds(ids) {
         return undefined;

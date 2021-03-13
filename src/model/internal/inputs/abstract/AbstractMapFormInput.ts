@@ -27,19 +27,19 @@ abstract class AbstractMapFormInput implements IMapFormInput {
     /**
      * It returns input element.
      */
-    abstract create(): HTMLElement;
+    public abstract create(): HTMLElement;
 
     /**
      * It returns value of the input element.
      */
-    abstract getValue(): any;
+    public abstract getValue(): any;
 
     /**
      * It sets value of the input element.
      * 
-     * @param {any} value 
+     * @param value 
      */
-    abstract setValue(value: any): void;
+    public abstract setValue(value: any): void;
 
 }
 export default AbstractMapFormInput;

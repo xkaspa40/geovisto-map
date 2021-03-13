@@ -1,4 +1,4 @@
-import SidebarFragmentState from "./SidebarTabFragmentState";
+import SidebarFragmentState from "./SidebarFragmentState";
 import SidebarFragmentDefaults from "./SidebarFragmentDefaults";
 import ISidebarFragmentDefaults from "../../types/fragment/ISidebarFragmentDefaults";
 import MapObject from "../../../../../model/internal/object/MapObject";
@@ -64,15 +64,15 @@ abstract class AbstractSidebarFragment extends MapObject implements ISidebarFrag
     /**
      * The function returns true if the sidebar fragment should be included in the sidebar tab.
      * 
-     * @param {ISidebarTab} sidebarTab 
+     * @param sidebarTab 
      */
     public abstract isChild(sidebarTab: ISidebarTab): boolean;
 
     /**
      * It initializes the tab control.
      * 
-     * @param {ISidebarTab} tabControl 
-     * @param {ISidebarFragmentConfig} config 
+     * @param tabControl 
+     * @param config 
      */
     public initialize(tabControl: ISidebarTab, config: ISidebarFragmentConfig | undefined): void {
         // the sidebar tab which stores the sidebar fragment
@@ -91,15 +91,17 @@ abstract class AbstractSidebarFragment extends MapObject implements ISidebarFrag
     /**
      * This function is called after the sidebar tab is rendered in sidebar.
      */
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     public postCreate(): void {
     }
 
     /**
      * Changes the state of the tool which is controled by this sidebar tab.
      * 
-     * @param {boolean} checked 
+     * @param checked 
      */
-    public setFragmentContentChecked(checked: boolean) {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+    public setFragmentContentChecked(checked: boolean): void {
     }
 }
 export default AbstractSidebarFragment;

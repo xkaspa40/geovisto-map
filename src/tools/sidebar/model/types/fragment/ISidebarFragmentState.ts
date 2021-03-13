@@ -14,7 +14,7 @@ interface ISidebarFragmentState extends IMapObjectState {
     /**
      * The metod takes config and deserializes the values.
      * 
-     * @param {ISidebarFragmentConfig} config 
+     * @param config 
      */
     deserialize(config: ISidebarFragmentConfig): void;
 
@@ -22,7 +22,7 @@ interface ISidebarFragmentState extends IMapObjectState {
      * The method serializes the sidebar tab fragment configuration.
      * Optionally, a serialed value can be let undefined if it equals the default value.
      * 
-     * @param {boolean | undefined} filterDefaults 
+     * @param filterDefaults 
      */
     serialize(filterDefaults: boolean | undefined): ISidebarFragmentConfig;
 
@@ -34,7 +34,7 @@ interface ISidebarFragmentState extends IMapObjectState {
     /**
      * It sets the tool property of the sidebar tab fragment state.
      * 
-     * @param {IMapTool} tool 
+     * @param tool 
      */
     setTool(tool: IMapTool): void;
 
@@ -46,7 +46,7 @@ interface ISidebarFragmentState extends IMapObjectState {
     /**
      * It sets the enabled property of the sidebar tab fragment state.
      * 
-     * @param {boolean} enabled 
+     * @param enabled 
      */
     setEnabled(enabled: boolean): void;
 
@@ -58,7 +58,7 @@ interface ISidebarFragmentState extends IMapObjectState {
     /**
      * It sets the sidebar tab property of the sidebar tab contrfragmentol state.
      * 
-     * @param {ISidebarTab} sidebarTab 
+     * @param sidebarTab 
      */
     setSidebarTab(sidebarTab: ISidebarTab): void;
 
@@ -70,7 +70,7 @@ interface ISidebarFragmentState extends IMapObjectState {
     /**
      * It sets the content property of the sidebar fragmemt tab state.
      * 
-     * @param {HTMLElement} content 
+     * @param content 
      */
     setContent(content: HTMLElement): void;
 }

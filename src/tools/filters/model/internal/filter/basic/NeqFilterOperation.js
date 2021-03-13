@@ -21,8 +21,8 @@ class NeqFilterOperation extends AbstractFilterOperation {
     /**
      * It checks if value does not equal pattern.
      * 
-     * @param {any} value 
-     * @param {any} pattern 
+     * @param value 
+     * @param pattern 
      */
     match(value, pattern) {
         return value != pattern;

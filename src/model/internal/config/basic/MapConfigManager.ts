@@ -13,7 +13,7 @@ class MapConfigManager extends AbstractMapConfigManager implements IMapConfigMan
      * It initializes the config wrapper providing a basic API.
      * It expects a config represented by the implicict Geovisto map structure.
      * 
-     * @param {any} config 
+     * @param config 
      */
     constructor(config: any) {
         super(config);
@@ -23,7 +23,7 @@ class MapConfigManager extends AbstractMapConfigManager implements IMapConfigMan
      * It converts given config to the internal map config structure.
      * It keeps the config structure.
      * 
-     * @param {any} mapConfing 
+     * @param mapConfing 
      */
     protected import(config: any): IMapConfig {
         return config;
@@ -32,9 +32,9 @@ class MapConfigManager extends AbstractMapConfigManager implements IMapConfigMan
     /**
      * It returns map config of the implicit structure.
      * 
-     * @param {IMapConfig} mapConfing 
+     * @param mapConfing 
      */
-    public export(mapConfig: IMapConfig) {
+    public export(mapConfig: IMapConfig): any {
         return mapConfig;
     }
 }

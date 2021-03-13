@@ -13,7 +13,7 @@ class FiltersTool extends AbstractTool {
     /**
      * It creates a new tool with respect to the props.
      * 
-     * @param {*} props 
+     * @param props 
      */
     constructor(props) {
         super(props);
@@ -77,7 +77,7 @@ class FiltersTool extends AbstractTool {
 
     /**
      * 
-     * @param {*} filterRules 
+     * @param filterRules 
      */
     setFilterRules(filterRules) {
         if(filterRules != undefined) {
@@ -95,7 +95,7 @@ class FiltersTool extends AbstractTool {
     /**
      * It changes filters state to enabled/disabled.
      * 
-     * @param {*} enabled
+     * @param enabled
      */
     setEnabled(enabled) {
         if(enabled != this.isEnabled()) {

@@ -12,28 +12,24 @@ abstract class AbstractMapDataDomain implements IMapDataDomain {
     /**
      *  It initializes the data domain wrapper providing a basic API.
      * 
-     * @param {any} originalDataDomain 
+     * @param originalDataDomain 
      */
-    constructor(originalDataDomain : any) {
+    constructor(originalDataDomain: any) {
         this.originalDataDomain = originalDataDomain;
     }
 
     /**
      * The function returns the string representation of the map data domain
      * which is *unique* among the labels of other data domains.
-     * 
-     * @returns {string}
      */
-    getOriginal() {
+    public getOriginal(): string {
         return this.originalDataDomain;
     }
 
     /**
      * The function returns the string representation of the map data domain
      * which is *unique* among the labels of other data domains.
-     * 
-     * @returns {string}
      */
-    abstract getName(): string;
+    public abstract getName(): string;
 }
 export default AbstractMapDataDomain;

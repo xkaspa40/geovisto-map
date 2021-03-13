@@ -51,9 +51,9 @@ class AbstractFiltersManager {
     /**
      * The function creates a new filter rule using given operation label.
      * 
-     * @param {*} dataDomain 
-     * @param {*} label 
-     * @param {*} pattern 
+     * @param dataDomain 
+     * @param label 
+     * @param pattern 
      */
     createRule(dataDomain, operation, pattern) {
         return undefined;
@@ -63,7 +63,7 @@ class AbstractFiltersManager {
      * Takes a list of data and applies the given filter rules.
      * Returns a new list of the references to filtered data items.
      * 
-     * @param {[FilterRule]} filterRules 
+     * @param filterRules 
      */
     filterData(data, filterRules) {
     }

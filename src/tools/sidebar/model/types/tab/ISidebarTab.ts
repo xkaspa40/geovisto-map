@@ -38,8 +38,8 @@ interface ISidebarTab extends IMapObject {
     /**
      * It initializes the sidebar tab.
      *
-     * @param {Control.Sidebar} sidebar
-     * @param {ISidebarTabConfig} config
+     * @param sidebar
+     * @param config
      */
     initialize(sidebar: Control.Sidebar, config: ISidebarTabConfig | undefined): void;
 
@@ -51,7 +51,7 @@ interface ISidebarTab extends IMapObject {
     /**
      * Functions changes layer state to enabled/disabled.
      *
-     * @param {boolean} checked
+     * @param checked
      */
     setChecked(checked: boolean): void;
 

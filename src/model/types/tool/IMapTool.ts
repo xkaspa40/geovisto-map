@@ -49,8 +49,8 @@ interface IMapTool extends IMapObject {
      * since there can be possible dependencies between the tools
      * (the tool might depend on other tools which needs to be initialized).
      * 
-     * @param {IMap} map
-     * @param {IMapToolConfig} config 
+     * @param map
+     * @param config 
      */
     initialize(map: IMap, config: IMapToolConfig | undefined): void;
 
@@ -73,7 +73,7 @@ interface IMapTool extends IMapObject {
      * Some tools might be dynamicaly enabled/disabled.
      * This function is called externally when the tool is enabled/disabled.
      * 
-     * @param {boolean} enabled 
+     * @param enabled 
      */
     setEnabled(enabled: boolean): void
 
@@ -85,8 +85,8 @@ interface IMapTool extends IMapObject {
     /**
      * This function is called when a custom event is invoked.
      * 
-     * @param {IMapEvent} event
+     * @param event
      */
-    handleEvent(event: IMapEvent): void;
+    handleEvent(event: IMapEvent<IMapObject>): void;
 }
 export default IMapTool;

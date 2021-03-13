@@ -19,7 +19,7 @@ class MapToolsManager extends MapObjectsManager<IMapTool> implements IMapToolsMa
     public copy(): IMapToolsManager {
         // we use copies of predefined tools due to later multiple imports of configs
         let toolsCopy: IMapTool[] = [];
-        let tools: IMapTool[] = this.getObjects();
+        let tools: IMapTool[] = this.getAll();
         for(let i = 0; i < tools.length; i++) {
             toolsCopy.push(tools[i].copy());
         }

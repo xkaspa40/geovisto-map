@@ -18,7 +18,7 @@ class MapLayerToolState extends AbstractLayerToolState {
     /**
      * It resets state with respect to initial props. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {MapLayerToolDefaults} defaults 
+     * @param defaults 
      */
     reset(defaults) {
         super.reset(defaults);
@@ -33,7 +33,7 @@ class MapLayerToolState extends AbstractLayerToolState {
     /**
      * The metod takes config and deserializes the values.
      * 
-     * @param {*} config 
+     * @param config 
      */
     deserialize(config) {
         super.deserialize(config);
@@ -45,7 +45,7 @@ class MapLayerToolState extends AbstractLayerToolState {
     /**
      * The method serializes the tool state. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {MapLayerToolDefaults} defaults
+     * @param defaults
      */
     serialize(defaults) {
         let config = super.serialize(defaults);
@@ -66,7 +66,7 @@ class MapLayerToolState extends AbstractLayerToolState {
     /**
      * It sets a Leaflet tile layer.
      * 
-     * @param {L.TileLayer} layer 
+     * @param layer 
      */
     setLayer(layer) {
         this.layer = layer;
@@ -82,7 +82,7 @@ class MapLayerToolState extends AbstractLayerToolState {
     /**
      * It sets a base map ID.
      * 
-     * @param {string} baseMap
+     * @param baseMap
      */
     setBaseMap(baseMap) {
         this.baseMap = baseMap;

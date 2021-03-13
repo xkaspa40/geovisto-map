@@ -56,7 +56,7 @@ class TextFormInput extends AbstractMapFormInput implements IMapFormInput {
     /**
      * It sets value of the input element.
      * 
-     * @param {string} value 
+     * @param value 
      */
     public setValue(value: string): void {
         if(this.input) {

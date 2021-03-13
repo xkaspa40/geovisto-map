@@ -35,7 +35,7 @@ class FilterSelectFormInput extends AbstractMapFormInput {
             data: undefined,
             op: undefined,
             val: undefined,
-        }
+        };
     }
     
     /**
@@ -50,7 +50,7 @@ class FilterSelectFormInput extends AbstractMapFormInput {
      */
     public create(): HTMLElement {
         if(this.inputDiv == undefined) {
-            let props = <IFilterFormInputProps> this.getProps();
+            const props = <IFilterFormInputProps> this.getProps();
             // create inline container
             this.inputDiv = document.createElement("div");
             this.inputDiv.classList.add(COMPONENT_DIV_CLASS);
@@ -73,12 +73,12 @@ class FilterSelectFormInput extends AbstractMapFormInput {
     /**
      * Help static function which creates select element.
      * 
-     * @param {((this: GlobalEventHandlers, ev: Event) => any) | null} onChangeAction 
-     * @param {string[]} options 
+     * @param onChangeAction 
+     * @param options 
      */
     protected createSelectElement(onChangeAction: ((this: GlobalEventHandlers, ev: Event) => any) | null, options: string[]): HTMLSelectElement {
         // create select element
-        let select = document.createElement('select');
+        const select = document.createElement('select');
         select.onchange = onChangeAction;
         // append options
         let option;
@@ -95,7 +95,7 @@ class FilterSelectFormInput extends AbstractMapFormInput {
      */
     protected createInputElement(): HTMLInputElement {
         // create input element
-        let input = document.createElement('input');
+        const input = document.createElement('input');
         input.setAttribute("type", "text");
         input.setAttribute("size", "10");
         return input;
@@ -115,7 +115,7 @@ class FilterSelectFormInput extends AbstractMapFormInput {
     /**
      * It sets values of the inputs.
      * 
-     * @param {IFilterFormInputValue} value 
+     * @param value 
      */
     public setValue(value: IFilterFormInputValue): void {
         if(this.input.data && this.input.op && this.input.val) {

@@ -36,7 +36,7 @@ interface IFiltersTool extends IMapTool, ISidebarTabControl {
     /**
      * It updates filter rules and notifies listeners.
      * 
-     * @param {IMapFilterRule[]} filterRules 
+     * @param filterRules 
      */
     setFilterRules(filterRules: IMapFilterRule[]): void;
 }

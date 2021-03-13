@@ -32,7 +32,7 @@ class AbstractLayerToolTabControl extends AbstractSidebarTab {
     /**
      * It returns generic layer tab pane.
      */
-    getTabContent() {
+    getContent() {
         if(this.tabContent == undefined) {
             // tab pane contains empty div element
             this.tabContent = document.createElement('div');
@@ -55,7 +55,7 @@ class AbstractLayerToolTabControl extends AbstractSidebarTab {
      * 
      * This function is intended to be extended.
      * 
-     * @param {*} dataMapping 
+     * @param dataMapping 
      */
     setInputValues(dataMapping) {
     }

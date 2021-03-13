@@ -3,8 +3,8 @@ import L from 'leaflet';
 import "leaflet-sidebar-v2";
 import "leaflet-sidebar-v2/css/leaflet-sidebar.min.css";
 
-// styles
-import "./styles/style.scss";
+// styles - TODO: move to index.ts
+import "../../../styles/style.scss";
 
 import SidebarToolState from "./SidebarToolState";
 import SidebarToolDefaults from "./SidebarToolDefaults";
@@ -28,7 +28,7 @@ class SidebarTool extends MapTool implements ISidebarTool {
     /**
      * It creates a new tool with respect to the props.
      *
-     * @param {ISidebarToolProps} props
+     * @param props
      */
     constructor(props: ISidebarToolProps) {
         super(props);
@@ -37,7 +37,7 @@ class SidebarTool extends MapTool implements ISidebarTool {
     /**
      * A unique string of the tool type.
      */
-    static TYPE() {
+    static TYPE(): string {
         return "geovisto-tool-sidebar";
     }
 
@@ -70,7 +70,7 @@ class SidebarTool extends MapTool implements ISidebarTool {
     }
 
     /**
-     * It returns the sidebar tab state.
+     * It returns the sidebar tool state.
      */
     public getState(): ISidebarToolState {
         return <ISidebarToolState> super.getState();
@@ -131,7 +131,7 @@ class SidebarTool extends MapTool implements ISidebarTool {
      */
     private createTabs(): void {
         // import tabs
-        let tabsConfigs: ISidebarTabConfig[] | undefined = this.getState().getTabsConfigs();
+        const tabsConfigs: ISidebarTabConfig[] | undefined = this.getState().getTabsConfigs();
         if(tabsConfigs) {
             // based on config
             let tabConfig: ISidebarTabConfig, tool: IMapTool | undefined;
@@ -144,7 +144,7 @@ class SidebarTool extends MapTool implements ISidebarTool {
             }
         } else {
             // based on the implicit order of the tools in the list of the tools
-            let tools: IMapTool[] = this.getMap().getState().getTools().getObjects();
+            const tools: IMapTool[] = this.getMap().getState().getTools().getAll();
             for(let i = 0; i < tools.length; i++) {
                 this.createSidebarTab(tools[i], undefined);
             }
@@ -164,15 +164,15 @@ class SidebarTool extends MapTool implements ISidebarTool {
     /**
      * Help function which initializes and creates sidebar tab for a tool with respect to a given config.
      *
-     * @param {IMapTool | undefined} tool
-     * @param {ISidebarTabConfig | undefined} config
+     * @param tool
+     * @param config
      */
     private createSidebarTab(tool: IMapTool | undefined, config: ISidebarTabConfig | undefined) {
         if(tool && this.instanceOfTabControl(tool)) {
-            let sidebar: L.Control.Sidebar | null = this.getState().getSidebar();
+            const sidebar: L.Control.Sidebar | null = this.getState().getSidebar();
             if(sidebar) {
                 // the tool implements the getSidebarTab function
-                let sidebarTabControl = tool.getSidebarTab();
+                const sidebarTabControl = tool.getSidebarTab();
                 if(sidebarTabControl != undefined) {
                     // render sidebar
                     sidebarTabControl.initialize(sidebar, config);

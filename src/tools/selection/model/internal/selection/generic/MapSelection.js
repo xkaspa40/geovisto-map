@@ -46,7 +46,7 @@ class MapSelection extends AbstractMapSelection {
     /**
      * It compares two map selections.
      * 
-     * @param {AbstractSelection} selection 
+     * @param selection 
      */
     equals(selection) {
         if(selection) {
@@ -68,7 +68,7 @@ class MapSelection extends AbstractMapSelection {
     /**
      * It adds geographical items.
      * 
-     * @param {*} ids 
+     * @param ids 
      */
     addIds(ids) {
         let newIds = [];

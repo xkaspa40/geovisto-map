@@ -21,8 +21,8 @@ class RegFilterOperation extends AbstractFilterOperation {
     /**
      * It checks if a value match a regular expression pattern.
      * 
-     * @param {any} value 
-     * @param {any} pattern 
+     * @param value 
+     * @param pattern 
      */
     match(value, pattern) {
         return value.match(new RegExp(pattern, 'g'));

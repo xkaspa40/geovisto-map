@@ -28,7 +28,7 @@ class ChoroplethLayerTool extends AbstractLayerTool {
     /**
      * It creates a new tool with respect to the props.
      * 
-     * @param {*} props 
+     * @param props 
      */
     constructor(props) {
         super(props);
@@ -275,7 +275,7 @@ class ChoroplethLayerTool extends AbstractLayerTool {
     /**
      * This function is called when a custom event is invoked.
      * 
-     * @param {AbstractEvent} event 
+     * @param event 
      */
     handleEvent(event) {
         if(event.getType() == DataChangeEvent.TYPE()) {

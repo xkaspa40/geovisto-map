@@ -13,14 +13,14 @@ interface IMapToolState extends IMapObjectState {
     /**
      * The metod takes config and deserializes the values.
      * 
-     * @param {IMapToolConfig} config 
+     * @param config 
      */
     deserialize(config: IMapToolConfig): void;
 
     /**
      * The method serializes the map tool state. Optionally, a serialed value can be let undefined if it equals the default value.
      * 
-     * @param {boolean | undefined} filterDefaults 
+     * @param filterDefaults 
      */
     serialize(filterDefaults: boolean | undefined): IMapToolConfig;
 
@@ -32,7 +32,7 @@ interface IMapToolState extends IMapObjectState {
     /**
      * It sets the enabled property of tool state.
      * 
-     * @param {boolean} enabled 
+     * @param enabled 
      */
     setEnabled(enabled: boolean): void;
 
@@ -44,7 +44,7 @@ interface IMapToolState extends IMapObjectState {
     /**
      * It sets the map property of the tool state.
      * 
-     * @param {IMap} map  
+     * @param map  
      */
     setMap(map: IMap): void;
 }

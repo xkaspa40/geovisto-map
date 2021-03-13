@@ -35,15 +35,15 @@ class LabeledTextFormInput extends TextFormInput implements IMapFormInput {
     public create(): HTMLElement {
         if(this.div == undefined) {
             // create input element
-            let input: HTMLElement = super.create();
+            const input: HTMLElement = super.create();
 
             // create div block
             this.div = document.createElement("div");
 
             // append label
-            let props = <ILabeledMapFormInputProps> this.getProps();
+            const props = <ILabeledMapFormInputProps> this.getProps();
             if(props.label) {
-                this.div.appendChild(document.createTextNode(props.label + ": "))
+                this.div.appendChild(document.createTextNode(props.label + ": "));
             }
 
             // append input element

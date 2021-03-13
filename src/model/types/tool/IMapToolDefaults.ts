@@ -21,7 +21,7 @@ interface IMapToolDefaults extends IMapObjectDefaults {
     /**
      * By default, the tool is enabled.
      * 
-     * @param {boolean} enabled 
+     * @param enabled 
      */
     isEnabled(): boolean;
 }

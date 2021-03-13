@@ -64,7 +64,7 @@ class AutocompleteFormInput extends AbstractMapFormInput implements IMapFormInpu
     /*
      * Sets/removes attribute 'disabled' from input box.
      */
-    public setDisabled(disabled: boolean) {
+    public setDisabled(disabled: boolean): void {
         if(this.input) {
             if(disabled == true) {
                 this.input.setAttribute("disabled", "true");            
@@ -77,7 +77,7 @@ class AutocompleteFormInput extends AbstractMapFormInput implements IMapFormInpu
     /*
      * Changes options for the completion list.
      */
-    public changeOptions(newOptions: string[]) { 
+    public changeOptions(newOptions: string[]): void { 
         this.options = newOptions;
     }
 
@@ -85,8 +85,8 @@ class AutocompleteFormInput extends AbstractMapFormInput implements IMapFormInpu
      * Divides options into the two groups (matched and not matched values) with respect to the currently selected input.
      */
     private getCurrentOptions(): { match: string[], other: string[] } {
-        let matchArray: string[] = [];
-        let notMatchArray: string[] = [];
+        const matchArray: string[] = [];
+        const notMatchArray: string[] = [];
         if(this.input) {
             for(let i = 0; i < this.options.length; i++) {
                 if(new String(this.options[i]).includes(this.input.value)) {
@@ -109,7 +109,7 @@ class AutocompleteFormInput extends AbstractMapFormInput implements IMapFormInpu
     /**
      * It sets value of the input element.
      * 
-     * @param {any} value 
+     * @param value 
      */
     public setValue(value: string): void {
         throw this.input.value = value;
@@ -137,7 +137,7 @@ class AutocompleteFormInput extends AbstractMapFormInput implements IMapFormInpu
         this.formDiv.classList.add(ID);
 
         // label div
-        let labelDiv = document.createElement('div');
+        const labelDiv = document.createElement('div');
         labelDiv.classList.add(COMPONENT_DIV_LABEL_CLASS);
         labelDiv.innerHTML = (<IAutocompleteFormInputProps> this.getProps()).label;
 
@@ -170,19 +170,19 @@ class AutocompleteFormInput extends AbstractMapFormInput implements IMapFormInpu
             this.input.onchange = (<IAutocompleteFormInputProps> this.getProps()).onChangeAction;
 
             // input change listener: create autocomplete and find
-            this.input.addEventListener('input', function(e) {
+            this.input.addEventListener('input', function() {
                 _this.createMenu();
             });
 
             // focus-in listener: create autocomplete
-            this.input.addEventListener('focusin', function(e) {
+            this.input.addEventListener('focusin', function() {
                 _this.createMenu();
             });
 
             // key-up/down listener
             this.input.addEventListener('keydown', function(e) {
                 if (_this.completionListDiv != undefined) {
-                    let completionItems = _this.completionListDiv.children;
+                    const completionItems = _this.completionListDiv.children;
                     
                     // remove active completion item
                     if(_this.selectedCompletionItem != -1 && completionItems[_this.selectedCompletionItem] != undefined){
@@ -209,7 +209,7 @@ class AutocompleteFormInput extends AbstractMapFormInput implements IMapFormInpu
                         // key Enter
                         //this.value = completionItems[_this.selectedCompletionItem].textContent;
                         _this.completionListDiv.remove();
-                        _this.selectedCompletionItem != -1
+                        _this.selectedCompletionItem != -1;
                         // input on change event needs to be invoked manualy in this case
                         this.dispatchEvent(new Event("change"));
                     } 
@@ -256,9 +256,9 @@ class AutocompleteFormInput extends AbstractMapFormInput implements IMapFormInpu
         this.completionListDiv.classList.add(COMPONENT_COMPLETION_LIST_CLASS);
 
         // help function which creates completion item
-        let createCompletionItem = function(label: string, className: string) {
+        const createCompletionItem = function(label: string, className: string) {
             // create item
-            let completionItemDiv = document.createElement('div');
+            const completionItemDiv = document.createElement('div');
             completionItemDiv.innerHTML = label;
             completionItemDiv.classList.add(className);
 
@@ -266,7 +266,7 @@ class AutocompleteFormInput extends AbstractMapFormInput implements IMapFormInpu
             _this.completionListDiv.appendChild(completionItemDiv);
             
             // on click listener: the item has been selected
-            completionItemDiv.addEventListener('click', function(e) {
+            completionItemDiv.addEventListener('click', function() {
                 _this.input.value = completionItemDiv.textContent ? completionItemDiv.textContent : "";
                 if(completionItemDiv.parentElement) {
                     completionItemDiv.parentElement.remove();
@@ -274,10 +274,10 @@ class AutocompleteFormInput extends AbstractMapFormInput implements IMapFormInpu
                 // input on change event needs to be invoked manualy in this case
                 _this.input.dispatchEvent(new Event("change"));
             });
-        }
+        };
 
         // create new completion item for every matched and not matched path
-        var currentOptions = this.getCurrentOptions();
+        const currentOptions = this.getCurrentOptions();
         currentOptions.match.forEach(element => createCompletionItem(element, COMPONENT_COMPLETION_ITEM_CLASS));
         currentOptions.other.forEach(element => createCompletionItem(element, COMPONENT_COMPLETION_NOT_IN_CLASS));
         

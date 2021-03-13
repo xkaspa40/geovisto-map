@@ -21,8 +21,8 @@ class AbstractFilterOperation {
     /**
      * It performs the filter operation which compare a value with a pattern.
      * 
-     * @param {any} value 
-     * @param {any} pattern 
+     * @param value 
+     * @param pattern 
      */
     match(value, pattern) {
         return false;

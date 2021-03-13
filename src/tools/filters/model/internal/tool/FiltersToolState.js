@@ -20,7 +20,7 @@ class FiltersToolState extends MapToolState {
     /**
      * It resets state with respect to initial props. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {FiltersToolDefaults} defaults 
+     * @param
      */
     reset(defaults) {
         super.reset(defaults);
@@ -37,7 +37,7 @@ class FiltersToolState extends MapToolState {
     /**
      * The metod takes config and deserializes the values.
      * 
-     * @param {*} config 
+     * @paramfig 
      */
     deserialize(config) {
         super.deserialize(config);
@@ -70,7 +70,7 @@ class FiltersToolState extends MapToolState {
     /**
      * The method serializes the tool state. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {FiltersToolDefaults} defaults 
+     * @param
      */
     serialize(defaults) {
         let config = super.serialize(defaults);
@@ -95,7 +95,7 @@ class FiltersToolState extends MapToolState {
     /**
      * It updates filter manager.
      * 
-     * @param {AbstractFiltersManager} manager 
+     * @param
      */
     setFiltersManager(manager) {
         this.manager = manager;
@@ -118,7 +118,7 @@ class FiltersToolState extends MapToolState {
     /**
      * It sets the filterRules property of the tool state.
      * 
-     * @param {[AbstractFilterRule]} filterRules 
+     * @param
      */
     setFilterRules(filterRules) {
         this.filterRules = filterRules;

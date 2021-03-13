@@ -15,12 +15,12 @@ interface IMapDataManager {
     /**
      * It returns the preprocessed data as a list of data reconds of the *same* object type.
      */
-    getDataRecords(): object[];
+    getDataRecords(): any[];
 
     /**
      * It returns list of all values of the selected data domain.
      * 
-     * @param {IMapDataDomain} dataDomain
+     * @param dataDomain
      */
     getValues(dataDomain: IMapDataDomain): string[];
 
@@ -38,24 +38,24 @@ interface IMapDataManager {
      * It returns the data domain which corresponds to the given string
      * or creates a new one.
      * 
-     * @param {string} label 
+     * @param label 
      */
     getDataDomain(label: string): IMapDataDomain | undefined;
 
     /**
      * It returns list of all values of the selected data domain stored in the given data records.
      * 
-     * @param {IMapDataDomain} dataDomain
-     * @param {object[]} dataRecords
+     * @param dataDomain
+     * @param dataRecords
      */
-    getDataRecordsValues(dataDomain: IMapDataDomain, dataRecords: object[]): string[];
+    getDataRecordsValues(dataDomain: IMapDataDomain, dataRecords: any[]): string[];
 
     /**
      * It returns values stored of the selected data domain stored in the given data record.
      * 
-     * @param {IMapDataDomain} dataDomain
-     * @param {object} dataRecord
+     * @param dataDomain
+     * @param dataRecord
      */
-    getDataRecordValues(dataDomain: IMapDataDomain, dataRecord: object): string[];
+    getDataRecordValues(dataDomain: IMapDataDomain, dataRecord: any): string[];
 }
 export default IMapDataManager;

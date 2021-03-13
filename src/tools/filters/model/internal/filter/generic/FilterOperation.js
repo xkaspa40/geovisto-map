@@ -9,8 +9,8 @@ class FilterOperation extends AbstractFilterOperation {
 
     /**
      * 
-     * @param {*} label 
-     * @param {*} acceptFunction 
+     * @param label 
+     * @param acceptFunction 
      */
     constructor(label, acceptFunction) {
         super();
@@ -28,8 +28,8 @@ class FilterOperation extends AbstractFilterOperation {
     /**
      * It performs the filter operation which compare a value with a pattern.
      * 
-     * @param {any} value 
-     * @param {any} pattern 
+     * @param value 
+     * @param pattern 
      */
     match(value, pattern) {
         return this.acceptFunction(value, pattern);

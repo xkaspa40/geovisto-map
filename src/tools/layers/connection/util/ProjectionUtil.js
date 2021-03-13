@@ -10,7 +10,7 @@ class ProjectionUtil {
     /**
      * It provides the function which projects the given point to the given leaflet map with the given zoom.
      * 
-     * @param {*} d 
+     * @param d 
      */
     static getDataProjectionFunction(map, zoom) {
         return function(d) {
@@ -26,8 +26,8 @@ class ProjectionUtil {
      * (1) unprojects the given point from the given leaflet map with given zoom
      * (2) projects the point of (1) to the current map state
      * 
-     * @param {*} map 
-     * @param {*} zoom 
+     * @param map 
+     * @param zoom 
      */
     static getPathProjectionFunction(map, zoom) {
         return d3.line()

@@ -23,7 +23,7 @@ class SidebarFragmentDefaults extends MapObjectDefaults implements ISidebarFragm
      * It returns the default config.
      */
     public getConfig(): ISidebarFragmentConfig {
-        let config = <ISidebarFragmentConfig> super.getConfig();
+        const config = <ISidebarFragmentConfig> super.getConfig();
         config.tool = undefined,
         config.enabled = undefined;
         return config;
@@ -39,7 +39,7 @@ class SidebarFragmentDefaults extends MapObjectDefaults implements ISidebarFragm
     /**
      * It returns a logical value whether the sidebar fragment is enabled.
      */
-    public isEnabled() {
+    public isEnabled(): boolean {
         return true;
     }
 }

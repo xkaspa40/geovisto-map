@@ -16,14 +16,14 @@ interface IMapObjectState {
     /**
      * The metod takes config and deserializes the values.
      * 
-     * @param {IMapObjectConfig} config 
+     * @param config 
      */
     deserialize(config: IMapObjectConfig): void;
 
     /**
      * The method serializes the map object state. Optionally, a serialed value can be let undefined if it equals the default value.
      * 
-     * @param {boolean | undefined} filterDefaults 
+     * @param filterDefaults 
      */
     serialize(filterDefaults: boolean | undefined): IMapObjectConfig;
 
@@ -41,7 +41,7 @@ interface IMapObjectState {
      * It sets the id property of the map object state.
      * It can be set only once.
      * 
-     * @param {string} id 
+     * @param id 
      */
     setId(id: string): void;
 }

@@ -66,7 +66,7 @@ class D3PathForceSimulator {
      * Help function which takes a connection and split the connection into segments.
      * The number of segments is based on the preferred maximal length of segment.
      * 
-     * @param {*} connection 
+     * @param connection 
      */
     createPath(connection) {
         let path = [];
@@ -113,8 +113,8 @@ class D3PathForceSimulator {
     /**
      * It creates creates and runs the D3 force layout simulation.
      * 
-     * @param {*} onTickAction
-     * @param {*} onEndAction
+     * @param onTickAction
+     * @param onEndAction
      */
     run(onTickAction, onEndAction) {
         // get D3 force layout simulator

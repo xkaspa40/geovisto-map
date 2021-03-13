@@ -13,21 +13,21 @@ interface IFiltersToolState extends IMapToolState {
     /**
      * The metod takes config and deserializes the values.
      * 
-     * @param {IFiltersToolConfig} config 
+     * @param config 
      */
     deserialize(config: IFiltersToolConfig): void;
 
     /**
      * The method serializes the tool state. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {boolean} filterDefaults 
+     * @param filterDefaults 
      */
     serialize(defaults: boolean): IFiltersToolConfig;
 
     /**
      * It updates filter manager.
      * 
-     * @param {IMapFiltersManager} manager 
+     * @param manager 
      */
     setFiltersManager(manager: IMapFiltersManager): void;
 
@@ -44,7 +44,7 @@ interface IFiltersToolState extends IMapToolState {
     /**
      * It sets the filterRules property of the tool state.
      * 
-     * @param {IMapFilterRule[]} filterRules 
+     * @param filterRules 
      */
     setFilterRules(filterRules: IMapFilterRule[]): void;
 }

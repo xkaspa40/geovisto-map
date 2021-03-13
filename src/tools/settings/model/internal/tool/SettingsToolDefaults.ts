@@ -1,31 +1,33 @@
+import MapToolDefaults from "../../../../../model/internal/tool/MapToolDefaults";
+import ISettingsToolDefaults from "../../types/tool/ISettingsToolDefaults";
+import ISettingsTool from "../../types/tool/ISettingsTool";
 import SettingsTool from "./SettingsTool";
-import AbstractToolDefaults from "../../model/tool/abstract/AbstractToolDefaults";
 
 /**
  * This class provide functions which return the default state values.
  * 
  * @author Jiri Hynek
  */
-class SettingsToolDefaults extends AbstractToolDefaults {
+class SettingsToolDefaults extends MapToolDefaults implements ISettingsToolDefaults {
 
     /**
      * It creates tool defaults.
      */
-    constructor() {
-        super();
+    constructor(tool: ISettingsTool) {
+        super(tool);
     }
 
     /**
      * Only one settings tool should be present in the Geovisto map.
      */
-    isSingleton() {
+    public isSingleton(): boolean {
        return true; 
     }
 
     /**
      * It returns a unique string of the tool type.
      */
-    getType() {
+    public getType(): string {
         return SettingsTool.TYPE();
     }
 }

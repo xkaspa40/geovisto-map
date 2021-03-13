@@ -6,21 +6,21 @@ import IMapCategoriesManager from "../../../types/category/IMapCategoriesManager
  * 
  * @author Jiri Hynek
  */
-class MapCategoriesManager implements IMapCategoriesManager {
+class MapCategoriesManager<T extends IMapCategory> implements IMapCategoriesManager<T> {
     
-    private categories: IMapCategory[];
+    private categories: T[];
 
     /**
      * It initializes a map categories manager.
      */
-    constructor(categories: IMapCategory[] | undefined) {
+    constructor(categories: T[] | undefined) {
         this.categories = categories ? categories : [];
     }
 
     /**
      * The function returns available map categories.
      */
-    public getCategories(): IMapCategory[] {
+    public getAll(): T[] {
         return this.categories;
     }
 
@@ -43,18 +43,18 @@ class MapCategoriesManager implements IMapCategoriesManager {
      * 
      * Override this function.
      * 
-     * @param {IMapCategory} category 
+     * @param category 
      */
-    public add(category: IMapCategory): void {
+    public add(category: T): void {
         this.categories.push(category);
     }
 
     /**
      * It removes category from the list of categories.
      * 
-     * @param {IMapCategory} category 
+     * @param category 
      */
-    public remove(category: IMapCategory): void {
+    public remove(category: T): void {
         this.categories = this.categories.filter(item => item != category);
     }
 
@@ -63,7 +63,7 @@ class MapCategoriesManager implements IMapCategoriesManager {
      * 
      * Override this function.
      * 
-     * @param {string} id 
+     * @param id 
      */
     public removeByName(id: string): void {
         this.categories = this.categories.filter(item => item.getName() != id);
@@ -73,8 +73,8 @@ class MapCategoriesManager implements IMapCategoriesManager {
      * Help function which returns the list of category string labels (category types).
      */
     public getNames(): string[] {
-        let names = [];
-        let categories = this.getCategories();
+        const names: string[] = [];
+        const categories = this.getAll();
         if(categories != undefined) {
             for(let i = 0; i < categories.length; i++) {
                 names.push(categories[i].getName());
@@ -86,11 +86,11 @@ class MapCategoriesManager implements IMapCategoriesManager {
     /**
      * The function returns map categories of given type.
      * 
-     * @param {string} name
+     * @param name
      */
-    public getByName(name: string): IMapCategory[] {
-        let categories = this.getCategories();
-        let resultCategories: IMapCategory[] = [];
+    public getByName(name: string): T[] {
+        const categories = this.getAll();
+        const resultCategories: T[] = [];
         if(categories != undefined) {
             for(let i = 0; i < categories.length; i++) {
                 if(categories[i].getName() == name) {

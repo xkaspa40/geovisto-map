@@ -30,15 +30,15 @@ interface ISidebarFragment extends IMapObject {
     /**
      * The function returns true if the sidebar fragment should be included in the sidebar tab.
      * 
-     * @param {ISidebarTab} sidebarTab 
+     * @param sidebarTab 
      */
     isChild(sidebarTab: ISidebarTab): boolean
 
     /**
      * It initializes the sidebar fragment.
      * 
-     * @param {ISidebarTab} sidebarTab 
-     * @param {ISidebarFragmentConfig} config 
+     * @param sidebarTab 
+     * @param config 
      */
     initialize(sidebarTab: ISidebarTab, config: ISidebarFragmentConfig | undefined): void;
 
@@ -55,7 +55,7 @@ interface ISidebarFragment extends IMapObject {
     /**
      * Changes the state of the tool which is controled by this sidebar tab.
      * 
-     * @param {boolean} checked 
+     * @param checked 
      */
     setFragmentContentChecked(checked: boolean): void;
 

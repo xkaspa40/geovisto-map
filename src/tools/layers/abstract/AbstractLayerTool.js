@@ -14,7 +14,7 @@ class AbstractLayerTool extends AbstractTool {
     /**
      * It creates a new tool with respect to the props.
      * 
-     * @param {*} props 
+     * @param props 
      */
     constructor(props) {
         super(props);
@@ -82,7 +82,7 @@ class AbstractLayerTool extends AbstractTool {
     /**
      * It changes layer state to enabled/disabled.
      * 
-     * @param {*} enabled
+     * @param enabled
      */
     setEnabled(enabled) {
         if(enabled != this.isEnabled()) {
@@ -162,7 +162,7 @@ class AbstractLayerTool extends AbstractTool {
      * It updates data mapping and redraws the layer.
      * It can be used by the layer tab providers when input values are changed.
      * 
-     * @param {*} dataMapping 
+     * @param dataMapping 
      */
     updateDataMapping(dataMapping, onlyStyle) {
         // update state
@@ -177,7 +177,7 @@ class AbstractLayerTool extends AbstractTool {
      * 
      * Override this function.
      * 
-     * @param {*} onlyStyle 
+     * @param onlyStyle 
      */
     redraw(onlyStyle) {
     }
@@ -187,7 +187,7 @@ class AbstractLayerTool extends AbstractTool {
      * 
      * Override this function if needed.
      * 
-     * @param {AbstractEvent} event 
+     * @param event 
      */
     handleEvent(event) {
     }

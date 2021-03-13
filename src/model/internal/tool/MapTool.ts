@@ -83,8 +83,8 @@ class MapTool extends MapObject implements IMapTool {
      * since there can be possible dependencies between the tools
      * (the tool might depend on other tools which needs to be initialized).
      * 
-     * @param {GeovistoMap} map
-     * @param {IMapToolConfig | undefined} config
+     * @param map
+     * @param config
      */
     public initialize(map: IMap, config: IMapToolConfig | undefined): void {
         // the map should not be undefined (this function is called only by GeovistoMap)
@@ -130,7 +130,7 @@ class MapTool extends MapObject implements IMapTool {
      * 
      * Override this function, if needed.
      * 
-     * @param {boolean} enabled 
+     * @param enabled 
      */
     public setEnabled(enabled: boolean) : void {
         if(this.isEnabled() != enabled) {
@@ -153,7 +153,7 @@ class MapTool extends MapObject implements IMapTool {
      * 
      * Override this function, if needed.
      * 
-     * @param {IMapEvent} event
+     * @param event
      */
     public handleEvent(event: IMapEvent): void {
     }

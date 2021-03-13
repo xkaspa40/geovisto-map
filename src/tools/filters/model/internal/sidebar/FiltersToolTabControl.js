@@ -53,7 +53,7 @@ class FiltersToolTabControl extends AbstractSidebarTab {
      * It returns tab content.
      * 
      */
-    getTabContent() {
+    getContent() {
         if(this.tabContent == undefined) {
             // tab pane
             this.tabContent = document.createElement('div');
@@ -64,11 +64,11 @@ class FiltersToolTabControl extends AbstractSidebarTab {
 
             // append add button
             var _this = this;
-            this.btnGroup.appendChild(TabDOMUtil.createButton("<i class=\"fa fa-plus-circle\"></i>", function() { FiltersToolTabControl.addSelectItem(_this) }, "plusBtn" ));
+            this.btnGroup.appendChild(TabDOMUtil.createButton("<i class=\"fa fa-plus-circle\"></i>", function() { FiltersToolTabControl.addSelectItem(_this); }, "plusBtn" ));
 
             // append apply button
             this.btnGroup.appendChild(TabDOMUtil.createButton("Apply", function() {
-                _this.inputChangedAction()
+                _this.inputChangedAction();
             },"applyBtn"));
 
             // import inputs according to configuration
@@ -81,25 +81,25 @@ class FiltersToolTabControl extends AbstractSidebarTab {
     /**
      * Help static function which adds new select item to the filter sidebar tab.
      * 
-     * @param {*} _this 
+     * @param _this 
      */
     static addSelectItem(_this) {
         // div container
         let div = _this.tabContent.insertBefore(document.createElement('div'), _this.btnGroup);
         div.classList.add(_this.getDefaults().getFilterRuleElementClass());
         
-        var minusButton = TabDOMUtil.createButton("<i class=\"fa fa-minus-circle\"></i>", function(e) { FiltersToolTabControl.removeSelectItem(e, _this) }, "minusBtn");        
+        var minusButton = TabDOMUtil.createButton("<i class=\"fa fa-minus-circle\"></i>", function(e) { FiltersToolTabControl.removeSelectItem(e, _this); }, "minusBtn");        
         div.appendChild(minusButton);
 
         /**
          * Help function which is invoked when the data domain input is changed.
          * It changes possible options of the operation and value inputs.
          * 
-         * @param {*} e 
+         * @param e 
          */
         let updateValueOptions = function(e) {
             // find the input item
-            let input = undefined
+            let input = undefined;
             let div = e.target.closest("." + _this.getDefaults().getFilterRuleElementClass());
             for(let i = 0; i < _this.inputs.length; i++) {
                 if(_this.inputs[i].container == div) {
@@ -131,7 +131,7 @@ class FiltersToolTabControl extends AbstractSidebarTab {
                 input.valInput.setDisabled(true);
                 input.valInput.setValue("");   
             }
-        }
+        };
 
         // inputs
         let input = SidebarInputFactory.createSidebarInput(FilterAutocompleteFormInput.ID(), {
@@ -166,7 +166,7 @@ class FiltersToolTabControl extends AbstractSidebarTab {
     /**
      * Help static function which removes item from the filter sidebar tab.
      * 
-     * @param {*} _this 
+     * @param _this 
      */
     static removeSelectItem(e, _this) {
         // get div
@@ -185,7 +185,7 @@ class FiltersToolTabControl extends AbstractSidebarTab {
     /**
      * It changes state to enabled/disabled.
      * 
-     * @param {*} enabled
+     * @param enabled
      */
     setContentState(enabled) {
         this.getTool().setEnabled(enabled);
@@ -232,7 +232,7 @@ class FiltersToolTabControl extends AbstractSidebarTab {
     /**
      * It updates input fileds according to the given filter rules.
      * 
-     * @param {*} filterRules 
+     * @param filterRules 
      */
     setFilterRules(filterRules) {
         // clear inputs
@@ -256,4 +256,4 @@ class FiltersToolTabControl extends AbstractSidebarTab {
         }
     }
 }
-export default FiltersToolTabControl
+export default FiltersToolTabControl;

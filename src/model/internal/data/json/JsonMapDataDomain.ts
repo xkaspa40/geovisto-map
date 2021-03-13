@@ -18,9 +18,9 @@ class JsonMapDataDomain extends AbstractMapDataDomain {
      * The function returns the string representation of the map data domain
      * which is *unique* among the names of other data domains.
      * 
-     * It is uses dots to delimiter the array items.
+     * It uses dots to delimiter the array items.
      */
-    getName() {
+    public getName(): string {
         return this.name;
     }
 }

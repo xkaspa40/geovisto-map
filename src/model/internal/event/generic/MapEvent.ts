@@ -6,15 +6,15 @@ import IMapObject from "../../../types/object/IMapObject";
  * 
  * @author Jiri Hynek
  */
-class MapEvent implements IMapEvent {
+class MapEvent<TSource extends IMapObject> implements IMapEvent<TSource> {
     
     private type: string;
-    private source: IMapObject;
+    private source: TSource;
 
     /**
      * It initializes event.
      */
-    constructor(type: string, source: IMapObject) {
+    constructor(type: string, source: TSource) {
         this.type = type;
         this.source = source;
     }
@@ -29,7 +29,7 @@ class MapEvent implements IMapEvent {
     /**
      * It return source map object of the event.
      */
-    getSource(): IMapObject {
+    getSource(): TSource {
         return this.source;
     }
 }

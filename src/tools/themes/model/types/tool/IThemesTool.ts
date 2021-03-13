@@ -3,6 +3,7 @@ import ISidebarFragmentControl from "../../../../sidebar/model/types/fragment/IS
 import IThemesToolDefaults from "./IThemesToolDefaults";
 import IThemesToolProps from "./IThemesToolProps";
 import IThemesToolState from "./IThemesToolState";
+import IMapTheme from "../theme/IMapTheme";
 
 /**
  * This interface provides the themes tool.
@@ -32,8 +33,10 @@ interface IThemesTool extends IMapTool, ISidebarFragmentControl {
     getState(): IThemesToolState;
 
     /**
-     * @param {IThemesTool} theme 
+     * It updates the theme and notifies listeners.
+     * 
+     * @param theme 
      */
-    setTheme(theme: IThemesTool): void
+    setTheme(theme: IMapTheme): void
 }
 export default IThemesTool;

@@ -21,8 +21,8 @@ class EqFilterOperation extends AbstractFilterOperation {
     /**
      * It checks if value equals pattern.
      * 
-     * @param {any} value 
-     * @param {any} pattern 
+     * @param value 
+     * @param pattern 
      */
     match(value, pattern) {
         return value == pattern;

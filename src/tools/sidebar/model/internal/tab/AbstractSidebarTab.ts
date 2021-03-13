@@ -87,18 +87,16 @@ abstract class AbstractSidebarTab extends MapObject implements ISidebarTab {
     /**
      * It initializes the sidebar tab.
      *
-     * @param {Control.Sidebar} sidebar
-     * @param {ISidebarTabConfig} config
+     * @param sidebar
+     * @param config
      */
-    public initialize(sidebar: Control.Sidebar, config: ISidebarTabConfig) {
+    public initialize(sidebar: Control.Sidebar, config: ISidebarTabConfig): void {
         // the sidebar which stores the tab
         // the sidebar should not be undefined (this function is called only by sidebar)
         this.getState().setSidebar(sidebar);
 
         // copy existing config if exists or use the default one
         this.setConfig(config != undefined ? JSON.parse(JSON.stringify(config)) : this.getDefaults().getConfig());
-
-        return this;
     }
 
     /**
@@ -106,8 +104,8 @@ abstract class AbstractSidebarTab extends MapObject implements ISidebarTab {
      *
      */
     public create(): void {
-        let state: ISidebarTabState = this.getState();
-        let sidebar: Control.Sidebar | null = state.getSidebar();
+        const state: ISidebarTabState = this.getState();
+        const sidebar: Control.Sidebar | null = state.getSidebar();
         if(sidebar && state.isEnabled()) {
             // render sidebar tab pane
             sidebar.addPanel(this.getTabStructure());
@@ -138,17 +136,17 @@ abstract class AbstractSidebarTab extends MapObject implements ISidebarTab {
      */
     protected postCreate(): void {
         // get rendered sidebar tab
-        let tabElement: HTMLElement | null = document.getElementById(this.getState().getId());
+        const tabElement: HTMLElement | null = document.getElementById(this.getState().getId());
 
         // create sidebar tab content
         if(tabElement) {
-            let tabContentElements: HTMLCollectionOf<Element> = tabElement.getElementsByClassName(C_sidebar_tab_content_class);
+            const tabContentElements: HTMLCollectionOf<Element> = tabElement.getElementsByClassName(C_sidebar_tab_content_class);
             if(tabContentElements.length > 0) {
-                let tabContent: Element = tabContentElements[0];
-                tabContent.appendChild(this.getTabContent());
+                const tabContent: Element = tabContentElements[0];
+                tabContent.appendChild(this.getContent());
 
                 // append tab fragments if defined
-                let tabFragments: ISidebarFragment[] | undefined = this.getState().getFragments();
+                const tabFragments: ISidebarFragment[] | undefined = this.getState().getFragments();
                 if(tabFragments) {
                     for(let i = 0; i < tabFragments.length; i++) {
                         tabContent.appendChild(tabFragments[i].getContent());
@@ -156,21 +154,21 @@ abstract class AbstractSidebarTab extends MapObject implements ISidebarTab {
                 }
 
                 // enable/disable button
-                let tabHeaderElements: HTMLCollectionOf<Element> = tabElement.getElementsByClassName(C_sidebar_header_class);
+                const tabHeaderElements: HTMLCollectionOf<Element> = tabElement.getElementsByClassName(C_sidebar_header_class);
                 if(tabHeaderElements.length > 0) {
-                    let tabHeader: Element = tabHeaderElements[0];
+                    const tabHeader: Element = tabHeaderElements[0];
                     
                     // check button
                     if(this.getState().hasCheckButton()) {
                         // create enable button in sidebar tab header
-                        let tabEnableBtn: HTMLInputElement = document.createElement("input");
+                        const tabEnableBtn: HTMLInputElement = document.createElement("input");
                         tabEnableBtn.setAttribute("type", "checkbox");
                         tabEnableBtn.setAttribute("id", this.getState().getId() + '-enable-btn');
                         var _this = this;
                         tabEnableBtn.onclick = function() {
                             // onclick event handler enables/disables its items
                             _this.setChecked(tabEnableBtn.checked);
-                        }
+                        };
                         tabHeader.insertBefore(tabEnableBtn, tabHeader.firstChild);
 
                         if(this.getState().getTool().isEnabled()) {
@@ -198,18 +196,18 @@ abstract class AbstractSidebarTab extends MapObject implements ISidebarTab {
      *
      * This function needs to be extended.
      */
-    protected abstract getTabContent(): HTMLElement;
+    protected abstract getContent(): HTMLElement;
 
     /**
      * Functions changes layer state to enabled/disabled.
      *
-     * @param {boolean} checked
+     * @param checked
      */
-    public setChecked(checked: boolean) {
-        let tool: IMapTool = this.getState().getTool();
+    public setChecked(checked: boolean): void {
+        const tool: IMapTool = this.getState().getTool();
         if(checked != tool.isEnabled()) {
             // enable/disable sidebar tab
-            let sidebarTab = d3.select("#" + this.getState().getId());
+            const sidebarTab = d3.select("#" + this.getState().getId());
             if(sidebarTab != undefined) {
                 // emhasize tab
                 sidebarTab.classed(C_enabled_class, checked);
@@ -233,9 +231,10 @@ abstract class AbstractSidebarTab extends MapObject implements ISidebarTab {
      *
      * This function can be extended if needed.
      *
-     * @param {boolean} checked
+     * @param checked
      */
-    public setTabContentChecked(checked: boolean) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
+    public setTabContentChecked(checked: boolean): void {
     }
 }
 export default AbstractSidebarTab;

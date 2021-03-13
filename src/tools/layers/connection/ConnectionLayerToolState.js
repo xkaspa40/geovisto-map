@@ -18,8 +18,8 @@ class ConnectionLayerToolState extends AbstractLayerToolState {
     /**
      * It initializes the state using the initial props. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {*} props 
-     * @param {*} defaults 
+     * @param props 
+     * @param defaults 
      */
     initialize(props, defaults) {
         super.initialize(props, defaults);
@@ -28,7 +28,7 @@ class ConnectionLayerToolState extends AbstractLayerToolState {
     /**
      * It resets state with respect to initial props. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {ConnectionLayerToolDefaults} defaults 
+     * @param defaults 
      */
     reset(defaults) {
         super.reset(defaults);
@@ -47,7 +47,7 @@ class ConnectionLayerToolState extends AbstractLayerToolState {
     /**
      * The metod takes config and deserializes the values.
      * 
-     * @param {*} config 
+     * @param config 
      */
     deserialize(config) {
         super.deserialize(config);
@@ -59,7 +59,7 @@ class ConnectionLayerToolState extends AbstractLayerToolState {
     /**
      * The method serializes the tool state. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {ConnectionLayerToolDefaults} defaults
+     * @param defaults
      */
     serialize(defaults) {
         let config = super.serialize(defaults);
@@ -80,7 +80,7 @@ class ConnectionLayerToolState extends AbstractLayerToolState {
     /**
      * It sets a Leaflet svg layer.
      * 
-     * @param {L.svg} layer 
+     * @param layer 
      */
     setLayer(layer) {
         this.layer = layer;
@@ -96,7 +96,7 @@ class ConnectionLayerToolState extends AbstractLayerToolState {
     /**
      * It sets the centroids.
      * 
-     * @param {*} centroids 
+     * @param centroids 
      */
     setCentroids(centroids) {
         this.centroids = centroids;
@@ -112,7 +112,7 @@ class ConnectionLayerToolState extends AbstractLayerToolState {
     /**
      * It sets the work data for the force layout algorithm.
      * 
-     * @param {*} workData 
+     * @param workData 
      */
     setWorkData(workData) {
         this.workData = workData;

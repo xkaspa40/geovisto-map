@@ -18,7 +18,7 @@ class ChoroplethLayerToolState extends AbstractLayerToolState {
     /**
      * It resets state with respect to initial props. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {ChoroplethLayerToolDefaults} defaults 
+     * @param defaults 
      */
     reset(defaults) {
         super.reset(defaults);
@@ -41,7 +41,7 @@ class ChoroplethLayerToolState extends AbstractLayerToolState {
     /**
      * The metod takes config and deserializes the values.
      * 
-     * @param {*} config 
+     * @param config 
      */
     deserialize(config) {
         super.deserialize(config);
@@ -53,7 +53,7 @@ class ChoroplethLayerToolState extends AbstractLayerToolState {
     /**
      * The method serializes the tool state. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {ChoroplethLayerToolDefaults} defaults
+     * @param defaults
      */
     serialize(defaults) {
         let config = super.serialize(defaults);
@@ -74,7 +74,7 @@ class ChoroplethLayerToolState extends AbstractLayerToolState {
     /**
      * It sets a Leaflet geoJSON layer.
      * 
-     * @param {L.svg} layer 
+     * @param layer 
      */
     setLayer(layer) {
         this.layer = layer;
@@ -90,7 +90,7 @@ class ChoroplethLayerToolState extends AbstractLayerToolState {
     /**
      * It sets a Leaflet popup control.
      * 
-     * @param {L.control} popup 
+     * @param popup 
      */
     setLayerPopup(popup) {
         this.popup = popup;
@@ -106,7 +106,7 @@ class ChoroplethLayerToolState extends AbstractLayerToolState {
     /**
      * It sets the polygons.
      * 
-     * @param {*} polygons 
+     * @param polygons 
      */
     setPolygons(polygons) {
         this.polygons = polygons;
@@ -122,7 +122,7 @@ class ChoroplethLayerToolState extends AbstractLayerToolState {
     /**
      * It sets the hovered item.
      * 
-     * @param {*} hoveredItem 
+     * @param hoveredItem 
      */
     setHoveredItem(hoveredItem) {
         this.hoveredItem = hoveredItem;
@@ -138,7 +138,7 @@ class ChoroplethLayerToolState extends AbstractLayerToolState {
     /**
      * It sets the z index.
      * 
-     * @param {*} zindex 
+     * @param zindex 
      */
     setZIndex(zindex) {
         this.zindex = zindex;

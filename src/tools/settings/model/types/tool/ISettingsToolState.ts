@@ -11,14 +11,14 @@ interface ISettingsToolState extends IMapToolState {
     /**
      * The metod takes config and deserializes the values.
      * 
-     * @param {ISettingsToolConfig} config 
+     * @param config 
      */
     deserialize(config: ISettingsToolConfig): void;
 
     /**
      * The method serializes the tool state. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {boolean | undefined} filterDefaults
+     * @param filterDefaults
      */
     serialize(filterDefaults: boolean | undefined): ISettingsToolConfig;
 }

@@ -8,14 +8,14 @@ import IMapFilterRule from "./IMapFilterRule";
  * 
  * @author Jiri Hynek
  */
-interface IMapFiltersManager extends IMapCategoriesManager {
+interface IMapFiltersManager extends IMapCategoriesManager<IMapFilterOperation> {
 
     /**
      * The function creates a new filter rule using given operation label.
      * 
-     * @param {IMapDataDomain} dataDomain 
-     * @param {IMapFilterOperation} operation 
-     * @param {string} pattern 
+     * @param dataDomain 
+     * @param operation 
+     * @param pattern 
      */
     createRule(dataDomain: IMapDataDomain, operation: IMapFilterOperation, pattern: string): IMapFilterRule;
 
@@ -23,8 +23,8 @@ interface IMapFiltersManager extends IMapCategoriesManager {
      * Takes a list of data and applies the given filter rules.
      * Returns a new list of the references to filtered data items.
      * 
-     * @param {object[]} filterRules 
-     * @param {IMapFilterRule[]} filterRules 
+     * @param filterRules 
+     * @param filterRules 
      */
     filterData(dataRecords: object[], filterRules: IMapFilterRule[]): object[];
 }

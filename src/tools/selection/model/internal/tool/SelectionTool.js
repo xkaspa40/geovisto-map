@@ -17,13 +17,13 @@ class SelectionTool extends AbstractTool {
     /**
      * It creates a new tool with respect to the props.
      * 
-     * @param {*} props 
+     * @paramps 
      */
     constructor(props) {
         super(props);
 
         // the tab fragment for a sidebar tab will be created only if needed
-        this.tabFragment = undefined
+        this.tabFragment = undefined;
     }
 
     /**
@@ -72,7 +72,7 @@ class SelectionTool extends AbstractTool {
 
     /**
      * 
-     * @param {*} selection 
+     * @paramection 
      */
     setSelection(selection) {
         if(selection != undefined) {

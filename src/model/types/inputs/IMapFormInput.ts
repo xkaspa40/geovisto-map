@@ -18,7 +18,7 @@ interface IMapFormInput {
     /**
      * It sets value of the input element.
      * 
-     * @param {string} value 
+     * @param value 
      */
     setValue(value: any): void;
 

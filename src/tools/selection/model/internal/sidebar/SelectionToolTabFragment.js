@@ -34,7 +34,7 @@ class SelectionToolTabFragment extends AbstractSidebarFragment {
     /**
      * The function returns true if the tab fragment should be included in the tab control.
      * 
-     * @param {*} tabControl 
+     * @paramControl 
      */
     isChild(tabControl) {
         return tabControl.getState().getTool().getType() == SettingsTool.TYPE();

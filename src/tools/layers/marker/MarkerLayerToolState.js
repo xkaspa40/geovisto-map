@@ -18,7 +18,7 @@ class MarkerLayerToolState extends AbstractLayerToolState {
     /**
      * It resets state with respect to initial props. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {MarkerLayerToolDefaults} defaults 
+     * @param defaults 
      */
     reset(defaults) {
         super.reset(defaults);
@@ -41,7 +41,7 @@ class MarkerLayerToolState extends AbstractLayerToolState {
     /**
      * The metod takes config and deserializes the values.
      * 
-     * @param {*} config 
+     * @param config 
      */
     deserialize(config) {
         super.deserialize(config);
@@ -53,7 +53,7 @@ class MarkerLayerToolState extends AbstractLayerToolState {
     /**
      * The method serializes the tool state. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {MarkerLayerToolDefaults} defaults
+     * @param defaults
      */
     serialize(defaults) {
         let config = super.serialize(defaults);
@@ -74,7 +74,7 @@ class MarkerLayerToolState extends AbstractLayerToolState {
     /**
      * It sets a Leaflet layer group.
      * 
-     * @param {L.layerGroup} layer 
+     * @param layer 
      */
     setLayer(layer) {
         this.layer = layer;
@@ -90,7 +90,7 @@ class MarkerLayerToolState extends AbstractLayerToolState {
     /**
      * It sets the centroids.
      * 
-     * @param {*} centroids 
+     * @param centroids 
      */
     setCentroids(centroids) {
         this.centroids = centroids;
@@ -106,7 +106,7 @@ class MarkerLayerToolState extends AbstractLayerToolState {
     /**
      * It sets the markers.
      * 
-     * @param {*} markers 
+     * @param markers 
      */
     setMarkers(markers) {
         this.markers = markers;

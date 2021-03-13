@@ -14,14 +14,14 @@ interface ISidebarToolState extends IMapToolState {
     /**
      * The metod takes config and deserializes the values.
      * 
-     * @param {ISidebarToolConfig} config 
+     * @param config 
      */
     deserialize(config: ISidebarToolConfig): void;
 
     /**
      * The method serializes the tool configuration. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {boolean | undefined} filterDefaults
+     * @param filterDefaults
      */
     serialize(filterDefaults: boolean | undefined): ISidebarToolConfig;
 
@@ -38,7 +38,7 @@ interface ISidebarToolState extends IMapToolState {
     /**
      * It sets sidebar.
      * 
-     * @param {Control.Sidebar} sidebar 
+     * @param sidebar 
      */
     setSidebar(sidebar: Control.Sidebar): void;
 
@@ -50,14 +50,14 @@ interface ISidebarToolState extends IMapToolState {
     /**
      * It sets the tabs property of the tool state.
      * 
-     * @param {ISidebarTab} tab
+     * @param tab
      */
     addTab(tab: ISidebarTab): void;
 
     /**
      * It removes tab from the list of tabs.
      * 
-     * @param {ISidebarTab} tab 
+     * @param tab 
      */
     removeTab(tab: ISidebarTab): void;
 }

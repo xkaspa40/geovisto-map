@@ -12,5 +12,7 @@
   "env": {
     "browser": true
   },
-  "rules": { }
+  "rules": {
+    "semi": 1
+  }
 }

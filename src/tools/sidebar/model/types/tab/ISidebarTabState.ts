@@ -15,7 +15,7 @@ interface ISidebarTabState extends IMapObjectState {
     /**
      * The function takes config and deserializes the values.
      * 
-     * @param {ISidebarTabConfig} config 
+     * @param config 
      */
     deserialize(config: ISidebarTabConfig): void;
 
@@ -23,7 +23,7 @@ interface ISidebarTabState extends IMapObjectState {
      * The method serializes the sidebar tab configuration.
      * Optionally, a serialed value can be let undefined if it equals the default value.
      * 
-     * @param {boolean | undefined} filterDefaults 
+     * @param filterDefaults 
      */
     serialize(filterDefaults: boolean | undefined): ISidebarTabConfig;
 
@@ -35,7 +35,7 @@ interface ISidebarTabState extends IMapObjectState {
     /**
      * It sets the tool property of the sidebar tab state.
      * 
-     * @param {IMapTool} tool 
+     * @param tool 
      */
     setTool(tool: IMapTool): void;
 
@@ -47,7 +47,7 @@ interface ISidebarTabState extends IMapObjectState {
     /**
      * It sets the enabled property of the sidebar tab state.
      * 
-     * @param {boolean} enabled 
+     * @param enabled 
      */
     setEnabled(enabled: boolean): void;
 
@@ -59,7 +59,7 @@ interface ISidebarTabState extends IMapObjectState {
     /**
      * It sets the name property of the sidebar tab state.
      * 
-     * @param {string} name 
+     * @param name 
      */
     setName(name: string): void;
 
@@ -71,7 +71,7 @@ interface ISidebarTabState extends IMapObjectState {
     /**
      * It sets the icon property of the sidebar tab state.
      * 
-     * @param {string} icon
+     * @param icon
      */
     setIcon(icon: string): void;
 
@@ -83,7 +83,7 @@ interface ISidebarTabState extends IMapObjectState {
     /**
      * It sets the checkButton property of the sidebar tab state.
      * 
-     * @param {boolean} checkButton 
+     * @param checkButton 
      */
     setCheckButton(checkButton: boolean): void;
 
@@ -95,7 +95,7 @@ interface ISidebarTabState extends IMapObjectState {
     /**
      * It sets the sidebar property of the sidebar tab state.
      * 
-     * @param {Control.Sidebar} sidebar 
+     * @param sidebar 
      */
     setSidebar(sidebar: Control.Sidebar): void;
 
@@ -107,7 +107,7 @@ interface ISidebarTabState extends IMapObjectState {
     /**
      * It sets the tabPane property of the sidebar tab state.
      * 
-     * @param {HTMLElement} content 
+     * @param content 
      */
     setContent(content: HTMLElement): void;
 
@@ -119,7 +119,7 @@ interface ISidebarTabState extends IMapObjectState {
     /**
      * It sets the fragments property of the sidebar tab state.
      * 
-     * @param {ISidebarFragment[]} fragments 
+     * @param fragments 
      */
     setFragments(fragments: ISidebarFragment[]): void;
 }

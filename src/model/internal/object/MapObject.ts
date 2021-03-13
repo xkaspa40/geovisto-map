@@ -91,7 +91,7 @@ class MapObject implements IMapObject {
     /**
      * It sets a config
      * 
-     * @param {IMapObjectConfig} config 
+     * @param config 
      */
     public setConfig(config: IMapObjectConfig): void {
         // override state by the config if specified in argument

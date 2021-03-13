@@ -16,7 +16,7 @@ class MapLayerTool extends AbstractLayerTool {
     /**
      * It creates a new tool with respect to the props.
      * 
-     * @param {*} props 
+     * @param props 
      */
     constructor(props) {
         super(props);
@@ -73,7 +73,7 @@ class MapLayerTool extends AbstractLayerTool {
     /**
      * Creates new tile layer
      * 
-     * @param {*} tileID 
+     * @param tileID 
      */
     createTileLayer(tileID) {
         // ----------------- TODO: refactorization needed
@@ -89,7 +89,7 @@ class MapLayerTool extends AbstractLayerTool {
     /**
      * This function is called when a custom event is invoked.
      * 
-     * @param {AbstractEvent} event 
+     * @param event 
      */
     handleEvent(event) {
         if(event.getType() == ThemesToolEvent.TYPE()) {

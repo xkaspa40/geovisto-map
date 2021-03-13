@@ -45,7 +45,7 @@ class SidebarToolState extends MapToolState implements ISidebarToolState {
     /**
      * The metod takes config and deserializes the values.
      * 
-     * @param {ISidebarToolConfig} config 
+     * @param config 
      */
     deserialize(config: ISidebarToolConfig): void {
         super.deserialize(config);
@@ -57,16 +57,16 @@ class SidebarToolState extends MapToolState implements ISidebarToolState {
     /**
      * The method serializes the tool configuration. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {boolean} filterDefaults
+     * @param filterDefaults
      */
     serialize(filterDefaults: boolean): ISidebarToolConfig {
-        let config: ISidebarToolConfig = <ISidebarToolConfig> super.serialize(filterDefaults);
+        const config: ISidebarToolConfig = <ISidebarToolConfig> super.serialize(filterDefaults);
 
         // serialize sidebar tabs
         config.tabs = [];
-        let tabs: ISidebarTab[] = this.getTabs();
+        const tabs: ISidebarTab[] = this.getTabs();
         for(let i = 0; i < tabs.length; i++) {
-            config.tabs.push(tabs[i].getState().serialize(filterDefaults))
+            config.tabs.push(tabs[i].getState().serialize(filterDefaults));
         }
 
         return config;
@@ -89,9 +89,9 @@ class SidebarToolState extends MapToolState implements ISidebarToolState {
     /**
      * It sets sidebar.
      * 
-     * @param {Control.Sidebar} sidebar 
+     * @param sidebar 
      */
-    setSidebar(sidebar: Control.Sidebar) {
+    setSidebar(sidebar: Control.Sidebar): void {
         this.sidebar = sidebar;
     }
 
@@ -105,16 +105,16 @@ class SidebarToolState extends MapToolState implements ISidebarToolState {
     /**
      * It sets the tabs property of the tool state.
      * 
-     * @param {ISidebarTab} tab
+     * @param tab
      */
     addTab(tab: ISidebarTab): void {
-        this.tabs.push(tab)
+        this.tabs.push(tab);
     }
 
     /**
      * It removes tab from the list of tabs.
      * 
-     * @param {ISidebarTab} tab 
+     * @param tab 
      */
     removeTab(tab: ISidebarTab): void {
         const index = this.tabs.indexOf(tab);

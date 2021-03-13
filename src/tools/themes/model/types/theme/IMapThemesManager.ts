@@ -6,12 +6,12 @@ import IMapCategoriesManager from "../../../../../model/types/category/IMapCateg
  * 
  * @author Jiri Hynek
  */
-interface IMapThemesManager extends IMapCategoriesManager {
+interface IMapThemesManager extends IMapCategoriesManager<IMapTheme> {
 
     /**
      * It returns the default theme.
      */
-    getDefault(): IMapTheme;
+    getDefault(): IMapTheme | undefined;
     
 }
 export default IMapThemesManager;

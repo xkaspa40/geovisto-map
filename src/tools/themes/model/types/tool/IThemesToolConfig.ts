@@ -8,5 +8,6 @@ import IMapToolConfig from "../../../../../model/types/tool/IMapToolConfig";
  * @author Jiri Hynek
  */
 interface IThemesToolConfig extends IMapToolConfig {
+    theme: string | undefined;
 }
 export default IThemesToolConfig;

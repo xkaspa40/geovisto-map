@@ -12,7 +12,7 @@ class ReactGeovistoMap extends Component {
     /**
      * Initializes object.
      * 
-     * @param {*} props 
+     * @param props 
      */
     constructor(props) {
         super(props);

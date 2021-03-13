@@ -5,6 +5,7 @@ import IMapToolProps from "../../../../../model/types/tool/IMapToolProps";
  * 
  * @author Jiri Hynek
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface ISidebarToolProps extends IMapToolProps {
 }
 export default ISidebarToolProps;

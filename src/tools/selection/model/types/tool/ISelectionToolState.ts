@@ -12,14 +12,14 @@ interface ISelectionToolState extends IMapToolState {
     /**
      * The metod takes config and deserializes the values.
      * 
-     * @param {ISelectionToolConfig} config 
+     * @param config 
      */
     deserialize(config: ISelectionToolConfig): void;
 
     /**
      * The method serializes the tool state. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {boolean | undefined} defaults
+     * @param defaults
      */
     serialize(filterDefaults: boolean | undefined): ISelectionToolConfig;
 
@@ -31,7 +31,7 @@ interface ISelectionToolState extends IMapToolState {
     /**
      * It sets the selection property of the tool state.
      * 
-     * @param {AbstractMapSelection} selection
+     * @param selection
      */
     setSelection(selection: IMapSelection): void;
 }

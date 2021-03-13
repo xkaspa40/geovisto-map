@@ -13,7 +13,7 @@ abstract class AbstractMapDataManager implements IMapDataManager {
     /**
      * It initializes the data wrapper providing a basic API.
      * 
-     * @param {any} data 
+     * @param data 
      */
     constructor(data: any) {
         this.data = data;
@@ -22,33 +22,33 @@ abstract class AbstractMapDataManager implements IMapDataManager {
     /**
      * It returns the original input data.
      */
-    getOriginalData() {
+    public getOriginalData(): any {
         return this.data;
     }
 
     /**
      * It returns the preprocessed data as a list of data reconds of the *same* object type.
      */
-    abstract getDataRecords(): object[];
+    public abstract getDataRecords(): any[];
 
     /**
      * It returns list of data domains.
      */
-    abstract getDataDomains(): IMapDataDomain[];
+    public abstract getDataDomains(): IMapDataDomain[];
 
     /**
      * It returns list of all values of the selected data domain.
      * 
-     * @param {IMapDataDomain} dataDomain
+     * @param dataDomain
      */
-    abstract getValues(dataDomain: IMapDataDomain): string[];
+    public abstract getValues(dataDomain: IMapDataDomain): string[];
 
     /**
      * Help function which returns the list of data domain string name.
      */
-    getDataDomainNames(): string[] {
-        let names = [];
-        let dataDomains: IMapDataDomain[] = this.getDataDomains();
+    public getDataDomainNames(): string[] {
+        const names = [];
+        const dataDomains: IMapDataDomain[] = this.getDataDomains();
         for(let i = 0; i < dataDomains.length; i++) {
             names.push(dataDomains[i].getName());
         }
@@ -59,10 +59,10 @@ abstract class AbstractMapDataManager implements IMapDataManager {
      * It returns the data domain which corresponds to the given string
      * or creates a new one.
      * 
-     * @param {string} name 
+     * @param name 
      */
-    getDataDomain(name : string) : IMapDataDomain | undefined {
-        let dataDomains: IMapDataDomain[] = this.getDataDomains();
+    public getDataDomain(name : string) : IMapDataDomain | undefined {
+        const dataDomains: IMapDataDomain[] = this.getDataDomains();
         if(dataDomains != undefined) {
             for(let i = 0; i < dataDomains.length; i++) {
                 if(dataDomains[i].getName() == name) {
@@ -76,17 +76,17 @@ abstract class AbstractMapDataManager implements IMapDataManager {
     /**
      * It returns list of all values of the selected data domain stored in the given data records.
      * 
-     * @param {IMapDataDomain} dataDomain
-     * @param {object[]} dataRecords
+     * @param dataDomain
+     * @param dataRecords
      */
-    abstract getDataRecordsValues(dataDomain: IMapDataDomain, data: object[]): string[];
+    public abstract getDataRecordsValues(dataDomain: IMapDataDomain, data: any[]): string[];
 
     /**
      * It returns values stored of the selected data domain stored in the given data record.
      * 
-     * @param {IMapDataDomain} dataDomain
-     * @param {object} dataRecord
+     * @param dataDomain
+     * @param dataRecord
      */
-    abstract getDataRecordValues(dataDomain: IMapDataDomain, dataRecord: object): string[];
+    public abstract getDataRecordValues(dataDomain: IMapDataDomain, dataRecord: any): string[];
 }
 export default AbstractMapDataManager;

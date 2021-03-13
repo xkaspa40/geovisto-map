@@ -23,7 +23,7 @@ class SidebarTabDefaults extends MapObjectDefaults implements ISidebarTabDefault
      * It returns the default config.
      */
     public getConfig(): ISidebarTabConfig {
-        let config = <ISidebarTabConfig> super.getConfig();
+        const config = <ISidebarTabConfig> super.getConfig();
         config.tool = undefined,
         config.enabled = undefined;
         return config;

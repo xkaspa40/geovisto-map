@@ -13,14 +13,14 @@ interface IThemesToolState extends IMapToolState {
     /**
      * The metod takes config and deserializes the values.
      * 
-     * @param {IThemesToolConfig} config 
+     * @param config 
      */
     deserialize(config: IThemesToolConfig): void;
 
     /**
      * The method serializes the tool state. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {boolean | undefined} filterDefaults
+     * @param filterDefaults
      */
     serialize(filterDefaults: boolean | undefined): IThemesToolConfig;
 
@@ -32,19 +32,19 @@ interface IThemesToolState extends IMapToolState {
     /**
      * It sets themes manager.
      * 
-     * @param {IMapThemesManager} manager 
+     * @param manager 
      */
     setThemesManager(manager: IMapThemesManager): void;
 
     /**
      * It returns the theme property of the tool state.
      */
-    getTheme(): IMapTheme;
+    getTheme(): IMapTheme | undefined;
 
     /**
      * It sets the theme property of the tool state.
      * 
-     * @param {IMapTheme} theme 
+     * @param theme 
      */
     setTheme(theme: IMapTheme): void;
 }

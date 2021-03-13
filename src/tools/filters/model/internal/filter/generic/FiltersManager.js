@@ -25,9 +25,9 @@ class FiltersManager extends AbstractFiltersManager {
     /**
      * The function creates a new filter rule using given operation label.
      * 
-     * @param {*} dataDomain 
-     * @param {*} label 
-     * @param {*} pattern 
+     * @param dataDomain 
+     * @param label 
+     * @param pattern 
      */
     createRule(dataDomain, label, pattern) {
         let operation = this.getOperation(label);
@@ -41,9 +41,9 @@ class FiltersManager extends AbstractFiltersManager {
      * Takes a list of data and applies the given filter rules.
      * Returns a new list of the references to filtered data items.
      * 
-     * @param {AbstractMapData} mapData
-     * @param {*} data 
-     * @param {[FilterRule]} filterRules 
+     * @param mapData
+     * @param data 
+     * @param filterRules 
      */
     filterData(mapData, data, filterRules) {
         let resultData = [];

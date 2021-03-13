@@ -35,21 +35,21 @@ interface IMap extends IMapObject {
     /**
      * It exports the serialized representation of the current state of the map.
      */
-    export(): object;
+    export(): any;
 
     /**
      * It updates data and invokes listeners.
      * 
-     * @param {object[]} data
-     * @param {IMapObject} source of the change
+     * @param data
+     * @param source of the change
      */
-    updateData(data: object[], source: IMapObject): void;
+    updateData(data: any[], source: IMapObject): void;
     
     /**
      * It sends custom event to all listeners (tools)
      * 
-     * @param {AbstractEvent} event 
+     * @param event 
      */
-    dispatchEvent(event: IMapEvent): void;
-};
+    dispatchEvent(event: IMapEvent<IMapObject>): void;
+}
 export default IMap;

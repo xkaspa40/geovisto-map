@@ -24,7 +24,7 @@ class GeovistoMapState extends MapObjectState implements IMapState {
     private tools: IMapToolsManager;
     private toolTemplates: IMapToolsManager;
     private mapData: IMapDataManager;
-    private data: object[];
+    private data: any[];
     private mapConfig: IMapConfigManager;
     private polygons: any;
     private centroids: any;
@@ -40,13 +40,13 @@ class GeovistoMapState extends MapObjectState implements IMapState {
     constructor(map: IMap) {
         super(map);
 
-        let props = <IMapProps> this.getProps();
-        let defaults = <IMapDefaults> this.getDefaults();
+        const props = <IMapProps> this.getProps();
+        const defaults = <IMapDefaults> this.getDefaults();
 
         this.mapConfig = defaults.getConfigManager();
 
         // templates
-        let templates: IMapTemplates = props.templates == undefined ? defaults.getTemplates() : props.templates;
+        const templates: IMapTemplates = props.templates == undefined ? defaults.getTemplates() : props.templates;
         this.toolTemplates = (templates.tools == undefined ? defaults.getToolTemplates() : templates.tools);
 
         // tools
@@ -61,7 +61,7 @@ class GeovistoMapState extends MapObjectState implements IMapState {
         this.centroids = props.centroids == undefined ? defaults.getCentroids() : props.centroids;
 
         // globals (state variables which are common for all geovisto tools) - can be undefined and set by initialize function
-        let globals: IMapGlobals = props.globals == undefined ? defaults.getGlobals() : props.globals;
+        const globals: IMapGlobals = props.globals == undefined ? defaults.getGlobals() : props.globals;
         this.zoom = globals.zoom == undefined ? defaults.getZoom() : globals.zoom;
         this.mapCenter = globals.mapCenter == undefined ? defaults.getMapCenter() : globals.mapCenter;
         this.mapStructure = globals.mapStructure == undefined ? defaults.getMapStructure() : globals.mapStructure;
@@ -73,11 +73,11 @@ class GeovistoMapState extends MapObjectState implements IMapState {
     public reset(): void {
         super.reset();
         
-        let props = <IMapProps> this.getProps();
-        let defaults = <IMapDefaults> this.getDefaults();
+        const props = <IMapProps> this.getProps();
+        const defaults = <IMapDefaults> this.getDefaults();
 
         // templates
-        let templates: IMapTemplates = props.templates == undefined ? defaults.getTemplates() : props.templates;
+        const templates: IMapTemplates = props.templates == undefined ? defaults.getTemplates() : props.templates;
         this.setToolTemplates(templates.tools == undefined ? defaults.getToolTemplates() : templates.tools);
 
         // tools
@@ -91,7 +91,7 @@ class GeovistoMapState extends MapObjectState implements IMapState {
         this.setCentroids(props.centroids == undefined ? defaults.getCentroids() : props.centroids);
 
         // globals (state variables which are common for all geovisto tools) - can be undefined and set by initialize function
-        let globals: IMapGlobals = props.globals == undefined ? defaults.getGlobals() : props.globals;
+        const globals: IMapGlobals = props.globals == undefined ? defaults.getGlobals() : props.globals;
         this.setInitialZoom(globals.zoom == undefined ? defaults.getZoom() : globals.zoom);
         this.setInitialMapCenter(globals.mapCenter == undefined ? defaults.getMapCenter() : globals.mapCenter);
         this.setInitialMapStructure(globals.mapStructure == undefined ? defaults.getMapStructure() : globals.mapStructure);
@@ -100,7 +100,7 @@ class GeovistoMapState extends MapObjectState implements IMapState {
     /**
      * It takes config and deserializes the values.
      * 
-     * @param {IMapConfig} config
+     * @param config
      */
     public deserialize(config: IMapConfig): void {
         super.deserialize(config);
@@ -113,27 +113,27 @@ class GeovistoMapState extends MapObjectState implements IMapState {
     /**
      * It serializes the map state. Optionally, a serialed value can be let undefined if it equals the default value.
      * 
-     * @param {boolean | undefined} filterDefaults 
+     * @param filterDefaults 
      */
     public serialize(filterDefaults: boolean | undefined): IMapConfig {
-        let defaults = <IMapDefaults> this.getDefaults();
-        let map = this.getLeafletMap();
+        const defaults = <IMapDefaults> this.getDefaults();
+        const map = this.getLeafletMap();
 
         // initialize config
         // do not serialize the id and type for map
         //let config = super.serialize(defaults);
-        let config: IMapConfig = {
+        const config: IMapConfig = {
             id: undefined,
             type: undefined,
             zoom: filterDefaults && map.getZoom() == defaults.getZoom() ? undefined : map.getZoom(),
             mapCenter: filterDefaults && map.getCenter() == defaults.getMapCenter() ? undefined : map.getCenter(),
             mapStructure: undefined, // TODO map structure
             tools: undefined // see the code below
-        }
+        };
 
         // serialize tools
-        let tools: IMapTool[] = this.getTools().getObjects();
-        let toolsConfigs: IMapToolConfig[] = [];
+        const tools: IMapTool[] = this.getTools().getAll();
+        const toolsConfigs: IMapToolConfig[] = [];
         for (let i = 0; i < tools.length; i++) {
             toolsConfigs.push(tools[i].getState().serialize(false));
         }
@@ -156,9 +156,9 @@ class GeovistoMapState extends MapObjectState implements IMapState {
      * 
      * TODO: specify the type
      * 
-     * @param {any} map 
+     * @param map 
      */
-    public setLeafletMap(map: any) {
+    public setLeafletMap(map: any): void {
         return this.map = map;
     }
 
@@ -172,7 +172,7 @@ class GeovistoMapState extends MapObjectState implements IMapState {
     /**
      * It sets tool templates providing tool templates.
      * 
-     * @param {IMapToolsManager} toolTemplates 
+     * @param toolTemplates 
      */
     public setToolTemplates(toolTemplates: IMapToolsManager): void {
         this.toolTemplates = toolTemplates;
@@ -181,16 +181,16 @@ class GeovistoMapState extends MapObjectState implements IMapState {
     /**
      * It returns tools manager providing tools.
      */
-    getTools(): IMapToolsManager {
+    public getTools(): IMapToolsManager {
         return this.tools;
     }
 
     /**
      * It sets tools manager providing tools.
      * 
-     * @param {IMapToolsManager} tools 
+     * @param tools 
      */
-    setTools(tools: IMapToolsManager): void {
+    public setTools(tools: IMapToolsManager): void {
         // we use copies of predefined tools due to later multiple imports of configs
         this.tools = tools.copy();
     }
@@ -198,7 +198,7 @@ class GeovistoMapState extends MapObjectState implements IMapState {
     /**
      * It returns the map data manager.
      */
-    getMapData(): IMapDataManager {
+    public getMapData(): IMapDataManager {
         return this.mapData;
     }
 
@@ -206,9 +206,9 @@ class GeovistoMapState extends MapObjectState implements IMapState {
      * It sets the map data manager.
      * note: It also updates the current data.
      * 
-     * @param {IMapDataManager} mapData 
+     * @param mapData 
      */
-    setMapData(mapData: IMapDataManager) {
+    public setMapData(mapData: IMapDataManager): void {
         this.mapData = mapData;
         this.setCurrentData(mapData.getDataRecords());
     }
@@ -218,7 +218,7 @@ class GeovistoMapState extends MapObjectState implements IMapState {
      * 
      * TODO: specify the type
      */
-    getCurrentData(): object[] {
+    public getCurrentData(): any[] {
         return this.data;
     }
 
@@ -227,25 +227,25 @@ class GeovistoMapState extends MapObjectState implements IMapState {
      * 
      * TODO: specify the type
      * 
-     * @param {object[]} data
+     * @param data
      */
-    setCurrentData(data: object[]): void {
+    public setCurrentData(data: any[]): void {
         this.data = data;
     }
 
     /**
      * It returns the map config manager.
      */
-    getMapConfig(): IMapConfigManager {
+    public getMapConfig(): IMapConfigManager {
         return this.mapConfig;
     }
 
     /**
      * It sets the map config manager.
      * 
-     * @param {IMapConfigManager} mapData 
+     * @param mapData 
      */
-    setMapConfig(mapConfig: IMapConfigManager) {
+    public setMapConfig(mapConfig: IMapConfigManager): void {
         this.mapConfig = mapConfig;
     }
 
@@ -254,7 +254,7 @@ class GeovistoMapState extends MapObjectState implements IMapState {
      * 
      * TODO: specify the type
      */
-    getPolygons(): any {
+    public getPolygons(): any {
         return this.polygons;
     }
 
@@ -263,9 +263,9 @@ class GeovistoMapState extends MapObjectState implements IMapState {
      * 
      * TODO: specify the type
      * 
-     * @param {any} polygons
+     * @param polygons
      */
-    setPolygons(polygons: any): void {
+    public setPolygons(polygons: any): void {
         return this.polygons = polygons;
     }
 
@@ -274,7 +274,7 @@ class GeovistoMapState extends MapObjectState implements IMapState {
      * 
      * TODO: specify the type
      */
-    getCentroids(): any {
+    public getCentroids(): any {
         return this.centroids;
     }
 
@@ -283,25 +283,25 @@ class GeovistoMapState extends MapObjectState implements IMapState {
      * 
      * TODO: specify the type
      * 
-     * @param {any[]} centroids
+     * @param centroids
      */
-    setCentroids(centroids: any) {
+    public setCentroids(centroids: any): void {
         return this.centroids = centroids;
     }
 
     /**
      * It returns the initial zoom level.
      */
-    getInitialZoom(): number {
+    public getInitialZoom(): number {
         return this.zoom;
     }
 
     /**
      * It sets initial zoom level.
      * 
-     * @param {number} zoom
+     * @param zoom
      */
-    setInitialZoom(zoom: number): void {
+    public setInitialZoom(zoom: number): void {
         this.zoom = zoom;
     }
 
@@ -310,7 +310,7 @@ class GeovistoMapState extends MapObjectState implements IMapState {
      * 
      * TODO: remove from state (use defaults only)
      */
-    getInitialMapCenter(): { lat: number, lng: number } {
+    public getInitialMapCenter(): { lat: number, lng: number } {
         return this.mapCenter;
     }
 
@@ -319,9 +319,9 @@ class GeovistoMapState extends MapObjectState implements IMapState {
      * 
      * TODO: remove from state (use defaults only)
      * 
-     * @param {*} mapCenter
+     * @param mapCenter
      */
-    setInitialMapCenter(mapCenter: { lat: number, lng: number }) {
+    public setInitialMapCenter(mapCenter: { lat: number, lng: number }): void {
         this.mapCenter = mapCenter;
     }
 
@@ -330,7 +330,7 @@ class GeovistoMapState extends MapObjectState implements IMapState {
      * 
      * TODO: remove from state (use defaults only)
      */
-    getInitialMapStructure(): { maxZoom: number, maxBounds: [[ number,number ],[ number,number ]] } {
+    public getInitialMapStructure(): { maxZoom: number, maxBounds: [[ number,number ],[ number,number ]] } {
         return this.mapStructure;
     }
 
@@ -339,9 +339,9 @@ class GeovistoMapState extends MapObjectState implements IMapState {
      * 
      * TODO: remove from state (use defaults only)
      * 
-     * @param {*} mapStructure
+     * @param mapStructure
      */
-    setInitialMapStructure(mapStructure: { maxZoom: number, maxBounds: [[ number,number ],[ number,number ]] }): void {
+    public setInitialMapStructure(mapStructure: { maxZoom: number, maxBounds: [[ number,number ],[ number,number ]] }): void {
         this.mapStructure = mapStructure;
     }
 }

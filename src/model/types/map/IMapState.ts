@@ -15,14 +15,14 @@ interface IMapState extends IMapObjectState {
     /**
      * It takes config and deserializes the values.
      * 
-     * @param {IMapConfig} config
+     * @param config
      */
     deserialize(config: IMapConfig): void;
 
     /**
      * It serializes the map state. Optionally, a serialed value can be let undefined if it equals the default value.
      * 
-     * @param {boolean | undefined} filterDefaults 
+     * @param filterDefaults 
      */
     serialize(filterDefaults: boolean | undefined): IMapConfig
 
@@ -34,7 +34,7 @@ interface IMapState extends IMapObjectState {
     /**
      * It returns the Leaflet map.
      * 
-     * @param {L.Map} map 
+     * @param map 
      */
     setLeafletMap(map: L.Map): void;
 
@@ -46,7 +46,7 @@ interface IMapState extends IMapObjectState {
     /**
      * It sets the tool templates providing tool templates.
      * 
-     * @param {IMapToolsManager} toolTemplates 
+     * @param toolTemplates 
      */
     setToolTemplates(toolTemplates: IMapToolsManager): void;
 
@@ -58,7 +58,7 @@ interface IMapState extends IMapObjectState {
     /**
      * It sets tools manager providing tools.
      * 
-     * @param {IMapToolsManager} tools 
+     * @param tools 
      */
     setTools(tools: IMapToolsManager): void;
 
@@ -71,7 +71,7 @@ interface IMapState extends IMapObjectState {
      * It sets the map data manager.
      * note: It also updates the current data.
      * 
-     * @param {IMapDataManager} mapData 
+     * @param mapData 
      */
     setMapData(mapData: IMapDataManager): void;
 
@@ -80,16 +80,16 @@ interface IMapState extends IMapObjectState {
      * 
      * TODO: specify the type
      */
-    getCurrentData(): object[];
+    getCurrentData(): any[];
 
     /**
      * It sets current data.
      * 
      * TODO: specify the type
      * 
-     * @param {object[]} data
+     * @param data
      */
-    setCurrentData(data: object[]): void;
+    setCurrentData(data: any[]): void;
 
     /**
      * It returns the map config manager.
@@ -99,7 +99,7 @@ interface IMapState extends IMapObjectState {
     /**
      * It sets the map config manager.
      * 
-     * @param {IMapConfigManager} mapConfigManager 
+     * @param mapConfigManager 
      */
     setMapConfig(mapConfigManager: IMapConfigManager): void;
 
@@ -115,7 +115,7 @@ interface IMapState extends IMapObjectState {
      * 
      * TODO: specify the type
      * 
-     * @param {any} polygons
+     * @param polygons
      */
     setPolygons(polygons: any): void;
 
@@ -131,7 +131,7 @@ interface IMapState extends IMapObjectState {
      * 
      * TODO: specify the type
      * 
-     * @param {any} centroids
+     * @param centroids
      */
     setCentroids(centroids: any): void;
 
@@ -143,7 +143,7 @@ interface IMapState extends IMapObjectState {
     /**
      * It sets initial zoom level.
      * 
-     * @param {number} zoom
+     * @param zoom
      */
     setInitialZoom(zoom: number): void;
 
@@ -159,7 +159,7 @@ interface IMapState extends IMapObjectState {
      * 
      * TODO: remove from state (use defaults only)
      * 
-     * @param {*} mapCenter
+     * @param mapCenter
      */
     setInitialMapCenter(mapCenter: { lat: number, lng: number }): void;
 
@@ -175,7 +175,7 @@ interface IMapState extends IMapObjectState {
      * 
      * TODO: remove from state (use defaults only)
      * 
-     * @param {*} mapStructure
+     * @param mapStructure
      */
     setInitialMapStructure(mapStructure: { maxZoom: number, maxBounds: [[ number,number ],[ number,number ]] }): void;
 }

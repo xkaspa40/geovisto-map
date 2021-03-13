@@ -15,14 +15,19 @@ class JsonMapDataManager extends AbstractMapDataManager implements IMapDataManag
     /**
      * The list is initialized when required.
      */
-    private dataRecords: object[];
+    private dataRecords: any[];
 
     /**
      * The list is initialized when required.
      */
     private dataDomains: IMapDataDomain[];
 
-    constructor(data: object) {
+    /**
+     * It creates JSON data manager
+     * 
+     * @param data 
+     */
+    constructor(data: any) {
         super(data);
         this.dataRecords = [];
         this.dataDomains = [];
@@ -31,14 +36,14 @@ class JsonMapDataManager extends AbstractMapDataManager implements IMapDataManag
     /**
      * It returns the original input data.
      */
-    getOriginalData() {
+    public getOriginalData(): any {
         return super.getOriginalData();
     }
 
     /**
      * It returns preprocessed flattened data.
      */
-    getDataRecords() {
+    public getDataRecords(): any[] {
         if(this.dataRecords == undefined) {
             this.dataRecords = this.createDataRecords(this.getOriginalData());
         }
@@ -56,7 +61,7 @@ class JsonMapDataManager extends AbstractMapDataManager implements IMapDataManag
      * ]
      * 
      */
-    getDataDomains(): IMapDataDomain[] {
+    public getDataDomains(): IMapDataDomain[] {
         if(this.dataDomains == undefined) {
             this.dataDomains = this.createDataDomains();
         }
@@ -69,19 +74,19 @@ class JsonMapDataManager extends AbstractMapDataManager implements IMapDataManag
      * 
      * If data domain does not exists it creates a new one (to avoid undefined return value)
      * 
-     * @param {string} name 
+     * @param name 
      */
-    getDataDomain(name: string): IMapDataDomain {
-        let dataDomain: IMapDataDomain | undefined = super.getDataDomain(name)
+    public getDataDomain(name: string): IMapDataDomain {
+        const dataDomain: IMapDataDomain | undefined = super.getDataDomain(name);
         return dataDomain ? dataDomain : new JsonMapDataDomain(name.split('.'));
     }
 
     /**
      * It returns list of all values of the selected data domain.
      * 
-     * @param {IMapDataDomain} dataDomain
+     * @param dataDomain
      */
-    getValues(dataDomain: IMapDataDomain): string[] {
+    public getValues(dataDomain: IMapDataDomain): string[] {
         return this.getDataRecordsValues(dataDomain, this.getDataRecords());
     }
 
@@ -89,15 +94,15 @@ class JsonMapDataManager extends AbstractMapDataManager implements IMapDataManag
      * It returns list of all values of the selected data domain
      * for the given subset of data.
      * 
-     * @param {AbstractMapDataDomain} dataDomain 
-     * @param {object[]} dataRecords 
+     * @param dataDomain 
+     * @param dataRecords 
      */
-    getDataRecordsValues(dataDomain: IMapDataDomain, dataRecords: object[]): string[] {
-        let result: string[] = [];
+    public getDataRecordsValues(dataDomain: IMapDataDomain, dataRecords: any[]): string[] {
+        const result: string[] = [];
 
         if(dataRecords != undefined) {
             for(let i = 0; i < dataRecords.length; i++) {
-                let actResult: string[] = [];
+                const actResult: string[] = [];
                 this.processDataDomainDescription(actResult, dataRecords[i], dataDomain.getOriginal(), 0);
                 // add only unique results
                 for(let j = 0; j < actResult.length; j++) {
@@ -114,11 +119,11 @@ class JsonMapDataManager extends AbstractMapDataManager implements IMapDataManag
     /**
      * It returns values stored of the selected data domain stored in the given data record.
      * 
-     * @param {IMapDataDomain} dataDomain
-     * @param {object} dataRecord
+     * @param dataDomain
+     * @param dataRecord
      */
-    getDataRecordValues(dataDomain: IMapDataDomain, dataRecord: object) {
-        let result: string[] = [];
+    public getDataRecordValues(dataDomain: IMapDataDomain, dataRecord: any): string[] {
+        const result: string[] = [];
 
         if(dataRecord != undefined) {
             this.processDataDomainDescription(result, dataRecord, dataDomain.getOriginal(), 0);
@@ -134,22 +139,22 @@ class JsonMapDataManager extends AbstractMapDataManager implements IMapDataManag
         /*
          * Tests if an array contains an item
          */
-        let contains = function(dataDomains: IMapDataDomain[], dataDomain: IMapDataDomain) {
-            let dataDomainLabel = dataDomain.getName()
+        const contains = function(dataDomains: IMapDataDomain[], dataDomain: IMapDataDomain) {
+            const dataDomainLabel = dataDomain.getName();
             for(let i = 0; i < dataDomains.length; i++) {
                 if(dataDomains[i].getName() == dataDomainLabel) {
                     return true;
                 }
             }
             return false;
-        }
+        };
 
         /*
          * *Recursive* build of data domains
          *
          * TODO: optimize
          */
-        let processDataDomain = function(dataDomains: IMapDataDomain[], dataDomainValues: any[], actValue: any) {
+        const processDataDomain = function(dataDomains: IMapDataDomain[], dataDomainValues: any[], actValue: any) {
             if(typeof actValue == "object") {
                 // object
                 if(Array.isArray(actValue)) {
@@ -160,28 +165,28 @@ class JsonMapDataManager extends AbstractMapDataManager implements IMapDataManag
                     }
                 } else {
                     // structure (key, value)
-                    let actKeys = Object.keys(actValue);
+                    const actKeys: string[] = Object.keys(actValue);
                     for(let j = 0; j < actKeys.length; j++) {
-                        let dataDomainCopy = [...dataDomainValues];
+                        const dataDomainCopy = [...dataDomainValues];
                         dataDomainCopy.push(actKeys[j]);
                         processDataDomain(dataDomains, dataDomainCopy, actValue[actKeys[j]]);
                     }
                 }
             } else {
                 // simple value
-                let newMapDataDomain = new FlattenedMapDataDomain(dataDomainValues);
+                const newMapDataDomain = new FlattenedMapDataDomain(dataDomainValues);
                 if(!contains(dataDomains, newMapDataDomain)) {
                     dataDomains.push(newMapDataDomain);
                 }
             }
-        }
+        };
 
         // process data -> builing list of data domains (simplified scheme)
-        let dataDomains: IMapDataDomain[] = [];
+        const dataDomains: IMapDataDomain[] = [];
         let dataDomainValues: any[] = [];
         let actKeys;
-        let data: any[] = this.getDataRecords(); // get flattened data
-        for (var i = 0; i < data.length; i++) {
+        const data: any[] = this.getDataRecords(); // get flattened data
+        for (let i = 0; i < data.length; i++) {
             actKeys = Object.keys(data[i]);
             for(let j = 0; j < actKeys.length; j++) {
                 dataDomainValues = [ actKeys[j] ];
@@ -198,22 +203,22 @@ class JsonMapDataManager extends AbstractMapDataManager implements IMapDataManag
      * 
      * TODO: rewrite to typescript
      */
-    protected createDataRecords(data: any) { 
+    protected createDataRecords(data: any): any[] { 
 
         /*
          * *Recursive* flattening of data
          *
          * TODO: optimize
          */
-        let transformObject = function(actValue: any): object[] | null {
+        const transformObject = function(actValue: any): any[] | null {
             let result: any[] | null;
-            let clone = rfdc;
+            const clone = rfdc;
             if(typeof actValue == "object") {
                 // object
                 if(Array.isArray(actValue)) {
                     // array
-                    let transformedChildren: object[] = [];
-                    let transformedChild: object[] | null;
+                    let transformedChildren: any[] = [];
+                    let transformedChild: any[] | null;
                     for(let i = 0; i < actValue.length; i++) {
                         transformedChild = transformObject(actValue[i]);
                         if(Array.isArray(transformedChild)) {
@@ -225,14 +230,14 @@ class JsonMapDataManager extends AbstractMapDataManager implements IMapDataManag
                     result = transformedChildren;
                 } else {
                     // structure (key, value)
-                    let transformedChild: object[] | null;
-                    let actKeys: string[] = Object.keys(actValue);
+                    let transformedChild: any[] | null;
+                    const actKeys: string[] = Object.keys(actValue);
                     result = [{}];
                     for(let i = 0; i < actKeys.length; i++) {
                         transformedChild = transformObject(actValue[actKeys[i]]);
                         if(Array.isArray(transformedChild)) {
                             // wee need to duplicate actual results
-                            let newResults: object[] = [];
+                            const newResults: any[] = [];
                             let copy: any;
                             for(let j = 0; j < result.length; j++) {
                                 for(let k = 0; k < transformedChild.length; k++) {
@@ -260,10 +265,10 @@ class JsonMapDataManager extends AbstractMapDataManager implements IMapDataManag
                  result = actValue;
             }
             return result;
-        }
+        };
         
-        let result: object[] | null = transformObject(data);
-        let dataRecords = result != null ? result : [];
+        const result: any[] | null = transformObject(data);
+        const dataRecords = result != null ? result : [];
         console.log("flattened data: ", dataRecords);
 
         return dataRecords;
@@ -274,12 +279,12 @@ class JsonMapDataManager extends AbstractMapDataManager implements IMapDataManag
      * 
      * TODO: rewrite to typescript
      * 
-     * @param {*} result 
-     * @param {*} actValue 
-     * @param {*} dataDomain 
-     * @param {*} i 
+     * @param result 
+     * @param actValue 
+     * @param dataDomain 
+     * @param i 
      */
-    protected processDataDomainDescription(result: string[], actValue: any, domainDescription: any, i: number) {
+    protected processDataDomainDescription(result: string[], actValue: any, domainDescription: any, i: number): void {
 
         if(actValue != undefined && actValue != null) {
             if(i == domainDescription.length) {
@@ -291,7 +296,7 @@ class JsonMapDataManager extends AbstractMapDataManager implements IMapDataManag
                 // act value needs to be type of object
                 // TODO reqrite to TypeScript
                 if(typeof actValue == "object") {
-                    let dataDomainPart = domainDescription[i];
+                    const dataDomainPart = domainDescription[i];
                     if(dataDomainPart == "[]") {
                         // act value needs to be type of array
                         if(Array.isArray(actValue)) {
@@ -308,4 +313,4 @@ class JsonMapDataManager extends AbstractMapDataManager implements IMapDataManag
         }
     }
 }
-export default JsonMapDataManager
+export default JsonMapDataManager;

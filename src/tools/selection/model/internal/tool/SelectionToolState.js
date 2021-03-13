@@ -20,7 +20,7 @@ class SelectionToolState extends MapToolState {
     /**
      * It resets state with respect to initial props. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {SelectionToolDefaults} defaults 
+     * @param
      */
     reset(defaults) {
         super.reset(defaults);
@@ -32,7 +32,7 @@ class SelectionToolState extends MapToolState {
     /**
      * The metod takes config and deserializes the values.
      * 
-     * @param {*} config 
+     * @paramfig 
      */
     deserialize(config) {
         super.deserialize(config);
@@ -49,7 +49,7 @@ class SelectionToolState extends MapToolState {
     /**
      * The method serializes the tool state. Optionally, defaults can be set if property is undefined.
      * 
-     * @param {SelectionToolDefaults} defaults
+     * @param
      */
     serialize(defaults) {
         let config = super.serialize(defaults);
@@ -76,7 +76,7 @@ class SelectionToolState extends MapToolState {
     /**
      * It sets the selection property of the tool state.
      * 
-     * @param {AbstractMapSelection} selection
+     * @param
      */
     setSelection(selection) {
        this.selection = selection;

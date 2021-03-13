@@ -10,7 +10,7 @@ interface IMapObjectsManager<T extends IMapObject> {
     /**
      * The function returns available map objects.
      */
-    getObjects(): T[]
+    getAll(): T[]
 
     /**
      * The function returns the number of objects.
@@ -25,21 +25,21 @@ interface IMapObjectsManager<T extends IMapObject> {
     /**
      * It adds object to the list of objects.
      * 
-     * @param {T} object 
+     * @param object 
      */
     add(object: T): void;
 
     /**
      * It removes object from the list of objects.
      * 
-     * @param {T} object 
+     * @param object 
      */
     remove(object: T): void;
 
     /**
      * It removes object of the given id from the list of objects.
      * 
-     * @param {string} id 
+     * @param id 
      */
     removeById(id: string): void;
 
@@ -56,14 +56,14 @@ interface IMapObjectsManager<T extends IMapObject> {
     /**
      * The function returns map objects of given type.
      * 
-     * @param {string} type
+     * @param type
      */
     getByType(type: string): T[];
 
     /**
      * The function returns map object of given unique identifier.
      * 
-     * @param {string} id
+     * @param id
      */
     getById(id: string): T | undefined;
 }

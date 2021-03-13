@@ -5,12 +5,12 @@ import IMapCategory from "./IMapCategory";
  * 
  * @author Jiri Hynek
  */
-interface IMapCategoriesManager {
+interface IMapCategoriesManager<T extends IMapCategory> {
 
     /**
      * The function returns available map categories.
      */
-    getCategories(): IMapCategory[];
+    getAll(): T[];
 
     /**
      * The function returns the number of categories.
@@ -25,21 +25,21 @@ interface IMapCategoriesManager {
     /**
      * It adds category to the list of categories.
      * 
-     * @param {IMapCategory} category 
+     * @param category 
      */
-    add(category: IMapCategory): void;
+    add(category: T): void;
 
     /**
      * It removes category from the list of categories.
      * 
-     * @param {IMapCategory} category 
+     * @param category 
      */
-    remove(category: IMapCategory): void;
+    remove(category: T): void;
 
     /**
      * It removes category of the given name from the list of categories.
      * 
-     * @param {string} name 
+     * @param name 
      */
     removeByName(name: string): void;
 
@@ -51,8 +51,8 @@ interface IMapCategoriesManager {
     /**
      * The function returns map categories of given name.
      * 
-     * @param {string} name
+     * @param name
      */
-    getByName(name: string): IMapCategory[];
+    getByName(name: string): T[];
 }
 export default IMapCategoriesManager;

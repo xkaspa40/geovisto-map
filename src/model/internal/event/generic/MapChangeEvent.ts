@@ -7,24 +7,24 @@ import IMapChangeEvent from "../../../types/event/IMapChangeEvent";
  * 
  * @author Jiri Hynek
  */
-class MapChangeEvent extends MapEvent implements IMapChangeEvent {
+class MapChangeEvent<TSource extends IMapObject, TChangedObject> extends MapEvent<TSource> implements IMapChangeEvent<TSource, TChangedObject> {
     
-    private object: any;
+    private changedObject: any;
 
     /**
      * It initializes event.
      */
-    constructor(type: string, source: IMapObject, changedObject: any) {
+    constructor(type: string, source: TSource, changedObject: TChangedObject) {
         super(type, source);
         
-        this.object = changedObject;
+        this.changedObject = changedObject;
     }
 
     /**
      * Return the changed object.
      */
-    getChangedObject(): any {
-        return this.object;
+    getChangedObject(): TChangedObject {
+        return this.changedObject;
     }
 }
 export default MapChangeEvent;

@@ -21,19 +21,19 @@ interface IMapConfigManager {
     /**
      * It returns the list of all config records for the tools.
      */
-    getToolsConfigs(): IMapToolConfig[];
+    getToolsConfigs(): IMapToolConfig[] | undefined;
 
     /**
      * It returns the config record for the tool identified by the given tool identifier.
      * 
-     * @param {string} toolId 
+     * @param toolId 
      */
     getToolConfig(toolId: string): IMapToolConfig | undefined;
 
     /**
      * It provides possibility to transform given config to the original structure.
      * 
-     * @param {*} mapConfing 
+     * @param mapConfing 
      */
     export(mapConfing: IMapConfig): any;
 }

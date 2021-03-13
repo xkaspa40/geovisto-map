@@ -48,7 +48,7 @@ class MapToolState extends MapObjectState implements IMapToolState {
     /**
      * The metod takes config and deserializes the values.
      * 
-     * @param {IMapToolConfig} config 
+     * @param config 
      */
     public deserialize(config: IMapToolConfig): void {
         super.deserialize(config);
@@ -60,7 +60,7 @@ class MapToolState extends MapObjectState implements IMapToolState {
     /**
      * The method serializes the tool state. Optionally, a serialed value can be let undefined if it equals the default value.
      * 
-     * @param {boolean | undefined} filterDefaults 
+     * @param filterDefaults 
      */
     public serialize(filterDefaults : boolean | undefined): IMapToolConfig {
         let config: IMapToolConfig = <IMapToolConfig> super.serialize(filterDefaults);
@@ -81,7 +81,7 @@ class MapToolState extends MapObjectState implements IMapToolState {
     /**
      * It sets the enabled property of tool state.
      * 
-     * @param {boolean} enabled 
+     * @param enabled 
      */
     public setEnabled(enabled: boolean): void {
        this.enabled = enabled;
@@ -97,7 +97,7 @@ class MapToolState extends MapObjectState implements IMapToolState {
     /**
      * It sets the map property of the tool state.
      * 
-     * @param {IMap} map  
+     * @param map  
      */
     public setMap(map: IMap): void {
        this.map = map;

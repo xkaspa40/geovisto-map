@@ -1,6 +1,9 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import '../styles/common.scss';
+
+// TODO - move to index.ts
+import '../../../styles/common.scss';
+
 import DataChangeEvent from '../event/data/DataChangeEvent';
 import GeovistoMapDefaults from './GeovistoMapDefaults';
 import GeovistoMapState from './GeovistoMapState';
@@ -26,7 +29,7 @@ class GeovistoMap extends MapObject implements IMap {
     /**
      * Initializes object.
      * 
-     * @param {IMapProps} props 
+     * @param props 
      */
     constructor(props: IMapProps) {
         super(props);
@@ -35,7 +38,7 @@ class GeovistoMap extends MapObject implements IMap {
     /**
      * The type of the object.
      */
-    public static TYPE() {
+    public static TYPE(): string {
         // important! CSS styles use this name!
         return "geovisto-map";
     }
@@ -85,9 +88,9 @@ class GeovistoMap extends MapObject implements IMap {
     /**
      * This function redraws the current map.
      */
-    public redraw(mapConfig: IMapConfigManager, props: IMapProps) {
+    public redraw(mapConfig: IMapConfigManager, props: IMapProps): HTMLElement | null {
         // get map and remove map children
-        let mapContainer: HTMLElement | null = document.getElementById(this.getState().getId());
+        const mapContainer: HTMLElement | null = document.getElementById(this.getState().getId());
         if(mapContainer && mapContainer.childNodes.length > 0) {
             // remove old elements
             mapContainer.childNodes[0].remove();
@@ -114,7 +117,7 @@ class GeovistoMap extends MapObject implements IMap {
     /**
      * Resets variables.
      */
-    protected initialize(mapConfig: IMapConfigManager | undefined) {
+    protected initialize(mapConfig: IMapConfigManager | undefined): void {
         mapConfig = mapConfig == undefined ? this.getDefaults().getConfigManager() : mapConfig;
         this.getState().setMapConfig(mapConfig);
 
@@ -123,10 +126,10 @@ class GeovistoMap extends MapObject implements IMap {
         this.getState().deserialize(mapConfig.getMapConfig());
 
         // initialize existing tools
-        let toolsManager: IMapToolsManager = this.getState().getTools();
+        const toolsManager: IMapToolsManager = this.getState().getTools();
         if(!toolsManager.isEmpty()) {
             // a) tool is already created, initialize them and try to find their config
-            let tools: IMapTool[] = toolsManager.getObjects();
+            const tools: IMapTool[] = toolsManager.getAll();
             for(let i = 0; i < tools.length; i++) {
                 // initialize tool (provide map and config)
                 tools[i].initialize(this, mapConfig.getToolConfig(tools[i].getId()));
@@ -134,9 +137,9 @@ class GeovistoMap extends MapObject implements IMap {
         }
         
         // deserialize remaining tools with respect to the config
-        let toolsConfigs: IMapToolConfig[] = mapConfig.getToolsConfigs();
+        const toolsConfigs: IMapToolConfig[] | undefined = mapConfig.getToolsConfigs();
         if(toolsConfigs != undefined) {
-            let toolTemplatesManager: IMapToolsManager = this.getState().getToolTemplates();
+            const toolTemplatesManager: IMapToolsManager = this.getState().getToolTemplates();
             let tool: IMapTool | undefined;
             let toolConfig: IMapToolConfig;
             for(let i = 0; i < toolsConfigs.length; i++) {
@@ -144,14 +147,15 @@ class GeovistoMap extends MapObject implements IMap {
 
                 // filter already initialized tools
                 if(toolConfig.id) {
-                    if(tool = <IMapTool> toolsManager.getById(toolConfig.id)) {
+                    tool = <IMapTool> toolsManager.getById(toolConfig.id);
+                    if(tool) {
                         continue;
-                    };
+                    }
                 }
 
                 // b) tool has not been created yet, use config and tool template to create the tool
                 if(toolConfig.type) {
-                    let toolTemplates: IMapTool[] = <IMapTool[]> toolTemplatesManager.getByType(toolConfig.type);
+                    const toolTemplates: IMapTool[] = <IMapTool[]> toolTemplatesManager.getByType(toolConfig.type);
                     if(toolTemplates.length > 0) {
                         // filter singleton duplicates
                         if(toolTemplates[0].isSingleton() && toolsManager.getByType(toolConfig.type).length > 0) {
@@ -174,7 +178,7 @@ class GeovistoMap extends MapObject implements IMap {
     /**
      * It exports the serialized representation of the current state of the map.
      */
-    public export() {
+    public export(): any {
         return this.getState().getMapConfig().export(this.getState().serialize(true));
     }
 
@@ -182,7 +186,7 @@ class GeovistoMap extends MapObject implements IMap {
      * This function creates Geovisto map - it creates map container, leaflet map and tools.
      */
     protected create(): HTMLElement | null {
-        let mapContainer: HTMLElement | null = this.createMapContainer();
+        const mapContainer: HTMLElement | null = this.createMapContainer();
 
         // create new map container (DOM element)
         if(mapContainer) {
@@ -200,11 +204,11 @@ class GeovistoMap extends MapObject implements IMap {
      * This function creates the map container.
      */
     protected createMapContainer(): HTMLElement | null {
-        let mapContainer: HTMLElement | null = document.getElementById(this.getState().getId());
+        const mapContainer: HTMLElement | null = document.getElementById(this.getState().getId());
         if(mapContainer) {
             mapContainer.appendChild(document.createElement("div"));
-            mapContainer.setAttribute("id", this.getContainerId())
-            mapContainer.setAttribute("class", this.getContainerClass())
+            mapContainer.setAttribute("id", this.getContainerId());
+            mapContainer.setAttribute("class", this.getContainerClass());
         }
         
         return mapContainer;
@@ -228,8 +232,8 @@ class GeovistoMap extends MapObject implements IMap {
      * Creates the leaflet-based map with respect to the configuration.
      */
     protected createMap(): L.Map {
-        let state = this.getState();
-        let map: L.Map = L
+        const state: IMapState = this.getState();
+        const map: L.Map = L
         .map(this.getContainerId(), state.getInitialMapStructure())
         .setView(
             state.getInitialMapCenter(),
@@ -258,7 +262,7 @@ class GeovistoMap extends MapObject implements IMap {
      */
     protected createTools(): IMapTool[] {
         // create tools
-        let tools: IMapTool[] = this.getState().getTools().getObjects();
+        const tools: IMapTool[] = this.getState().getTools().getAll();
         for(let i = 0; i < tools.length; i++) {
             // create tool
             tools[i].create();
@@ -269,10 +273,10 @@ class GeovistoMap extends MapObject implements IMap {
     /**
      * It updates data and invokes listeners.
      * 
-     * @param {object[]} data
-     * @param {IMapObject} source of the change
+     * @param data
+     * @param source of the change
      */
-    public updateData(data: object[], source: IMapObject) {
+    public updateData(data: any[], source: IMapObject): void {
         // update state
         this.getState().setCurrentData(data);
 
@@ -283,16 +287,15 @@ class GeovistoMap extends MapObject implements IMap {
     /**
      * It sends custom event to all listeners (tools)
      * 
-     * @param {IMapEvent} event 
+     * @param event 
      */
-    public dispatchEvent(event: IMapEvent) {
+    public dispatchEvent(event: IMapEvent<IMapObject>): void {
         console.log("event: " + event.getType(), event);
         // notify listeners
-        let tools: IMapTool[] = this.getState().getTools().getObjects();
+        const tools: IMapTool[] = this.getState().getTools().getAll();
         for(let i = 0; i < tools.length; i++) {
             tools[i].handleEvent(event);
         }
     }
-};
-
+}
 export default GeovistoMap;

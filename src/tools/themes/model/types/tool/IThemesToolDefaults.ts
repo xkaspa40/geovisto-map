@@ -23,6 +23,6 @@ interface IThemesToolDefaults extends IMapToolDefaults {
     /**
      * It returns default theme.
      */
-    getTheme(): IMapTheme;
+    getTheme(): IMapTheme | undefined;
 }
 export default IThemesToolDefaults;

@@ -15,7 +15,7 @@ abstract class AbstractMapConfigManager {
      * It initializes the config wrapper providing a basic API.
      * It expects a config represented by the implicict Geovisto map structure.
      * 
-     * @param {any} config 
+     * @param config 
      */
     constructor(config: any) {
         this.originalConfig = config;
@@ -25,14 +25,14 @@ abstract class AbstractMapConfigManager {
     /**
      * It converts given config to the internal map config structure.
      * 
-     * @param {any} mapConfing 
+     * @param mapConfing 
      */
     protected abstract import(config: any): IMapConfig;
 
     /**
      * It converts map config to the original structure.
      * 
-     * @param {IMapConfig} mapConfing 
+     * @param mapConfing 
      */
     public abstract export(mapConfig: IMapConfig): any;
 
@@ -60,11 +60,11 @@ abstract class AbstractMapConfigManager {
     /**
      * It returns the config record for the tool identified by the given tool identifier.
      * 
-     * @param {string} toolId 
+     * @param toolId 
      */
     public getToolConfig(toolId: string): IMapToolConfig | undefined {
-        let tools = this.config.tools
-        let tool = undefined;
+        const tools: IMapToolConfig[] | undefined = this.config.tools;
+        let tool: IMapToolConfig | undefined = undefined;
         if(tools != undefined && Array.isArray(tools)) {
             tool = tools.find(x => x.id == toolId);
         }
