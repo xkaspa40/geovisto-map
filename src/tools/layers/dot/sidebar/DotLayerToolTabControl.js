@@ -2,6 +2,8 @@ import DotLayerToolTabControlDefaults from "./DotLayerToolTabControlDefaults";
 import DotLayerToolTabControlState from "./DotLayerToolTabControlState";
 import AbstractLayerToolTabControl from "../../abstract/sidebar/AbstractLayerToolTabControl";
 import SidebarInputFactory from "../../../../inputs/SidebarInputFactory";
+import TabDOMUtil from "../../../../util/TabDOMUtil";
+import CategoryClassifierSidebarInput from "../../../../inputs/category/CategoryClassifierSidebarInput"
 
 /**
  * This class provides controls for management of the layer sidebar tab.
@@ -14,6 +16,7 @@ class DotLayerToolTabControl extends AbstractLayerToolTabControl {
         super(tool);
 
         this.tabContent = undefined;
+        this.colorClassInputs = [];
     }
 
     /**
@@ -67,15 +70,14 @@ class DotLayerToolTabControl extends AbstractLayerToolTabControl {
     /**
      * It returns the sidebar tab pane.
      */
-    getTabContent() {
-        var _this = this;
+    getTabContent = () => {
 
         // event handler: change dimension action
-        let changeDimensionAction = function(e) {
+        let changeDimensionAction = (e) => {
             // get selected values and update layer's data mapping
-            _this.getTool().updateDataMapping(_this.getInputValues());
+            this.getTool().updateDataMapping(this.getInputValues());
         }
-        
+
         // tab content
         let tab = document.createElement('div');
         let elem = tab.appendChild(document.createElement('div'));
@@ -96,10 +98,65 @@ class DotLayerToolTabControl extends AbstractLayerToolTabControl {
         this.inputCategory = SidebarInputFactory.createSidebarInput(model.category.input, { label: model.category.label, options: dataDomainLabels, action: changeDimensionAction });
         elem.appendChild(this.inputCategory.create());
 
+        //category color selector
+        this.categoryClasses = document.createElement('div');
+        this.categoryClasses.setAttribute('class', 'categoryClasses');
+        elem.appendChild(this.categoryClasses);
+
+        // horizontal rule
+        let catClassSeparator = document.createElement('hr');
+        this.categoryClasses.appendChild(catClassSeparator);
+
+        //header text
+        let catClassHeader = document.createElement('h2');
+        catClassHeader.innerText = 'Category colors';
+        this.categoryClasses.appendChild(catClassHeader);
+
+        //button group
+        this.buttonGroup = this.categoryClasses.appendChild(document.createElement('div'));
+        this.buttonGroup.appendChild(TabDOMUtil.createButton("<i class=\"fa fa-plus-circle\"></i>",  this.addMappingInputs, "plusBtn" ));
+
+        this.buttonGroup.appendChild(TabDOMUtil.createButton("Apply", {},
+        "applyBtn"));
+
         this.setInputValues(this.getTool().getState().getDataMapping());
         
         return tab;
     }
 
+    addMappingInputs = () => {
+        let div = this.categoryClasses.insertBefore(document.createElement('div'), this.buttonGroup);
+        div.setAttribute('class', 'categoryClassesGroup');
+
+        let minusButton = TabDOMUtil.createButton("<i class=\"fa fa-minus-circle\"></i>", (e) => this.removeMappingInput(e), "minusBtn");
+        div.appendChild(minusButton);
+
+        let input = SidebarInputFactory.createSidebarInput(CategoryClassifierSidebarInput.ID(), {
+            operations: {
+                options: ["=", "!=", "reg"],
+                action: () => {/**/}
+            },
+            values: {
+                options: [],
+                action: function() { /* do nothing; */ }
+            },
+            colors: {
+                options: []
+            }
+        });
+
+        div.appendChild(input.create());
+        this.colorClassInputs.push({
+            input,
+            container: div
+        });
+    }
+
+    removeMappingInput = (e) => {
+        let inputGroup = e.target.closest(".categoryClassesGroup");
+        this.colorClassInputs = this.colorClassInputs.filter((item) => item.container !== inputGroup);
+        console.log(this.colorClassInputs);
+        inputGroup.remove();
+    }
 }
 export default DotLayerToolTabControl;

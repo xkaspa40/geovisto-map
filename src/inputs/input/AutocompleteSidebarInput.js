@@ -15,7 +15,9 @@ const COMPONENT_COMPLETION_ITEM_CLASS = ID + "-option-m";
 
 const COMPONENT_COMPLETION_NOT_IN_CLASS = ID + "-option-n";
 
-const COMPONENT_COMPLETION_ACTIVE_ITEM_CLASS = ID + "-option-a"; 
+const COMPONENT_COMPLETION_ACTIVE_ITEM_CLASS = ID + "-option-a";
+
+const COMPONENT_INPUT_PLACEHOLDER = "choose dimension";
 
 /**
  * This class represents labeled text sidebar input with autocomplete.
@@ -32,6 +34,7 @@ class AutocompleteSidebarInput extends AbstractSidebarInput {
         this.options = settings.options;
         this.label = settings.label;
         this.setData = settings.setData;
+        this.placeholder = settings.placeholder ?? COMPONENT_INPUT_PLACEHOLDER;
 
         // div elements
         this.formDiv = undefined;
@@ -118,7 +121,7 @@ class AutocompleteSidebarInput extends AbstractSidebarInput {
         this.input = document.createElement('input');
         TabDOMUtil.setAttributes(this.input,
             [ "class", "type", 'placeholder', 'type' ],
-            [ COMPONENT_INPUT_CLASS, "text", 'choose dimension: ', 'hidden' ]);
+            [ COMPONENT_INPUT_CLASS, "text", this.placeholder, 'hidden' ]);
 
         // construct elements
         this.formDiv.appendChild(labelDiv);

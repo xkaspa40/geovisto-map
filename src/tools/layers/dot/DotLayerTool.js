@@ -262,31 +262,31 @@ class DotLayerTool extends AbstractLayerTool {
      */
     createLayerItems() {
         // create layer which clusters points
-        //let layer = L.layerGroup([]);
-        let layer = L.markerClusterGroup({
-
-            // create cluster icon
-            iconCreateFunction: function (cluster) {
-                var markers = cluster.getAllChildMarkers();
-                let data = { id: "<Group>", value: 0, subvalues: {} };
-                for (var i = 0; i < markers.length; i++) {
-                    data.value += markers[i].options.icon.options.values.value;
-                    for(let [key, value] of Object.entries(markers[i].options.icon.options.values.subvalues)) {
-                        if(data.subvalues[key] == undefined) {
-                            data.subvalues[key] = value;
-                        } else {
-                            data.subvalues[key] += value;
-                        }
-                    }
-                }
-                // create custom icon
-                return new CountryIcon( { 
-                    countryName: "<Group>",
-                    values: data,
-                    isGroup: true,
-                } );
-            }
-        });
+        let layer = L.layerGroup([]);
+         //let layer = L.markerClusterGroup({
+        //
+        //     // create cluster icon
+        //     iconCreateFunction: function (cluster) {
+        //         var markers = cluster.getAllChildMarkers();
+        //         let data = { id: "<Group>", value: 0, subvalues: {} };
+        //         for (var i = 0; i < markers.length; i++) {
+        //             data.value += markers[i].options.icon.options.values.value;
+        //             for(let [key, value] of Object.entries(markers[i].options.icon.options.values.subvalues)) {
+        //                 if(data.subvalues[key] == undefined) {
+        //                     data.subvalues[key] = value;
+        //                 } else {
+        //                     data.subvalues[key] += value;
+        //                 }
+        //             }
+        //         }
+        //         // create custom icon
+        //         return new CountryIcon( {
+        //             countryName: "<Group>",
+        //             values: data,
+        //             isGroup: true,
+        //         } );
+        //     }
+        // });
 
         // update state
         this.getState().setLayer(layer);
@@ -323,73 +323,89 @@ class DotLayerTool extends AbstractLayerTool {
         let mapData = this.getMap().getState().getMapData();
         let dataMappingModel = this.getDefaults().getDataMappingModel();
         let dataMapping = this.getState().getDataMapping();
-        let countryDataDomain = mapData.getDataDomain(dataMapping[dataMappingModel.latitude.name]);
-        let valueDataDomain = mapData.getDataDomain(dataMapping[dataMappingModel.longitude.name]);
+        let latDataDomain = mapData.getDataDomain(dataMapping[dataMappingModel.latitude.name]);
+        let longDataDomain = mapData.getDataDomain(dataMapping[dataMappingModel.longitude.name]);
         let categoryDataDomain = mapData.getDataDomain(dataMapping[dataMappingModel.category.name]);
-        let geoCountry, actResultItem;
-        let foundCountries, foundValues, foundCategories;
-        let highlightedIds = this.getSelectionTool() && this.getSelectionTool().getState().getSelection() ?
-                                this.getSelectionTool().getState().getSelection().getIds() : [];
+        let foundLats, foundLongs, foundCategories;
         let data = this.getMap().getState().getCurrentData();
         let dataLen = data.length;
-        let centroids = this.getState().getCentroids();
         for (let i = 0; i < dataLen; i++) {
-            // find the 'country' properties
-            foundCountries = mapData.getItemValues(countryDataDomain, data[i]);
-            //console.log("search country: ", foundCountries);
+            // find the 'lat' properties
+            foundLats = mapData.getItemValues(latDataDomain, data[i]);
 
-            // find the 'value' properties
-            foundValues = mapData.getItemValues(valueDataDomain, data[i]);
-            //console.log("search values: ", foundValues);
+            // find the 'long' properties
+            foundLongs = mapData.getItemValues(longDataDomain, data[i]);
 
             // find the 'category' properties
             foundCategories = mapData.getItemValues(categoryDataDomain, data[i]);
-            //console.log("search category: ", foundCategories);
 
-            // since the data are flattened we can expect max one found item
-            //console.log("abc", highlightedIds);
-            if(foundCountries.length == 1 && (highlightedIds.length == 0 || highlightedIds.indexOf(foundCountries[0]) >= 0)) {
-                // test if country respects highlighting selection
-                /*if(highlightedIds != undefined) {
-                    console.log(highlightedIds.indexOf(foundCountries[0]) >= 0);
-                }*/
-
-                // test if country exists in the map
-                geoCountry = centroids.find(x => x.id == foundCountries[0]);
-                if(geoCountry != undefined) {
-                    // test if country exists in the results array
-                    actResultItem = workData.find(x => x.id == foundCountries[0]);
-                    if(actResultItem == undefined) {
-                        actResultItem = { id: foundCountries[0], value: 0, subvalues: {} };
-                        workData.push(actResultItem);
-                    }
-                    // initialize category if does not exists yet
-                    if(foundCategories.length == 1) {
-                        if(actResultItem.subvalues[foundCategories[0]] == undefined) {
-                            actResultItem.subvalues[foundCategories[0]] = 0;
-                        }
-                    }
-                    // set value with respect to the aggregation function
-                    if(dataMapping[dataMappingModel.aggregation.name] == "sum") {
-                        // test if value is valid
-                        if(foundValues.length == 1 && foundValues[0] != null && typeof foundValues[0] === 'number') {
-                            actResultItem.value += foundValues[0];
-                            // set category
-                            if(foundCategories.length == 1) {
-                                actResultItem.subvalues[foundCategories[0]] += foundValues[0];
-                            }
-                        }
-                    } else {
-                        // count
-                        actResultItem.value++;
-                        // incerement category value
-                        actResultItem.subvalues[foundCategories[0]]++;
-                    }
-                }
+            let resultItem;
+            if (foundLats.length === 1 && foundLongs.length === 1) {
+                resultItem = {lat: foundLats[0], long: foundLongs[0]};
             }
+
+            if (foundCategories.length === 1) {
+                resultItem.category = foundCategories[0];
+                //TODO add color definition based on user settings (probably need to create a function for this one)
+            }
+
+            if (resultItem !== undefined) {
+                workData.push(resultItem);
+            }
+
+            // // since the data are flattened we can expect max one found item
+            // //console.log("abc", highlightedIds);
+            // if(foundLats.length == 1 && (highlightedIds.length == 0 || highlightedIds.indexOf(foundLats[0]) >= 0)) {
+            //     // test if country respects highlighting selection
+            //     /*if(highlightedIds != undefined) {
+            //         console.log(highlightedIds.indexOf(foundCountries[0]) >= 0);
+            //     }*/
+            //
+            //     // test if country exists in the map
+            //     geoCountry = centroids.find(x => x.id == foundLats[0]);
+            //     if(geoCountry != undefined) {
+            //         // test if country exists in the results array
+            //         actResultItem = workData.find(x => x.id == foundLats[0]);
+            //         if(actResultItem == undefined) {
+            //             actResultItem = { id: foundLats[0], value: 0, subvalues: {} };
+            //             workData.push(actResultItem);
+            //         }
+            //         // initialize category if does not exists yet
+            //         if(foundCategories.length == 1) {
+            //             if(actResultItem.subvalues[foundCategories[0]] == undefined) {
+            //                 actResultItem.subvalues[foundCategories[0]] = 0;
+            //             }
+            //         }
+            //         // set value with respect to the aggregation function
+            //         if(dataMapping[dataMappingModel.aggregation.name] == "sum") {
+            //             // test if value is valid
+            //             if(foundLongs.length == 1 && foundLongs[0] != null && typeof foundLongs[0] === 'number') {
+            //                 actResultItem.value += foundLongs[0];
+            //                 // set category
+            //                 if(foundCategories.length == 1) {
+            //                     actResultItem.subvalues[foundCategories[0]] += foundLongs[0];
+            //                 }
+            //             }
+            //         } else {
+            //             // count
+            //             actResultItem.value++;
+            //             // incerement category value
+            //             actResultItem.subvalues[foundCategories[0]]++;
+            //         }
+            //     }
+            // }
         }
         //console.log("result: ", preparedData);
         return workData;
+    }
+
+    createDot = (data) => {
+        // TODO set color based on Category colour passed in data
+        let point = L.circleMarker([data.lat, data.long], {
+            radius: 2,
+            color: 'green'
+        });
+        return point;
     }
 
     /**
@@ -403,11 +419,7 @@ class DotLayerTool extends AbstractLayerTool {
         let layer = this.getState().getLayer();
         let centroids = this.getState().getCentroids();
         for(let i = 0; i < workData.length; i++) {
-            // get centroid
-            // note: the centroid exists since invalid countries has been filtered
-            geoCountry = centroids.find(x => x.id == workData[i].id);
-            // build message
-            let point = this.createMarker(geoCountry, workData[i]);
+            let point = this.createDot(workData[i]);
             layer.addLayer(point);
             markers.push(point);
         }
