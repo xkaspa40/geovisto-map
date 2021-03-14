@@ -1,9 +1,8 @@
 import AbstractLayerToolState from "../abstract/AbstractLayerToolState";
-import MarkerLayerToolDefaults from "./MarkerLayerToolDefaults";
 
 /**
  * This class provide functions for using the state of the layer tool.
- * 
+ *
  * @author Jiri Hynek
  */
 class MarkerLayerToolState extends AbstractLayerToolState {
@@ -16,9 +15,10 @@ class MarkerLayerToolState extends AbstractLayerToolState {
     }
 
     /**
-     * It resets state with respect to initial props. Optionally, defaults can be set if property is undefined.
-     * 
-     * @param {MarkerLayerToolDefaults} defaults 
+     * It resets state with respect to initial props. Optionally, defaults can be set if property
+     * is undefined.
+     *
+     * @param {MarkerLayerToolDefaults} defaults
      */
     reset(defaults) {
         super.reset(defaults);
@@ -33,15 +33,15 @@ class MarkerLayerToolState extends AbstractLayerToolState {
      */
     resetMapVariables(map, defaults) {
         super.resetMapVariables(map, defaults);
-        
+
         let props = this.getProps();
         this.setCentroids(props.centroids == undefined && defaults && map ? defaults.getCentroids() : props.centroids);
     }
 
     /**
      * The metod takes config and desrializes the values.
-     * 
-     * @param {*} config 
+     *
+     * @param {*} config
      */
     deserialize(config) {
         super.deserialize(config);
@@ -51,8 +51,9 @@ class MarkerLayerToolState extends AbstractLayerToolState {
     }
 
     /**
-     * The method serializes the tool state. Optionally, defaults can be set if property is undefined.
-     * 
+     * The method serializes the tool state. Optionally, defaults can be set if property is
+     * undefined.
+     *
      * @param {MarkerLayerToolDefaults} defaults
      */
     serialize(defaults) {
@@ -73,8 +74,8 @@ class MarkerLayerToolState extends AbstractLayerToolState {
 
     /**
      * It sets a Leaflet layer group.
-     * 
-     * @param {L.layerGroup} layer 
+     *
+     * @param {L.layerGroup} layer
      */
     setLayer(layer) {
         this.layer = layer;
@@ -89,8 +90,8 @@ class MarkerLayerToolState extends AbstractLayerToolState {
 
     /**
      * It sets the centroids.
-     * 
-     * @param {*} centroids 
+     *
+     * @param {*} centroids
      */
     setCentroids(centroids) {
         this.centroids = centroids;
@@ -103,10 +104,14 @@ class MarkerLayerToolState extends AbstractLayerToolState {
         return this.markers;
     }
 
+    getMarkerById(id) {
+        return this.markers.find((marker) => marker.options.id === id);
+    }
+
     /**
      * It sets the markers.
-     * 
-     * @param {*} markers 
+     *
+     * @param {*} markers
      */
     setMarkers(markers) {
         this.markers = markers;

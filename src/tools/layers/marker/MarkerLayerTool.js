@@ -1,19 +1,21 @@
-import L from 'leaflet';
-import LL from 'leaflet.markercluster';
-import 'leaflet/dist/leaflet.css';
-import 'leaflet.markercluster/dist/MarkerCluster.css';
-import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
-import './style/markerLayer.scss';
+import L from "leaflet";
+import "leaflet.markercluster";
+import "leaflet/dist/leaflet.css";
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
+import "./style/markerLayer.scss";
 import * as d3 from "d3";
-import MarkerLayerToolTabControl from './sidebar/MarkerLayerToolTabControl';
-import MarkerLayerToolDefaults from './MarkerLayerToolDefaults';
-import MarkerLayerToolState from './MarkerLayerToolState';
-import SelectionTool from '../../selection/SelectionTool';
-import AbstractLayerTool from '../abstract/AbstractLayerTool';
-import ThemesToolEvent from '../../themes/model/event/ThemesToolEvent';
-import SelectionToolEvent from '../../selection/model/event/SelectionToolEvent';
-import DataChangeEvent from '../../../model/event/basic/DataChangeEvent';
+import MarkerLayerToolTabControl from "./sidebar/MarkerLayerToolTabControl";
+import MarkerLayerToolDefaults from "./MarkerLayerToolDefaults";
+import MarkerLayerToolState from "./MarkerLayerToolState";
+import SelectionTool from "../../selection/SelectionTool";
+import AbstractLayerTool from "../abstract/AbstractLayerTool";
+import ThemesToolEvent from "../../themes/model/event/ThemesToolEvent";
+import SelectionToolEvent from "../../selection/model/event/SelectionToolEvent";
+import DataChangeEvent from "../../../model/event/basic/DataChangeEvent";
 import TimeChangeEvent from "../../timeline/model/TimeChangeEvent";
+import { createClusterMarkersData, createMarkerPopupContent, mergeSubValues } from "./utils";
+import TimeInitializedEvent from "../../timeline/model/TimeInitializedEvent";
 
 /**
  * This class represents custom div icon which is used to mark center of countries.
@@ -22,11 +24,11 @@ import TimeChangeEvent from "../../timeline/model/TimeChangeEvent";
  * @author Jiri Hynek
  * @override {L.DivIcon}
  */
-var CountryIcon = L.DivIcon.extend({
-
+const CountryIcon = L.DivIcon.extend({
     _LEVEL: 0,
     _SUFFIX: 1,
     _COLOR: 2,
+    _svgGroup: null,
     levels: [
         [-Infinity, "N/A", "#CCCCCC"],
         [1, "", "#CCCCCC"],
@@ -59,7 +61,7 @@ var CountryIcon = L.DivIcon.extend({
             }
         },
         isGroup: false,
-        useDonut: true
+        useDonut: true,
     },
 
     round: function(value, align) {
@@ -76,7 +78,7 @@ var CountryIcon = L.DivIcon.extend({
                 return this.round(value, this.levels[level][this._LEVEL]);
             } else {
                 value = value/(this.levels[level][this._LEVEL]*10);
-                var align = (value >= 10) ? 1 : 10;
+                const align = (value >= 10) ? 1 : 10;
                 return this.round(value, align) + this.levels[level][this._SUFFIX];
             }
         }
@@ -99,46 +101,47 @@ var CountryIcon = L.DivIcon.extend({
         return -1;
     },
 
+    getSize: function() {
+        const { useDonut, sizeDonut, isGroup, sizeGroup, sizeBasic } = this.options;
+        return useDonut ? sizeDonut : (isGroup ? sizeGroup : sizeBasic);
+    },
+
+    arc: (size) => {
+        return d3.arc()
+            .innerRadius(size / 4 + 6)
+            .outerRadius(size / 2)
+    },
+
     createIcon: function (oldIcon) {
-        var div = (oldIcon && oldIcon.tagName === 'DIV') ? oldIcon : document.createElement('div'),
+        const div = (oldIcon && oldIcon.tagName === 'DIV') ? oldIcon : document.createElement('div'),
             options = this.options;
 
-        var size = options.useDonut ? options.sizeDonut : (options.isGroup ? options.sizeGroup : options.sizeBasic);
+        const size = this.getSize(this);
+        const center = size / 2;
         options.iconSize = [size,size];
-        options.iconAnchor = [size/2,size/2];
-        var rCircle = options.sizeBasic/2;
-        var center = size/2;
+        options.iconAnchor = [center, center];
+        const rCircle = options.sizeBasic/2;
         // moved to css
-        //var strokeWidth = options.isGroup ? ((options.sizeGroup-options.sizeBasic)/2) : 0;
-        var level = this.getLevel(options.values.value);
+        const level = this.getLevel(options.values.value);
 
-        var divContent = div.appendChild(document.createElement('div'));
+        const divContent = div.appendChild(document.createElement('div'));
         divContent.classList.value =
             "leaflet-marker-level" + level // level
-            + (options.isGroup ? " leaflet-marker-group" : "") // group of several markers
-        ;
+            + (options.isGroup ? " leaflet-marker-group" : ""); // group of several markers
 
-
-        //console.log(size);
-        var element = d3.select(divContent);
-        //console.log(element)
-        var svg = element.append("svg");
-        svg.attr("width", size).attr("height", size);
-        //svg.classList.add("leaflet-marker-item");
+        const svg = d3.select(divContent)
+            .append("svg")
+            .attr("width", size)
+            .attr("height", size);
 
         // circle
         svg.append("circle")
             .attr("cx", center)
             .attr("cy", center)
             .attr("r", rCircle)
-            // moved to css
-            //.attr("fill", this.getColor(level))
-            //.attr("fill-opacity", 0.9)
-            //.attr("stroke-width", strokeWidth)
-            //.attr("stroke", "black");
 
         // value label
-        svg.append("text")
+        this._label = svg.append("text")
             .html(this.formatValue(options.values.value, level))
             .attr("x", "50%")
             .attr("y", "50%")
@@ -146,52 +149,56 @@ var CountryIcon = L.DivIcon.extend({
             .attr("font-size", "12px")
             .attr("dy", "0.3em")
             .attr("font-family", "Arial");
-            // moved to css
-            //.attr("fill", "white")
 
-        if(options.values.value != null && options.values.value != 0) {
-        //var values = { a: 0.5, b: 0.3, c: 0.2 };
-        // moved to css
-        //var color = d3.scaleOrdinal()
-        //    .domain(options.values.subvalues)
-        //    .range(this.donutColors);
-        var pie = d3.pie().value(function(d) { return d[1]; });
-        var values_ready = pie(Object.entries(options.values.subvalues));
-        // donut chart
-        svg.append("g")
-            .attr("transform", "translate(" + size / 2 + "," + size / 2 + ")")
-            .selectAll("abc")
-            .data(values_ready)
-            .enter()
-            .append("path")
-            .attr("d", d3.arc()
-            .innerRadius(size/4+6)
-            .outerRadius(size/2)
-            )
-            // moved to css
-            .attr('class', function(d, i) { return "leaflet-marker-donut" + (i % 3 + 1); })
-            //.attr('fill', function(d) { return(color(d.data.key)) })
-            //.attr("stroke-width", "0px")
-            //.attr("opacity", 0.8)
-            ;
+        if (options.values.value != null && options.values.value != 0) {
+            const pie = d3.pie().value((d) => d[1]).sort(null);
+            // donut chart
+            this._svgGroup = svg
+                .append("g")
+                .attr("transform", `translate(${center}, ${center})`);
+
+            this._svgGroup
+                .datum(Object.entries(options.values.subvalues))
+                .selectAll("path")
+                .data(pie)
+                .enter()
+                .append("path")
+                .attr("class", function (d, i) { return "leaflet-marker-donut" + (i % 3 + 1); })
+                .attr("d", this.arc(size))
+                .each(function (d) { this._current = d });
         }
-
-        /*const icon = <svg width={size} height={size}>
-            <circle cx={center} cy={center} r={rCircle} fill={this.getColor(level)} fillOpacity="0.8" strokeWidth={strokeWidth} stroke="black" />
-            <text x="50%" y="50%" textAnchor="middle" fill="white"
-                fontSize="12px" dy="0.3em" fontFamily="Arial">{this.formatValue(options.countryValue, level)}</text>
-        </svg>;
-        //div.innerHTML = "<b>1</b>";
-        ReactDOM.render(icon, divContent);*/
-
         if (options.bgPos) {
-            var bgPos = point(options.bgPos);
+            const bgPos = point(options.bgPos);
             div.style.backgroundPosition = (-bgPos.x) + 'px ' + (-bgPos.y) + 'px';
         }
         this._setIconStyles(div, 'icon');
-
         return div;
     },
+
+    updateData: function(values, transitionDuration) {
+        this.options.values = values;
+        if (this._label) {
+            const level = this.getLevel(this.options.values.value);
+            this._label.text(this.formatValue(this.options.values.value, level))
+        }
+
+        if (this._svgGroup) {
+            const pie = d3.pie().value((d) => d[1]).sort(null);
+            const size = this.getSize(this);
+            const arc = this.arc(size);
+            this._svgGroup
+                .datum(Object.entries(values.subvalues))
+                .selectAll("path")
+                .data(pie)
+                .transition()
+                .duration(transitionDuration)
+                .attrTween("d", function(a) {
+                    const i = d3.interpolate(this._current, a);
+                    this._current = i(0);
+                    return (t) => arc(i(t));
+                });
+        }
+    }
 });
 
 /**
@@ -208,6 +215,7 @@ class MarkerLayerTool extends AbstractLayerTool {
      */
     constructor(props) {
         super(props);
+        this._transitionDuration = 500;
     }
 
     /**
@@ -263,36 +271,25 @@ class MarkerLayerTool extends AbstractLayerTool {
      */
     createLayerItems() {
         // create layer which clusters points
-        //let layer = L.layerGroup([]);
         let layer = L.markerClusterGroup({
-
             // create cluster icon
             iconCreateFunction: function (cluster) {
-                var markers = cluster.getAllChildMarkers();
-                let data = { id: "<Group>", value: 0, subvalues: {} };
-                for (var i = 0; i < markers.length; i++) {
-                    data.value += markers[i].options.icon.options.values.value;
-                    for(let [key, value] of Object.entries(markers[i].options.icon.options.values.subvalues)) {
-                        if(data.subvalues[key] == undefined) {
-                            data.subvalues[key] = value;
-                        } else {
-                            data.subvalues[key] += value;
-                        }
-                    }
-                }
+                const markers = cluster.getAllChildMarkers();
+                const markerData = createClusterMarkersData(markers);
                 // create custom icon
-                return new CountryIcon( {
+                return new CountryIcon({
                     countryName: "<Group>",
-                    values: data,
+                    values: markerData,
                     isGroup: true,
-                } );
+                });
             }
         });
 
         // update state
         this.getState().setLayer(layer);
 
-        this.redraw();
+        const data = this.getMap().getState().getCurrentData();
+        this.redraw(data);
 
         return [ layer ];
     }
@@ -316,7 +313,7 @@ class MarkerLayerTool extends AbstractLayerTool {
     /**
      * It prepares data for markers.
      */
-    prepareMapData() {
+    prepareMapData(data) {
         //console.log("updating map data", this);
 
         // prepare data
@@ -331,24 +328,14 @@ class MarkerLayerTool extends AbstractLayerTool {
         let foundCountries, foundValues, foundCategories;
         let highlightedIds = this.getSelectionTool() && this.getSelectionTool().getState().getSelection() ?
                                 this.getSelectionTool().getState().getSelection().getIds() : [];
-        let data = this.getMap().getState().getCurrentData();
         let dataLen = data.length;
         let centroids = this.getState().getCentroids();
         for (let i = 0; i < dataLen; i++) {
-            // find the 'country' properties
             foundCountries = mapData.getItemValues(countryDataDomain, data[i]);
-            //console.log("search country: ", foundCountries);
-
-            // find the 'value' properties
             foundValues = mapData.getItemValues(valueDataDomain, data[i]);
-            //console.log("search values: ", foundValues);
-
-            // find the 'category' properties
             foundCategories = mapData.getItemValues(categoryDataDomain, data[i]);
-            //console.log("search category: ", foundCategories);
 
             // since the data are flattened we can expect max one found item
-            //console.log("abc", highlightedIds);
             if(foundCountries.length == 1 && (highlightedIds.length == 0 || highlightedIds.indexOf(foundCountries[0]) >= 0)) {
                 // test if country respects highlighting selection
                 /*if(highlightedIds != undefined) {
@@ -397,21 +384,15 @@ class MarkerLayerTool extends AbstractLayerTool {
      * It creates markers using workData
      */
     createMarkers(workData) {
-        // create markers
-        let markers = [];
+        const layer = this.getState().getLayer();
+        const centroids = this.getState().getCentroids();
 
-        let geoCountry;
-        let layer = this.getState().getLayer();
-        let centroids = this.getState().getCentroids();
-        for(let i = 0; i < workData.length; i++) {
-            // get centroid
-            // note: the centroid exists since invalid countries has been filtered
-            geoCountry = centroids.find(x => x.id == workData[i].id);
-            // build message
-            let point = this.createMarker(geoCountry, workData[i]);
-            layer.addLayer(point);
-            markers.push(point);
-        }
+        const markers = workData.reduce((acc, workDatum)  => {
+            const geoCountry = centroids.find(centroid => centroid.id === workDatum.id);
+            const point = this.createMarker(geoCountry, workDatum);
+            layer.addLayer(point)
+            return [...acc, point]
+        }, [])
 
         return markers;
     }
@@ -423,48 +404,54 @@ class MarkerLayerTool extends AbstractLayerTool {
      * @param {*} data
      */
     createMarker(centroid, data) {
-        function thousands_separator(num)
-          {
-            var num_parts = num.toString().split(".");
-            num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-            return num_parts.join(".");
-          }
-
-        // build popup message
-        let popupMsg = "<b>" + centroid.name + "</b><br>";
-        popupMsg += (data.value != null ? thousands_separator(data.value) : "N/A") + "<br>";
-        for(let [key, value] of Object.entries(data.subvalues)) {
-            popupMsg += key + ": " + thousands_separator(value) + "<br>";
-        }
-
         // create marker
         let point = L.marker([centroid.lat, centroid.long], {
             // create basic icon
-            id: centroid.name,
-            icon: new CountryIcon( {
-                values: data
-            } )
-        }).bindPopup(popupMsg);
+            id: centroid.id,
+            name: centroid.name,
+            icon: new CountryIcon({ values: data }),
+            updateData: function (values, transitionDuration) {
+                this.icon.updateData.call(this.icon, values, transitionDuration);
+            },
+        }).bindPopup(createMarkerPopupContent(centroid.name, data.value, data.subvalues));
         return point;
     }
 
     /**
      * It reloads data and redraw the layer.
      */
-    redraw(onlyStyle) {
+    redraw(data) {
         if(this.getState().getLayer()) {
             // delete actual items
             this.deleteLayerItems();
-
             // prepare data
-            let workData = this.prepareMapData();
-
+            let workData = this.prepareMapData(data);
             // update map
             let markers = this.createMarkers(workData);
-
             // update state
             this.getState().setMarkers(markers);
         }
+    }
+
+    updateMarkers(data) {
+        const transitionDuration = this._transitionDuration;
+        const markersData = this.prepareMapData(data);
+        markersData.forEach((markerData) => {
+            const marker =  this.getState().getMarkerById(markerData.id)
+            marker.options.updateData(markerData, transitionDuration)
+            marker._popup.setContent(createMarkerPopupContent(
+                marker.options.name,
+                markerData.value,
+                markerData.subvalues
+            ))
+        })
+        this.getState().getLayer()._featureGroup.eachLayer(function (marker) {
+            if (marker instanceof L.MarkerCluster) {
+                const markers = marker.getAllChildMarkers();
+                const markerData = createClusterMarkersData(markers);
+                marker._iconObj.updateData.call(marker._iconObj, markerData, transitionDuration)
+            }
+        });
     }
 
     /**
@@ -475,15 +462,27 @@ class MarkerLayerTool extends AbstractLayerTool {
     handleEvent(event) {
         if(event.getType() === DataChangeEvent.TYPE()) {
             // data change
-            this.redraw();
+            if (event.getSource() !== "timeline") {
+                let data = this.getMap().getState().getCurrentData();
+                this.redraw(data);
+            }
         } else if(event.getType() === SelectionToolEvent.TYPE()) {
-            this.redraw();
+            let data = this.getMap().getState().getCurrentData();
+            this.redraw(data);
             // TODO
         } else if(event.getType() === ThemesToolEvent.TYPE()) {
             // theme change
             // TODO
         } else if (event.getType() === TimeChangeEvent.TYPE()) {
-            // TODO
+            // this.redraw(event.getObject());
+
+            this.updateMarkers(event.getObject());
+        } if (event.getType() === TimeInitializedEvent.TYPE()) {
+            const { stepTimeLength } = event.getObject();
+            const transitionDuration = stepTimeLength / 2 < 500 ?
+                stepTimeLength / 2 :
+                500;
+            this._transitionDuration = transitionDuration;
         }
     }
 }

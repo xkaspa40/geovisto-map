@@ -303,7 +303,7 @@ class ChoroplethLayerTool extends AbstractLayerTool {
                     if (item._path != undefined) {
                         item._path.style.transitionDuration = `${stepTimeLength / 2 < 500 ?
                             stepTimeLength / 2 :
-                            stepTimeLength}ms`
+                            500}ms`
                     }
                 });
             }
