@@ -65,7 +65,8 @@ class DrawingLayerToolState extends AbstractLayerToolState {
   setSelectedLayer(layer) {
     this.selectedLayer = layer;
     this.selecting = false;
-    layer.setStyle(highlightStyles);
+    if (layer.setStyle) layer.setStyle(highlightStyles);
+    else L.DomUtil.addClass(layer._icon, 'highlight-marker');
   }
 
   clearSelectedLayer() {
@@ -78,32 +79,33 @@ class DrawingLayerToolState extends AbstractLayerToolState {
 
     const exportSettings = [];
 
-    const pushPolygon = (layer) => {
-      const { options, _latlngs: latlngs, layerType, popupContent = '' } = layer;
+    const pushPolygon = (layer, layerType) => {
+      const { options, _latlngs: latlngs, popupContent = '' } = layer;
       exportSettings.push({
         layerType,
-        options: { ...options, normalStyles },
+        options: { ...options, ...normalStyles, draggable: true, transform: true },
         latlngs,
         popupContent,
       });
     };
 
     this.featureGroup.eachLayer((layer) => {
-      const { layerType, popupContent = '' } = layer;
+      const { layerType } = layer;
       if (layerType === 'marker') {
+        const { popupContent = '' } = layer;
         exportSettings.push({
           layerType,
-          options: layer.markerOptions,
+          options: { ...layer?.options?.icon?.options, draggable: true, transform: true },
           latlngs: layer._latlng,
           popupContent,
         });
       } else {
         if (layer._layers) {
           layer.eachLayer((l) => {
-            pushPolygon(l);
+            pushPolygon(l, layerType);
           });
         } else {
-          pushPolygon(layer);
+          pushPolygon(layer, layerType);
         }
       }
     });
@@ -112,55 +114,54 @@ class DrawingLayerToolState extends AbstractLayerToolState {
     return config;
   }
 
-  deserialize(config, map) {
-    // TODO: deserialize config
+  deserialize(config) {
     super.deserialize(config);
 
     const { data = [] } = config;
 
-    console.log({ map, data });
+    data.forEach((layer) => {
+      let layerToAdd;
+      // decide what type they are according to it render what is needed
+      if (layer.layerType === 'marker') {
+        let { latlngs } = layer;
+        let latlng = L.latLng(latlngs.lat, latlngs.lng);
+        let options = {
+          ...layer.options,
+          iconAnchor: new L.Point(layer.options.iconAnchor.x, layer.options.iconAnchor.y),
+          iconSize: new L.Point(layer.options.iconSize.x, layer.options.iconSize.y),
+        };
+        let MyCustomMarker = L.Icon.extend({
+          options,
+        });
 
-    if (!map) return;
+        let icon = new MyCustomMarker();
+        icon.options = options;
+        let marker = new L.Marker.Touch(latlng, { icon });
 
-    // data.forEach((layer) => {
-    //   // decide what type they are according to it render what is needed
-    //   if (layer.layerType === 'marker') {
-    //     let { latlngs } = layer;
-    //     let latlng = L.latLng(latlngs.lat, latlngs.lng);
-    //     let MyCustomMarker = L.Icon.extend({
-    //       options: layer.options,
-    //     });
+        layerToAdd = marker;
+      } else {
+        let _latlng;
+        let poly;
+        if (layer.layerType === 'polyline') {
+          _latlng = layer.latlngs.map((l) => L.latLng(l.lat, l.lng));
+          poly = new L.polyline(_latlng, layer.options);
+        }
+        if (layer.layerType === 'polygon' || layer.layerType === 'painted') {
+          _latlng = layer.latlngs[0].map((l) => L.latLng(l.lat, l.lng));
+          poly = new L.polygon(_latlng, layer.options);
+        }
 
-    //     let marker = new L.Marker.Touch(latlng, { icon: new MyCustomMarker() });
-    //     if (layer.popupContent) {
-    //       marker.bindPopup(layer.popupContent);
-    //       marker.popupContent = layer.popupContent;
-    //     }
-    //     marker.addTo(map);
-    //     map.fire(L.Draw.Event.CREATED, { layer: marker, layerType: 'marker' });
-    //   } else {
-    //     if (layer.layerType === 'polyline' || layer.layerType === 'vertice') {
-    //       let _latlng = layer.latlngs.map((l) => L.latLng(l.lat, l.lng));
-    //       let poly = new L.polyline(_latlng, layer.options);
-    //       if (layer.popupContent) {
-    //         poly.bindPopup(layer.popupContent);
-    //         poly.popupContent = layer.popupContent;
-    //       }
-    //       poly.addTo(map);
-    //       map.fire(L.Draw.Event.CREATED, { layer: poly, layerType: layer.layerType });
-    //     }
-    //     if (layer.layerType === 'polygon') {
-    //       let _latlng = layer.latlngs[0].map((l) => L.latLng(l.lat, l.lng));
-    //       let poly = new L.polygon(_latlng, layer.options);
-    //       if (layer.popupContent) {
-    //         poly.bindPopup(layer.popupContent);
-    //         poly.popupContent = layer.popupContent;
-    //       }
-    //       poly.addTo(map);
-    //       map.fire(L.Draw.Event.CREATED, { layer: poly, layerType: 'polygon' });
-    //     }
-    //   }
-    // });
+        layerToAdd = poly;
+      }
+
+      if (layer.popupContent) {
+        layerToAdd.bindPopup(layer.popupContent);
+        layerToAdd.popupContent = layer.popupContent;
+      }
+      layerToAdd.layerType = layer.layerType;
+
+      this.addLayer(layerToAdd);
+    });
   }
 }
 export default DrawingLayerToolState;

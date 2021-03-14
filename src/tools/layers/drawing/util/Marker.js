@@ -19,9 +19,11 @@ export const markerCreate = (map, sidebar) => {
   let MyCustomMarker = L.Icon.extend({
     options: iconOptions,
   });
+  const icon = new MyCustomMarker();
+  icon.options = iconOptions;
 
   const x = new L.Draw.Marker(map, {
-    icon: new MyCustomMarker(),
+    icon,
     draggable: true,
     transform: true,
   });

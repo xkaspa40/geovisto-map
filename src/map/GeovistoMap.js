@@ -6,6 +6,7 @@ import AbstractEvent from '../model/event/abstract/AbstractEvent';
 import DataChangeEvent from '../model/event/basic/DataChangeEvent';
 import GeovistoMapDefaults from './GeovistoMapDefaults';
 import GeovistoMapState from './GeovistoMapState';
+import MapCreatedEvent from '../model/event/basic/MapCreatedEvent';
 
 /**
  * Representation of map wrapper which handles map layers, sidebar and other tools
@@ -82,10 +83,9 @@ class GeovistoMap extends AbstractMapObject {
     mapConfig = mapConfig == undefined ? this.getDefaults().getConfig() : mapConfig;
     this.getState().setMapConfig(mapConfig);
 
-    const map = this.getState().getLeafletMap();
     // override state by Geovisto config if specified in argument
     // this also initializes child map objects - e.g., tools
-    this.getState().deserialize(mapConfig.getConfig(), geojson, map);
+    this.getState().deserialize(mapConfig.getConfig(), geojson);
 
     // initialize existing tools
     let toolsManager = this.getState().getTools();

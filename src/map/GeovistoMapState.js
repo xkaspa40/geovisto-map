@@ -67,28 +67,24 @@ class GeovistoMapState extends AbstractMapObjectState {
    *
    * @param {*} config
    */
-  deserialize(config, geojson, map) {
+  deserialize(config, geojson) {
     super.deserialize(config);
 
     if (config.zoom != undefined) this.setInitialZoom(config.zoom);
     if (config.mapCenter != undefined) this.setInitialMapCenter(config.mapCenter);
     if (config.mapStructure != undefined) this.setInitialMapStructure(config.mapStructure);
 
-    this.deserializeGeoJSON(geojson, config, map);
+    this.deserializeGeoJSON(geojson);
   }
 
-  deserializeGeoJSON(geojson, config, map) {
-    // TODO: deserialize config
+  deserializeGeoJSON(geojson) {
+    if (!geojson) return;
     // tools
     let tools = this.getTools().getObjects();
     // get drawing tool
     let found = tools.find((t) => t.getState().type === DRAWING_TOOL_LAYER_TYPE);
     if (found) {
-      if (!geojson) {
-        found.getState().deserialize(config, map);
-      } else {
-        found.deserializeGeoJSON(geojson);
-      }
+      found.deserializeGeoJSON(geojson);
     }
   }
 

@@ -4,6 +4,8 @@ import 'leaflet-path-transform';
 
 import 'leaflet/dist/leaflet.css';
 
+import { STROKES, COLORS } from '../sidebar/DrawingLayerToolTabControlState';
+
 export const highlightStyles = { fillOpacity: 0.5, opacity: 0.2 };
 export const normalStyles = { fillOpacity: 0.2, opacity: 0.5 };
 
@@ -46,15 +48,66 @@ export const getGeoJSONFeatureFromLayer = (layer) => {
   return feature;
 };
 
-export const featureToLeafletCoordinates = (featureCoordinates) => {
+export const featureToLeafletCoordinates = (featureCoordinates, type = 'Polygon') => {
   let point;
-  for (let i = 0; i < featureCoordinates.length; i++) {
-    for (let j = 0; j < featureCoordinates[i].length; j++) {
-      point = L.latLng(featureCoordinates[i][j]);
+  if (type === 'Point') {
+    point = L.latLng(featureCoordinates.reverse());
+    if (point) {
+      featureCoordinates = [point.lng, point.lat];
+    }
+    return featureCoordinates;
+  } else if (type === 'LineString') {
+    for (let i = 0; i < featureCoordinates.length; i++) {
+      point = L.latLng(featureCoordinates[i]);
+      console.log({ point });
       if (point) {
-        featureCoordinates[i][j] = [point.lng, point.lat];
+        featureCoordinates[i] = [point.lng, point.lat];
+      }
+    }
+    return featureCoordinates;
+  } else if (type === 'Polygon') {
+    for (let i = 0; i < featureCoordinates.length; i++) {
+      for (let j = 0; j < featureCoordinates[i].length; j++) {
+        point = L.latLng(featureCoordinates[i][j]);
+        if (point) {
+          featureCoordinates[i][j] = [point.lng, point.lat];
+        }
       }
     }
   }
+
   return featureCoordinates;
+};
+
+export const getLeafletTypeFromFeature = (feature) => {
+  switch (feature?.geometry?.type) {
+    case 'Polygon':
+      return 'polygon';
+    case 'LineString':
+      return 'polyline';
+    case 'Point':
+      return 'marker';
+    default:
+      return '';
+  }
+};
+
+export const convertPropertiesToOptions = (properties) => {
+  let options = { draggable: true, transform: true };
+  options.weight = properties['stroke-width'] || STROKES[1].value;
+  options.color = properties['fill'] || COLORS[0];
+  options.fillOpacity = properties['fill-opacity'] || normalStyles.fillOpacity;
+  options.opacity = properties['stroke-opacity'] || normalStyles.opacity;
+
+  return options;
+};
+
+export const convertOptionsToProperties = (options) => {
+  let properties = { draggable: true, transform: true };
+  properties['stroke-width'] = options.weight || STROKES[1].value;
+  properties['fill'] = options.color || COLORS[0];
+  properties['fill-opacity'] = normalStyles.fillOpacity;
+  properties['stroke-opacity'] = normalStyles.opacity;
+
+  return properties;
 };

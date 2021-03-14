@@ -5,7 +5,7 @@ const ICON_SRCS = [
   'https://upload.wikimedia.org/wikipedia/commons/0/0a/Marker_location.png',
   'https://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Flag-1-Right-Azure-icon.png',
 ];
-const COLORS = [
+export const COLORS = [
   '#1ABC9C',
   '#16A085',
   '#2ECC71',
@@ -27,7 +27,7 @@ const COLORS = [
   '#95A5A6',
   '#7F8C8D',
 ];
-const STROKES = [
+export const STROKES = [
   { label: 'thin', value: 3 },
   { label: 'medium', value: 5, selected: true },
   { label: 'bold', value: 7 },

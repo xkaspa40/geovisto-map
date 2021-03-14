@@ -56,6 +56,9 @@ class Demo extends Component {
 
     // // implicit config
     const jsonConfig = require('/static/config/config.json');
+    
+    // // implicitgeojson
+    const geojsonConfig = require('/static/geo/map.json');
 
     // reference to the rendered map
     this.map = React.createRef();
@@ -63,7 +66,8 @@ class Demo extends Component {
     // data and config can be changed
     this.state = {
       data: jsonData,
-      config: jsonConfig
+      config: jsonConfig,
+      geo: geojsonConfig,
     }
   }
 
@@ -174,7 +178,7 @@ class Demo extends Component {
       
       // process geojson
       if(!document.getElementById(C_ID_check_geojson).checked || geo.json == undefined) {
-        config.json = require('/static/geo/map.json');
+        geo.json = require('/static/geo/map.json');
       }
 
       // update state

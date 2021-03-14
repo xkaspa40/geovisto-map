@@ -6,8 +6,11 @@ import DrawingLayerToolTabControl from './sidebar/DrawingLayerToolTabControl';
 import useDrawingToolbar from './components/useDrawingToolbar';
 import union from '@turf/union';
 import {
+  convertOptionsToProperties,
+  convertPropertiesToOptions,
   featureToLeafletCoordinates,
   getGeoJSONFeatureFromLayer,
+  getLeafletTypeFromFeature,
   highlightStyles,
   normalStyles,
 } from './util/Poly';
@@ -15,6 +18,8 @@ import {
 import 'leaflet/dist/leaflet.css';
 import './style/drawingLayer.scss';
 import difference from '@turf/difference';
+import MapCreatedEvent from '../../../model/event/basic/MapCreatedEvent';
+import { iconStarter } from './util/Marker';
 
 export const DRAWING_TOOL_LAYER_TYPE = 'geovisto-tool-layer-drawing';
 
@@ -94,7 +99,8 @@ class DrawingLayerTool extends AbstractLayerTool {
     this.getState().featureGroup.eachLayer((l) => {
       let feature = l.toGeoJSON();
       // * so we don't save selected polygon
-      feature.properties = { ...l.options, ...normalStyles };
+      let properties = convertOptionsToProperties(l.options);
+      feature.properties = properties;
       geo.features.push(feature);
     });
 
@@ -103,13 +109,36 @@ class DrawingLayerTool extends AbstractLayerTool {
 
   // ? possibly move to state
   deserializeGeoJSON(geojson) {
+    console.log({ geojson });
     if (geojson.type === 'FeatureCollection' && geojson.features) {
       geojson.features.forEach((f) => {
-        featureToLeafletCoordinates(f.geometry.coordinates);
-        let result = new L.polygon(f.geometry.coordinates, f.properties);
-        result.layerType = 'polygon';
-        this.getState().addLayer(result);
-        this.applyEventListeners(result);
+        let opts = convertPropertiesToOptions(f.properties);
+        let lType = getLeafletTypeFromFeature(f);
+        featureToLeafletCoordinates(f.geometry.coordinates, f.geometry.type);
+        let result;
+        if (lType === 'polygon') {
+          result = new L.polygon(f.geometry.coordinates, opts);
+        } else if (lType === 'polyline') {
+          result = new L.polyline(f.geometry.coordinates, opts);
+        } else if (lType === 'marker') {
+          let options = {
+            ...iconStarter,
+            iconUrl: this.getSidebarTabControl().getState().getSelectedIcon(),
+            ...f.properties,
+          };
+          let MyCustomMarker = L.Icon.extend({
+            options,
+          });
+
+          let icon = new MyCustomMarker();
+          icon.options = options;
+          result = new L.Marker.Touch(f.geometry.coordinates, { icon });
+        }
+        if (result) {
+          result.layerType = lType;
+          this.getState().addLayer(result);
+          this.applyEventListeners(result);
+        }
       });
     }
     return;
@@ -124,6 +153,7 @@ class DrawingLayerTool extends AbstractLayerTool {
   createdListener = (e) => {
     let layer = e.layer;
     layer.layerType = e.layerType;
+    layer.options = { ...layer.options, draggable: true, transform: true };
 
     let prevLayer = this.getState().getPrevLayer();
     if (prevLayer?.layerType !== e.layerType) this.redrawSidebarTabControl(e.layerType);
@@ -143,6 +173,8 @@ class DrawingLayerTool extends AbstractLayerTool {
       featureToLeafletCoordinates(unifiedFeature.geometry.coordinates);
       let result = new L.polygon(unifiedFeature.geometry.coordinates, {
         ...layer.options,
+        draggable: true,
+        transform: true,
       });
       layer = result;
       layer.layerType = 'polygon';
@@ -186,13 +218,19 @@ class DrawingLayerTool extends AbstractLayerTool {
    * It creates layer items.
    */
   createLayerItems() {
+    console.log('%c ...creating', 'color: #ff5108');
     const combinedMap = this.getMap();
     const map = combinedMap.state.map;
     map.addControl(L.control.drawingToolbar({ tool: this }));
     // * eventlistener for when object is created
     map.on('draw:created', this.createdListener);
 
-    return [this.getState().featureGroup];
+    const layer = this.getState().featureGroup;
+    layer.eachLayer((layer) => {
+      layer.addTo(map);
+      this.applyEventListeners(layer);
+    });
+    return [layer];
   }
 
   hightlightPoly(e) {
@@ -218,12 +256,12 @@ class DrawingLayerTool extends AbstractLayerTool {
     if (this.getState().getSelecting()) {
       let fgLayers = this.getState().featureGroup._layers;
       Object.values(fgLayers).forEach((_) => {
-        _.setStyle(normalStyles);
+        if (_.setStyle) _.setStyle(normalStyles);
       });
       this.getState().setSelectedLayer(drawObject);
+      this.redrawSidebarTabControl(e.target.layerType);
+      this.getState().setCurrEl(drawObject);
     }
-    this.getState().setCurrEl(drawObject);
-    this.redrawSidebarTabControl(e.target.layerType);
     document.querySelector('.leaflet-container').style.cursor = '';
   }
 
@@ -236,7 +274,7 @@ class DrawingLayerTool extends AbstractLayerTool {
    * It reloads data and redraw the layer.
    */
   redraw(onlyStyle) {
-    console.log('...redrawing');
+    console.log('%c ...redrawing', 'color: #08ff51');
   }
 
   /**

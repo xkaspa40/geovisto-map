@@ -130,8 +130,10 @@ export default function useDrawingToolbar() {
         if (Boolean(sidebar.getState().enabledEl) || !this.getSelecting()) return;
         let selected = this.options.tool.getState().selectedLayer;
         if (selected) {
-          selected.setStyle(normalStyles);
+          if (selected.setStyle) selected.setStyle(normalStyles);
           this.options.tool.getState().clearSelectedLayer();
+          this.options.tool.redrawSidebarTabControl();
+          this.setCurrEl(null);
           document.querySelector('.leaflet-container').style.cursor = '';
         }
       });

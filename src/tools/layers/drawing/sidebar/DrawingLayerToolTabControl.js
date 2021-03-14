@@ -135,9 +135,9 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     let MyCustomMarker = L.Icon.extend({
       options: newOptions,
     });
-    currEl.markerOptions = newOptions;
 
     const marker = new MyCustomMarker();
+    marker.options = newOptions;
     currEl.setIcon(marker);
     this.redrawTabContent(currEl?.layerType);
   };
