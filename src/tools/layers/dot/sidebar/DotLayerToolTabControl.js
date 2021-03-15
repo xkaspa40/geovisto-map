@@ -72,7 +72,7 @@ class DotLayerToolTabControl extends AbstractLayerToolTabControl {
     /**
      * It returns the sidebar tab pane.
      */
-    getTabContent = () => {
+    getTabContent() {
 
         // event handler: change dimension action
         let changeDimensionAction = (e) => {
@@ -116,8 +116,8 @@ class DotLayerToolTabControl extends AbstractLayerToolTabControl {
 
         //button group
         this.buttonGroup = this.categoryClasses.appendChild(document.createElement('div'));
-        this.buttonGroup.appendChild(TabDOMUtil.createButton("<i class=\"fa fa-plus-circle\"></i>",  this.addMappingInputs, "plusBtn" ));
-        this.buttonGroup.appendChild(TabDOMUtil.createButton("Apply", this.applyFilters,
+        this.buttonGroup.appendChild(TabDOMUtil.createButton("<i class=\"fa fa-plus-circle\"></i>",   () => this.addMappingInputs(), "plusBtn" ));
+        this.buttonGroup.appendChild(TabDOMUtil.createButton("Apply", () => this.applyFilters(),
         "applyBtn"));
 
         this.setInputValues(this.getTool().getState().getDataMapping());
@@ -125,11 +125,11 @@ class DotLayerToolTabControl extends AbstractLayerToolTabControl {
         return tab;
     }
 
-    addMappingInputs = () => {
+    addMappingInputs() {
         let div = this.categoryClasses.insertBefore(document.createElement('div'), this.buttonGroup);
         div.setAttribute('class', 'categoryClassesGroup');
 
-        let minusButton = TabDOMUtil.createButton("<i class=\"fa fa-minus-circle\"></i>", (e) => this.removeMappingInput(e), "minusBtn");
+        let minusButton = TabDOMUtil.createButton("<i class=\"fa fa-minus-circle\"></i>", (e) => {this.removeMappingInput(e)}, "minusBtn");
         div.appendChild(minusButton);
 
         const operations = this.filterManager.getOperationLabels();
@@ -154,14 +154,14 @@ class DotLayerToolTabControl extends AbstractLayerToolTabControl {
         });
     }
 
-    removeMappingInput = (e) => {
+    removeMappingInput(e) {
         let inputGroup = e.target.closest(".categoryClassesGroup");
         this.colorClassInputs = this.colorClassInputs.filter((item) => item.container !== inputGroup);
 
         inputGroup.remove();
     }
 
-    applyFilters = () => {
+    applyFilters() {
         let rules = [];
         this.colorClassInputs.forEach((input) => {
             const data = input.input.getValue();

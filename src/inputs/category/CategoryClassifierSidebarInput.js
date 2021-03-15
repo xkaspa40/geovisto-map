@@ -28,7 +28,7 @@ class CategoryClassifierSidebarInput extends AbstractSidebarInput {
         this.colorInput = undefined;
     }
 
-    create = () => {
+    create() {
         if (this.input !== undefined) {
             return this.input;
         }
@@ -64,7 +64,7 @@ class CategoryClassifierSidebarInput extends AbstractSidebarInput {
     /**
      * It returns values of the inputs.
      */
-    getValue = () => {
+    getValue() {
         return {
             op: this.opInput.getValue(),
             val: this.valInput.getValue(),

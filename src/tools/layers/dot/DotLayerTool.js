@@ -414,7 +414,7 @@ class DotLayerTool extends AbstractLayerTool {
      * @param data
      * @returns {Circle}
      */
-    createDot = (data) => {
+    createDot(data) {
         // TODO set color based on Category colour passed in data
         let point = L.circle([data.lat, data.long], {
             radius: 10,
@@ -500,7 +500,7 @@ class DotLayerTool extends AbstractLayerTool {
      *
      * @param rules
      */
-    setCategoryFilters = (rules) => {
+    setCategoryFilters(rules) {
         this.categoryFilters = rules;
         this.redraw();
     }
