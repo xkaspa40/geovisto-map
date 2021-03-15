@@ -59,7 +59,6 @@ export const featureToLeafletCoordinates = (featureCoordinates, type = 'Polygon'
   } else if (type === 'LineString') {
     for (let i = 0; i < featureCoordinates.length; i++) {
       point = L.latLng(featureCoordinates[i]);
-      console.log({ point });
       if (point) {
         featureCoordinates[i] = [point.lng, point.lat];
       }

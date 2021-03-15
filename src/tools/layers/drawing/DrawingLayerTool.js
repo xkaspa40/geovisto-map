@@ -136,6 +136,7 @@ class DrawingLayerTool extends AbstractLayerTool {
         }
         if (result) {
           result.layerType = lType;
+          if (result.dragging) result.dragging.disable();
           this.getState().addLayer(result);
           this.applyEventListeners(result);
         }
@@ -153,7 +154,7 @@ class DrawingLayerTool extends AbstractLayerTool {
   createdListener = (e) => {
     let layer = e.layer;
     layer.layerType = e.layerType;
-    layer.options = { ...layer.options, draggable: true, transform: true };
+    if (e.keyIndex) layer.kIdx = e.keyIndex;
 
     let prevLayer = this.getState().getPrevLayer();
     if (prevLayer?.layerType !== e.layerType) this.redrawSidebarTabControl(e.layerType);
@@ -204,6 +205,8 @@ class DrawingLayerTool extends AbstractLayerTool {
     //     }
     //   }
     // });
+
+    if (layer.dragging) layer.dragging.disable();
 
     this.getState().addLayer(layer);
     this.getState().setCurrEl(layer);

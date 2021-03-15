@@ -159,7 +159,7 @@ class DrawingLayerToolState extends AbstractLayerToolState {
         layerToAdd.popupContent = layer.popupContent;
       }
       layerToAdd.layerType = layer.layerType;
-
+      if (layerToAdd.dragging) layerToAdd.dragging.disable();
       this.addLayer(layerToAdd);
     });
   }

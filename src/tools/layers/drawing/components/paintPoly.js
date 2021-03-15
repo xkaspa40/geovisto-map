@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import circle from '@turf/circle';
 import union from '@turf/union';
 import difference from '@turf/difference';
-import { getGeoJSONFeatureFromLayer } from '../util/Poly';
+import { convertOptionsToProperties, getGeoJSONFeatureFromLayer } from '../util/Poly';
 
 const DEFAULT_COLOR = '#333333';
 
@@ -59,6 +59,18 @@ class PaintPoly {
     delete this._accumulatedShapes[kIdx];
   };
 
+  updatePaintedPolys = (kIdx, layer) => {
+    if (kIdx === undefined) return;
+
+    if (this._shapeLayers[kIdx]) {
+      this._shapeLayers[kIdx] = layer;
+    }
+    let feature = layer.toGeoJSON();
+    feature.properties = convertOptionsToProperties(layer.options);
+
+    this._accumulatedShapes[kIdx] = feature;
+  };
+
   // taken from https://stackoverflow.com/questions/27545098/leaflet-calculating-meters-per-pixel-at-zoom-level
   _pixelsToMeters = () => {
     const metersPerPixel =
@@ -101,9 +113,16 @@ class PaintPoly {
 
   _redrawShapes = () => {
     Object.keys(this._accumulatedShapes).forEach((key) => {
-      let result = new L.GeoJSON(this._accumulatedShapes[key], {
+      const coords = this._accumulatedShapes[key].geometry.coordinates;
+      const latlngs = L.GeoJSON.coordsToLatLngs(coords, 1);
+
+      let result = new L.polygon(latlngs, {
         color: this._accumulatedShapes[key]?.properties?.fill || DEFAULT_COLOR,
+        draggable: true,
+        transform: true,
       });
+
+      result.dragging.disable();
 
       if (this._shapeLayers[key] !== undefined) {
         this._shapeLayers[key].remove();

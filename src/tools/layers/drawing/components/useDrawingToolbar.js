@@ -66,6 +66,13 @@ export default function useDrawingToolbar() {
         'fa fa-arrows-alt',
       );
 
+      this.options.drawingBtns.editBtn = this.createToolbarBtn(
+        'editBtn',
+        toolContainer,
+        'Edit',
+        'fa fa-square',
+      );
+
       const sidebar = this.options.tool.getSidebarTabControl();
 
       this.options.drawingBtns.paintBtn = sidebar.getState().paintPoly.renderButton({
@@ -101,14 +108,22 @@ export default function useDrawingToolbar() {
     },
 
     addEventListeners: function () {
-      const { lineBtn, markerBtn, polygonBtn, selectBtn, transformBtn } = this.options.drawingBtns;
+      const {
+        lineBtn,
+        markerBtn,
+        polygonBtn,
+        selectBtn,
+        transformBtn,
+        editBtn,
+      } = this.options.drawingBtns;
       const map = this.options.map;
       const sidebar = this.options.tool.getSidebarTabControl();
 
-      const btnsArr = Object.values(this.options.drawingBtns);
-      btnsArr.forEach((btn) => {
-        L.DomEvent.on(btn, 'click', () => this._dispatchClickEvent(btn, sidebar), this);
-      });
+      // TODO: think of better solution
+      // const btnsArr = Object.values(this.options.drawingBtns);
+      // btnsArr.forEach((btn) => {
+      //   L.DomEvent.on(btn, 'click', () => this._dispatchClickEvent(btn, sidebar), this);
+      // });
 
       L.DomEvent.on(lineBtn, 'click', () => polylineCreate(map, sidebar), this);
       L.DomEvent.on(markerBtn, 'click', L.DomEvent.stopPropagation)
@@ -117,6 +132,21 @@ export default function useDrawingToolbar() {
       L.DomEvent.on(polygonBtn, 'click', () => polygonCreate(map, sidebar), this);
       L.DomEvent.on(selectBtn, 'click', this.initSelecting, this);
       L.DomEvent.on(transformBtn, 'click', this.initTransform, this);
+      L.DomEvent.on(editBtn, 'click', this.initNodeEdit, this);
+    },
+
+    initNodeEdit: function () {
+      const currEl = this.options.tool.getState().currEl;
+      console.log({ currEl });
+      if (currEl.editing) {
+        if (currEl.editing._enabled) {
+          currEl.editing.disable();
+          // let paintPoly = this.options.tool.getSidebarTabControl().getState().paintPoly;
+          // paintPoly.updatePaintedPolys(layer.kIdx, layer);
+        } else {
+          currEl.editing.enable();
+        }
+      }
     },
 
     initSelecting: function () {
@@ -144,8 +174,12 @@ export default function useDrawingToolbar() {
       if (layer?.transform) {
         if (layer.transform._enabled) {
           layer.transform.disable();
+          layer.dragging.disable();
+          let paintPoly = this.options.tool.getSidebarTabControl().getState().paintPoly;
+          paintPoly.updatePaintedPolys(layer.kIdx, layer);
         } else {
           layer.transform.enable({ rotation: true, scaling: true });
+          layer.dragging.enable();
         }
       }
     },
