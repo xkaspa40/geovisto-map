@@ -207,6 +207,8 @@ class DotLayerTool extends AbstractLayerTool {
      */
     constructor(props) {
         super(props);
+
+        this.categoryFilters = [];
     }
 
     /**
@@ -346,7 +348,14 @@ class DotLayerTool extends AbstractLayerTool {
 
             if (foundCategories.length === 1) {
                 resultItem.category = foundCategories[0];
-                //TODO add color definition based on user settings (probably need to create a function for this one)
+                for (let j = 0; j < this.categoryFilters.length; j++) {
+                    const filter = this.categoryFilters[j];
+                    if (filter.operation(resultItem.category, filter.value)) {
+                        resultItem.color = filter.color;
+
+                        break;
+                    }
+                }
             }
 
             if (resultItem !== undefined) {
@@ -399,11 +408,19 @@ class DotLayerTool extends AbstractLayerTool {
         return workData;
     }
 
+    /**
+     * Creates dot symbol
+     *
+     * @param data
+     * @returns {Circle}
+     */
     createDot = (data) => {
         // TODO set color based on Category colour passed in data
-        let point = L.circleMarker([data.lat, data.long], {
-            radius: 2,
-            color: 'green'
+        let point = L.circle([data.lat, data.long], {
+            radius: 10,
+            weight: 0,
+            fillOpacity: 1.0,
+            color: data.color ?? 'green'
         });
         return point;
     }
@@ -476,6 +493,16 @@ class DotLayerTool extends AbstractLayerTool {
             // update state
             this.getState().setMarkers(markers);
         }
+    }
+
+    /**
+     * Sets rules for category colors
+     *
+     * @param rules
+     */
+    setCategoryFilters = (rules) => {
+        this.categoryFilters = rules;
+        this.redraw();
     }
 
     /**

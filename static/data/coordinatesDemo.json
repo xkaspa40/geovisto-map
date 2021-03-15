@@ -5,6 +5,51 @@
     "status": "recovered"
   },
   {
+    "lat": 50.02,
+    "long": 15.065,
+    "status": "recovered"
+  },
+  {
+    "lat": 50.021,
+    "long": 15.065,
+    "status": "recovered"
+  },
+  {
+    "lat": 50.022,
+    "long": 15.065,
+    "status": "recovered"
+  },
+  {
+    "lat": 50.023,
+    "long": 15.065,
+    "status": "recovered"
+  },
+  {
+    "lat": 50.024,
+    "long": 15.068,
+    "status": "recovered"
+  },
+  {
+    "lat": 50.026,
+    "long": 15.061,
+    "status": "recovered"
+  },
+  {
+    "lat": 50.022,
+    "long": 15.06,
+    "status": "recovered"
+  },
+  {
+    "lat": 50.023,
+    "long": 15.067,
+    "status": "recovered"
+  },
+  {
+    "lat": 50.029,
+    "long": 15.061,
+    "status": "recovered"
+  },
+  {
     "lat": 32.032,
     "long": 15.065,
     "status": "sick"

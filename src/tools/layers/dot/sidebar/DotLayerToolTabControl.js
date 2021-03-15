@@ -3,7 +3,8 @@ import DotLayerToolTabControlState from "./DotLayerToolTabControlState";
 import AbstractLayerToolTabControl from "../../abstract/sidebar/AbstractLayerToolTabControl";
 import SidebarInputFactory from "../../../../inputs/SidebarInputFactory";
 import TabDOMUtil from "../../../../util/TabDOMUtil";
-import CategoryClassifierSidebarInput from "../../../../inputs/category/CategoryClassifierSidebarInput"
+import CategoryClassifierSidebarInput from "../../../../inputs/category/CategoryClassifierSidebarInput";
+import FiltersToolDefaults from "../../../filters/FiltersToolDefaults";
 
 /**
  * This class provides controls for management of the layer sidebar tab.
@@ -16,6 +17,7 @@ class DotLayerToolTabControl extends AbstractLayerToolTabControl {
         super(tool);
 
         this.tabContent = undefined;
+        this.filterManager = new FiltersToolDefaults().getFiltersManager();
         this.colorClassInputs = [];
     }
 
@@ -115,8 +117,7 @@ class DotLayerToolTabControl extends AbstractLayerToolTabControl {
         //button group
         this.buttonGroup = this.categoryClasses.appendChild(document.createElement('div'));
         this.buttonGroup.appendChild(TabDOMUtil.createButton("<i class=\"fa fa-plus-circle\"></i>",  this.addMappingInputs, "plusBtn" ));
-
-        this.buttonGroup.appendChild(TabDOMUtil.createButton("Apply", {},
+        this.buttonGroup.appendChild(TabDOMUtil.createButton("Apply", this.applyFilters,
         "applyBtn"));
 
         this.setInputValues(this.getTool().getState().getDataMapping());
@@ -131,9 +132,10 @@ class DotLayerToolTabControl extends AbstractLayerToolTabControl {
         let minusButton = TabDOMUtil.createButton("<i class=\"fa fa-minus-circle\"></i>", (e) => this.removeMappingInput(e), "minusBtn");
         div.appendChild(minusButton);
 
+        const operations = this.filterManager.getOperationLabels();
         let input = SidebarInputFactory.createSidebarInput(CategoryClassifierSidebarInput.ID(), {
             operations: {
-                options: ["=", "!=", "reg"],
+                options: operations,
                 action: () => {/**/}
             },
             values: {
@@ -155,8 +157,23 @@ class DotLayerToolTabControl extends AbstractLayerToolTabControl {
     removeMappingInput = (e) => {
         let inputGroup = e.target.closest(".categoryClassesGroup");
         this.colorClassInputs = this.colorClassInputs.filter((item) => item.container !== inputGroup);
-        console.log(this.colorClassInputs);
+
         inputGroup.remove();
+    }
+
+    applyFilters = () => {
+        let rules = [];
+        this.colorClassInputs.forEach((input) => {
+            const data = input.input.getValue();
+            const operation = this.filterManager.getOperation(data.op)[0] ? this.filterManager.getOperation(data.op)[0].match : undefined;
+            data.val && data.color && operation && rules.push({
+                operation,
+                value: data.val,
+                color: data.color
+            });
+        });
+
+        this.getTool().setCategoryFilters(rules);
     }
 }
 export default DotLayerToolTabControl;
