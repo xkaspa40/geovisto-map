@@ -41,7 +41,7 @@ const C_ID_input_export = "leaflet-combined-map-input-export";
 
 class Demo extends Component {
 
-  constructor(props) {
+  public constructor(props) {
     super(props);
 
     // initialize geo objects

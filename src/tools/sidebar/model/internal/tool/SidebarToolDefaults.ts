@@ -14,7 +14,7 @@ class SidebarToolDefaults extends MapToolDefaults implements ISidebarToolDefault
     /**
      * It creates a tool defaults.
      */
-    constructor(tool: ISidebarTool) {
+    public constructor(tool: ISidebarTool) {
         super(tool);
     }
 

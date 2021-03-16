@@ -1,4 +1,4 @@
-import { ISidebarTab, ISidebarTabProps } from '../../../../sidebar';
+import { ISidebarTab, ISidebarFragmentProps } from '../../../../sidebar';
 import AbstractSidebarFragment from '../../../../sidebar/model/internal/fragment/AbstractSidebarFragment';
 import SettingsTool from '../../../../settings/model/internal/tool/SettingsTool';
 import IMapTheme from '../../types/theme/IMapTheme';
@@ -11,17 +11,18 @@ import AutocompleteFormInput from '../../../../../model/internal/inputs/labeled/
  * 
  * @author Jiri Hynek
  */
-class ThemesToolSidebarFragment extends AbstractSidebarFragment {
+class ThemesToolSidebarFragment extends AbstractSidebarFragment<IThemesTool> {
     
     private htmlContent: HTMLElement | undefined;
 
     /**
      * It creates a sidebar fragment with respect to the given props.
      * 
+     * @param tool
      * @param props 
      */
-    constructor(props: ISidebarTabProps) {
-        super(props);
+    public constructor(tool: IThemesTool, props: ISidebarFragmentProps | undefined) {
+        super(tool, props);
     }
 
     /**
@@ -30,7 +31,7 @@ class ThemesToolSidebarFragment extends AbstractSidebarFragment {
      * @param sidebarTab 
      */
     public isChild(sidebarTab: ISidebarTab): boolean {
-        return sidebarTab.getState().getTool().getType() == SettingsTool.TYPE();
+        return sidebarTab.getTool().getType() == SettingsTool.TYPE();
     }
 
     /**

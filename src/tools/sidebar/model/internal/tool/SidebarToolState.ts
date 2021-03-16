@@ -22,7 +22,7 @@ class SidebarToolState extends MapToolState implements ISidebarToolState {
     /**
      * It creates a tool state.
      */
-    constructor(tool: ISidebarTool) {
+    public constructor(tool: ISidebarTool) {
         super(tool);
 
         // tabs will be added by using addTab function
@@ -47,7 +47,7 @@ class SidebarToolState extends MapToolState implements ISidebarToolState {
      * 
      * @param config 
      */
-    deserialize(config: ISidebarToolConfig): void {
+    public deserialize(config: ISidebarToolConfig): void {
         super.deserialize(config);
 
         // original tabs desriptions can be used after all tools are initialized during the sidebar tool creation
@@ -59,7 +59,7 @@ class SidebarToolState extends MapToolState implements ISidebarToolState {
      * 
      * @param filterDefaults
      */
-    serialize(filterDefaults: boolean): ISidebarToolConfig {
+    public serialize(filterDefaults: boolean): ISidebarToolConfig {
         const config: ISidebarToolConfig = <ISidebarToolConfig> super.serialize(filterDefaults);
 
         // serialize sidebar tabs
@@ -82,7 +82,7 @@ class SidebarToolState extends MapToolState implements ISidebarToolState {
     /**
      * It returns the sidebar.
      */
-    getSidebar(): Control.Sidebar | null {
+    public getSidebar(): Control.Sidebar | null {
         return this.sidebar;
     }
 
@@ -91,14 +91,14 @@ class SidebarToolState extends MapToolState implements ISidebarToolState {
      * 
      * @param sidebar 
      */
-    setSidebar(sidebar: Control.Sidebar): void {
+    public setSidebar(sidebar: Control.Sidebar): void {
         this.sidebar = sidebar;
     }
 
     /**
      * It returns the tabs controls.
      */
-    getTabs(): ISidebarTab[] {
+    public getTabs(): ISidebarTab[] {
         return this.tabs;
     }
 
@@ -107,7 +107,7 @@ class SidebarToolState extends MapToolState implements ISidebarToolState {
      * 
      * @param tab
      */
-    addTab(tab: ISidebarTab): void {
+    public addTab(tab: ISidebarTab): void {
         this.tabs.push(tab);
     }
 
@@ -116,7 +116,7 @@ class SidebarToolState extends MapToolState implements ISidebarToolState {
      * 
      * @param tab 
      */
-    removeTab(tab: ISidebarTab): void {
+    public removeTab(tab: ISidebarTab): void {
         const index = this.tabs.indexOf(tab);
         if (index > -1) {
             this.tabs.splice(index, 1);

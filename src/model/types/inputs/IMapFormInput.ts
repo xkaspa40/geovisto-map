@@ -6,7 +6,7 @@
 interface IMapFormInput {
 
     /**
-     * It returns input element.
+     * It creates an input element.
      */
     create(): HTMLElement;
 

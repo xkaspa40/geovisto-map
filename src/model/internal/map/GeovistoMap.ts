@@ -31,7 +31,7 @@ class GeovistoMap extends MapObject implements IMap {
      * 
      * @param props 
      */
-    constructor(props: IMapProps) {
+    public constructor(props: IMapProps) {
         super(props);
     }
 

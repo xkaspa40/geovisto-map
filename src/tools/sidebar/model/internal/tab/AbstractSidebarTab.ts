@@ -24,15 +24,20 @@ const C_checked_class = "checked";
  *
  * @author Jiri Hynek
  */
-abstract class AbstractSidebarTab extends MapObject implements ISidebarTab {
+abstract class AbstractSidebarTab<T extends IMapTool> extends MapObject implements ISidebarTab {
 
     /**
      * It creates abstract sidebar tab with respect to the given props.
      * 
+     * @param tool
      * @param props 
      */
-    constructor(props: ISidebarTabProps) {
+    public constructor(tool: T, props: ISidebarTabProps | undefined) {
         super(props);
+
+        // store the tool which provides this sidebar tab
+        // props.tool should not be undefined
+        this.getState().setTool(tool);
     }
 
     /**
@@ -73,8 +78,8 @@ abstract class AbstractSidebarTab extends MapObject implements ISidebarTab {
     /**
      * Help function which returns the tool.
      */
-    public getTool(): IMapTool {
-        return this.getState().getTool();
+    public getTool(): T {
+        return <T> this.getState().getTool();
     }
 
     /**
@@ -171,13 +176,13 @@ abstract class AbstractSidebarTab extends MapObject implements ISidebarTab {
                         };
                         tabHeader.insertBefore(tabEnableBtn, tabHeader.firstChild);
 
-                        if(this.getState().getTool().isEnabled()) {
+                        if(this.getState().getTool()?.isEnabled()) {
                             tabEnableBtn.setAttribute(C_checked_class, "true");
                         }
                     }
 
                     // initial state
-                    if(this.getState().getTool().isEnabled()) {
+                    if(this.getState().getTool()?.isEnabled()) {
                         tabHeader.classList.add(C_enabled_class);
                         tabElement.classList.add(C_enabled_class);
                     } else {
@@ -204,8 +209,8 @@ abstract class AbstractSidebarTab extends MapObject implements ISidebarTab {
      * @param checked
      */
     public setChecked(checked: boolean): void {
-        const tool: IMapTool = this.getState().getTool();
-        if(checked != tool.isEnabled()) {
+        const tool: IMapTool | null = this.getState().getTool();
+        if(tool && checked != tool.isEnabled()) {
             // enable/disable sidebar tab
             const sidebarTab = d3.select("#" + this.getState().getId());
             if(sidebarTab != undefined) {

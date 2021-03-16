@@ -15,9 +15,9 @@ import ISidebarTab from "../../types/tab/ISidebarTab";
  */
 class SidebarFragmentState extends MapObjectState implements ISidebarFragmentState {
     
-    private tool: IMapTool;
-    
     private enabled: boolean;
+    
+    private tool: IMapTool | null;
     
     private sidebarTab: ISidebarTab | null;
     
@@ -28,17 +28,17 @@ class SidebarFragmentState extends MapObjectState implements ISidebarFragmentSta
      * 
      * @param sidebarFragment 
      */
-    constructor(sidebarFragment: ISidebarFragment) {
+    public constructor(sidebarFragment: ISidebarFragment) {
         super(sidebarFragment);
 
         const props = <ISidebarFragmentProps> this.getProps();
         const defaults = <ISidebarFragmentDefaults> this.getDefaults();
+
+        this.enabled = props.enabled == undefined ? defaults.isEnabled() : props.enabled;
         
         // store the tool which provides this sidebar fragment
         // props.tool should not be undefined
-        this.tool = props.tool;
-
-        this.enabled = props.enabled == undefined ? defaults.isEnabled() : props.enabled;
+        this.tool = null;
 
         this.sidebarTab = null;
         this.content = null;
@@ -80,7 +80,7 @@ class SidebarFragmentState extends MapObjectState implements ISidebarFragmentSta
         return {
             id: undefined,
             type: undefined,
-            tool: this.getTool().getId(),
+            tool: this.getTool()?.getId(),
             enabled: filterDefaults && this.isEnabled() == defaults.isEnabled() ? undefined : this.isEnabled(),
         };
     }
@@ -88,7 +88,7 @@ class SidebarFragmentState extends MapObjectState implements ISidebarFragmentSta
     /**
      * It returns the tool property of the sidebar tab fragment state.
      */
-    public getTool(): IMapTool {
+    public getTool(): IMapTool | null {
         return this.tool;
     }
 

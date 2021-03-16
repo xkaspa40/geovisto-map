@@ -16,7 +16,7 @@ import ISettingsToolDefaults from "../../types/tool/ISettingsToolDefaults";
 class SettingsTool extends MapTool implements ISettingsTool, ISidebarTabControl {
     
     /**
-     * TODO: to to the state
+     * TODO: move to the state
      */
     private sidebarTab: ISidebarTab | undefined;
 
@@ -25,7 +25,7 @@ class SettingsTool extends MapTool implements ISettingsTool, ISidebarTabControl 
      * 
      * @param props 
      */
-    constructor(props: ISettingsToolProps) {
+    public constructor(props: ISettingsToolProps) {
         super(props);
 
         // the tab control for a sidebar will be created only if needed
@@ -96,9 +96,8 @@ class SettingsTool extends MapTool implements ISettingsTool, ISidebarTabControl 
      */
     protected createSidebarTabControl(): ISidebarTab {
         // override if needed
-        return new SettingsToolSidebarTab({
-            tool: this,
-            // defined by the tab defaults
+        return new SettingsToolSidebarTab(this, {
+            // defined by the sidebar tab defaults
             id: undefined,
             enabled: undefined,
             name: undefined,

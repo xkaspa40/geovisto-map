@@ -14,7 +14,7 @@ class MapEvent<TSource extends IMapObject> implements IMapEvent<TSource> {
     /**
      * It initializes event.
      */
-    constructor(type: string, source: TSource) {
+    public constructor(type: string, source: TSource) {
         this.type = type;
         this.source = source;
     }
@@ -22,14 +22,14 @@ class MapEvent<TSource extends IMapObject> implements IMapEvent<TSource> {
     /**
      * It returns string which identifies the event.
      */
-    getType(): string {
+    public getType(): string {
         return this.type;
     }
 
     /**
      * It return source map object of the event.
      */
-    getSource(): TSource {
+    public getSource(): TSource {
         return this.source;
     }
 }

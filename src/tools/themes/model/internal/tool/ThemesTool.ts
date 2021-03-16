@@ -1,7 +1,7 @@
 import MapTool from "../../../../../model/internal/tool/MapTool";
 import IThemesTool from "../../types/tool/IThemesTool";
 import IThemesToolProps from "../../types/tool/IThemesToolProps";
-import { ISidebarFragment } from "../../../../sidebar";
+import { ISidebarFragment, ISidebarFragmentControl } from "../../../../sidebar";
 import IThemesToolDefaults from "../../types/tool/IThemesToolDefaults";
 import ThemesToolDefaults from "./ThemesToolDefaults";
 import IThemesToolState from "../../types/tool/IThemesToolState";
@@ -20,19 +20,19 @@ const THEME_ATTR_NAME = "data-theme";
  * 
  * @author Jiri Hynek
  */
-class ThemesTool extends MapTool implements IThemesTool {
+class ThemesTool extends MapTool implements IThemesTool, ISidebarFragmentControl {
     
     /**
      * TODO: move to the tool state.
      */
-    sidebarFragment: ISidebarFragment | undefined;
+    private sidebarFragment: ISidebarFragment | undefined;
 
     /**
      * It creates a new tool with respect to the props.
      * 
      * @param props 
      */
-    constructor(props: IThemesToolProps) {
+    public constructor(props: IThemesToolProps) {
         super(props);
 
         // the tab fragment for a sidebar tab will be created only if needed
@@ -138,14 +138,10 @@ class ThemesTool extends MapTool implements IThemesTool {
      */
     protected createSidebarTabFragment(): ISidebarFragment {
         // override if needed
-        return new ThemesToolSidebarFragment({
-            tool: this,
-            // defined by the tab defaults
+        return new ThemesToolSidebarFragment(this, {
+            // defined by the sidebar fragment defaults
             id: undefined,
-            enabled: undefined,
-            name: undefined,
-            icon: undefined,
-            checkButton: undefined
+            enabled: undefined
         });
     }
 }

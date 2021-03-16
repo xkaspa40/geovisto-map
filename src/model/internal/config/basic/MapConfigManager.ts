@@ -15,7 +15,7 @@ class MapConfigManager extends AbstractMapConfigManager implements IMapConfigMan
      * 
      * @param config 
      */
-    constructor(config: any) {
+    public constructor(config: any) {
         super(config);
     }
 

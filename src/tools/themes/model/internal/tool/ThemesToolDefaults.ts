@@ -12,6 +12,7 @@ import IMapThemesManager from "../../types/theme/IMapThemesManager";
 import IMapTheme from "../../types/theme/IMapTheme";
 import IThemesToolDefaults from "../../types/tool/IThemesToolDefaults";
 import IThemesToolConfig from "../../types/tool/IThemesToolConfig";
+import BasicTheme from "../theme/basic/BasicTheme";
 
 /**
  * This class provide functions which return the default state values.
@@ -23,7 +24,7 @@ class ThemesToolDefaults extends MapToolDefaults implements IThemesToolDefaults 
     /**
      * It creates tool defaults.
      */
-    constructor(tool: IThemesTool) {
+    public constructor(tool: IThemesTool) {
         super(tool);
     }
 
@@ -67,8 +68,12 @@ class ThemesToolDefaults extends MapToolDefaults implements IThemesToolDefaults 
     /**
      * It returns default theme.
      */
-    getTheme(): IMapTheme | undefined {
-        return (<IThemesTool> this.getMapObject()).getState().getThemesManager().getDefault();
+    public getTheme(): IMapTheme {
+        let theme: IMapTheme | undefined = (<IThemesTool> this.getMapObject()).getState().getThemesManager().getDefault();
+        if(theme == undefined) {
+            theme = new BasicTheme();
+        }
+        return theme;
     }
 }
 export default ThemesToolDefaults;

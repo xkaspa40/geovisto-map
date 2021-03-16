@@ -14,7 +14,7 @@ class DataChangeEvent<TSource extends IMapObject> extends MapChangeEvent<TSource
     /**
      * It initializes event.
      */
-    constructor(source: TSource, data: any) {
+    public constructor(source: TSource, data: any) {
         super(DataChangeEvent.TYPE(), source, data);
     }
 

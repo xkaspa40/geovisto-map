@@ -26,7 +26,7 @@ class MapToolState extends MapObjectState implements IMapToolState {
      * 
      * @param tool 
      */
-    constructor(tool : IMapTool) {
+    public constructor(tool : IMapTool) {
         super(tool);
 
         this.enabled = (<IMapToolDefaults> this.getDefaults()).isEnabled();
@@ -38,8 +38,8 @@ class MapToolState extends MapObjectState implements IMapToolState {
     public reset(): void {
         super.reset();
 
-        let props = <IMapToolProps> this.getProps();
-        let defaults = <IMapToolDefaults> this.getDefaults();
+        const props = <IMapToolProps> this.getProps();
+        const defaults = <IMapToolDefaults> this.getDefaults();
 
         // set the enabled property 
         this.setEnabled(props.enabled == undefined ? defaults.isEnabled() :  props.enabled);
@@ -63,7 +63,7 @@ class MapToolState extends MapObjectState implements IMapToolState {
      * @param filterDefaults 
      */
     public serialize(filterDefaults : boolean | undefined): IMapToolConfig {
-        let config: IMapToolConfig = <IMapToolConfig> super.serialize(filterDefaults);
+        const config: IMapToolConfig = <IMapToolConfig> super.serialize(filterDefaults);
 
         // tools properties
         config.enabled = filterDefaults && this.isEnabled() == (<IMapToolDefaults>  this.getDefaults()).isEnabled() ? undefined : this.isEnabled();

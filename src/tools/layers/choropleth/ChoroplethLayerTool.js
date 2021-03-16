@@ -8,7 +8,7 @@ import ChoropolethLayerToolTabControl from './sidebar/ChoroplethLayerToolTabCont
 import ThemesToolEvent from '../../themes/model/internal/event/ThemesToolEvent';
 import SelectionToolEvent from '../../selection/model/internal/event/SelectionToolEvent';
 import DataChangeEvent from '../../../model/internal/event/data/DataChangeEvent';
-import MapSelection from '../../selection/model/internal/selection/generic/MapSelection';
+import MapSelection from '../../selection/model/internal/selection/MapSelection';
 import SelectionTool from '../../selection/model/internal/tool/SelectionTool';
 
 // TODO: move to defaults

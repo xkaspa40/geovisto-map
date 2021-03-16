@@ -14,7 +14,7 @@ abstract class AbstractMapDataDomain implements IMapDataDomain {
      * 
      * @param originalDataDomain 
      */
-    constructor(originalDataDomain: any) {
+    public constructor(originalDataDomain: any) {
         this.originalDataDomain = originalDataDomain;
     }
 

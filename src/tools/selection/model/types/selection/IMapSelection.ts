@@ -27,15 +27,16 @@ interface IMapSelection {
     /**
      * It compares two selections.
      * 
-     * @param
+     * @param selection
      */
     equals(selection: IMapSelection): boolean;
 
     /**
-     * It adds geographical items.
+     * It takes geographical items and returns the list of new ids
+     * which were added to the list of all ids.
      * 
-     * @param
+     * @param ids
      */
-    addIds(ids: string[]): void;
+    addIds(ids: string[]): string[];
 }
 export default IMapSelection;

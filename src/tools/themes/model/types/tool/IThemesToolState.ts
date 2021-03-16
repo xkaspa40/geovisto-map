@@ -39,7 +39,7 @@ interface IThemesToolState extends IMapToolState {
     /**
      * It returns the theme property of the tool state.
      */
-    getTheme(): IMapTheme | undefined;
+    getTheme(): IMapTheme;
 
     /**
      * It sets the theme property of the tool state.

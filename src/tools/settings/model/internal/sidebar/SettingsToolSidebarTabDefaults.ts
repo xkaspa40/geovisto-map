@@ -10,7 +10,7 @@ class SettingsToolSidebarTabDefaults extends SidebarTabDefaults implements ISide
     /**
      * It creates tab control defaults.
      */
-    constructor(sidebarTab: ISidebarTab) {
+    public constructor(sidebarTab: ISidebarTab) {
         super(sidebarTab);
     }
 

@@ -13,7 +13,7 @@ class SettingsToolState extends MapToolState implements ISettingsToolState {
     /**
      * It creates a tool state.
      */
-    constructor(tool: ISettingsTool) {
+    public constructor(tool: ISettingsTool) {
         super(tool);
     }
 
@@ -31,7 +31,7 @@ class SettingsToolState extends MapToolState implements ISettingsToolState {
      * 
      * @param filterDefaults
      */
-    serialize(filterDefaults: boolean): ISettingsToolConfig {
+    public serialize(filterDefaults: boolean): ISettingsToolConfig {
         return super.serialize(filterDefaults);
     }
 }

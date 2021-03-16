@@ -25,16 +25,16 @@ interface IFiltersToolState extends IMapToolState {
     serialize(defaults: boolean): IFiltersToolConfig;
 
     /**
+     * It returns filter manager
+     */
+    getFiltersManager(): IMapFiltersManager;
+
+    /**
      * It updates filter manager.
      * 
      * @param manager 
      */
     setFiltersManager(manager: IMapFiltersManager): void;
-
-    /**
-     * It returns filter manager
-     */
-    getFiltersManager(): IMapFiltersManager;
 
     /**
      * It returns the filterRules property of the tool state.

@@ -1,5 +1,4 @@
 import IMapTool from '../../../../../model/types/tool/IMapTool';
-import ISidebarTabControl from "../../../../sidebar/model/types/tab/ISidebarTabControl";
 import ISettingsToolProps from "./ISettingsToolProps";
 import ISettingsToolDefaults from "./ISettingsToolDefaults";
 import ISettingsToolState from "./ISettingsToolState";
@@ -9,7 +8,7 @@ import ISettingsToolState from "./ISettingsToolState";
  * 
  * @author Jiri Hynek
  */
-interface ISettingsTool extends IMapTool, ISidebarTabControl {
+interface ISettingsTool extends IMapTool {
 
     /**
      * It creates a copy of the uninitialized tool.

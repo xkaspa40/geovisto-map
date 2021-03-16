@@ -16,12 +16,12 @@ class ThemesToolState extends MapToolState implements IThemesToolState {
     
     private manager: IMapThemesManager;
     
-    private theme: IMapTheme | undefined;
+    private theme: IMapTheme;
 
     /**
      * It creates a tool state.
      */
-    constructor(tool: IThemesTool) {
+    public constructor(tool: IThemesTool) {
         super(tool);
 
         const props: IThemesToolProps = <IThemesToolProps> this.getProps();
@@ -79,13 +79,10 @@ class ThemesToolState extends MapToolState implements IThemesToolState {
     public serialize(filterDefaults: boolean): IThemesToolConfig {
         const config: IThemesToolConfig = <IThemesToolConfig> super.serialize(filterDefaults);
 
-        const theme = this.getTheme();
-
         // serialize the theme
-        if(theme) {
-            const defaultTheme: IMapTheme | undefined = (<IThemesToolDefaults> this.getDefaults()).getTheme();
-            config.theme = filterDefaults && defaultTheme && theme.getName() == defaultTheme.getName() ? undefined : theme.getName();
-        }
+        const theme = this.getTheme();
+        const defaultTheme: IMapTheme | undefined = (<IThemesToolDefaults> this.getDefaults()).getTheme();
+        config.theme = filterDefaults && defaultTheme && theme.getName() == defaultTheme.getName() ? undefined : theme.getName();
 
         return config;
     }
@@ -109,7 +106,7 @@ class ThemesToolState extends MapToolState implements IThemesToolState {
     /**
      * It returns the theme property of the tool state.
      */
-    public getTheme(): IMapTheme | undefined {
+    public getTheme(): IMapTheme {
         return this.theme;
     }
 
@@ -118,7 +115,7 @@ class ThemesToolState extends MapToolState implements IThemesToolState {
      * 
      * @param theme 
      */
-    public setTheme(theme: IMapTheme | undefined): void {
+    public setTheme(theme: IMapTheme): void {
        this.theme = theme;
     }
 }

@@ -17,7 +17,7 @@ import { Control } from "leaflet";
  */
 class SidebarTabState extends MapObjectState implements ISidebarTabState {
     
-    private tool: IMapTool;
+    private tool: IMapTool | null;
     
     private enabled: boolean;
 
@@ -38,15 +38,13 @@ class SidebarTabState extends MapObjectState implements ISidebarTabState {
      * 
      * @param sidebarTab 
      */
-    constructor(sidebarTab: ISidebarTab) {
+    public constructor(sidebarTab: ISidebarTab) {
         super(sidebarTab);
 
         const props = <ISidebarTabProps> this.getProps();
         const defaults = <ISidebarTabDefaults> this.getDefaults();
         
-        // store the tool which provides this sidebar fragment
-        // props.tool should not be undefined
-        this.tool = props.tool;
+        this.tool = null;
 
         this.enabled = props.enabled == undefined ? defaults.isEnabled() : props.enabled;
         this.name = props.name == undefined ? defaults.getName() : props.name;
@@ -104,34 +102,37 @@ class SidebarTabState extends MapObjectState implements ISidebarTabState {
         const sidebarTab: ISidebarTab = <ISidebarTab> this.getMapObject();
         const fragments: ISidebarFragment[] = [];
         let fragment: ISidebarFragment;
-        let tool: IMapTool | undefined;
+        let fragmentTool: IMapTool | undefined;
 
-        // process tab fragments
-        if(config.fragments) {
-            let fragmentConfig: ISidebarFragmentConfig;
-            for(let i = 0; i != config.fragments.length; i++) {
-                fragmentConfig = config.fragments[i];
-                if(fragmentConfig.tool) {
-                    tool = this.getTool().getMap().getState().getTools().getById(fragmentConfig.tool);
-                    if(tool && (instanceOfFragmentControl(tool))) {
-                        fragment = (tool as ISidebarFragmentControl).getSidebarFragment();
-                        if(fragment && fragment.isChild(sidebarTab)) {
-                            fragment.initialize(sidebarTab, fragmentConfig);
-                            fragments.push(fragment);
+        const thisTool = this.getTool();
+        if(thisTool) {
+            // process tab fragments
+            if(config.fragments) {
+                let fragmentConfig: ISidebarFragmentConfig;
+                for(let i = 0; i != config.fragments.length; i++) {
+                    fragmentConfig = config.fragments[i];
+                    if(fragmentConfig.tool) {
+                        fragmentTool = thisTool.getMap().getState().getTools().getById(fragmentConfig.tool);
+                        if(fragmentTool && (instanceOfFragmentControl(fragmentTool))) {
+                            fragment = (fragmentTool as ISidebarFragmentControl).getSidebarFragment();
+                            if(fragment && fragment.isChild(sidebarTab)) {
+                                fragment.initialize(sidebarTab, fragmentConfig);
+                                fragments.push(fragment);
+                            }
                         }
                     }
                 }
-            }
-        } else {
-            // try to look for fragments if not specified in config
-            const tools: IMapTool[] = this.getTool().getMap().getState().getTools().getAll();
-            for(let i = 0; i < tools.length; i++) {
-                tool = tools[i];
-                if(instanceOfFragmentControl(tool)) {
-                    fragment = (tool as ISidebarFragmentControl).getSidebarFragment();
-                    if(fragment && fragment.isChild(sidebarTab)) {
-                        fragment.initialize(sidebarTab, undefined);
-                        fragments.push(fragment);
+            } else {
+                // try to look for fragments if not specified in config
+                const tools: IMapTool[] = thisTool.getMap().getState().getTools().getAll();
+                for(let i = 0; i < tools.length; i++) {
+                    fragmentTool = tools[i];
+                    if(instanceOfFragmentControl(fragmentTool)) {
+                        fragment = (fragmentTool as ISidebarFragmentControl).getSidebarFragment();
+                        if(fragment && fragment.isChild(sidebarTab)) {
+                            fragment.initialize(sidebarTab, undefined);
+                            fragments.push(fragment);
+                        }
                     }
                 }
             }
@@ -154,7 +155,7 @@ class SidebarTabState extends MapObjectState implements ISidebarTabState {
         const config: ISidebarTabConfig = {
             type: undefined,
             id: undefined,
-            tool: this.getTool().getId(),
+            tool: this.getTool()?.getId(),
             enabled: filterDefaults && this.isEnabled() == defaults.isEnabled() ? undefined : this.isEnabled(),
             name: filterDefaults && this.getName() == defaults.getName() ? undefined : this.getName(),
             icon: filterDefaults && this.getIcon() == defaults.getIcon() ? undefined : this.getIcon(),
@@ -177,7 +178,7 @@ class SidebarTabState extends MapObjectState implements ISidebarTabState {
     /**
      * It returns the tool property of the sidebar tab state.
      */
-    public getTool(): IMapTool {
+    public getTool(): IMapTool | null {
         return this.tool;
     }
 

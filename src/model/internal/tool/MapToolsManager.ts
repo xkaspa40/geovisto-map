@@ -9,7 +9,7 @@ import IMapTool from "../../types/tool/IMapTool";
  */
 class MapToolsManager extends MapObjectsManager<IMapTool> implements IMapToolsManager {
 
-    constructor(tools: IMapTool[]) {
+    public constructor(tools: IMapTool[]) {
         super(tools);
     }
 
@@ -18,8 +18,8 @@ class MapToolsManager extends MapObjectsManager<IMapTool> implements IMapToolsMa
      */
     public copy(): IMapToolsManager {
         // we use copies of predefined tools due to later multiple imports of configs
-        let toolsCopy: IMapTool[] = [];
-        let tools: IMapTool[] = this.getAll();
+        const toolsCopy: IMapTool[] = [];
+        const tools: IMapTool[] = this.getAll();
         for(let i = 0; i < tools.length; i++) {
             toolsCopy.push(tools[i].copy());
         }

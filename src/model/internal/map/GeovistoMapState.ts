@@ -37,7 +37,7 @@ class GeovistoMapState extends MapObjectState implements IMapState {
      * 
      * @param map 
      */
-    constructor(map: IMap) {
+    public constructor(map: IMap) {
         super(map);
 
         const props = <IMapProps> this.getProps();

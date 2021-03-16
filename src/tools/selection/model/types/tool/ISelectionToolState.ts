@@ -26,13 +26,13 @@ interface ISelectionToolState extends IMapToolState {
     /**
      * It returns the selection property of the tool state.
      */
-    getSelection(): IMapSelection;
+    getSelection(): IMapSelection | null;
 
     /**
      * It sets the selection property of the tool state.
      * 
      * @param selection
      */
-    setSelection(selection: IMapSelection): void;
+    setSelection(selection: IMapSelection | null): void;
 }
 export default ISelectionToolState;

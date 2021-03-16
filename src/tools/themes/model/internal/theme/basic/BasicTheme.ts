@@ -11,7 +11,7 @@ class BasicTheme extends AbstractMapCategory implements IMapTheme {
     /**
      * It initializes the theme.
      */
-    constructor() {
+    public constructor() {
         super();
     }
 

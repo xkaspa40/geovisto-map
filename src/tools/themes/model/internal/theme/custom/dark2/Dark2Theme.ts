@@ -13,7 +13,7 @@ class Dark2Theme extends BasicTheme implements IMapTheme {
     /**
      * It initializes the dark theme.
      */
-    constructor() {
+    public constructor() {
         super();
     }
 

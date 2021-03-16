@@ -20,7 +20,7 @@ class MapObject implements IMapObject {
     /**
      * It creates a map object.
      */
-    constructor(props : IMapObjectProps | undefined) {
+    public constructor(props : IMapObjectProps | undefined) {
         // create defaults of the object
         this.defaults = this.createDefaults();
 
@@ -77,14 +77,14 @@ class MapObject implements IMapObject {
     /**
      * Help function which returns the type of the object.
      */
-    public getType() {
+    public getType(): string {
         return this.state.getType();
     }
 
     /**
      * Help function which returns the id of the object.
      */
-    public getId() {
+    public getId(): string {
         return this.state.getId();
     }
     

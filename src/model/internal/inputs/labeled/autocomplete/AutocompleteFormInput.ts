@@ -45,7 +45,7 @@ class AutocompleteFormInput extends AbstractMapFormInput implements IMapFormInpu
      */
     private selectedCompletionItem: number;
 
-    constructor(props: IAutocompleteFormInputProps){
+    public constructor(props: IAutocompleteFormInputProps){
         super(props);
         
         this.options = props.options ? props.options : [];
@@ -77,7 +77,7 @@ class AutocompleteFormInput extends AbstractMapFormInput implements IMapFormInpu
     /*
      * Changes options for the completion list.
      */
-    public changeOptions(newOptions: string[]): void { 
+    public setOptions(newOptions: string[]): void { 
         this.options = newOptions;
     }
 

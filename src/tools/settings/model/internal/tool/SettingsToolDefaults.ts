@@ -2,6 +2,7 @@ import MapToolDefaults from "../../../../../model/internal/tool/MapToolDefaults"
 import ISettingsToolDefaults from "../../types/tool/ISettingsToolDefaults";
 import ISettingsTool from "../../types/tool/ISettingsTool";
 import SettingsTool from "./SettingsTool";
+import ISettingsToolConfig from "../../types/tool/ISettingsToolConfig";
 
 /**
  * This class provide functions which return the default state values.
@@ -13,8 +14,15 @@ class SettingsToolDefaults extends MapToolDefaults implements ISettingsToolDefau
     /**
      * It creates tool defaults.
      */
-    constructor(tool: ISettingsTool) {
+    public constructor(tool: ISettingsTool) {
         super(tool);
+    }
+    
+    /**
+     * It returns default config if no config is given.
+     */
+    public getConfig(): ISettingsToolConfig {
+        return <ISettingsToolConfig> super.getConfig();
     }
 
     /**

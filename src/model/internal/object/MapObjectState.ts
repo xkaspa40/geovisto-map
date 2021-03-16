@@ -20,7 +20,7 @@ class AbstractMapObjectState implements IMapObjectState {
     /**
      * It creates a map object state.
      */
-    constructor(mapObject : IMapObject) {
+    public constructor(mapObject : IMapObject) {
         this.mapObject = mapObject;
 
         // sets the type of the object (can be set only once in constructor)
@@ -33,7 +33,7 @@ class AbstractMapObjectState implements IMapObjectState {
     /**
      * It makes the map object visible to extended classes.
      */
-    protected getMapObject() {
+    protected getMapObject(): IMapObject {
         return this.mapObject;
     }
 
@@ -54,6 +54,7 @@ class AbstractMapObjectState implements IMapObjectState {
     /**
      * It resets the state to the initial props.
      */
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     public reset(): void {
     }
 
@@ -71,6 +72,7 @@ class AbstractMapObjectState implements IMapObjectState {
      * 
      * @param filterDefaults 
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public serialize(filterDefaults : boolean | undefined): IMapObjectConfig {
         return {
             type: this.getType(),

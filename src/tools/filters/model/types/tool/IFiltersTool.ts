@@ -11,7 +11,7 @@ import IMapFilterRule from "../filter/IMapFilterRule";
  * 
  * @author Jiri Hynek
  */
-interface IFiltersTool extends IMapTool, ISidebarTabControl {
+interface IFiltersTool extends IMapTool {
 
     /**
      * It creates a copy of the uninitialized tool.

@@ -16,7 +16,7 @@ class LabeledTextFormInput extends TextFormInput implements IMapFormInput {
      */
     private div: HTMLDivElement | undefined;
 
-    constructor(props: ILabeledMapFormInputProps) {
+    public constructor(props: ILabeledMapFormInputProps) {
         super(props);
         
         this.div = undefined;

@@ -12,7 +12,7 @@ class ThemesToolEvent extends MapChangeEvent<IThemesTool, IMapTheme> {
     /**
      * It initializes event.
      */
-    constructor(themesTool: IThemesTool, theme: IMapTheme) {
+    public constructor(themesTool: IThemesTool, theme: IMapTheme) {
         super(ThemesToolEvent.TYPE(), themesTool, theme);
     }
 

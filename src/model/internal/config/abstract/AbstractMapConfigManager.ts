@@ -17,7 +17,7 @@ abstract class AbstractMapConfigManager {
      * 
      * @param config 
      */
-    constructor(config: any) {
+    public constructor(config: any) {
         this.originalConfig = config;
         this.config = this.import(config);
     }

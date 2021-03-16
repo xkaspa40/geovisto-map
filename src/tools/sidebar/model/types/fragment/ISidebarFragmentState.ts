@@ -29,7 +29,7 @@ interface ISidebarFragmentState extends IMapObjectState {
     /**
      * It returns the tool property of the sidebar tab fragment state.
      */
-    getTool(): IMapTool;
+    getTool(): IMapTool | null;
 
     /**
      * It sets the tool property of the sidebar tab fragment state.

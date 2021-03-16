@@ -21,7 +21,7 @@ class MapObjectDefaults implements IMapObjectDefaults {
     /**
      * It creates map object defaults.
      */
-    constructor(mapObject : IMapObject) {
+    public constructor(mapObject : IMapObject) {
         this.mapObject = mapObject;
     }
 

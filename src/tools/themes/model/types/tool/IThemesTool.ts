@@ -10,7 +10,7 @@ import IMapTheme from "../theme/IMapTheme";
  * 
  * @author Jiri Hynek
  */
-interface IThemesTool extends IMapTool, ISidebarFragmentControl {
+interface IThemesTool extends IMapTool {
 
     /**
      * It creates a copy of the uninitialized tool.

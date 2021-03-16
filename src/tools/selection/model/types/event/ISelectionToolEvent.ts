@@ -1,17 +1,13 @@
-import GenericObjectEvent from "../../../../../model/internal/event/generic/MapChangeEvent";
-import IMapEvent from "../../../../../model/types/event/IMapEvent";
-import ISelectionTool from "../tool/ISelectionTool";
+import IMapChangeEvent from "../../../../../model/types/event/IMapChangeEvent";
+import IMapSelection from "../selection/IMapSelection";
+import IMapTool from "../../../../../model/types/tool/IMapTool";
 
 /**
  * This class provides the map selection change event.
  * 
  * @author Jiri Hynek
  */
-interface ISelectionToolEvent extends IMapEvent {
-
-    /**
-     * Return the selection tool which invoked this event.
-     */
-    getSource(): ISelectionTool;
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface ISelectionToolEvent extends IMapChangeEvent<IMapTool, IMapSelection> {
 }
 export default ISelectionToolEvent;

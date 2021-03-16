@@ -7,6 +7,7 @@ import ISidebarFragmentProps from "../../types/fragment/ISidebarFragmentProps";
 import ISidebarFragmentState from "../../types/fragment/ISidebarFragmentState";
 import ISidebarTab from "../../types/tab/ISidebarTab";
 import ISidebarFragmentConfig from "../../types/fragment/ISidebarFragmentConfig";
+import IMapTool from "../../../../../model/types/tool/IMapTool";
 
 /**
  * This class provides tab fragment for a sidebar tab.
@@ -15,15 +16,20 @@ import ISidebarFragmentConfig from "../../types/fragment/ISidebarFragmentConfig"
  * 
  * @author Jiri Hynek
  */
-abstract class AbstractSidebarFragment extends MapObject implements ISidebarFragment {
+abstract class AbstractSidebarFragment<T extends IMapTool> extends MapObject implements ISidebarFragment {
 
     /**
      * It creates abstract sidebar fragment with respect to the given props.
      * 
+     * @param tool
      * @param props 
      */
-    constructor(props: ISidebarFragmentProps) {
+    public constructor(tool: T, props: ISidebarFragmentProps | undefined) {
         super(props);
+
+        // store the tool which provides this sidebar fragment
+        // the tool should not be undefined
+        this.getState().setTool(tool);
     }
 
     /**
@@ -62,6 +68,13 @@ abstract class AbstractSidebarFragment extends MapObject implements ISidebarFrag
     }
 
     /**
+     * Help function which returns the tool.
+     */
+    public getTool(): T {
+        return <T> this.getState().getTool();
+    }
+
+    /**
      * The function returns true if the sidebar fragment should be included in the sidebar tab.
      * 
      * @param sidebarTab 
@@ -71,13 +84,13 @@ abstract class AbstractSidebarFragment extends MapObject implements ISidebarFrag
     /**
      * It initializes the tab control.
      * 
-     * @param tabControl 
+     * @param sidebarTab 
      * @param config 
      */
-    public initialize(tabControl: ISidebarTab, config: ISidebarFragmentConfig | undefined): void {
+    public initialize(sidebarTab: ISidebarTab, config: ISidebarFragmentConfig | undefined): void {
         // the sidebar tab which stores the sidebar fragment
         // the sidebar tab should not be undefined (this function is called only by tab control)
-        this.getState().setSidebarTab(tabControl);
+        this.getState().setSidebarTab(sidebarTab);
 
         // copy existing config if exists or use the default one
         this.setConfig(config != undefined ? JSON.parse(JSON.stringify(config)) : this.getDefaults().getConfig());

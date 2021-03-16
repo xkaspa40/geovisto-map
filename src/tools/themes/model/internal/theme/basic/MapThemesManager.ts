@@ -9,7 +9,7 @@ import IMapThemesManager from "../../../types/theme/IMapThemesManager";
  */
 class MapThemesManager extends MapCategoriesManager<IMapTheme> implements IMapThemesManager {
 
-    constructor(themes: IMapTheme[]) {
+    public constructor(themes: IMapTheme[]) {
         super(themes);
     }
 

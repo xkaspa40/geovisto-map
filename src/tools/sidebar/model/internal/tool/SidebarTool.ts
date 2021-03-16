@@ -30,14 +30,14 @@ class SidebarTool extends MapTool implements ISidebarTool {
      *
      * @param props
      */
-    constructor(props: ISidebarToolProps) {
+    public constructor(props: ISidebarToolProps | undefined) {
         super(props);
     }
 
     /**
      * A unique string of the tool type.
      */
-    static TYPE(): string {
+    public static TYPE(): string {
         return "geovisto-tool-sidebar";
     }
 

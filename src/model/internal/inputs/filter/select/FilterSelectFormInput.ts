@@ -27,7 +27,7 @@ class FilterSelectFormInput extends AbstractMapFormInput {
         val: HTMLInputElement | undefined
     };
 
-    constructor(props: IFilterFormInputProps) {
+    public constructor(props: IFilterFormInputProps) {
         super(props);
 
         // inputs

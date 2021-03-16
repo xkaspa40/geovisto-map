@@ -15,7 +15,7 @@ class SidebarFragmentDefaults extends MapObjectDefaults implements ISidebarFragm
      * 
      * @param sidebarFragment
      */
-    constructor(sidebarFragment: ISidebarFragment) {
+    public constructor(sidebarFragment: ISidebarFragment) {
         super(sidebarFragment);
     }
 

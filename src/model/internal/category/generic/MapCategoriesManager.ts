@@ -13,7 +13,7 @@ class MapCategoriesManager<T extends IMapCategory> implements IMapCategoriesMana
     /**
      * It initializes a map categories manager.
      */
-    constructor(categories: T[] | undefined) {
+    public constructor(categories: T[] | undefined) {
         this.categories = categories ? categories : [];
     }
 

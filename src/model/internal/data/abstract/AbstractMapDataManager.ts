@@ -15,7 +15,7 @@ abstract class AbstractMapDataManager implements IMapDataManager {
      * 
      * @param data 
      */
-    constructor(data: any) {
+    public constructor(data: any) {
         this.data = data;
     }
 

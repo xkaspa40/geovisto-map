@@ -9,12 +9,12 @@ import IMapChangeEvent from "../../../types/event/IMapChangeEvent";
  */
 class MapChangeEvent<TSource extends IMapObject, TChangedObject> extends MapEvent<TSource> implements IMapChangeEvent<TSource, TChangedObject> {
     
-    private changedObject: any;
+    private changedObject: TChangedObject;
 
     /**
      * It initializes event.
      */
-    constructor(type: string, source: TSource, changedObject: TChangedObject) {
+    public constructor(type: string, source: TSource, changedObject: TChangedObject) {
         super(type, source);
         
         this.changedObject = changedObject;
@@ -23,7 +23,7 @@ class MapChangeEvent<TSource extends IMapObject, TChangedObject> extends MapEven
     /**
      * Return the changed object.
      */
-    getChangedObject(): TChangedObject {
+    public getChangedObject(): TChangedObject {
         return this.changedObject;
     }
 }

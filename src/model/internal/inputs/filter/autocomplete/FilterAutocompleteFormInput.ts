@@ -18,26 +18,23 @@ class FilterAutocompleteFormInput extends AbstractMapFormInput {
     /**
      * The input element is created when required.
      */
-    private inputDiv: HTMLDivElement | undefined;
+    private inputDiv: HTMLDivElement | null;
     
     /**
      * Input element is composed of 3 HTML select elements
      */
     private input: { 
-        data: AutocompleteFormInput | undefined,
-        op: AutocompleteFormInput | undefined,
-        val: AutocompleteFormInput | undefined
-    };
+        data: AutocompleteFormInput,
+        op: AutocompleteFormInput,
+        val: AutocompleteFormInput
+    } | null;
 
-    constructor(props: IFilterFormInputProps) {
+    public constructor(props: IFilterFormInputProps) {
         super(props);
 
         // inputs
-        this.input = {
-            data: undefined,
-            op: undefined,
-            val: undefined,
-        };
+        this.inputDiv = null;
+        this.input = null;
     } 
 
     /**
@@ -58,9 +55,11 @@ class FilterAutocompleteFormInput extends AbstractMapFormInput {
 
             // initialize filter inputs
             const props = <IFilterFormInputProps> this.getProps();
-            this.input.val = new AutocompleteFormInput({ label: "Value", options: [], onChangeAction: props.vals.onChangeAction });
-            this.input.op = new AutocompleteFormInput({ label: "Operation", options: props.ops.options, onChangeAction: props.ops.onChangeAction });                        
-            this.input.data = new AutocompleteFormInput({ label: "Data", options: props.data.options, onChangeAction: props.data.onChangeAction });
+            this.input = {
+                val: new AutocompleteFormInput({ label: "Value", options: [], onChangeAction: props.vals.onChangeAction }),
+                op: new AutocompleteFormInput({ label: "Operation", options: props.ops.options, onChangeAction: props.ops.onChangeAction }),
+                data: new AutocompleteFormInput({ label: "Data", options: props.data.options, onChangeAction: props.data.onChangeAction })
+            };
 
             // create elements of filter inputs and add them to parent div
             this.inputDiv.appendChild(this.input.data.create());
@@ -75,10 +74,14 @@ class FilterAutocompleteFormInput extends AbstractMapFormInput {
      * It returns values of the inputs.
      */
     public getValue(): IFilterFormInputValue {
-        return {
-            data: this.input.data ? this.input.data.getValue() : "",
-            op: this.input.op? this.input.op.getValue() : "",
-            val: this.input.val ? this.input.val.getValue() : "",
+        return this.input ? {
+            data: this.input.data.getValue(),
+            op: this.input.op.getValue(),
+            val: this.input.val.getValue(),
+        } : {
+            data: "",
+            op: "",
+            val: ""
         };
     }
 
@@ -88,11 +91,22 @@ class FilterAutocompleteFormInput extends AbstractMapFormInput {
      * @param value 
      */
     public setValue(value: IFilterFormInputValue): void {
-        if(this.input.data && this.input.op && this.input.val) {
+        if(this.input) {
             this.input.data.setValue(value.data);
             this.input.op.setValue(value.op);
             this.input.val.setValue(value.val);
         }
+    }
+    
+    /**
+     * It returns input
+     */
+    public getInputElement(): { 
+        data: AutocompleteFormInput,
+        op: AutocompleteFormInput,
+        val: AutocompleteFormInput
+    } | null {
+        return this.input;
     }
 }
 export default FilterAutocompleteFormInput;

@@ -1,4 +1,5 @@
-import AbstractMapSelection from "../abstract/AbstractMapSelection";
+import IMapTool from "../../../../../model/types/tool/IMapTool";
+import IMapSelection from "../../types/selection/IMapSelection";
 
 /**
  * The class provides API for the selection of map elements.
@@ -6,40 +7,42 @@ import AbstractMapSelection from "../abstract/AbstractMapSelection";
  * 
  * @author Jiri Hynek
  */
-class MapSelection extends AbstractMapSelection {
+class MapSelection implements IMapSelection {
+    
+    private tool: IMapTool;
+    private srcIds: string[];
+    private allIds: string[];
 
-    constructor(tool, srcIds) {
-        super();
+    /**
+     * It creates a map selection.
+     * 
+     * @param tool 
+     * @param srcIds 
+     */
+    public constructor(tool: IMapTool, srcIds: string[]) {
         this.tool = tool;
         this.srcIds = srcIds;
         this.allIds = srcIds.map((x) => x);
     }
 
     /**
-     * It returns the source element of the selection.
-     */
-    getSrcElement() {
-        return this.srcElement;
-    }
-
-    /**
      * It returns the tool of the selected element.
      */
-    getTool() {
+    public getTool(): IMapTool {
         return this.tool;
     }
 
     /**
      * It returns identifiers of geographical items which were selected.
      */
-    getSrcIds() {
+    public getSrcIds(): string[] {
         return this.srcIds;
     }
 
     /**
      * It returns identifiers of geographical items which were selected or affected by this selection.
      */
-    getIds() {
+    public getIds(): string[] {
         return this.allIds;
     }
 
@@ -48,10 +51,10 @@ class MapSelection extends AbstractMapSelection {
      * 
      * @param selection 
      */
-    equals(selection) {
+    public equals(selection: IMapSelection): boolean {
         if(selection) {
-            let srcIds = this.getSrcIds();
-            let srcIds2 = selection.getSrcIds();
+            const srcIds: string[] = this.getSrcIds();
+            const srcIds2: string[] = selection.getSrcIds();
             if(this.getTool() == selection.getTool() && srcIds.length == srcIds2.length) {
                 for (let i = 0; i < srcIds.length; i++) {
                     if(this.srcIds[i] != srcIds2[i]) {
@@ -66,12 +69,13 @@ class MapSelection extends AbstractMapSelection {
     }
 
     /**
-     * It adds geographical items.
+     * It takes geographical items and returns the list of new ids
+     * which were added to the list of all ids.
      * 
      * @param ids 
      */
-    addIds(ids) {
-        let newIds = [];
+    public addIds(ids: string[]): string[] {
+        const newIds: string[] = [];
         for(let i = 0; i < ids.length; i++) {
             if(!this.allIds.includes(ids[i])) {
                 this.allIds.push(ids[i]);

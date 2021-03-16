@@ -40,7 +40,7 @@ class GeovistoMapDefaults extends MapObjectDefaults implements IMapDefaults {
      * 
      * @param map 
      */
-    constructor(map: IMap) {
+    public constructor(map: IMap) {
         super(map);
     }
 

@@ -27,7 +27,7 @@ class JsonMapDataManager extends AbstractMapDataManager implements IMapDataManag
      * 
      * @param data 
      */
-    constructor(data: any) {
+    public constructor(data: any) {
         super(data);
         this.dataRecords = [];
         this.dataDomains = [];

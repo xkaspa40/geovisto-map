@@ -15,7 +15,7 @@ class SidebarTabDefaults extends MapObjectDefaults implements ISidebarTabDefault
      * 
      * @param sidebarTab
      */
-    constructor(sidebarTab: ISidebarTab) {
+    public constructor(sidebarTab: ISidebarTab) {
         super(sidebarTab);
     }
 

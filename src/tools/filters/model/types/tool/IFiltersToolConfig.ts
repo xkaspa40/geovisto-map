@@ -8,5 +8,10 @@ import IMapToolConfig from "../../../../../model/types/tool/IMapToolConfig";
  * @author Jiri Hynek
  */
 interface IFiltersToolConfig extends IMapToolConfig {
+    filterRules: {
+        domain: string,
+        operation: string,
+        pattern: string,
+    }[] | undefined;
 }
 export default IFiltersToolConfig;

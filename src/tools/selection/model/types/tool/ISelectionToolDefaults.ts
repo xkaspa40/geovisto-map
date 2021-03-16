@@ -1,6 +1,4 @@
-import ISelectionTool from "./ISelectionTool";
 import IMapToolDefaults from "../../../../../model/types/tool/IMapToolDefaults";
-import ISidebarFragmentControl from "../../../../sidebar/model/types/fragment/ISidebarFragmentControl";
 import IMapSelection from "../selection/IMapSelection";
 import ISelectionToolConfig from "./ISelectionToolConfig";
 
@@ -9,7 +7,7 @@ import ISelectionToolConfig from "./ISelectionToolConfig";
  * 
  * @author Jiri Hynek
  */
-interface ISelectionToolDefaults extends IMapToolDefaults, ISidebarFragmentControl {
+interface ISelectionToolDefaults extends IMapToolDefaults {
 
     /**
      * It returns default config if no config is given.
@@ -19,6 +17,6 @@ interface ISelectionToolDefaults extends IMapToolDefaults, ISidebarFragmentContr
     /**
      * It returns default map selection.
      */
-    getSelection(): IMapSelection;
+    getSelection(): IMapSelection | null;
 }
 export default ISelectionToolDefaults;

@@ -13,7 +13,7 @@ class MapToolDefaults extends MapObjectDefaults implements IMapToolDefaults {
     /**
      * It creates tool defaults.
      */
-    constructor(tool : IMapTool) {
+    public constructor(tool : IMapTool) {
         super(tool);
     }
 
@@ -21,7 +21,9 @@ class MapToolDefaults extends MapObjectDefaults implements IMapToolDefaults {
      * By defaults it returns the config with undefined props.
      */
     public getConfig(): IMapToolConfig {
-        return <IMapToolConfig> super.getConfig();
+        const config = <IMapToolConfig> super.getConfig();
+        config.enabled = undefined;
+        return config;
     }
 
     /**

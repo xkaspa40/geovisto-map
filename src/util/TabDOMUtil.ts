@@ -13,11 +13,11 @@ class TabDOMUtil {
      * @param action 
      * @param options 
      */
-    static createSelectDiv(label: string, id: string, action: ((this: GlobalEventHandlers, ev: Event) => any) | null, options: string[]): HTMLDivElement {
-        let div: HTMLDivElement = document.createElement('div');
+    public static createSelectDiv(label: string, id: string, action: ((this: GlobalEventHandlers, ev: Event) => any) | null, options: string[]): HTMLDivElement {
+        const div: HTMLDivElement = document.createElement('div');
         
         if(label != null) {
-            div.appendChild(document.createTextNode(label + ": "))
+            div.appendChild(document.createTextNode(label + ": "));
         }
         div.appendChild(TabDOMUtil.createSelect(id, action, options, undefined));
         
@@ -32,8 +32,8 @@ class TabDOMUtil {
      * @param options 
      * @param className 
      */
-    static createSelect(id: string, action: ((this: GlobalEventHandlers, ev: Event) => any) | null, options: string[], className: string | undefined): HTMLSelectElement {
-        let select: HTMLSelectElement = document.createElement('select');
+    public static createSelect(id: string, action: ((this: GlobalEventHandlers, ev: Event) => any) | null, options: string[], className: string | undefined): HTMLSelectElement {
+        const select: HTMLSelectElement = document.createElement('select');
         
         select.setAttribute("id", id);
         if(className) {
@@ -51,7 +51,7 @@ class TabDOMUtil {
      * @param select 
      * @param options 
      */
-    static appendOptions(select: HTMLSelectElement, options: string[]): void {
+    public static appendOptions(select: HTMLSelectElement, options: string[]): void {
         let option: HTMLOptionElement;
         for(let i = 0; i < options.length; i++) {
             option = select.appendChild(document.createElement("option"));
@@ -66,8 +66,8 @@ class TabDOMUtil {
      * @param size 
      * @param className 
      */
-    static createTextInput(size: string | undefined, className: string | undefined): HTMLInputElement {
-        let input: HTMLInputElement = document.createElement('input');
+    public static createTextInput(size: string | undefined, className: string | undefined): HTMLInputElement {
+        const input: HTMLInputElement = document.createElement('input');
         
         input.setAttribute("type", "text");
         if(size) {
@@ -87,8 +87,8 @@ class TabDOMUtil {
      * @param action 
      * @param id
      */
-    static createButton(label: string, action: ((this: GlobalEventHandlers, ev: Event) => any) | null, id: string): HTMLButtonElement {
-        let btn: HTMLButtonElement = document.createElement('button');
+    public static createButton(label: string, action: ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null, id: string): HTMLButtonElement {
+        const btn: HTMLButtonElement = document.createElement('button');
         
         btn.setAttribute("type", "button");
         btn.setAttribute("id", id);
@@ -103,8 +103,8 @@ class TabDOMUtil {
      * 
      * @param label 
      */
-    static createSidebarHeading(label: string): HTMLElement {
-        let heading = document.createElement('strong');
+    public static createSidebarHeading(label: string): HTMLElement {
+        const heading = document.createElement('strong');
         heading.innerHTML = label;
         return heading;
     }
@@ -117,9 +117,9 @@ class TabDOMUtil {
      * @param keyArray 
      * @param valueArray
      */
-    static setAttributes(element: HTMLElement, keyArray: string[], valueArray: string[]): void {
+    public static setAttributes(element: HTMLElement, keyArray: string[], valueArray: string[]): void {
         if (keyArray.length == valueArray.length) {
-            for (var i = keyArray.length - 1; i >= 0; i--) {
+            for (let i = keyArray.length - 1; i >= 0; i--) {
                 element.setAttribute(keyArray[i], valueArray[i]);
             }
         }

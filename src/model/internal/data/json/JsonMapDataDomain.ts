@@ -9,7 +9,7 @@ class JsonMapDataDomain extends AbstractMapDataDomain {
     
     private name: string;
 
-    constructor(domainDescription: any) {
+    public constructor(domainDescription: any) {
         super(domainDescription);
         this.name = domainDescription.join().replace(/,/g, ".");
     }

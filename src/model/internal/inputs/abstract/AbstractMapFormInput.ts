@@ -13,7 +13,7 @@ abstract class AbstractMapFormInput implements IMapFormInput {
      */
     private props: IMapFormInputProps;
 
-    constructor(props: IMapFormInputProps) {
+    public constructor(props: IMapFormInputProps) {
         this.props = props;
     }
 
@@ -25,7 +25,7 @@ abstract class AbstractMapFormInput implements IMapFormInput {
     }
 
     /**
-     * It returns input element.
+     * It creates the input element.
      */
     public abstract create(): HTMLElement;
 

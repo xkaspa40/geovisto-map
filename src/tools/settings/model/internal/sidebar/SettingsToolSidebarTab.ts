@@ -1,23 +1,25 @@
 import { AbstractSidebarTab, ISidebarTab, ISidebarTabDefaults } from "../../../../sidebar";
 import ISidebarTabProps from "../../../../sidebar/model/types/tab/ISidebarTabProps";
 import SettingsToolSidebarTabDefaults from "./SettingsToolSidebarTabDefaults";
+import ISettingsTool from "../../types/tool/ISettingsTool";
 
 /**
  * This class provides the settings sidebar tab.
  * 
  * @author Jiri Hynek
  */
-class SettingsToolSidebarTab extends AbstractSidebarTab implements ISidebarTab {
+class SettingsToolSidebarTab extends AbstractSidebarTab<ISettingsTool> implements ISidebarTab {
     
     private htmlContent: HTMLElement | undefined;
 
     /**
      * It creates a sidebar tab with respect to the given props.
      * 
+     * @param tool
      * @param props 
      */
-    constructor(props: ISidebarTabProps) {
-        super(props);
+    public constructor(tool: ISettingsTool, props: ISidebarTabProps | undefined) {
+        super(tool, props);
     }
 
     /**

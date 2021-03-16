@@ -13,7 +13,7 @@ class MapObjectsManager<T extends IMapObject> implements IMapObjectsManager<T> {
     /**
      * It initializes a map objects manager.
      */
-    constructor(objects: T[] | undefined) {
+    public constructor(objects: T[] | undefined) {
         this.objects = objects ? objects : [];
     }
 
@@ -65,7 +65,7 @@ class MapObjectsManager<T extends IMapObject> implements IMapObjectsManager<T> {
      * 
      * @param id 
      */
-    removeById(id: string): void {
+    public removeById(id: string): void {
         this.objects = this.objects.filter(item => item.getId() != id);
     }
     
@@ -73,8 +73,8 @@ class MapObjectsManager<T extends IMapObject> implements IMapObjectsManager<T> {
      * Help function which returns the list of object string labels (object types).
      */
     public getTypes(): string[] {
-        let types = [];
-        let objects = this.getAll();
+        const types: string[] = [];
+        const objects: T[] = this.getAll();
         if(objects != undefined) {
             for(let i = 0; i < objects.length; i++) {
                 types.push(objects[i].getType());
@@ -87,8 +87,8 @@ class MapObjectsManager<T extends IMapObject> implements IMapObjectsManager<T> {
      * Help function which returns the list of object string labels (object types).
      */
     public getIds(): string[] {
-        let types = [];
-        let objects = this.getAll();
+        const types: string[] = [];
+        const objects: T[] = this.getAll();
         if(objects != undefined) {
             for(let i = 0; i < objects.length; i++) {
                 types.push(objects[i].getId());
@@ -103,8 +103,8 @@ class MapObjectsManager<T extends IMapObject> implements IMapObjectsManager<T> {
      * @param type
      */
     public getByType(type: string): T[] {
-        let objects = this.getAll();
-        let resultObjects: T[] = [];
+        const objects: T[] = this.getAll();
+        const resultObjects: T[] = [];
         if(objects != undefined) {
             for(let i = 0; i < objects.length; i++) {
                 if(objects[i].getType() == type) {
@@ -121,7 +121,7 @@ class MapObjectsManager<T extends IMapObject> implements IMapObjectsManager<T> {
      * @param id
      */
     public getById(id: string): T | undefined {
-        let objects = this.getAll();
+        const objects: T[] = this.getAll();
         if(objects != undefined) {
             for(let i = 0; i < objects.length; i++) {
                 if(objects[i].getId() == id) {

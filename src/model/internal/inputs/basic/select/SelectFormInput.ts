@@ -15,7 +15,7 @@ class SelectFormInput extends AbstractFormInput {
      */
     private element: HTMLSelectElement | undefined;
 
-    constructor(props: ISelectFormInputProps) {
+    public constructor(props: ISelectFormInputProps) {
         super(props);
     }
     

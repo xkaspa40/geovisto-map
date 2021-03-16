@@ -16,7 +16,7 @@ class LabeledSelectFormInput extends SelectFormInput implements IMapFormInput {
      */
     private div: HTMLDivElement | undefined;
 
-    constructor(props: ILabeledSelectFormInputProps) {
+    public constructor(props: ILabeledSelectFormInputProps) {
         super(props);
         
         this.div = undefined;

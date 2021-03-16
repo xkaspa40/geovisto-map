@@ -8,6 +8,7 @@ import IMapToolConfig from "../../types/tool/IMapToolConfig";
 import MapObject from "../object/MapObject";
 import MapToolDefaults from "./MapToolDefaults";
 import MapToolState from "./MapToolState";
+import IMapObject from "../../types/object/IMapObject";
 
 /**
  * This class provides basic tools API.
@@ -19,7 +20,7 @@ class MapTool extends MapObject implements IMapTool {
     /**
      * It initializes the tool.
      */
-    constructor(props: IMapToolProps) {
+    public constructor(props: IMapToolProps | undefined) {
         super(props);
     }
 
@@ -112,6 +113,7 @@ class MapTool extends MapObject implements IMapTool {
      * 
      * Override this function.
      */
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     public create(): void {
     }
 
@@ -155,7 +157,8 @@ class MapTool extends MapObject implements IMapTool {
      * 
      * @param event
      */
-    public handleEvent(event: IMapEvent): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
+    public handleEvent(event: IMapEvent<IMapObject>): void {
     }
 }
 export default MapTool;

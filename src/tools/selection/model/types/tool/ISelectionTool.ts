@@ -2,7 +2,6 @@ import IMapTool from "../../../../../model/types/tool/IMapTool";
 import ISelectionToolProps from "./ISelectionToolProps";
 import ISelectionToolDefaults from "./ISelectionToolDefaults";
 import ISelectionToolState from "./ISelectionToolState";
-import ISidebarFragmentControl from "../../../../sidebar/model/types/fragment/ISidebarFragmentControl";
 import IMapSelection from "../selection/IMapSelection";
 
 /**
@@ -10,7 +9,7 @@ import IMapSelection from "../selection/IMapSelection";
  * 
  * @author Jiri Hynek
  */
-interface ISelectionTool extends IMapTool, ISidebarFragmentControl {
+interface ISelectionTool extends IMapTool {
 
     /**
      * It creates a copy of the uninitialized tool.

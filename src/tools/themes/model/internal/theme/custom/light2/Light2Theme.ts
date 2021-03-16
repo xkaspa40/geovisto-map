@@ -13,7 +13,7 @@ class Light2Theme extends BasicTheme implements IMapTheme {
     /**
      * It initializes the light theme.
      */
-    constructor() {
+    public constructor() {
         super();
     }
 
