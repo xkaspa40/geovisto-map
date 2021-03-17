@@ -1,46 +1,52 @@
-import AbstractToolDefaults from "../../../model/tool/abstract/AbstractToolDefaults";
 import AbstractLayerTool from "./AbstractLayerTool";
+import ILayerTool from "../../types/layer/ILayerTool";
+import MapToolDefaults from "../tool/MapToolDefaults";
+import ILayerToolDefaults from "../../types/layer/ILayerToolDefaults";
 
 /**
  * This class provide functions which return the default state values.
  * 
  * @author Jiri Hynek
  */
-class AbstractLayerToolDefaults extends AbstractToolDefaults {
+class LayerToolDefaults extends MapToolDefaults implements ILayerToolDefaults {
 
     /**
-     * It initializes tool defaults.
+     * It initializes the tool defaults.
      */
-    constructor() {
-        super();
+    public constructor(tool: ILayerTool) {
+        super(tool);
     }
 
     /**
      * It returns a unique type string of the tool which is based on the layer it wraps.
      */
-    getType() {
+    public getType(): string {
         return AbstractLayerTool.TYPE();
     }
 
     /**
      * It returns the layer name.
      */
-    getLayerName() {
+    public getLayerName(): string {
         return "Abstract layer";
     }
 
     /**
      * It returns the default mapping of data domains to chart dimensions.
+     * 
+     * TODO: specify the type
      */
-    getDataMapping() {
+    public getDataMapping(): any {
         return undefined;
     }
 
     /**
      * It returns the data mapping model.
+     * 
+     * TODO: specify the type
      */
-    getDataMappingModel() {
+    public getDataMappingModel(): any {
         return undefined;
     }
 }
-export default AbstractLayerToolDefaults;
+export default LayerToolDefaults;

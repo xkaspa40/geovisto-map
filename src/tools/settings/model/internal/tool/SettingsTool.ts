@@ -25,7 +25,7 @@ class SettingsTool extends MapTool implements ISettingsTool, ISidebarTabControl 
      * 
      * @param props 
      */
-    public constructor(props: ISettingsToolProps) {
+    public constructor(props: ISettingsToolProps | undefined) {
         super(props);
 
         // the tab control for a sidebar will be created only if needed

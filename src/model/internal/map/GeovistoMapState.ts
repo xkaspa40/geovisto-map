@@ -20,7 +20,7 @@ import IMapConfigManager from "../../types/config/IMapConfigManager";
  */
 class GeovistoMapState extends MapObjectState implements IMapState {
     
-    private map: any; // TODO: define type
+    private map: L.Map | undefined;
     private tools: IMapToolsManager;
     private toolTemplates: IMapToolsManager;
     private mapData: IMapDataManager;
@@ -111,13 +111,13 @@ class GeovistoMapState extends MapObjectState implements IMapState {
     }
 
     /**
-     * It serializes the map state. Optionally, a serialed value can be let undefined if it equals the default value.
+     * It serializes the map state. Optionally, a serialized value can be let undefined if it equals the default value.
      * 
      * @param filterDefaults 
      */
     public serialize(filterDefaults: boolean | undefined): IMapConfig {
-        const defaults = <IMapDefaults> this.getDefaults();
-        const map = this.getLeafletMap();
+        const defaults: IMapDefaults = <IMapDefaults> this.getDefaults();
+        const map: L.Map | undefined = this.getLeafletMap();
 
         // initialize config
         // do not serialize the id and type for map
@@ -125,8 +125,8 @@ class GeovistoMapState extends MapObjectState implements IMapState {
         const config: IMapConfig = {
             id: undefined,
             type: undefined,
-            zoom: filterDefaults && map.getZoom() == defaults.getZoom() ? undefined : map.getZoom(),
-            mapCenter: filterDefaults && map.getCenter() == defaults.getMapCenter() ? undefined : map.getCenter(),
+            zoom: filterDefaults && map?.getZoom() == defaults.getZoom() ? undefined : map?.getZoom(),
+            mapCenter: filterDefaults && map?.getCenter() == defaults.getMapCenter() ? undefined : map?.getCenter(),
             mapStructure: undefined, // TODO map structure
             tools: undefined // see the code below
         };
@@ -144,10 +144,8 @@ class GeovistoMapState extends MapObjectState implements IMapState {
 
     /**
      * It returns the Leaflet map.
-     * 
-     * TODO: specify the type
      */
-    public getLeafletMap(): any {
+    public getLeafletMap(): L.Map | undefined {
         return this.map;
     }
 
@@ -158,8 +156,8 @@ class GeovistoMapState extends MapObjectState implements IMapState {
      * 
      * @param map 
      */
-    public setLeafletMap(map: any): void {
-        return this.map = map;
+    public setLeafletMap(map: L.Map): void {
+        this.map = map;
     }
 
     /**

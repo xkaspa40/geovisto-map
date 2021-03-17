@@ -1,4 +1,4 @@
-import AbstractLayerToolTabControlState from "../../abstract/sidebar/AbstractLayerToolTabControlState";
+import LayerToolSidebarTabState from "../../../sidebar/model/internal/tab/sidebar/LayerToolSidebarTabState";
 
 /**
  * This class manages the state of the sidebar tab.
@@ -6,7 +6,7 @@ import AbstractLayerToolTabControlState from "../../abstract/sidebar/AbstractLay
  * 
  * @author Jiri Hynek
  */
-class ChoroplethLayerToolTabControlState extends AbstractLayerToolTabControlState {
+class ChoroplethLayerToolTabControlState extends LayerToolSidebarTabState {
 
     /**
      * It creates a tab control state.

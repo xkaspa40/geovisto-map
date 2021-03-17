@@ -1,4 +1,4 @@
-import AbstractLayerToolState from "../abstract/AbstractLayerToolState";
+import LayerToolState from "../../../model/internal/layer/LayerToolState";
 import MarkerLayerToolDefaults from "./MarkerLayerToolDefaults";
 
 /**
@@ -6,7 +6,7 @@ import MarkerLayerToolDefaults from "./MarkerLayerToolDefaults";
  * 
  * @author Jiri Hynek
  */
-class MarkerLayerToolState extends AbstractLayerToolState {
+class MarkerLayerToolState extends LayerToolState {
 
     /**
      * It creates a tool state.

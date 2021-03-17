@@ -1,4 +1,4 @@
-import AbstractLayerToolTabControlDefaults from "../../abstract/sidebar/AbstractLayerToolTabControlDefaults";
+import LayerToolSidebarTabDefaults from "../../../sidebar/model/internal/tab/sidebar/LayerToolSidebarTabDefaults";
 
 
 /**
@@ -6,7 +6,7 @@ import AbstractLayerToolTabControlDefaults from "../../abstract/sidebar/Abstract
  * 
  * @author Jiri Hynek
  */
-class ConnectionLayerToolTabControlDefaults extends AbstractLayerToolTabControlDefaults {
+class ConnectionLayerToolTabControlDefaults extends LayerToolSidebarTabDefaults {
 
     /**
      * It creates tab control defaults.

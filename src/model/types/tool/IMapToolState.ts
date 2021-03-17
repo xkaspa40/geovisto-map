@@ -18,7 +18,7 @@ interface IMapToolState extends IMapObjectState {
     deserialize(config: IMapToolConfig): void;
 
     /**
-     * The method serializes the map tool state. Optionally, a serialed value can be let undefined if it equals the default value.
+     * The method serializes the map tool state. Optionally, a serialized value can be let undefined if it equals the default value.
      * 
      * @param filterDefaults 
      */

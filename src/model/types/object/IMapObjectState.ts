@@ -21,7 +21,7 @@ interface IMapObjectState {
     deserialize(config: IMapObjectConfig): void;
 
     /**
-     * The method serializes the map object state. Optionally, a serialed value can be let undefined if it equals the default value.
+     * The method serializes the map object state. Optionally, a serialized value can be let undefined if it equals the default value.
      * 
      * @param filterDefaults 
      */

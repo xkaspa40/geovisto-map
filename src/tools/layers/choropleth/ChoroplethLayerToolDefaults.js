@@ -1,5 +1,5 @@
 import ChoroplethLayerTool from "./ChoroplethLayerTool";
-import AbstractLayerToolDefaults from "../abstract/AbstractLayerToolDefaults";
+import AbstractLayerToolDefaults from "../abstract/model/internal/tool/AbstractLayerToolDefaults";
 import AutocompleteFormInput from "../../../model/internal/inputs/labeled/autocomplete/AutocompleteFormInput";
 
 /**

@@ -58,7 +58,7 @@ class MapToolState extends MapObjectState implements IMapToolState {
     }
 
     /**
-     * The method serializes the tool state. Optionally, a serialed value can be let undefined if it equals the default value.
+     * The method serializes the tool state. Optionally, a serialized value can be let undefined if it equals the default value.
      * 
      * @param filterDefaults 
      */

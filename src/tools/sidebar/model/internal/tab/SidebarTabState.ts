@@ -1,7 +1,7 @@
 import MapObjectState from "../../../../../model/internal/object/MapObjectState";
 import ISidebarTabState from "../../types/tab/ISidebarTabState";
 import ISidebarTab from "../../types/tab/ISidebarTab";
-import ISidebarTabProps from "../../types/tab/ISidebarTabProps";
+import ILayerToolSidebarTabProps from "../../types/tab/ISidebarTabProps";
 import ISidebarTabDefaults from "../../types/tab/ISidebarTabDefaults";
 import IMapTool from "../../../../../model/types/tool/IMapTool";
 import ISidebarFragment from "../../types/fragment/ISidebarFragment";
@@ -41,7 +41,7 @@ class SidebarTabState extends MapObjectState implements ISidebarTabState {
     public constructor(sidebarTab: ISidebarTab) {
         super(sidebarTab);
 
-        const props = <ISidebarTabProps> this.getProps();
+        const props = <ILayerToolSidebarTabProps> this.getProps();
         const defaults = <ISidebarTabDefaults> this.getDefaults();
         
         this.tool = null;
@@ -62,7 +62,7 @@ class SidebarTabState extends MapObjectState implements ISidebarTabState {
     public reset(): void {
         super.reset();
         
-        const props = <ISidebarTabProps> this.getProps();
+        const props = <ILayerToolSidebarTabProps> this.getProps();
         const defaults = <ISidebarTabDefaults> this.getDefaults();
 
         // set remaining properties if not set
@@ -143,9 +143,9 @@ class SidebarTabState extends MapObjectState implements ISidebarTabState {
 
     /**
      * The method serializes the sidebar tab control configuration.
-     * Optionally, a serialed value can be let undefined if it equals the default value.
+     * Optionally, a serialized value can be let undefined if it equals the default value.
      * 
-     * @param defaults 
+     * @param filterDefaults 
      */
     public serialize(filterDefaults: boolean | undefined): ISidebarTabConfig {
         // do not serialize id and type - it is not necessary for deserialization

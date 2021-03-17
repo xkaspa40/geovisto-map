@@ -1,4 +1,4 @@
-import AbstractLayerToolState from "../abstract/AbstractLayerToolState";
+import LayerToolState from "../../../model/internal/layer/LayerToolState";
 import ConnectionLayerToolDefaults from "./ConnectionLayerToolDefaults";
 
 /**
@@ -6,7 +6,7 @@ import ConnectionLayerToolDefaults from "./ConnectionLayerToolDefaults";
  * 
  * @author Jiri Hynek
  */
-class ConnectionLayerToolState extends AbstractLayerToolState {
+class ConnectionLayerToolState extends LayerToolState {
 
     /**
      * It creates a tool state.

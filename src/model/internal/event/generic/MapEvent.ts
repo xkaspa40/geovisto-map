@@ -6,7 +6,7 @@ import IMapObject from "../../../types/object/IMapObject";
  * 
  * @author Jiri Hynek
  */
-class MapEvent<TSource extends IMapObject> implements IMapEvent<TSource> {
+class MapEvent<TSource extends IMapObject> implements IMapEvent {
     
     private type: string;
     private source: TSource;

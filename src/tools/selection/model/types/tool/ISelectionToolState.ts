@@ -19,7 +19,7 @@ interface ISelectionToolState extends IMapToolState {
     /**
      * The method serializes the tool state. Optionally, defaults can be set if property is undefined.
      * 
-     * @param defaults
+     * @param filterDefaults
      */
     serialize(filterDefaults: boolean | undefined): ISelectionToolConfig;
 

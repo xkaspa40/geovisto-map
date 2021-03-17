@@ -1,6 +1,6 @@
 import ChoroplethLayerToolTabControlDefaults from "./ChoroplethLayerToolTabControlDefaults";
 import ChoroplethLayerToolTabControlState from "./ChoroplethLayerToolTabControlState";
-import AbstractLayerToolTabControl from "../../abstract/sidebar/AbstractLayerToolTabControl";
+import AbstractLayerToolSidebarTab from "../../../sidebar/model/internal/tab/sidebar/AbstractLayerToolSidebarTab";
 import SidebarInputFactory from "../../../../model/internal/inputs/SidebarInputFactory";
 
 /**
@@ -8,7 +8,7 @@ import SidebarInputFactory from "../../../../model/internal/inputs/SidebarInputF
  * 
  * @author Jiri Hynek
  */
-class ChoropolethLayerToolTabControl extends AbstractLayerToolTabControl {
+class ChoropolethLayerToolTabControl extends AbstractLayerToolSidebarTab {
 
     constructor(tool) {
         super(tool);

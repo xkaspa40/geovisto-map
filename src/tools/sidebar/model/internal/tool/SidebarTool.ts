@@ -97,11 +97,14 @@ class SidebarTool extends MapTool implements ISidebarTool {
      */
     protected createSidebar(): void {
         if(this.isEnabled()) {
-            let sidebar = undefined;
-            // create sidebar control and add it to the map
-            sidebar = L.control.sidebar(this.getSidebarStructure()).addTo(this.getMap().getState().getLeafletMap());
-            // update state
-            this.getState().setSidebar(sidebar);
+            const map = this.getMap().getState().getLeafletMap();
+            if(map) {
+                let sidebar = undefined;
+                // create sidebar control and add it to the map
+                sidebar = L.control.sidebar(this.getSidebarStructure()).addTo(map);
+                // update state
+                this.getState().setSidebar(sidebar);
+            }
         }
     }
 

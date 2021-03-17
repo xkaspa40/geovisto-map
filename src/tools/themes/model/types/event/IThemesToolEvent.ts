@@ -17,6 +17,6 @@ interface IThemesToolEvent extends IMapChangeEvent {
     /**
      * It returns a new theme descritpion of the theme change event.
      */
-    getObject(): IMapTheme;
+    getChangedObject(): IMapTheme;
 }
 export default IThemesToolEvent;

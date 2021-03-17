@@ -27,7 +27,7 @@ class FiltersTool extends MapTool implements IFiltersTool, ISidebarTabControl {
      * 
      * @param props 
      */
-    public constructor(props: IFiltersToolProps) {
+    public constructor(props: IFiltersToolProps | undefined) {
         super(props);
     }
 

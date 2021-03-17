@@ -1,4 +1,4 @@
-import AbstractLayerToolTabControlState from "../../abstract/sidebar/AbstractLayerToolTabControlState";
+import LayerToolSidebarTabState from "../../../sidebar/model/internal/tab/sidebar/LayerToolSidebarTabState";
 
 
 /**
@@ -7,7 +7,7 @@ import AbstractLayerToolTabControlState from "../../abstract/sidebar/AbstractLay
  * 
  * @author Jiri Hynek
  */
-class ConnectionLayerToolTabControlState extends AbstractLayerToolTabControlState {
+class ConnectionLayerToolTabControlState extends LayerToolSidebarTabState {
 
     /**
      * It creates a tab control state.

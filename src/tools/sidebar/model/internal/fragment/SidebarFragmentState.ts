@@ -71,7 +71,7 @@ class SidebarFragmentState extends MapObjectState implements ISidebarFragmentSta
 
     /**
      * The method serializes the sidebar tab fragment configuration.
-     * Optionally, a serialed value can be let undefined if it equals the default value.
+     * Optionally, a serialized value can be let undefined if it equals the default value.
      * 
      * @param filterDefaults 
      */

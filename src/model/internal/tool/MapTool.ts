@@ -60,7 +60,7 @@ class MapTool extends MapObject implements IMapTool {
     }
 
     /**
-     * It returns default state of the tool which is used when no state is specified.
+     * It creates new defaults of the tool.
      */
     protected createState(): IMapToolState {
         return new MapToolState(this);
@@ -158,7 +158,7 @@ class MapTool extends MapObject implements IMapTool {
      * @param event
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
-    public handleEvent(event: IMapEvent<IMapObject>): void {
+    public handleEvent(event: IMapEvent): void {
     }
 }
 export default MapTool;

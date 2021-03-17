@@ -31,6 +31,13 @@ export type { default as IAutocompleteFormInputProps } from './model/types/input
 export type { default as ILabeledSelectFormInputProps } from './model/types/inputs/labeled/select/ILabeledSelectFormInputProps';
 export type { default as ILabeledTextFormInputProps } from './model/types/inputs/labeled/text/ILabeledTextFormInputProps';
 
+// layer
+export type { default as ILayerTool } from './model/types/layer/ILayerTool';
+export type { default as ILayerToolConfig } from './model/types/layer/ILayerToolConfig';
+export type { default as ILayerToolDefaults } from './model/types/layer/ILayerToolDefaults';
+export type { default as ILayerToolProps } from './model/types/layer/ILayerToolProps';
+export type { default as ILayerToolState } from './model/types/layer/ILayerToolState';
+
 // map
 export type { default as IMap } from './model/types/map/IMap';
 export type { default as IMapConfig } from './model/types/map/IMapConfig';
@@ -89,6 +96,11 @@ export { default as FilterSelectFormInput } from './model/internal/inputs/filter
 export { default as AutocompleteFormInput } from './model/internal/inputs/labeled/autocomplete/AutocompleteFormInput';
 export { default as LabeledSelectFormInput } from './model/internal/inputs/labeled/select/LabeledSelectFormInput';
 export { default as LabeledTextFormInput } from './model/internal/inputs/labeled/text/LabeledTextFormInput';
+
+// layer
+export type { default as AbstractLayerTool } from './model/internal/layer/AbstractLayerTool';
+export type { default as LayerToolDefaults } from './model/internal/layer/LayerToolDefaults';
+export type { default as LayerToolState } from './model/internal/layer/LayerToolState';
 
 // map
 export { default as GeovistoMap } from './model/internal/map/GeovistoMap';

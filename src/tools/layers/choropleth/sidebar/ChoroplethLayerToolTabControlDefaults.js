@@ -1,11 +1,11 @@
-import AbstractLayerToolTabControlDefaults from "../../abstract/sidebar/AbstractLayerToolTabControlDefaults";
+import LayerToolSidebarTabDefaults from "../../../sidebar/model/internal/tab/sidebar/LayerToolSidebarTabDefaults";
 
 /**
  * This class provide functions which return the default state values.
  * 
  * @author Jiri Hynek
  */
-class ChoroplethLayerToolTabControlDefaults extends AbstractLayerToolTabControlDefaults {
+class ChoroplethLayerToolTabControlDefaults extends LayerToolSidebarTabDefaults {
 
     /**
      * It creates tab control defaults.

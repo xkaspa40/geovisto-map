@@ -32,7 +32,7 @@ class ThemesTool extends MapTool implements IThemesTool, ISidebarFragmentControl
      * 
      * @param props 
      */
-    public constructor(props: IThemesToolProps) {
+    public constructor(props: IThemesToolProps | undefined) {
         super(props);
 
         // the tab fragment for a sidebar tab will be created only if needed

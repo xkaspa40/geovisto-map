@@ -1,4 +1,4 @@
-import AbstractLayerToolState from "../abstract/AbstractLayerToolState";
+import LayerToolState from "../../../model/internal/layer/LayerToolState";
 import ChoroplethLayerToolDefaults from "./ChoroplethLayerToolDefaults";
 
 /**
@@ -6,7 +6,7 @@ import ChoroplethLayerToolDefaults from "./ChoroplethLayerToolDefaults";
  * 
  * @author Jiri Hynek
  */
-class ChoroplethLayerToolState extends AbstractLayerToolState {
+class ChoroplethLayerToolState extends LayerToolState {
 
     /**
      * It creates a tool state.

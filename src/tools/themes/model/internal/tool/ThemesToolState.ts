@@ -74,7 +74,7 @@ class ThemesToolState extends MapToolState implements IThemesToolState {
     /**
      * The method serializes the tool state. Optionally, defaults can be set if property is undefined.
      * 
-     * @param defaults
+     * @param filterDefaults
      */
     public serialize(filterDefaults: boolean): IThemesToolConfig {
         const config: IThemesToolConfig = <IThemesToolConfig> super.serialize(filterDefaults);

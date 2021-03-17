@@ -9,7 +9,7 @@ import MarkerLayerToolTabControl from './sidebar/MarkerLayerToolTabControl';
 import MarkerLayerToolDefaults from './MarkerLayerToolDefaults';
 import MarkerLayerToolState from './MarkerLayerToolState';
 import SelectionTool from '../../selection/model/internal/tool/SelectionTool';
-import AbstractLayerTool from '../abstract/AbstractLayerTool';
+import AbstractLayerTool from '../../../model/internal/layer/AbstractLayerTool';
 import ThemesToolEvent from '../../themes/model/internal/event/ThemesToolEvent';
 import SelectionToolEvent from '../../selection/model/internal/event/SelectionToolEvent';
 import DataChangeEvent from '../../../model/internal/event/data/DataChangeEvent';

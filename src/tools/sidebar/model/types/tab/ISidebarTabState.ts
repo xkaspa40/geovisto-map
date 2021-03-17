@@ -21,7 +21,7 @@ interface ISidebarTabState extends IMapObjectState {
 
     /**
      * The method serializes the sidebar tab configuration.
-     * Optionally, a serialed value can be let undefined if it equals the default value.
+     * Optionally, a serialized value can be let undefined if it equals the default value.
      * 
      * @param filterDefaults 
      */

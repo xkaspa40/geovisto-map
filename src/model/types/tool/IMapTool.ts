@@ -87,6 +87,6 @@ interface IMapTool extends IMapObject {
      * 
      * @param event
      */
-    handleEvent(event: IMapEvent<IMapObject>): void;
+    handleEvent(event: IMapEvent): void;
 }
 export default IMapTool;

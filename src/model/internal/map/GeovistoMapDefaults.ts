@@ -6,24 +6,15 @@ import IMapTemplates from "../../types/map/IMapTemplates";
 import IMapToolsManager from "../../types/tool/IMapToolsManager";
 import IMapDataManager from "../../types/data/IMapDataManager";
 import IMapGlobals from "../../types/map/IMapGlobals";
-
 import MapObjectDefaults from "../object/MapObjectDefaults";
 import MapToolsManager from "../tool/MapToolsManager";
-import SidebarTool from "../../../tools/sidebar/model/internal/tool/SidebarTool";
-import FiltersTool from "../../../tools/filters/model/internal/tool/FiltersTool";
-import SettingsTool from "../../../tools/settings/model/internal/tool/SettingsTool";
 import MapConfigManager from "../config/basic/MapConfigManager";
-import MapLayerTool from "../../../tools/layers/map/MapLayerTool";
-import ChoroplethLayerTool from "../../../tools/layers/choropleth/ChoroplethLayerTool";
-import MarkerLayerTool from "../../../tools/layers/marker/MarkerLayerTool";
-import ConnectionLayerTool from "../../../tools/layers/connection/ConnectionLayerTool";
-import ThemesTool from "../../../tools/themes/model/internal/tool/ThemesTool";
-import SelectionTool from "../../../tools/selection/model/internal/tool/SelectionTool";
 import GeovistoMap from "./GeovistoMap";
 import JsonMapDataManager from "../data/json/JsonMapDataManager";
 
 import countryCentroids from '../../../../static/geo/country_centroids.json';
 import countryPolygons from '../../../../static/geo/country_polygons.json';
+import { SidebarTool, SettingsTool, FiltersTool, ThemesTool, SelectionTool, TilesLayerTool } from "../../../tools";
 
 /**
  * This class provide functions which return the default state values.
@@ -88,12 +79,12 @@ class GeovistoMapDefaults extends MapObjectDefaults implements IMapDefaults {
      */
     public getToolTemplates(): MapToolsManager {
         return new MapToolsManager([
-            new SidebarTool(),
-            new SettingsTool(),
-            new FiltersTool(),
-            new ThemesTool(),
-            new SelectionTool(),
-            new MapLayerTool(),
+            new SidebarTool(undefined),
+            new SettingsTool(undefined),
+            new FiltersTool(undefined),
+            new ThemesTool(undefined),
+            new SelectionTool(undefined),
+            new TilesLayerTool(undefined),
             new ChoroplethLayerTool({ zindex: 350 }),
             new MarkerLayerTool(),
             new ConnectionLayerTool(),

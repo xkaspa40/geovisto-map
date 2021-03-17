@@ -7,7 +7,7 @@ import IMapChangeEvent from "../../../types/event/IMapChangeEvent";
  * 
  * @author Jiri Hynek
  */
-class MapChangeEvent<TSource extends IMapObject, TChangedObject> extends MapEvent<TSource> implements IMapChangeEvent<TSource, TChangedObject> {
+class MapChangeEvent<TSource extends IMapObject, TChangedObject> extends MapEvent<TSource> implements IMapChangeEvent {
     
     private changedObject: TChangedObject;
 

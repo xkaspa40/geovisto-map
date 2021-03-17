@@ -7,7 +7,7 @@ import ConnectionLayerToolTabControl from './sidebar/ConnectionLayerToolTabContr
 import ConnectionLayerToolState from './ConnectionLayerToolState';
 import ConnectionLayerToolDefaults from './ConnectionLayerToolDefaults';
 import SelectionTool from '../../selection/model/internal/tool/SelectionTool';
-import AbstractLayerTool from '../abstract/AbstractLayerTool';
+import AbstractLayerTool from '../../../model/internal/layer/AbstractLayerTool';
 import DataChangeEvent from '../../../model/internal/event/data/DataChangeEvent';
 import SelectionToolEvent from '../../selection/model/internal/event/SelectionToolEvent';
 import ThemesToolEvent from '../../themes/model/internal/event/ThemesToolEvent';

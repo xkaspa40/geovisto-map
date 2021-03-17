@@ -1,6 +1,6 @@
 import MarkerLayerToolTabControlDefaults from "./MarkerLayerToolTabControlDefaults";
 import MarkerLayerToolTabControlState from "./MarkerLayerToolTabControlState";
-import AbstractLayerToolTabControl from "../../abstract/sidebar/AbstractLayerToolTabControl";
+import AbstractLayerToolSidebarTab from "../../../sidebar/model/internal/tab/sidebar/AbstractLayerToolSidebarTab";
 import SidebarInputFactory from "../../../../model/internal/inputs/SidebarInputFactory";
 
 /**
@@ -8,7 +8,7 @@ import SidebarInputFactory from "../../../../model/internal/inputs/SidebarInputF
  * 
  * @author Jiri Hynek
  */
-class MarkerLayerToolTabControl extends AbstractLayerToolTabControl {
+class MarkerLayerToolTabControl extends AbstractLayerToolSidebarTab {
 
     constructor(tool) {
         super(tool);

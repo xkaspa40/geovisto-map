@@ -50,6 +50,6 @@ interface IMap extends IMapObject {
      * 
      * @param event 
      */
-    dispatchEvent(event: IMapEvent<IMapObject>): void;
+    dispatchEvent(event: IMapEvent): void;
 }
 export default IMap;

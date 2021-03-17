@@ -1,7 +1,7 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './style/choroplethLayer.scss'
-import AbstractLayerTool from '../abstract/AbstractLayerTool';
+import AbstractLayerTool from '../../../model/internal/layer/AbstractLayerTool';
 import ChoroplethLayerToolState from './ChoroplethLayerToolState';
 import ChoroplethLayerToolDefaults from './ChoroplethLayerToolDefaults';
 import ChoropolethLayerToolTabControl from './sidebar/ChoroplethLayerToolTabControl';

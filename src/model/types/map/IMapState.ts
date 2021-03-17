@@ -20,7 +20,7 @@ interface IMapState extends IMapObjectState {
     deserialize(config: IMapConfig): void;
 
     /**
-     * It serializes the map state. Optionally, a serialed value can be let undefined if it equals the default value.
+     * It serializes the map state. Optionally, a serialized value can be let undefined if it equals the default value.
      * 
      * @param filterDefaults 
      */
@@ -29,7 +29,7 @@ interface IMapState extends IMapObjectState {
     /**
      * It returns the Leaflet map.
      */
-    getLeafletMap(): L.Map;
+    getLeafletMap(): L.Map | undefined;
 
     /**
      * It returns the Leaflet map.

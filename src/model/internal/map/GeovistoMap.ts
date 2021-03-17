@@ -289,7 +289,7 @@ class GeovistoMap extends MapObject implements IMap {
      * 
      * @param event 
      */
-    public dispatchEvent(event: IMapEvent<IMapObject>): void {
+    public dispatchEvent(event: IMapEvent): void {
         console.log("event: " + event.getType(), event);
         // notify listeners
         const tools: IMapTool[] = this.getState().getTools().getAll();

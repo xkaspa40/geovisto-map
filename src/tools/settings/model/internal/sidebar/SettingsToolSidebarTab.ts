@@ -1,5 +1,5 @@
 import { AbstractSidebarTab, ISidebarTab, ISidebarTabDefaults } from "../../../../sidebar";
-import ISidebarTabProps from "../../../../sidebar/model/types/tab/ISidebarTabProps";
+import ILayerToolSidebarTabProps from "../../../../sidebar/model/types/tab/ISidebarTabProps";
 import SettingsToolSidebarTabDefaults from "./SettingsToolSidebarTabDefaults";
 import ISettingsTool from "../../types/tool/ISettingsTool";
 
@@ -18,7 +18,7 @@ class SettingsToolSidebarTab extends AbstractSidebarTab<ISettingsTool> implement
      * @param tool
      * @param props 
      */
-    public constructor(tool: ISettingsTool, props: ISidebarTabProps | undefined) {
+    public constructor(tool: ISettingsTool, props: ILayerToolSidebarTabProps | undefined) {
         super(tool, props);
     }
 
