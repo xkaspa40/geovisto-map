@@ -44,6 +44,10 @@ class ChoropolethLayerToolTabControl extends AbstractLayerToolTabControl {
         dataMapping[model.country.name] = this.inputCountry.getValue();
         dataMapping[model.value.name] = this.inputValue.getValue();
         dataMapping[model.aggregation.name] = this.inputAggregation.getValue();
+        dataMapping[model.scaling.name] = this.scaling.getValue();
+        dataMapping[model.range.name] = this.inputRange.getValue();
+        dataMapping[model.strategy.name] = this.colorStrategy.getValue();
+        dataMapping[model.color.name] = this.colorPicker.getValue();        
         // deprecated
         // dataMapping[model.color.name] = this.inputColor.getValue();
 
@@ -63,6 +67,10 @@ class ChoropolethLayerToolTabControl extends AbstractLayerToolTabControl {
         this.inputCountry.setValue(dataMapping[model.country.name]);
         this.inputValue.setValue(dataMapping[model.value.name]);
         this.inputAggregation.setValue(dataMapping[model.aggregation.name]);
+        this.scaling.setValue(dataMapping[model.scaling.name]);
+        this.inputRange.setValue(dataMapping[model.range.name]);
+        this.colorStrategy.setValue(dataMapping[model.strategy.name]);
+        this.colorPicker.setValue(dataMapping[model.color.name]);        
         // deprecated
         //this.inputColor.setValue(dataMapping[model.color.name]);
     }
@@ -104,6 +112,23 @@ class ChoropolethLayerToolTabControl extends AbstractLayerToolTabControl {
         // select aggregation
         this.inputAggregation = SidebarInputFactory.createSidebarInput(model.aggregation.input, { label: model.aggregation.label, options: model.aggregation.options, action: changeDimensionAction });
         elem.appendChild(this.inputAggregation.create());
+
+        
+        //color strategy
+        this.colorStrategy = SidebarInputFactory.createSidebarInput(model.strategy.input, {label: model.strategy.label, options: model.strategy.options, action: changeDimensionAction });
+        elem.appendChild(this.colorStrategy.create());
+        
+        //color strategy
+        this.colorPicker = SidebarInputFactory.createSidebarInput(model.color.input, {input:this.colorStrategy, label: model.color.label, options: model.color.options, action: changeDimensionAction });
+        elem.appendChild(this.colorPicker.create());
+
+        // scaling type
+        this.scaling = SidebarInputFactory.createSidebarInput(model.scaling.input, { label: model.scaling.label, options: model.scaling.options, action: changeDimensionAction });
+        elem.appendChild(this.scaling.create());
+
+        // range 
+        this.inputRange = SidebarInputFactory.createSidebarInput(model.range.input, { label: model.range.label, action: changeDimensionAction, elem:elem });
+        elem.appendChild(this.inputRange.create());        
 
         // select color scheme
         // deprecated

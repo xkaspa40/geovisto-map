@@ -1,67 +1,64 @@
 {
     "zoom": 2,
     "center": {
-      "lat": 50.064191736659104,
-      "lng": 0
+        "lat": 50.064191736659104,
+        "lng": 0
     },
-    "tools": [
-        {
+    "tools": [{
             "type": "geovisto-tool-sidebar",
             "id": "geovisto-tool-sidebar",
             "enabled": true,
-            "tabs": [
-            {
-                "tool": "geovisto-tool-settings",
-                "enabled": true,
-                "name": "General settings",
-                "icon": "<i class=\"fa fa-gear\"></i>",
-                "checkButton": false,
-                "fragments": [
-                {
-                    "tool": "geovisto-tool-themes",
-                    "enabled": true
+            "tabs": [{
+                    "tool": "geovisto-tool-settings",
+                    "enabled": true,
+                    "name": "General settings",
+                    "icon": "<i class=\"fa fa-gear\"></i>",
+                    "checkButton": false,
+                    "fragments": [{
+                            "tool": "geovisto-tool-themes",
+                            "enabled": true
+                        },
+                        {
+                            "tool": "geovisto-tool-selection",
+                            "enabled": true
+                        }
+                    ]
                 },
                 {
-                    "tool": "geovisto-tool-selection",
-                    "enabled": true
+                    "tool": "geovisto-tool-filters",
+                    "enabled": true,
+                    "name": "Filters",
+                    "icon": "<i class=\"fa fa-filter\"></i>",
+                    "checkButton": true
+                },
+                {
+                    "tool": "geovisto-tool-layer-map",
+                    "enabled": true,
+                    "name": "Map layer settings",
+                    "icon": "<i class=\"fa fa-globe\"></i>",
+                    "checkButton": true
+                },
+                {
+                    "tool": "geovisto-tool-layer-choropleth",
+                    "enabled": true,
+                    "name": "Choropleth layer settings",
+                    "icon": "<i class=\"fa fa-th-large\"></i>",
+                    "checkButton": true
+                },
+                {
+                    "tool": "geovisto-tool-layer-marker",
+                    "enabled": true,
+                    "name": "Marker layer settings",
+                    "icon": "<i class=\"fa fa-map-marker\"></i>",
+                    "checkButton": true
+                },
+                {
+                    "tool": "geovisto-tool-layer-connection",
+                    "enabled": true,
+                    "name": "Connection layer settings",
+                    "icon": "<i class=\"fa fa-road\"></i>",
+                    "checkButton": true
                 }
-                ]
-            },
-            {
-                "tool": "geovisto-tool-filters",
-                "enabled": true,
-                "name": "Filters",
-                "icon": "<i class=\"fa fa-filter\"></i>",
-                "checkButton": true
-            },
-            {
-                "tool": "geovisto-tool-layer-map",
-                "enabled": true,
-                "name": "Map layer settings",
-                "icon": "<i class=\"fa fa-globe\"></i>",
-                "checkButton": true
-            },
-            {
-                "tool": "geovisto-tool-layer-choropleth",
-                "enabled": true,
-                "name": "Choropleth layer settings",
-                "icon": "<i class=\"fa fa-th-large\"></i>",
-                "checkButton": true
-            },
-            {
-                "tool": "geovisto-tool-layer-marker",
-                "enabled": true,
-                "name": "Marker layer settings",
-                "icon": "<i class=\"fa fa-map-marker\"></i>",
-                "checkButton": true
-            },
-            {
-                "tool": "geovisto-tool-layer-connection",
-                "enabled": true,
-                "name": "Connection layer settings",
-                "icon": "<i class=\"fa fa-road\"></i>",
-                "checkButton": true
-            }
             ]
         },
         {
@@ -98,9 +95,13 @@
             "enabled": true,
             "layerName": "Choropleth layer",
             "data": {
-            "country": "",
-            "value": "",
-            "aggregation": ""
+                "country": "to",
+                "value": "value",
+                "aggregation": "sum",
+                "scaling": "median (sorted values)",
+                "range": "7",
+                "strategy": "custom color",
+                "color": "#e32400"
             }
         },
         {
@@ -109,10 +110,10 @@
             "enabled": true,
             "layerName": "Marker layer",
             "data": {
-            "country": "",
-            "value": "",
-            "aggregation": "",
-            "category": ""
+                "country": "",
+                "value": "",
+                "aggregation": "",
+                "category": ""
             }
         },
         {
@@ -121,10 +122,9 @@
             "enabled": true,
             "layerName": "Connection layer",
             "data": {
-            "from": "",
-            "to": ""
+                "from": "",
+                "to": ""
             }
         }
     ]
 }
-  

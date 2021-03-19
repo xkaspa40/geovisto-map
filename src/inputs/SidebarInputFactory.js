@@ -6,6 +6,8 @@ import LabeledSelectSidebarInput from "./select/LabeledSelectSidebarInput";
 import FilterSelectSidebarInput from "./filter/FilterSelectSidebarInput";
 import FilterAutocompleteSidebarInput from "./filter/FilterAutocompleteSidebarInput";
 import AutocompleteSidebarInput from "./input/AutocompleteSidebarInput";
+import RangeSliderInput from "./input/RangeSliderInput";
+import ColorPickerInput from "./input/ColorPickerInput";
 /**
  * Factory for sidebar inputs.
  * 
@@ -30,7 +32,11 @@ class SidebarInputFactory {
             element = new LabeledSelectSidebarInput(settings);
         } else if(id == FilterSelectSidebarInput.ID()) {
             element = new FilterSelectSidebarInput(settings);
-        } 
+        } else if(id == RangeSliderInput.ID()) {
+            element = new RangeSliderInput(settings);
+        } else if(id == ColorPickerInput.ID()) {
+            element = new ColorPickerInput(settings);
+        }  
         
         else if(id == AutocompleteSidebarInput.ID()){
             element = new AutocompleteSidebarInput(settings);

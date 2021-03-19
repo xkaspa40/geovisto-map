@@ -1,7 +1,8 @@
 import ChoroplethLayerTool from "./ChoroplethLayerTool";
 import AbstractLayerToolDefaults from "../abstract/AbstractLayerToolDefaults";
 import AutocompleteSidebarInput from "../../../inputs/input/AutocompleteSidebarInput";
-
+import RangeSliderInput from "../../../inputs/input/RangeSliderInput";
+import ColorPickerInput from "../../../inputs/input/ColorPickerInput";
 /**
  * TODO: refactorization needed!
  */
@@ -32,12 +33,32 @@ const MAPPING_MODEL = {
         options: [ "count", "sum" ],
         input: AutocompleteSidebarInput.ID()
     },
-    color: {
-        id: INPUT_ID_PREFIX + "-color",
-        name: "color",
-        label: "Color",
-        options: [ "orange", "blue", "red" ],
+    scaling: {
+        id: INPUT_ID_PREFIX + "-scaling",
+        name: "scaling",
+        label: "Scaling style",
+        options: [ "absolute (static scale)", "relative [0-max]", "irelative [min-max]", "median (sorted values)" ],
         input: AutocompleteSidebarInput.ID()
+    },
+    range: {
+        id: INPUT_ID_PREFIX + "-range",
+        name: "range",
+        label: "Levels",
+        options: [ "orange", "blue", "red" ],
+        input: RangeSliderInput.ID()
+    },  
+    strategy: {
+        id: INPUT_ID_PREFIX + "-colorStrategy",
+        name: "strategy",
+        label: "Fill strategy",
+        options: [ "custom color", "predefined colors" ],
+        input: AutocompleteSidebarInput.ID()
+    },
+    color: {
+        id: INPUT_ID_PREFIX + "-colorPicker",
+        name: "color",
+        label: "Fill color",
+        input: ColorPickerInput.ID()
     }
 }
 
@@ -81,8 +102,8 @@ class ChoroplethLayerToolDefaults extends AbstractLayerToolDefaults {
         dataMapping[dataMappingModel.country.name] = implicitDataDomainLabel;
         dataMapping[dataMappingModel.value.name] = implicitDataDomainLabel;
         dataMapping[dataMappingModel.aggregation.name] = dataMappingModel.aggregation.options[0];
-        dataMapping[dataMappingModel.color.name] = dataMappingModel.color.options[0];
-
+        dataMapping[dataMappingModel.scaling.name] = dataMappingModel.scaling.options[0];
+        dataMapping[dataMappingModel.range.name] = dataMappingModel.range.options[0];
         return dataMapping;
     }
 

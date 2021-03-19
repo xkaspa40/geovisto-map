@@ -16,6 +16,9 @@ const COLOR_orange = ['#8c8c8c','#ffffcc','#ffff99','#ffcc99','#ff9966','#ff6600
 const COLOR_red = ['#8c8c8c','#FED976','#FEB24C','#FD8D3C','#FC4E2A','#E31A1C','#BD0026','#800026'];
 const COLOR_blue = ['#8c8c8c','#edf8b1','#c7e9b4','#7fcdbb','#41b6c4','#1d91c0','#225ea8','#0c2c84'];
 
+const FillColor = "#cc0000";
+
+var DYNAMIC_SCALE = [];
 const SCALE = [1, 100, 1000, 10000, 100000, 1000000, 10000000];
 
 /**
@@ -299,6 +302,10 @@ class ChoroplethLayerTool extends AbstractLayerTool {
         return SCALE;
     }
 
+    getDynamicScale(){
+        return DYNAMIC_SCALE;
+    }
+
     /**
      * It returns color style for the current template.
      * 
@@ -337,16 +344,23 @@ class ChoroplethLayerTool extends AbstractLayerTool {
      * It returns color class for the current template and given value.
      */
     computeColorClass(val) {
-        let scale = this.getScale();
-        return val > scale[6] ? "leaflet-choropleth-item-clr8" :
-                val > scale[5] ? "leaflet-choropleth-item-clr7" :
-                val > scale[4] ? "leaflet-choropleth-item-clr6" :
-                val > scale[3] ? "leaflet-choropleth-item-clr5" :
-                val > scale[2] ? "leaflet-choropleth-item-clr4" :
-                val > scale[1] ? "leaflet-choropleth-item-clr3" :
-                val > scale[0] ? "leaflet-choropleth-item-clr2" :
-                "leaflet-choropleth-item-clr1";
+
+        for (let i = DYNAMIC_SCALE.length-1; i >= 0; i--) {
+            if (val >= DYNAMIC_SCALE[i]){
+                return "leaflet-choropleth-item-clr"+(i+2);
+            }            
+        }
+        return "leaflet-choropleth-item-clr1";
     }
+
+    computeColorIntensity(val) {
+        for (let i = DYNAMIC_SCALE.length-1; i >= 0; i--) {
+            if (val >= DYNAMIC_SCALE[i]){
+                return ((i+1)/(DYNAMIC_SCALE.length)).toFixed(2);                
+            }            
+        }
+        return 0.9;
+    }    
 
     /**
      * It returns style for the current template and given feature.
@@ -377,9 +391,26 @@ class ChoroplethLayerTool extends AbstractLayerTool {
         let classList = [ "leaflet-interactive", "leaflet-choropleth-item-basic" ];
 
         let feature = item.feature;
+        var _this = this;
+        let dataMappingModel = _this.getDefaults().getDataMappingModel();
+        let dataMapping = _this.getState().getDataMapping();  
+        if(dataMapping.strategy == dataMappingModel.strategy.options[0]){
+            if(feature.value == undefined){
+                item._path.style.fill = "grey";
+                item._path.style.fillOpacity = 0.3;
+            }
+            else{          
+                item._path.style.fill = dataMapping.color;
+                item._path.style.fillOpacity = this.computeColorIntensity(feature.value);
+            } 
+        }
+        else{
+            item._path.style.fill = null;
+            item._path.style.fillOpacity = null;            
+            classList.push(this.computeColorClass(feature.value));
+        }
 
         // compute color level
-        classList.push(this.computeColorClass(feature.value));
 
         // hovered
         if(this.getState().getHoveredItem() == feature.id) {
@@ -390,6 +421,8 @@ class ChoroplethLayerTool extends AbstractLayerTool {
         let selection = this.getSelectionTool() ? this.getSelectionTool().getState().getSelection() : undefined;
         let selectedIds = selection.getIds();
         if(selection && selectedIds.length > 0) {
+            item._path.style.fill = null;
+            item._path.style.fillOpacity = null;
             if(selectedIds.includes(feature.id)) {
                 if(selection.getTool() == this && selection.getSrcIds().includes(feature.id)) {
                     // selected
@@ -403,6 +436,7 @@ class ChoroplethLayerTool extends AbstractLayerTool {
                 classList.push("leaflet-choropleth-item-deempasize")
             }
         }
+
 
         return classList;
     }
@@ -424,6 +458,69 @@ class ChoroplethLayerTool extends AbstractLayerTool {
     updateStyle() {
         if(this.getState().getLayer()) {
             var _this = this;
+            let dataMappingModel = _this.getDefaults().getDataMappingModel();
+            let dataMapping = _this.getState().getDataMapping();  
+            var rangeInputValue = dataMapping.range;            
+            var nonSortedValues=[]
+            DYNAMIC_SCALE=[];
+            //getting all values
+            this.getState().getLayer().eachLayer(function(item){
+                nonSortedValues.push(item.feature.value);
+            });  
+            //filter 'undefined' values from array
+            var filteredValues = nonSortedValues.filter(function (e){
+                return e != undefined;
+            });
+
+
+            //relative [0-max]
+            if(dataMapping.scaling == dataMappingModel.scaling.options[1]){
+                filteredValues.sort(function(a, b){return a - b});
+                var step = filteredValues[filteredValues.length-1]/rangeInputValue;  
+                DYNAMIC_SCALE.push(0);                                  
+                for (let i = 1; i < rangeInputValue; i++) {
+                    DYNAMIC_SCALE.push(step*i);                    
+                }
+                console.log(DYNAMIC_SCALE);
+
+            }
+
+            //irelative [min-max]
+            else if(dataMapping.scaling == dataMappingModel.scaling.options[2]){
+                filteredValues.sort(function(a, b){return a - b});
+                var step = (filteredValues[filteredValues.length-1]-filteredValues[0])/rangeInputValue;  
+                DYNAMIC_SCALE.push(filteredValues[0]);                                  
+                for (let i = 1; i < rangeInputValue; i++) {
+                    DYNAMIC_SCALE.push(step*i);                    
+                }
+                console.log(DYNAMIC_SCALE);
+
+            }
+
+            //median (sort values)
+            else if (dataMapping.scaling == dataMappingModel.scaling.options[3]){
+                filteredValues.sort(function(a, b){return a - b});            
+                DYNAMIC_SCALE=[filteredValues[0]];
+                for (var i=1; i<rangeInputValue;i++){
+                    DYNAMIC_SCALE.push(filteredValues[Math.round(filteredValues.length/rangeInputValue*(i))]);
+                }
+            }
+
+           else{
+                let tmp = this.getScale();
+                for (let i = 0; i < rangeInputValue; i++) {
+                    DYNAMIC_SCALE.push(tmp[i]);
+                    
+                }
+            }            
+
+
+
+            //sort numeric array 
+            
+            //getting dynamic scales: [0], [length/7*1], [length/7*2], [length/7*3], [length/7*4], [length/7*5], [length/7*6]           
+
+
             this.getState().getLayer().eachLayer(function(item) {
                 _this.updateItemStyle(item);
             });
