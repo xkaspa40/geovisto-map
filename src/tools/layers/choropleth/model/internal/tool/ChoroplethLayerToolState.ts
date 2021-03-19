@@ -1,5 +1,5 @@
-import LayerToolState from "../../../model/internal/layer/LayerToolState";
-import ChoroplethLayerToolDefaults from "./ChoroplethLayerToolDefaults";
+import LayerToolState from "../../../../../../model/internal/layer/LayerToolState";
+import IChoroplethLayerToolDefaults from "../../types/tool/IChoroplethLayerToolDefaults";
 
 /**
  * This class provide functions for using the state of the layer tool.

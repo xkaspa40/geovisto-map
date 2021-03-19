@@ -1,39 +1,33 @@
-import ChoroplethLayerToolTabControlDefaults from "./ChoroplethLayerToolTabControlDefaults";
-import ChoroplethLayerToolTabControlState from "./ChoroplethLayerToolTabControlState";
-import AbstractLayerToolSidebarTab from "../../../sidebar/model/internal/tab/sidebar/AbstractLayerToolSidebarTab";
-import SidebarInputFactory from "../../../../model/internal/inputs/SidebarInputFactory";
+import ChoroplethLayerToolSidebarTabDefaults from "./ChoroplethLayerToolSidebarTabDefaults";
+import IChoroplethLayerTool from "../../types/tool/IChoroplethLayerTool";
+import { ILayerToolSidebarTabProps, AbstractLayerToolSidebarTab, ILayerToolSidebarTab, ILayerToolSidebarTabDefaults } from "../../../../../sidebar";
 
 /**
  * This class provides controls for management of the layer sidebar tab.
  * 
  * @author Jiri Hynek
  */
-class ChoropolethLayerToolTabControl extends AbstractLayerToolSidebarTab {
+class ChoropolethLayerToolSidebarTab extends AbstractLayerToolSidebarTab implements ILayerToolSidebarTab {
+    
+    private htmlContent: undefined;
 
-    constructor(tool) {
-        super(tool);
-
-        this.tabContent = undefined;
+    public constructor(tool: IChoroplethLayerTool, props: ILayerToolSidebarTabProps) {
+        super(tool, props);
     }
 
     /**
      * It creates new defaults of the tab control.
      */
-    createDefaults() {
-        return new ChoroplethLayerToolTabControlDefaults();
-    }
-
-    /**
-     * It creates new state of the tab control.
-     */
-    createState() {
-        return new ChoroplethLayerToolTabControlState();
+    public createDefaults(): ILayerToolSidebarTabDefaults {
+        return new ChoroplethLayerToolSidebarTabDefaults(this);
     }
 
     /**
      * It acquire selected data mapping from input values.
+     * 
+     * TODO: specify data types
      */
-    getInputValues() {
+    public getInputValues(): any {
         // get data mapping model
         let model = this.getDefaults().getDataMappingModel();
         
@@ -53,9 +47,11 @@ class ChoropolethLayerToolTabControl extends AbstractLayerToolSidebarTab {
     /**
      * It updates selected input values according to the given data mapping.
      * 
+     * TODO: specify data types
+     * 
      * @param dataMapping 
      */
-    setInputValues(dataMapping) {
+    public setInputValues(dataMapping: any): void {
         // get data model
         let model = this.getDefaults().getDataMappingModel();
 
@@ -70,17 +66,17 @@ class ChoropolethLayerToolTabControl extends AbstractLayerToolSidebarTab {
     /**
      * It returns the sidebar tab pane.
      */
-    getContent() {
+    public getContent(): HTMLDivElement {
         var _this = this;
 
         // event handler: change color action
-        let changeColorAction = function(e) {
+        const changeColorAction = function(e) {
            // get selected values and update layer's data mapping
            _this.getTool().updateDataMapping(_this.getInputValues(), true);
         };
 
         // event handler: change dimension action
-        let changeDimensionAction = function(e) {
+        const changeDimensionAction = function(e) {
             // get selected values and update layer's data mapping
             _this.getTool().updateDataMapping(_this.getInputValues());
         };
@@ -116,4 +112,4 @@ class ChoropolethLayerToolTabControl extends AbstractLayerToolSidebarTab {
     }
 
 }
-export default ChoropolethLayerToolTabControl;
+export default ChoropolethLayerToolSidebarTab;

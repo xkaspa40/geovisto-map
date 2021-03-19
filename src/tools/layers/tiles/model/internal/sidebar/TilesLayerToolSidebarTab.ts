@@ -3,7 +3,7 @@ import ITilesLayerTool from "../../types/tool/ITilesLayerTool";
 import TilesLayerToolSidebarTabDefaults from "./TilesLayerToolSidebarTabDefaults";
 
 /**
- * This class provides controls for management of the layer sidebar tab.
+ * This class provides functions for management of the layer sidebar tab.
  * 
  * @author Jiri Hynek
  */
@@ -14,7 +14,7 @@ class TilesLayerToolSidebarTab extends AbstractLayerToolSidebarTab<ITilesLayerTo
     } 
 
     /**
-     * It creates new defaults of the tab control.
+     * It creates new defaults of the sidebar tab.
      */
     public createDefaults(): ILayerToolSidebarTabDefaults {
         return new TilesLayerToolSidebarTabDefaults(this);

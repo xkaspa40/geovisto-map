@@ -23,13 +23,6 @@ interface ITilesLayerTool extends ILayerTool {
      * It returns default tool state.
      */
     getState(): ITilesLayerToolState;
-
-    /**
-     * It returns layer items which should be rendered.
-     * 
-     * TODO: define the type.
-     */
-    getLayerItems(): L.Layer[];
 }
 
 export default ITilesLayerTool;

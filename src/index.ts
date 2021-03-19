@@ -80,7 +80,7 @@ export { default as JsonMapDataDomain } from './model/internal/data/json/JsonMap
 export { default as JsonMapDataManager } from './model/internal/data/json/JsonMapDataManager';
 
 // dimension
-export { default as AbstractDimension } from './model/internal/dimension/AbstractDimension';
+export { default as AbstractDimension } from './model/internal/dimension/MapDimension';
 
 // event
 export { default as DataChangeEvent } from './model/internal/event/data/DataChangeEvent';

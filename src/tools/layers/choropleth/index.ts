@@ -1,6 +1,6 @@
-export { default as ChoroplethLayerTool } from './ChoroplethLayerTool';
-export { default as ChoroplethLayerToolDefaults } from './ChoroplethLayerToolDefaults';
-export { default as ChoroplethLayerToolState } from './ChoroplethLayerToolState';
-export { default as ChoroplethLayerToolTabControl } from './sidebar/ChoroplethLayerToolTabControl';
-export { default as ChoroplethLayerToolTabDefaults } from './sidebar/ChoroplethLayerToolTabControlDefaults';
-export { default as ChoroplethLayerToolTabState } from './sidebar/ChoroplethLayerToolTabControlState';
+export { default as IChoroplethLayerTool } from './model/types/tool/IChoroplethLayerTool';
+export { default as IChoroplethLayerToolDefaults } from './model/types/tool/IChoroplethLayerToolDefaults';
+export { default as ChoroplethLayerToolState } from './model/internal/tool/ChoroplethLayerToolState';
+export { default as ChoroplethLayerToolTabControl } from './model/internal/sidebar/ChoroplethLayerToolSidebarTab';
+export { default as ChoroplethLayerToolTabDefaults } from './model/internal/sidebar/ChoroplethLayerToolSidebarTabDefaults';
+export { default as ChoroplethLayerToolTabState } from './model/internal/sidebar/ChoroplethLayerToolSidebarTabState';

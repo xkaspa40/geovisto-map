@@ -8,7 +8,7 @@ import { LayerToolSidebarTabDefaults, ILayerToolSidebarTab, ILayerToolSidebarTab
 class TilesLayerToolSidebarTabDefaults extends LayerToolSidebarTabDefaults implements ILayerToolSidebarTabDefaults {
 
     /**
-     * It creates tab control defaults.
+     * It creates sidebar tab defaults.
      */
     public constructor(sidebarTab: ILayerToolSidebarTab) {
         super(sidebarTab);
