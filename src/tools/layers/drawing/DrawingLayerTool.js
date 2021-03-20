@@ -20,6 +20,7 @@ import './style/drawingLayer.scss';
 import difference from '@turf/difference';
 import MapCreatedEvent from '../../../model/event/basic/MapCreatedEvent';
 import { iconStarter } from './util/Marker';
+import { filter } from 'd3-array';
 
 export const DRAWING_TOOL_LAYER_TYPE = 'geovisto-tool-layer-drawing';
 
@@ -160,6 +161,8 @@ class DrawingLayerTool extends AbstractLayerTool {
     if (prevLayer?.layerType !== e.layerType) this.redrawSidebarTabControl(e.layerType);
     this.getSidebarTabControl().getState().setEnabledEl(null);
 
+    let paintPoly = this.getSidebarTabControl().getState().paintPoly;
+
     let feature = getGeoJSONFeatureFromLayer(layer);
     let featureType = feature ? feature.geometry.type.toLowerCase() : '';
 
@@ -171,46 +174,70 @@ class DrawingLayerTool extends AbstractLayerTool {
     if (join) {
       let selectedFeature = getGeoJSONFeatureFromLayer(selectedLayer);
       let unifiedFeature = union(feature, selectedFeature);
-      featureToLeafletCoordinates(unifiedFeature.geometry.coordinates);
-      let result = new L.polygon(unifiedFeature.geometry.coordinates, {
+      const coords = unifiedFeature.geometry.coordinates;
+      const latlngs = L.GeoJSON.coordsToLatLngs(coords, 1);
+      let result = new L.polygon(latlngs, {
         ...layer.options,
         draggable: true,
         transform: true,
       });
       layer = result;
       layer.layerType = 'polygon';
-      let paintPoly = this.getSidebarTabControl().getState().paintPoly;
+      if (layer.dragging) layer.dragging.disable();
       paintPoly.clearPaintedPolys(e?.keyIndex);
     }
 
     // * DIFFERENCE
     // TODO: FIX
-    // let fgLayers = this.getState().featureGroup._layers;
-    // let layerFeature = getGeoJSONFeatureFromLayer(layer);
-    // Object.values(fgLayers).forEach((l) => {
-    //   let feature = getGeoJSONFeatureFromLayer(l);
-    //   let featureType = feature ? feature.geometry.type.toLowerCase() : '';
-    //   let isFeaturePoly = featureType === 'polygon' || featureType === 'multipolygon';
-    //   if (isFeaturePoly && l?._leaflet_id !== selectedLayer?._leaflet_id) {
-    //     let diffFeature = difference(layerFeature, feature);
-    //     if (diffFeature) {
-    //       featureToLeafletCoordinates(diffFeature.geometry.coordinates);
-    //       let result = new L.polygon(diffFeature.geometry.coordinates, {
-    //         ...l.options,
-    //       });
-    //       result.layerType = 'polygon';
-    //       this.getState().removeLayer(l);
-    //       this.getState().addLayer(result);
-    //       this.applyEventListeners(result);
-    //     }
-    //   }
-    // });
+    let fgLayers = this.getState().featureGroup._layers;
+    let layerFeature = getGeoJSONFeatureFromLayer(layer);
+    let currentLayerType = layerFeature ? layerFeature.geometry.type.toLowerCase() : '';
+    let isCurrentLayerPoly = currentLayerType === 'polygon' || currentLayerType === 'multipolygon';
+    console.log({ fgLayers });
+    if (isCurrentLayerPoly) {
+      Object.values(fgLayers)
+        .filter((l) => {
+          let feature = getGeoJSONFeatureFromLayer(l);
+          let featureType = feature ? feature.geometry.type.toLowerCase() : '';
+          return featureType === 'polygon' || featureType === 'multipolygon';
+        })
+        .forEach((l) => {
+          let feature = getGeoJSONFeatureFromLayer(l);
+
+          if (l?._leaflet_id !== selectedLayer?._leaflet_id) {
+            let diffFeature = difference(feature, layerFeature);
+            if (diffFeature) {
+              let coords;
+              let latlngs;
+              try {
+                coords = diffFeature.geometry.coordinates;
+                // * when substracting you can basically slice polygon in more parts then we have to increase depth by one
+                let depth = coords.length === 1 ? 1 : 2;
+                latlngs = L.GeoJSON.coordsToLatLngs(coords, depth);
+                let result = new L.polygon(latlngs, {
+                  ...l.options,
+                });
+                // console.log({ result });
+                result.layerType = 'polygon';
+                this.getState().addLayer(result);
+                this.getState().removeLayer(l);
+                this.applyEventListeners(result);
+                paintPoly.clearPaintedPolys(l.kIdx);
+                // paintPoly.random(l.kIdx);
+              } catch (error) {
+                console.error({ coords, latlngs, error });
+              }
+            }
+          }
+        });
+    }
 
     if (layer.dragging) layer.dragging.disable();
-
+    this.getState().removeLayerByIdx(layer.kIdx);
     this.getState().addLayer(layer);
     this.getState().setCurrEl(layer);
     this.applyEventListeners(layer);
+
     if (join) {
       this.getState().removeLayer(selectedLayer);
       this.getState().setSelectedLayer(layer);

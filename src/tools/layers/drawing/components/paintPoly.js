@@ -71,6 +71,10 @@ class PaintPoly {
     this._accumulatedShapes[kIdx] = feature;
   };
 
+  random = (kIdx) => {
+    console.log({ shap: this._shapeLayers, acc: this._accumulatedShapes, kIdx });
+  };
+
   // taken from https://stackoverflow.com/questions/27545098/leaflet-calculating-meters-per-pixel-at-zoom-level
   _pixelsToMeters = () => {
     const metersPerPixel =
@@ -83,7 +87,7 @@ class PaintPoly {
   drawCircle = () => {
     const brushColor = this.tabState.getSelectedColor() || DEFAULT_COLOR;
     const turfCircle = circle([this._latlng.lng, this._latlng.lat], this._pixelsToMeters(), {
-      steps: 128,
+      steps: 16,
       units: 'meters',
     });
 
@@ -94,12 +98,6 @@ class PaintPoly {
         this._accumulatedShapes[this.keyIndex],
         turfCircle,
       );
-      // * DIFFERENCE
-      // Object.keys(this._accumulatedShapes).forEach((key) => {
-      //   if (key != this.keyIndex && this._accumulatedShapes[key]) {
-      //     this._accumulatedShapes[key] = difference(this._accumulatedShapes[key], turfCircle);
-      //   }
-      // });
     }
 
     this._accumulatedShapes[this.keyIndex].properties = { fill: brushColor };
@@ -133,7 +131,9 @@ class PaintPoly {
   };
 
   _fireCreatedShapes = () => {
+    console.log('%cfired', 'color: #085f89');
     Object.keys(this._shapeLayers).forEach((key) => {
+      console.log({ sLayer: this._shapeLayers[key] });
       this._map.fire(L.Draw.Event.CREATED, {
         layer: this._shapeLayers[key],
         layerType: 'painted',
