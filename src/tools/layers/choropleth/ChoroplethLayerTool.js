@@ -284,9 +284,13 @@ class ChoroplethLayerTool extends AbstractLayerTool {
         } else if(event.getType() == SelectionToolEvent.TYPE()) {
             // selection change
             this.redraw(true);
-        } else if(event.getType() == ThemesToolEvent.TYPE()) {
-            // theme change
-            this.redraw(true);
+        } else if(event.getType() == ThemesToolEvent.TYPE()) {            
+            var map = event.getObject()
+            document.documentElement.style.setProperty('--choropleth-item-hover', map.getHoverColor());
+            document.documentElement.style.setProperty('--choropleth-item-select', map.getHighlightColor().selected);
+            document.documentElement.style.setProperty('--choropleth-item-highlight', map.getHighlightColor().highlight);
+            document.documentElement.style.setProperty('--choropleth-item-deempasize', map.getHighlightColor().deempasize);
+
         }
     }
 

@@ -1,21 +1,26 @@
+:root {
+    --layer-connection: undefined;
+    --layer-connection-highlight: undefined;
+    --layer-connection-other: undefined;
+}
 
 .leaflet-layer-connection {
     fill: none;
-    stroke: slateblue;
+    stroke: var(--layer-connection);
     stroke-width: 0.5;
     stroke-opacity: 0.4;
 }
 
 .leaflet-layer-connection-highlight {
     fill: none;
-    stroke: gold;
+    stroke: var(--layer-connection-highlight);
     stroke-width: 2;
     stroke-opacity: 0.4;
 }
 
 .leaflet-layer-connection-other {
     fill: none;
-    stroke: lightgray;
+    stroke: var(--layer-connection-other);
     stroke-width: 0.5;
     stroke-opacity: 0.4;
 }

@@ -90,10 +90,12 @@ class MapLayerTool extends AbstractLayerTool {
      * This function is called when a custom event is invoked.
      * 
      * @param {AbstractEvent} event 
-     */
+     */ 
     handleEvent(event) {
         if(event.getType() == ThemesToolEvent.TYPE()) {
-            this.onThemeChange(event.getObject())
+            var map = event.getObject()
+            this.onThemeChange(event.getObject());
+            document.documentElement.style.setProperty('--default-font', map.getFont());
         }
     }
 

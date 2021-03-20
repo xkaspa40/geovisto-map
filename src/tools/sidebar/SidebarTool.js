@@ -9,6 +9,8 @@ import "./styles/style.scss";
 import SidebarToolState from "./SidebarToolState";
 import SidebarToolDefaults from "./SidebarToolDefaults";
 import AbstractTool from "../../model/tool/abstract/AbstractTool";
+import ThemesToolEvent from '../themes/model/event/ThemesToolEvent';
+
 
 /**
  * This class provides the sidebar tool.
@@ -120,6 +122,30 @@ class SidebarTool extends AbstractTool {
             for(let i = 0; i < tools.length; i++) {
                 this.createSidebarTab(tools[i], undefined);
             }
+        }
+    }
+
+        /**
+     * This function is called when a custom event is invoked.
+     * 
+     * @param {AbstractEvent} event 
+     */
+    handleEvent(event) {
+        if(event.getType() == ThemesToolEvent.TYPE()) {            
+            var map = event.getObject()
+            document.documentElement.style.setProperty('--leaflet-sidebar-primary-bg', map.getBackgroundColors().primary);
+            document.documentElement.style.setProperty('--leaflet-sidebar-primary-fg', map.getForegroundColors().primary);            
+            document.documentElement.style.setProperty('--leaflet-sidebar-secondary-bg', map.getBackgroundColors().secondary);
+            document.documentElement.style.setProperty('--leaflet-sidebar-secondary-fg', map.getForegroundColors().secondary);
+            document.documentElement.style.setProperty('--leaflet-sidebar-disabled-bg', map.getBackgroundColors().disabled);
+            document.documentElement.style.setProperty('--leaflet-sidebar-disabled-fg', map.getForegroundColors().disabled);
+
+            document.documentElement.style.setProperty('--geovisto-input-autocomplete-value-bg', map.getTextInputColor().matchBg);            
+            document.documentElement.style.setProperty('--geovisto-input-autocomplete-value-fg', map.getTextInputColor().matchFg);
+            document.documentElement.style.setProperty('--geovisto-input-autocomplete-value-notmatch-bg', map.getTextInputColor().notMatchBg);
+            document.documentElement.style.setProperty('--geovisto-input-autocomplete-value-notmatch-fg', map.getTextInputColor().notMatchFg);
+            document.documentElement.style.setProperty('--geovisto-input-autocomplete-value-placeholder', map.getTextInputColor().placeholder);            
+            document.documentElement.style.setProperty('--geovisto-input-autocomplete-value-hover', map.getTextInputColor().hover);            
         }
     }
 

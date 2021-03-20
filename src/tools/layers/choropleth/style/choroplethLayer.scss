@@ -1,3 +1,10 @@
+:root {
+    --choropleth-item-hover: yellow;
+    --choropleth-item-select: orange;
+    --choropleth-item-highlight: yellow;
+    --choropleth-item-deempasize: #8c8c8c;
+}
+
 .leaflet-choropleth-item-basic {
     stroke-width: 2;
     opacity: 0.85;
@@ -42,21 +49,21 @@
 }
 
 .leaflet-choropleth-item-highlight {
-    fill: yellow;
+    fill: var(--choropleth-item-highlight);
 }
 
 .leaflet-choropleth-item-select {
-    fill: orange;
+    fill: var(--choropleth-item-select);
 }
 
 .leaflet-choropleth-item-deempasize {
-    fill: #8c8c8c;
+    fill: var(--choropleth-item-deempasize);
 }
 
 .leaflet-choropleth-item-hover {
     stroke-width: 4;
     opacity: 0.7;
-    stroke: yellow;
+    stroke: var(--choropleth-item-hover);
     stroke-dasharray: none;
     fill-opacity: 0.9;
 }

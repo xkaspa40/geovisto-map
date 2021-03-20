@@ -479,8 +479,10 @@ class MarkerLayerTool extends AbstractLayerTool {
             this.redraw();
             // TODO
         } else if(event.getType() == ThemesToolEvent.TYPE()) {
-            // theme change
-            // TODO
+            var map = event.getObject();
+            document.documentElement.style.setProperty('--leaflet-marker-donut1', map.getDataColors().triadic1);
+            document.documentElement.style.setProperty('--leaflet-marker-donut2', map.getDataColors().triadic2);
+            document.documentElement.style.setProperty('--leaflet-marker-donut3', map.getDataColors().triadic3);
         }
     }
 }

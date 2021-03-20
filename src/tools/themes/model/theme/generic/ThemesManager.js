@@ -12,7 +12,7 @@ class ThemesManager extends AbstractThemesManager {
         this.themes = themes;
     }
 
-    /**
+    /** 
      * The function returns available themes.
      */
     getThemes() {
