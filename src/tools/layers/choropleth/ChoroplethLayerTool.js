@@ -12,6 +12,7 @@ import MapSelection from "../../selection/model/item/generic/MapSelection";
 import SelectionTool from "../../selection/SelectionTool";
 import TimeChangeEvent from "../../timeline/model/TimeChangeEvent";
 import TimeInitializedEvent from "../../timeline/model/TimeInitializedEvent";
+import { TimeDestroyedEvent } from "../../timeline/model/TimeDestroyedEvent";
 
 // TODO: move to defaults
 const COLOR_orange = ['#8c8c8c','#ffffcc','#ffff99','#ffcc99','#ff9966','#ff6600','#ff0000','#cc0000'];
@@ -301,9 +302,18 @@ class ChoroplethLayerTool extends AbstractLayerTool {
             if (this.getState().getLayer()) {
                 this.getState().getLayer().eachLayer((item) => {
                     if (item._path != undefined) {
-                        item._path.style.transitionDuration = `${stepTimeLength / 2 < 500 ?
-                            stepTimeLength / 2 :
-                            500}ms`
+                        item._path.style.transitionDuration = stepTimeLength / 2 < 500 ?
+                            `${stepTimeLength / 2}ms` :
+                            '500ms'
+                    }
+                });
+            }
+        }
+        if (event.getType() === TimeDestroyedEvent.TYPE()) {
+            if (this.getState().getLayer()) {
+                this.getState().getLayer().eachLayer((item) => {
+                    if (item._path != null) {
+                        item._path.style.transitionDuration = '500ms'
                     }
                 });
             }

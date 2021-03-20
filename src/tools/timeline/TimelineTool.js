@@ -11,6 +11,7 @@ import TimeChangeEvent from "./model/TimeChangeEvent";
 import { LatLng } from "leaflet";
 import TimeInitializedEvent from "./model/TimeInitializedEvent";
 import DataChangeEvent from "../../model/event/basic/DataChangeEvent";
+import { TimeDestroyedEvent } from "./model/TimeDestroyedEvent";
 
 
 export class TimelineTool extends AbstractLayerTool {
@@ -258,6 +259,7 @@ export class TimelineTool extends AbstractLayerTool {
             .getFiltersManager()
             .filterData(mapData, mapData.getData(), this.filtersTool.getState().getFilterRules())
         this.getMap().updateData(filteredData);
+        this.getMap().dispatchEvent(new TimeDestroyedEvent())
     }
 
     handleEvent(event) {
