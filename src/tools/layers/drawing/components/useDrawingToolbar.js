@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css';
 
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
-import { normalStyles, polygonCreate, polylineCreate } from '../util/Poly';
+import { normalStyles, polygonCreate, polylineCreate, slicePoly } from '../util/Poly';
 import { markerCreate } from '../util/Marker';
 
 import '../style/drawingLayer.scss';
@@ -73,6 +73,13 @@ export default function useDrawingToolbar() {
         'fa fa-square',
       );
 
+      this.options.drawingBtns.sliceBtn = this.createToolbarBtn(
+        'sliceBtn',
+        toolContainer,
+        'Slice polygon',
+        'fa fa-cutlery',
+      );
+
       const sidebar = this.options.tool.getSidebarTabControl();
 
       this.options.drawingBtns.paintBtn = sidebar.getState().paintPoly.renderButton({
@@ -115,6 +122,7 @@ export default function useDrawingToolbar() {
         selectBtn,
         transformBtn,
         editBtn,
+        sliceBtn,
       } = this.options.drawingBtns;
       const map = this.options.map;
       const sidebar = this.options.tool.getSidebarTabControl();
@@ -133,6 +141,7 @@ export default function useDrawingToolbar() {
       L.DomEvent.on(selectBtn, 'click', this.initSelecting, this);
       L.DomEvent.on(transformBtn, 'click', this.initTransform, this);
       L.DomEvent.on(editBtn, 'click', this.initNodeEdit, this);
+      L.DomEvent.on(sliceBtn, 'click', () => slicePoly(map, sidebar), this);
     },
 
     initNodeEdit: function () {

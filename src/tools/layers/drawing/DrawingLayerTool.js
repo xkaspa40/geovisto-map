@@ -21,6 +21,8 @@ import difference from '@turf/difference';
 import MapCreatedEvent from '../../../model/event/basic/MapCreatedEvent';
 import { iconStarter } from './util/Marker';
 import { filter } from 'd3-array';
+import lineToPolygon from '@turf/line-to-polygon';
+import * as turf from '@turf/turf';
 
 export const DRAWING_TOOL_LAYER_TYPE = 'geovisto-tool-layer-drawing';
 
@@ -115,6 +117,7 @@ class DrawingLayerTool extends AbstractLayerTool {
       geojson.features.forEach((f) => {
         let opts = convertPropertiesToOptions(f.properties);
         let lType = getLeafletTypeFromFeature(f);
+        console.log({ geo: f.geometry.coordinates });
         featureToLeafletCoordinates(f.geometry.coordinates, f.geometry.type);
         let result;
         if (lType === 'polygon') {
@@ -152,43 +155,9 @@ class DrawingLayerTool extends AbstractLayerTool {
     layer.on('mouseout', this.normalizePoly, this);
   }
 
-  createdListener = (e) => {
-    let layer = e.layer;
-    layer.layerType = e.layerType;
-    if (e.keyIndex) layer.kIdx = e.keyIndex;
-
-    let prevLayer = this.getState().getPrevLayer();
-    if (prevLayer?.layerType !== e.layerType) this.redrawSidebarTabControl(e.layerType);
-    this.getSidebarTabControl().getState().setEnabledEl(null);
-
-    let paintPoly = this.getSidebarTabControl().getState().paintPoly;
-
-    let feature = getGeoJSONFeatureFromLayer(layer);
-    let featureType = feature ? feature.geometry.type.toLowerCase() : '';
-
-    let isFeaturePoly = featureType === 'polygon' || featureType === 'multipolygon';
+  polyDiff(layer) {
     let selectedLayer = this.getState().selectedLayer;
-
-    let join = isFeaturePoly && Boolean(selectedLayer);
-
-    if (join) {
-      let selectedFeature = getGeoJSONFeatureFromLayer(selectedLayer);
-      let unifiedFeature = union(feature, selectedFeature);
-      const coords = unifiedFeature.geometry.coordinates;
-      const latlngs = L.GeoJSON.coordsToLatLngs(coords, 1);
-      let result = new L.polygon(latlngs, {
-        ...layer.options,
-        draggable: true,
-        transform: true,
-      });
-      layer = result;
-      layer.layerType = 'polygon';
-      if (layer.dragging) layer.dragging.disable();
-      paintPoly.clearPaintedPolys(e?.keyIndex);
-    }
-
-    // * DIFFERENCE
-    // TODO: FIX
+    let paintPoly = this.getSidebarTabControl().getState().paintPoly;
     let fgLayers = this.getState().featureGroup._layers;
     let layerFeature = getGeoJSONFeatureFromLayer(layer);
     let currentLayerType = layerFeature ? layerFeature.geometry.type.toLowerCase() : '';
@@ -223,7 +192,6 @@ class DrawingLayerTool extends AbstractLayerTool {
                 this.getState().removeLayer(l);
                 this.applyEventListeners(result);
                 paintPoly.clearPaintedPolys(l.kIdx);
-                // paintPoly.random(l.kIdx);
               } catch (error) {
                 console.error({ coords, latlngs, error });
               }
@@ -231,16 +199,120 @@ class DrawingLayerTool extends AbstractLayerTool {
           }
         });
     }
+  }
 
-    if (layer.dragging) layer.dragging.disable();
-    this.getState().removeLayerByIdx(layer.kIdx);
-    this.getState().addLayer(layer);
-    this.getState().setCurrEl(layer);
-    this.applyEventListeners(layer);
+  polyJoin(layer, eKeyIndex) {
+    let paintPoly = this.getSidebarTabControl().getState().paintPoly;
+    let feature = getGeoJSONFeatureFromLayer(layer);
+    let featureType = feature ? feature.geometry.type.toLowerCase() : '';
+
+    let isFeaturePoly = featureType === 'polygon' || featureType === 'multipolygon';
+    let selectedLayer = this.getState().selectedLayer;
+
+    let join = isFeaturePoly && Boolean(selectedLayer);
 
     if (join) {
+      let selectedFeature = getGeoJSONFeatureFromLayer(selectedLayer);
+      let unifiedFeature = union(feature, selectedFeature);
+      let coords = unifiedFeature.geometry.coordinates;
+      let latlngs = L.GeoJSON.coordsToLatLngs(coords, 1);
+      let result = new L.polygon(latlngs, {
+        ...layer.options,
+        draggable: true,
+        transform: true,
+      });
+      layer = result;
+      layer.layerType = 'polygon';
+      if (layer.dragging) layer.dragging.disable();
+      paintPoly.clearPaintedPolys(eKeyIndex);
       this.getState().removeLayer(selectedLayer);
       this.getState().setSelectedLayer(layer);
+    }
+    return layer;
+  }
+
+  createdListener = (e) => {
+    let layer = e.layer;
+    layer.layerType = e.layerType;
+    if (e.keyIndex) layer.kIdx = e.keyIndex;
+
+    let prevLayer = this.getState().getPrevLayer();
+    if (prevLayer?.layerType !== e.layerType) this.redrawSidebarTabControl(e.layerType);
+    this.getSidebarTabControl().getState().setEnabledEl(null);
+
+    if (e.layerType === 'polygon' || e.layerType === 'painted') {
+      // * JOIN
+      layer = this.polyJoin(layer, e.keyIndex);
+
+      // * DIFFERENCE
+      this.polyDiff(layer);
+    }
+
+    // * SLICE
+    if (e.layerType === 'knife') {
+      let lineFeat = getGeoJSONFeatureFromLayer(layer);
+
+      let selectedLayer = this.getState().selectedLayer;
+      if (selectedLayer) {
+        const THICK_LINE_WIDTH = 0.001;
+        const THICK_LINE_UNITS = 'kilometers';
+        let offsetLine;
+        let f = getGeoJSONFeatureFromLayer(selectedLayer);
+
+        let fType = f ? f.geometry.type.toLowerCase() : '';
+        let isFeatPoly = fType === 'polygon' || fType === 'multipolygon';
+        if (isFeatPoly) {
+          // console.log({ f, linePoly });
+          // let diffFeature = difference(f, linePoly);
+
+          // if (diffFeature?.geometry?.type === 'MultiPolygon') {
+          let coords;
+          let latlngs;
+          try {
+            offsetLine = turf.lineOffset(lineFeat, THICK_LINE_WIDTH, {
+              units: THICK_LINE_UNITS,
+            });
+
+            let polyCoords = [];
+            for (let j = 0; j < lineFeat.geometry.coordinates.length; j++) {
+              polyCoords.push(lineFeat.geometry.coordinates[j]);
+            }
+            for (let j = offsetLine.geometry.coordinates.length - 1; j >= 0; j--) {
+              polyCoords.push(offsetLine.geometry.coordinates[j]);
+            }
+            polyCoords.push(lineFeat.geometry.coordinates[0]);
+
+            let thickLineString = turf.lineString(polyCoords);
+            let thickLinePolygon = turf.lineToPolygon(thickLineString);
+            let clipped = turf.difference(f, thickLinePolygon);
+
+            coords = clipped.geometry.coordinates;
+            coords.forEach((coord) => {
+              latlngs = L.GeoJSON.coordsToLatLngs(coord, 1);
+              let result = new L.polygon(latlngs, {
+                ...selectedLayer.options,
+                ...normalStyles,
+              });
+              result.layerType = 'polygon';
+              this.getState().removeLayer(selectedLayer);
+              this.getState().selectedLayer = null;
+              this.getState().addLayer(result);
+              this.applyEventListeners(result);
+            });
+          } catch (error) {
+            console.error({ coords, latlngs, error });
+          }
+          // }
+        }
+      }
+    }
+
+    if (layer.dragging) layer.dragging.disable();
+    // this.getState().removeLayerByIdx(layer.kIdx);
+    if (e.layerType !== 'knife') {
+      this.getState().addLayer(layer);
+      this.getState().setCurrEl(layer);
+      this.applyEventListeners(layer);
     }
   };
 
