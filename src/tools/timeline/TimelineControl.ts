@@ -7,19 +7,19 @@ import "./TimelineControl.scss";
 export class TimelineControl extends L.Control {
     private readonly timelineService: TimelineService;
     private readonly leafletMap: any;
+    private readonly formState: any;
 
-    private constructor(timelineService: TimelineService,
+    private constructor(
+        timelineService: TimelineService,
         leafletMap: any,
-        options: ControlOptions = { position: "bottomleft" }) {
+        formState: any,
+        options: ControlOptions = { position: "bottomleft" },
+    ) {
         super(options);
         this.timelineService = timelineService;
         this.leafletMap = leafletMap;
+        this.formState = formState;
     }
-
-    static create(timelineService: TimelineService, leafletMap: any, options?: ControlOptions): TimelineControl {
-        return new TimelineControl(timelineService, leafletMap, options);
-    }
-
 
     onAdd(): HTMLElement {
         const container = L.DomUtil.create("div", "leaflet-timeline");
@@ -34,6 +34,7 @@ export class TimelineControl extends L.Control {
                 longitude: this.leafletMap.getCenter().lng,
             }),
             onRecordDeleteClick: (time) => this.timelineService.deleteState(time),
+            timeGranularity: this.formState.realTimeEnabled ? this.formState.granularity : null,
         };
         const timelineComponent = TimelineComponent.create(container, props);
 

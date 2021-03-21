@@ -1,9 +1,9 @@
-import React, { FC, useState } from 'react';
-import { Slider } from './Slider';
-import { PlayButton } from './PlayButton';
-import { RangeSlider } from './RangeSlider/RangeSlider';
+import React, { FC, useState } from "react";
+import { Slider } from "./Slider";
+import { PlayButton } from "./PlayButton";
+import { RangeSlider } from "./RangeSlider/RangeSlider";
 
-import './Timeline.scss';
+import "./Timeline.scss";
 
 export type TimelineProps = {
     times: Date[],
@@ -35,18 +35,23 @@ export const Timeline: FC<TimelineProps> = ({
     onRecordClick,
     onRecordDeleteClick,
     story,
+    tickFormat,
 }) => {
     const [compact, setCompact] = useState(true);
     return (
         <>
             <div className="timeline__collapse_button_wrapper">
                 <button className="timeline__collapse_button" onClick={() => setCompact(c => !c)}>
-                    <i className={`fa fa-angle-${compact ? 'up' : 'down'}`} />
+                    <i className={`fa fa-angle-${compact ? "up" : "down"}`} />
                 </button>
             </div>
-            <div className={`timeline ${chartData ? 'with-chart' : ''}`}>
+            <div className={`timeline ${chartData ? "with-chart" : ""}`}>
                 {!compact && <div className="timeline__range_slider_wrapper">
-                    <RangeSlider times={times} onChange={onRangeTimesIndexChange} />
+                    <RangeSlider
+                        times={times}
+                        onChange={onRangeTimesIndexChange}
+                        tickFormat={tickFormat}
+                    />
                 </div>}
                 <div className="timeline__player_container">
                     <div className="timeline__control_button__wrapper">
@@ -62,11 +67,12 @@ export const Timeline: FC<TimelineProps> = ({
                             chartData={chartData}
                             onCurrentTimeIndexChange={onCurrentTimeIndexChange}
                             story={story}
+                            tickFormat={tickFormat}
                         />
                         {story && (
                             <>
-                                <button onClick={onRecordClick}><i className="fa fa-save"/></button>
-                                <button onClick={onRecordDeleteClick}><i className="fa fa-trash"/></button>
+                                <button onClick={onRecordClick}><i className="fa fa-save" /></button>
+                                <button onClick={onRecordDeleteClick}><i className="fa fa-trash" /></button>
                             </>
                         )}
                     </div>

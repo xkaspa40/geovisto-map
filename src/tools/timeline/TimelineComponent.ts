@@ -1,9 +1,10 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { Timeline } from './Timeline';
-import { Subject } from './Subject';
-import { TimeData } from './TimelineService';
-import { path as getFromPath } from './utils';
+import React from "react";
+import ReactDOM from "react-dom";
+import { Timeline } from "./Timeline";
+import { Subject } from "./Subject";
+import { TimeData } from "./TimelineService";
+import { path as getFromPath } from "./utils";
+import { TimeGranularity } from "./contants";
 
 export type OnTimesChangedParams = {
     currentTimeIndex: number,
@@ -19,6 +20,14 @@ export type TimelineProps = {
     onPlayClick: () => void;
 }
 
+const TickFormat = {
+    [TimeGranularity.HOUR]: "hh:mm dd/MM/yyyy",
+    [TimeGranularity.DAY]: "dd/MM/yyyy",
+    [TimeGranularity.WEEK]: "dd/MM/yyyy",
+    [TimeGranularity.MONTH]: "MM/yyyy",
+    [TimeGranularity.YEAR]: "yyyy",
+};
+
 export class TimelineComponent {
     onTimesChanged = new Subject<OnTimesChangedParams>();
 
@@ -29,6 +38,7 @@ export class TimelineComponent {
     private _startTimeIndex: number;
     private _endTimeIndex: number;
     private _isPlaying = false;
+    private tickFormat = "hh:mm dd/MM/yyyy";
     private _onPlayClick: () => void;
     private _onRecordClick: () => void;
     private _onRecordDeleteClick: (times: Date) => void;
@@ -73,6 +83,7 @@ export class TimelineComponent {
         this._onPlayClick = props.onPlayClick;
         this._onRecordClick = props.onRecordClick;
         this._onRecordDeleteClick = props.onRecordDeleteClick;
+        this.tickFormat = props.timeGranularity ? TickFormat[props.timeGranularity] : "hh:mm dd/MM/yyyy";
         if (props.data.charts) {
             this.chartData = this.createChartData(props.data);
         }
@@ -104,6 +115,7 @@ export class TimelineComponent {
                     onRecordClick: this._onRecordClick,
                     onRecordDeleteClick: () => this._onRecordDeleteClick(this._times[this._currentTimeIndex]),
                     story: this._story,
+                    tickFormat: this.tickFormat,
                 }),
             this.container,
         );
@@ -149,11 +161,11 @@ export class TimelineComponent {
 
     private getChartValue(path: string,
         values: Record<string, unknown>[] | undefined,
-        aggregationFn: 'average' | 'sum') {
+        aggregationFn: "average" | "sum") {
         if (!values) return null;
 
         const chartValue = values.reduce((acc, value) => acc + getFromPath(path, value), 0);
-        if (aggregationFn === 'average') {
+        if (aggregationFn === "average") {
             return chartValue / values.length;
         }
         return chartValue;

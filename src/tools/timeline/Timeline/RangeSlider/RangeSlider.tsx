@@ -1,16 +1,15 @@
-import React, { FC, useCallback, useMemo } from 'react';
-import { Handles, Rail, Slider as SliderBase, Tracks } from 'react-compound-slider';
-import { scaleLinear } from 'd3-scale';
-import { Track } from './components/Track';
-import { Handle } from './components/Handle';
-import { TooltipRail } from './components/TooltipRail';
-import { format } from 'date-fns';
-import './RangeSlider.scss';
+import React, { FC, useMemo } from "react";
+import { Handles, Rail, Slider as SliderBase, Tracks } from "react-compound-slider";
+import { Track } from "./components/Track";
+import { Handle } from "./components/Handle";
+import { TooltipRail } from "./components/TooltipRail";
+import { format } from "date-fns";
+import "./RangeSlider.scss";
 
 const sliderStyle = {
-    position: 'relative',
-    width: '100%',
-    touchAction: 'none',
+    position: "relative",
+    width: "100%",
+    touchAction: "none",
 };
 
 export type SliderProps = {
@@ -25,14 +24,20 @@ export type SliderProps = {
 
 const NUMBER_OF_TICKS = 5;
 
-export const RangeSlider: FC<SliderProps> = ({ times, start = 0, end = (times.length - 1), onChange: onChangeProp }) => {
+export const RangeSlider: FC<SliderProps> = ({
+    times,
+    start = 0,
+    end = (times.length - 1),
+    onChange: onChangeProp,
+    tickFormat,
+}) => {
     const domain = useMemo(() => [0, times.length - 1], [times]);
     const values = useMemo(() => [start, end], [start, end]);
 
     const onChange = (newValues: ReadonlyArray<number>) => {
         onChangeProp(newValues);
     };
-    const labels = times.map((date) => ({ time: format(date, 'hh:mm dd/MM/yyyy'), values: [] }));
+    const labels = times.map((date) => ({ time: format(date, tickFormat), values: [] }));
 
     return (
         <div className="range_slider__time_range_container compact">

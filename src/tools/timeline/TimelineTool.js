@@ -222,16 +222,18 @@ export class TimelineTool extends AbstractLayerTool {
         this.timelineService.onCurrentTimeIndexChanged.subscribe(this.onCurrentTimeChange.bind(
             this));
         if (!this.timelineControl) {
-            this.timelineControl = TimelineControl.create(
+            this.timelineControl = new TimelineControl(
                 this.timelineService,
-                this.getMap().getState().getLeafletMap()
+                this.getMap().getState().getLeafletMap(),
+                formState
             )
                 .addTo(this.getMap().getState().getLeafletMap());
         } else {
             this.timelineControl.remove();
-            this.timelineControl = TimelineControl.create(
+            this.timelineControl = new TimelineControl(
                 this.timelineService,
-                this.getMap().getState().getLeafletMap()
+                this.getMap().getState().getLeafletMap(),
+                formState
             )
                 .addTo(this.getMap().getState().getLeafletMap());
         }

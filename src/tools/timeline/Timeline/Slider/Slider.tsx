@@ -36,6 +36,7 @@ export const Slider: FC<SliderProps> = ({
     currentTime,
     onChange: onChangeProp,
     story,
+    tickFormat,
 }) => {
     const times = useMemo(() => timesDefault.slice(startTimeIndex, endTimeIndex + 1),
         [timesDefault, startTimeIndex, endTimeIndex]);
@@ -55,7 +56,7 @@ export const Slider: FC<SliderProps> = ({
         }]
     ), []);
     const getChartValues = (time: Date) => chartData?.map(({ name, values }) => ({ name, value: values.get(time) }));
-    const labels = times.map((time) => ({ time: format(time, "hh:mm dd/MM/yyyy"), values: getChartValues(time) }));
+    const labels = times.map((time) => ({ time: format(time, tickFormat), values: getChartValues(time) }));
     const ticksIndexes = scaleLinear()
         .domain([domain[0], domain[1]])
         .ticks(NUMBER_OF_TICKS);
