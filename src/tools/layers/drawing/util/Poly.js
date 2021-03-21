@@ -5,6 +5,7 @@ import 'leaflet-path-transform';
 import 'leaflet/dist/leaflet.css';
 
 import { STROKES, COLORS } from '../sidebar/DrawingLayerToolTabControlState';
+import * as turf from '@turf/turf';
 
 export const highlightStyles = { fillOpacity: 0.5, opacity: 0.2 };
 export const normalStyles = { fillOpacity: 0.2, opacity: 0.5 };
@@ -171,4 +172,22 @@ export const convertOptionsToProperties = (options) => {
   properties['stroke-opacity'] = normalStyles.opacity;
 
   return properties;
+};
+
+export const getUnkinkedFeatFromLayer = (layer) => {
+  if (!layer) return null;
+  let drawnGeoJSON = layer.toGeoJSON();
+  let unkinked = turf.unkinkPolygon(drawnGeoJSON);
+  let feature = unkinked.type === 'FeatureCollection' ? unkinked.features : unkinked;
+  return feature;
+};
+
+export const isFeaturePoly = (feature) => {
+  console.log({ feature });
+  if (!feature) return false;
+  if (feature?.type === 'FeatureCollection') {
+    let f = feature.features[0];
+    return f?.geometry?.type === 'Polygon' || f?.geometry?.type === 'MultiPolygon';
+  }
+  return feature?.geometry?.type === 'Polygon' || feature?.geometry?.type === 'MultiPolygon';
 };

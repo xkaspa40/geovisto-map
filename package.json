@@ -84,6 +84,8 @@
     "leaflet-sidebar-v2": "3.2.2",
     "leaflet-snap": "^0.0.4",
     "leaflet.markercluster": "^1.4.1",
+    "martinez-polygon-clipping": "^0.7.0",
+    "polygon-clipping": "^0.15.2",
     "rfdc": "^1.1.4"
   }
 }

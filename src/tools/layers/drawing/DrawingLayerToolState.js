@@ -62,6 +62,11 @@ class DrawingLayerToolState extends AbstractLayerToolState {
     this.featureGroup.removeLayer(layer);
   }
 
+  removeSelectedLayer(layer) {
+    this.featureGroup.removeLayer(layer);
+    this.selectedLayer = null;
+  }
+
   removeLayerByIdx(idx) {
     if (idx === undefined) return;
     const found = Object.values(this.featureGroup._layers).find((l) => l.kIdx === idx);

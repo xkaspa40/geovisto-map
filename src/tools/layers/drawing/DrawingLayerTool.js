@@ -13,6 +13,8 @@ import {
   getLeafletTypeFromFeature,
   highlightStyles,
   normalStyles,
+  getUnkinkedFeatFromLayer,
+  isFeaturePoly,
 } from './util/Poly';
 
 import 'leaflet/dist/leaflet.css';
@@ -23,6 +25,8 @@ import { iconStarter } from './util/Marker';
 import { filter } from 'd3-array';
 import lineToPolygon from '@turf/line-to-polygon';
 import * as turf from '@turf/turf';
+import * as martinez from 'martinez-polygon-clipping';
+import * as polyClipping from 'polygon-clipping';
 
 export const DRAWING_TOOL_LAYER_TYPE = 'geovisto-tool-layer-drawing';
 
@@ -117,7 +121,6 @@ class DrawingLayerTool extends AbstractLayerTool {
       geojson.features.forEach((f) => {
         let opts = convertPropertiesToOptions(f.properties);
         let lType = getLeafletTypeFromFeature(f);
-        console.log({ geo: f.geometry.coordinates });
         featureToLeafletCoordinates(f.geometry.coordinates, f.geometry.type);
         let result;
         if (lType === 'polygon') {
@@ -162,7 +165,6 @@ class DrawingLayerTool extends AbstractLayerTool {
     let layerFeature = getGeoJSONFeatureFromLayer(layer);
     let currentLayerType = layerFeature ? layerFeature.geometry.type.toLowerCase() : '';
     let isCurrentLayerPoly = currentLayerType === 'polygon' || currentLayerType === 'multipolygon';
-    console.log({ fgLayers });
     if (isCurrentLayerPoly) {
       Object.values(fgLayers)
         .filter((l) => {
@@ -175,6 +177,7 @@ class DrawingLayerTool extends AbstractLayerTool {
 
           if (l?._leaflet_id !== selectedLayer?._leaflet_id) {
             let diffFeature = difference(feature, layerFeature);
+            console.log({ diffFeature });
             if (diffFeature) {
               let coords;
               let latlngs;
@@ -203,32 +206,98 @@ class DrawingLayerTool extends AbstractLayerTool {
 
   polyJoin(layer, eKeyIndex) {
     let paintPoly = this.getSidebarTabControl().getState().paintPoly;
-    let feature = getGeoJSONFeatureFromLayer(layer);
-    let featureType = feature ? feature.geometry.type.toLowerCase() : '';
 
-    let isFeaturePoly = featureType === 'polygon' || featureType === 'multipolygon';
+    // * gets only first one because I do not expect MultiPolygon to be created
+    let feature = getUnkinkedFeatFromLayer(layer);
+    feature = Array.isArray(feature) ? feature[0] : feature;
+    let isFeatPoly = isFeaturePoly(feature);
+    if (!isFeatPoly) return layer;
+
+    let unifiedFeature = feature;
+
     let selectedLayer = this.getState().selectedLayer;
+    let selectedFeatures = getUnkinkedFeatFromLayer(selectedLayer);
+    if (!selectedFeatures) return layer;
+    selectedFeatures.forEach((selectedFeature) => {
+      let isSelectedFeaturePoly = isFeaturePoly(selectedFeature);
 
-    let join = isFeaturePoly && Boolean(selectedLayer);
+      if (isSelectedFeaturePoly) {
+        unifiedFeature = union(selectedFeature, unifiedFeature);
+      }
+    });
 
-    if (join) {
-      let selectedFeature = getGeoJSONFeatureFromLayer(selectedLayer);
-      let unifiedFeature = union(feature, selectedFeature);
-      let coords = unifiedFeature.geometry.coordinates;
-      let latlngs = L.GeoJSON.coordsToLatLngs(coords, 1);
-      let result = new L.polygon(latlngs, {
-        ...layer.options,
-        draggable: true,
-        transform: true,
-      });
-      layer = result;
-      layer.layerType = 'polygon';
-      if (layer.dragging) layer.dragging.disable();
-      paintPoly.clearPaintedPolys(eKeyIndex);
-      this.getState().removeLayer(selectedLayer);
-      this.getState().setSelectedLayer(layer);
+    let coords = unifiedFeature.geometry.coordinates;
+    let depth = 1;
+    if (unifiedFeature.geometry.type === 'MultiPolygon') {
+      depth = 2;
     }
+    let latlngs = L.GeoJSON.coordsToLatLngs(coords, depth);
+
+    let result = new L.polygon(latlngs, {
+      ...layer.options,
+      draggable: true,
+      transform: true,
+    });
+    layer = result;
+    layer.layerType = 'polygon';
+    if (layer.dragging) layer.dragging.disable();
+    paintPoly.clearPaintedPolys(eKeyIndex);
+    this.getState().removeSelectedLayer(selectedLayer);
+    this.getState().setSelectedLayer(layer);
     return layer;
+  }
+
+  polySlice(layer) {
+    let lineFeat = getGeoJSONFeatureFromLayer(layer);
+
+    let selectedLayer = this.getState().selectedLayer;
+    if (selectedLayer) {
+      const THICK_LINE_WIDTH = 0.001;
+      const THICK_LINE_UNITS = 'kilometers';
+      let offsetLine;
+      let f = getGeoJSONFeatureFromLayer(selectedLayer);
+
+      let fType = f ? f.geometry.type.toLowerCase() : '';
+      let isFeatPoly = fType === 'polygon' || fType === 'multipolygon';
+      if (isFeatPoly) {
+        let coords;
+        let latlngs;
+        try {
+          offsetLine = turf.lineOffset(lineFeat, THICK_LINE_WIDTH, {
+            units: THICK_LINE_UNITS,
+          });
+
+          let polyCoords = [];
+          for (let j = 0; j < lineFeat.geometry.coordinates.length; j++) {
+            polyCoords.push(lineFeat.geometry.coordinates[j]);
+          }
+          for (let j = offsetLine.geometry.coordinates.length - 1; j >= 0; j--) {
+            polyCoords.push(offsetLine.geometry.coordinates[j]);
+          }
+          polyCoords.push(lineFeat.geometry.coordinates[0]);
+
+          let thickLineString = turf.lineString(polyCoords);
+          let thickLinePolygon = turf.lineToPolygon(thickLineString);
+          let clipped = turf.difference(f, thickLinePolygon);
+
+          coords = clipped.geometry.coordinates;
+          coords.forEach((coord) => {
+            latlngs = L.GeoJSON.coordsToLatLngs(coord, 1);
+            let result = new L.polygon(latlngs, {
+              ...selectedLayer.options,
+              ...normalStyles,
+            });
+            result.layerType = 'polygon';
+            this.getState().removeSelectedLayer(selectedLayer);
+            this.getState().selectedLayer = null;
+            this.getState().addLayer(result);
+            this.applyEventListeners(result);
+          });
+        } catch (error) {
+          console.error({ coords, latlngs, error });
+        }
+      }
+    }
   }
 
   createdListener = (e) => {
@@ -250,61 +319,7 @@ class DrawingLayerTool extends AbstractLayerTool {
 
     // * SLICE
     if (e.layerType === 'knife') {
-      let lineFeat = getGeoJSONFeatureFromLayer(layer);
-
-      let selectedLayer = this.getState().selectedLayer;
-      if (selectedLayer) {
-        const THICK_LINE_WIDTH = 0.001;
-        const THICK_LINE_UNITS = 'kilometers';
-        let offsetLine;
-        let f = getGeoJSONFeatureFromLayer(selectedLayer);
-
-        let fType = f ? f.geometry.type.toLowerCase() : '';
-        let isFeatPoly = fType === 'polygon' || fType === 'multipolygon';
-        if (isFeatPoly) {
-          // console.log({ f, linePoly });
-          // let diffFeature = difference(f, linePoly);
-
-          // if (diffFeature?.geometry?.type === 'MultiPolygon') {
-          let coords;
-          let latlngs;
-          try {
-            offsetLine = turf.lineOffset(lineFeat, THICK_LINE_WIDTH, {
-              units: THICK_LINE_UNITS,
-            });
-
-            let polyCoords = [];
-            for (let j = 0; j < lineFeat.geometry.coordinates.length; j++) {
-              polyCoords.push(lineFeat.geometry.coordinates[j]);
-            }
-            for (let j = offsetLine.geometry.coordinates.length - 1; j >= 0; j--) {
-              polyCoords.push(offsetLine.geometry.coordinates[j]);
-            }
-            polyCoords.push(lineFeat.geometry.coordinates[0]);
-
-            let thickLineString = turf.lineString(polyCoords);
-            let thickLinePolygon = turf.lineToPolygon(thickLineString);
-            let clipped = turf.difference(f, thickLinePolygon);
-
-            coords = clipped.geometry.coordinates;
-            coords.forEach((coord) => {
-              latlngs = L.GeoJSON.coordsToLatLngs(coord, 1);
-              let result = new L.polygon(latlngs, {
-                ...selectedLayer.options,
-                ...normalStyles,
-              });
-              result.layerType = 'polygon';
-              this.getState().removeLayer(selectedLayer);
-              this.getState().selectedLayer = null;
-              this.getState().addLayer(result);
-              this.applyEventListeners(result);
-            });
-          } catch (error) {
-            console.error({ coords, latlngs, error });
-          }
-          // }
-        }
-      }
+      this.polySlice(layer);
     }
 
     if (layer.dragging) layer.dragging.disable();
