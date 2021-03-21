@@ -13,6 +13,8 @@ import SelectionTool from "../../selection/SelectionTool";
 import TimeChangeEvent from "../../timeline/model/TimeChangeEvent";
 import TimeInitializedEvent from "../../timeline/model/TimeInitializedEvent";
 import { TimeDestroyedEvent } from "../../timeline/model/TimeDestroyedEvent";
+import { ToolInitializedEvent } from "../../../model/event/basic/ToolInitializedEvent";
+import { TimelineTool } from "../../timeline";
 
 // TODO: move to defaults
 const COLOR_orange = ['#8c8c8c','#ffffcc','#ffff99','#ffcc99','#ff9966','#ff6600','#ff0000','#cc0000'];
@@ -64,6 +66,15 @@ class ChoroplethLayerTool extends AbstractLayerTool {
      */
     createState() {
         return new ChoroplethLayerToolState();
+    }
+
+    updateDataMapping(dataMapping, onlyStyle) {
+        // update state
+        this.getState().setDataMapping(dataMapping);
+
+        // redraw the layer items
+        this.redraw(onlyStyle);
+        this.getMap().dispatchEvent(new ToolInitializedEvent(ChoroplethLayerTool.TYPE()))
     }
 
     /**
@@ -281,10 +292,8 @@ class ChoroplethLayerTool extends AbstractLayerTool {
      */
     handleEvent(event) {
         if (event.getType() === DataChangeEvent.TYPE()) {
-            if (event.getSource() !== "timeline") {
-                this.updatePolygons(event.getObject());
-                this.updateStyle();
-            }
+            this.updatePolygons(event.getObject());
+            this.updateStyle();
         }
         if (event.getType() === SelectionToolEvent.TYPE()) {
             this.updateStyle();
@@ -296,17 +305,19 @@ class ChoroplethLayerTool extends AbstractLayerTool {
             this.updatePolygons(event.getObject());
             this.updateStyle();
         }
-        if (event.getType() === TimeInitializedEvent.TYPE()) {
-            const { stepTimeLength } = event.getObject();
+        if (event.getType() === ToolInitializedEvent.TYPE()) {
+            if (event.getSource() === TimelineTool.TYPE()) {
+                const { stepTimeLength } = event.getObject();
 
-            if (this.getState().getLayer()) {
-                this.getState().getLayer().eachLayer((item) => {
-                    if (item._path != undefined) {
-                        item._path.style.transitionDuration = stepTimeLength / 2 < 500 ?
-                            `${stepTimeLength / 2}ms` :
-                            '500ms'
-                    }
-                });
+                if (this.getState().getLayer()) {
+                    this.getState().getLayer().eachLayer((item) => {
+                        if (item._path != undefined) {
+                            item._path.style.transitionDuration = stepTimeLength / 2 < 500 ?
+                                `${stepTimeLength / 2}ms` :
+                                '500ms'
+                        }
+                    });
+                }
             }
         }
         if (event.getType() === TimeDestroyedEvent.TYPE()) {

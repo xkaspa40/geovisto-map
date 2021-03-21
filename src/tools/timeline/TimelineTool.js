@@ -9,8 +9,8 @@ import TimelineToolState from "./TimelineToolState";
 import { FiltersTool } from "../filters";
 import TimeChangeEvent from "./model/TimeChangeEvent";
 import { LatLng } from "leaflet";
-import TimeInitializedEvent from "./model/TimeInitializedEvent";
 import DataChangeEvent from "../../model/event/basic/DataChangeEvent";
+import { ToolInitializedEvent } from "../../model/event/basic/ToolInitializedEvent";
 import { TimeDestroyedEvent } from "./model/TimeDestroyedEvent";
 
 
@@ -137,15 +137,15 @@ export class TimelineTool extends AbstractLayerTool {
                 { duration: this.formState.transitionTimeLength / 1000 }
             );
             setTimeout(() => {
-                this.getMap()
-                    .updateData(this.data.values.get(this.times[currentTimeIndex]), "timeline");
+                // this.getMap()
+                //     .updateData(this.data.values.get(this.times[currentTimeIndex]), "timeline");
                 // create and dispatch event
                 this.getMap()
                     .dispatchEvent(new TimeChangeEvent(this.data.values.get(this.times[currentTimeIndex])));
             }, this.formState.transitionTimeLength);
         } else {
-            this.getMap()
-                .updateData(this.data.values.get(this.times[currentTimeIndex]), "timeline");
+            // this.getMap()
+            //     .updateData(this.data.values.get(this.times[currentTimeIndex]), "timeline");
             // create and dispatch event
             this.getMap()
                 .dispatchEvent(new TimeChangeEvent(this.data.values.get(this.times[currentTimeIndex])));
@@ -178,7 +178,6 @@ export class TimelineTool extends AbstractLayerTool {
                 return timeStamp > time && timeStamp < this.times[index + 1]
             });
         }
-        console.log(this.getMap().getState().getCurrentData());
         this.getMap().getState().getCurrentData().forEach((item) => {
             const timeStamp = getTimeStamp(item[this.formState.timePath]);
             values.set(timeStamp, [...values.get(timeStamp), item]);
@@ -247,7 +246,7 @@ export class TimelineTool extends AbstractLayerTool {
         }
         this.timelineService.onStoryChanged.subscribe(this.onStoryChange.bind(this));
         this.getMap()
-            .dispatchEvent(new TimeInitializedEvent({ stepTimeLength: this.formState.stepTimeLength }));
+            .dispatchEvent(new ToolInitializedEvent(TimelineTool.TYPE(), { stepTimeLength: this.formState.stepTimeLength }));
         this.getMap().dispatchEvent(new TimeChangeEvent(this.data.values.get(this.times[0])));
     }
 
@@ -270,6 +269,14 @@ export class TimelineTool extends AbstractLayerTool {
         if (event.getType() === DataChangeEvent.TYPE()) {
             if (event.getSource() === "timeline") return;
             this.initializeTimeline(this.formState)
+        }
+        if (event.getType() === ToolInitializedEvent.TYPE()) {
+            if (event.getSource() === TimelineTool.TYPE()) return;
+
+            const { currentTimeIndex } = this.timelineService.getState();
+            this.getMap()
+                .dispatchEvent(new ToolInitializedEvent(TimelineTool.TYPE(), { stepTimeLength: this.formState.stepTimeLength }));
+            this.getMap().dispatchEvent(new TimeChangeEvent(this.data.values.get(this.times[currentTimeIndex])));
         }
     }
 }

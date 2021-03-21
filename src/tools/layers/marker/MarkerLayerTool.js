@@ -14,9 +14,10 @@ import ThemesToolEvent from "../../themes/model/event/ThemesToolEvent";
 import SelectionToolEvent from "../../selection/model/event/SelectionToolEvent";
 import DataChangeEvent from "../../../model/event/basic/DataChangeEvent";
 import TimeChangeEvent from "../../timeline/model/TimeChangeEvent";
-import { createClusterMarkersData, createMarkerPopupContent, mergeSubValues } from "./utils";
-import TimeInitializedEvent from "../../timeline/model/TimeInitializedEvent";
+import { createClusterMarkersData, createMarkerPopupContent } from "./utils";
 import { TimeDestroyedEvent } from "../../timeline/model/TimeDestroyedEvent";
+import { ToolInitializedEvent } from "../../../model/event/basic/ToolInitializedEvent";
+import { TimelineTool } from "../../timeline";
 
 /**
  * This class represents custom div icon which is used to mark center of countries.
@@ -260,6 +261,15 @@ class MarkerLayerTool extends AbstractLayerTool {
         return this.selectionTool;
     }
 
+    updateDataMapping(dataMapping, onlyStyle) {
+        // update state
+        this.getState().setDataMapping(dataMapping);
+
+        // redraw the layer items
+        this.redraw(onlyStyle);
+        this.getMap().dispatchEvent(new ToolInitializedEvent(MarkerLayerTool.TYPE()))
+    }
+
     /**
      * It creates new tab control.
      */
@@ -478,12 +488,14 @@ class MarkerLayerTool extends AbstractLayerTool {
             // this.redraw(event.getObject());
 
             this.updateMarkers(event.getObject());
-        } else if (event.getType() === TimeInitializedEvent.TYPE()) {
-            const { stepTimeLength } = event.getObject();
-            const transitionDuration = stepTimeLength / 2 < 500 ?
-                stepTimeLength / 2 :
-                500;
-            this._transitionDuration = transitionDuration;
+        } else if (event.getType() === ToolInitializedEvent.TYPE()) {
+            if (event.getSource() === TimelineTool.TYPE()) {
+                const { stepTimeLength } = event.getObject();
+                const transitionDuration = stepTimeLength / 2 < 500 ?
+                    stepTimeLength / 2 :
+                    500;
+                this._transitionDuration = transitionDuration;
+            }
         } else if (event.getType() === TimeDestroyedEvent.TYPE()) {
             this._transitionDuration = 500;
         }
