@@ -27,17 +27,14 @@ import { TimelineTool } from "../../timeline";
  * @override {L.DivIcon}
  */
 const CountryIcon = L.DivIcon.extend({
-    _LEVEL: 0,
-    _SUFFIX: 1,
-    _COLOR: 2,
     _svgGroup: null,
     levels: [
-        [-Infinity, "N/A", "#CCCCCC"],
-        [1, "", "#CCCCCC"],
-        [1e2, "K", "#AAAAAA"],
-        [1e5, "M", "#555555"],
-        [1e8, "B", "#222222"],
-        [1e11, "t", "#111111"],
+        { level: -Infinity, suffix: "N/A", color: "#CCCCCC" },
+        { level: 1, suffix: "", color: "#CCCCCC" },
+        { level: 1e2, suffix: "K", color:  "#AAAAAA" },
+        { level: 1e5, suffix: "M", color:  "#555555" },
+        { level: 1e8, suffix: "B", color:  "#222222" },
+        { level: 1e11, suffix: "t", color:  "#111111" },
     ],
 
     // moved to css
@@ -71,34 +68,29 @@ const CountryIcon = L.DivIcon.extend({
     },
 
     formatValue: function(value, level) {
-        if(level == undefined || level < 0) {
-            return this.levels[0][this._SUFFIX];
-        } else {
-            if(this.levels[level][this._LEVEL] == -Infinity) {
-                return this.levels[level][this._SUFFIX];
-            } else if(this.levels[level][this._LEVEL] == 1) {
-                return this.round(value, this.levels[level][this._LEVEL]);
-            } else {
-                value = value/(this.levels[level][this._LEVEL]*10);
-                const align = (value >= 10) ? 1 : 10;
-                return this.round(value, align) + this.levels[level][this._SUFFIX];
-            }
+        if(level == null || level < 0) {
+            return this.levels[0].suffix;
         }
+        if (this.levels[level].level === -Infinity) {
+            return this.levels[level].suffix;
+        }
+        if (this.levels[level].level === 1) {
+            return this.round(value, this.levels[level].level);
+        }
+        value = value / (this.levels[level].level * 10);
+        const align = (value >= 10) ? 1 : 10;
+        return `${this.round(value, align)}${this.levels[level].suffix}`;
     },
 
     getColor: function(level) {
-        if(level == null || level < 0) {
-            return this.levels[0][this._COLOR];
-        } else {
-            return this.levels[level][this._COLOR];
-        }
+        return level == null || level < 0 ?
+            this.levels[0].color:
+            this.levels[level].color;
     },
 
     getLevel: function(value) {
-        for(var i = this.levels.length-1; i >= 0; i--) {
-            if(value > this.levels[i][this._LEVEL]) {
-            return i;
-            }
+        for (let i = this.levels.length - 1; i >= 0; i--) {
+            if (value >= this.levels[i].level) return i;
         }
         return -1;
     },
@@ -152,7 +144,7 @@ const CountryIcon = L.DivIcon.extend({
             .attr("dy", "0.3em")
             .attr("font-family", "Arial");
 
-        if (options.values.value != null && options.values.value != 0) {
+        if (options.values.value != null && options.values.value !== 0) {
             const pie = d3.pie().value((d) => d[1]).sort(null);
             // donut chart
             this._svgGroup = svg
@@ -189,7 +181,7 @@ const CountryIcon = L.DivIcon.extend({
             const size = this.getSize(this);
             const arc = this.arc(size);
             this._svgGroup
-                .datum(Object.entries(values.subvalues))
+                .datum(Object.entries(this.options.values.subvalues))
                 .selectAll("path")
                 .data(pie)
                 .transition()
@@ -328,7 +320,7 @@ class MarkerLayerTool extends AbstractLayerTool {
         //console.log("updating map data", this);
 
         // prepare data
-        let workData = [];
+        let workData = {};
         let mapData = this.getMap().getState().getMapData();
         let dataMappingModel = this.getDefaults().getDataMappingModel();
         let dataMapping = this.getState().getDataMapping();
@@ -357,10 +349,10 @@ class MarkerLayerTool extends AbstractLayerTool {
                 geoCountry = centroids.find(x => x.id == foundCountries[0]);
                 if(geoCountry != undefined) {
                     // test if country exists in the results array
-                    actResultItem = workData.find(x => x.id == foundCountries[0]);
+                    actResultItem = workData[foundCountries[0]];
                     if(actResultItem == undefined) {
                         actResultItem = { id: foundCountries[0], value: 0, subvalues: {} };
-                        workData.push(actResultItem);
+                        workData[foundCountries[0]] = actResultItem;
                     }
                     // initialize category if does not exists yet
                     if(foundCategories.length == 1) {
@@ -398,7 +390,7 @@ class MarkerLayerTool extends AbstractLayerTool {
         const layer = this.getState().getLayer();
         const centroids = this.getState().getCentroids();
 
-        const markers = workData.reduce((acc, workDatum)  => {
+        const markers = Object.values(workData).reduce((acc, workDatum)  => {
             const geoCountry = centroids.find(centroid => centroid.id === workDatum.id);
             const point = this.createMarker(geoCountry, workDatum);
             layer.addLayer(point)
@@ -447,8 +439,15 @@ class MarkerLayerTool extends AbstractLayerTool {
     updateMarkers(data) {
         const transitionDuration = this._transitionDuration;
         const markersData = this.prepareMapData(data);
-        markersData.forEach((markerData) => {
-            const marker =  this.getState().getMarkerById(markerData.id)
+
+        this.getState().getMarkers().forEach((marker) => {
+            const markerData = markersData[marker.options.id] || {
+                id: marker.options.id,
+                value: null,
+                subvalues: Object.keys(marker.options.icon.options.values.subvalues)
+                    .reduce((subValues, key) => ({ ...subValues, [key]: null }), {}),
+            };
+
             marker.options.updateData(markerData, transitionDuration)
             marker._popup.setContent(createMarkerPopupContent(
                 marker.options.name,
@@ -456,6 +455,7 @@ class MarkerLayerTool extends AbstractLayerTool {
                 markerData.subvalues
             ))
         })
+
         this.getState().getLayer()._featureGroup.eachLayer(function (marker) {
             if (marker instanceof L.MarkerCluster) {
                 const markers = marker.getAllChildMarkers();

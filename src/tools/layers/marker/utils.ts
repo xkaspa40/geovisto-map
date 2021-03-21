@@ -24,7 +24,7 @@ export const createMarkerPopupContent = (name: string, value: number, subValues:
       ${value != null ? thousandsSeparator(value) : "N/A"}<br />
     `;
     for (const [key, subValue] of Object.entries(subValues)) {
-        popupMsg += `${key}: ${thousandsSeparator(subValue)}<br />`;
+        popupMsg += `${key}: ${subValue != null ? thousandsSeparator(subValue) : '-'}<br />`;
     }
     return popupMsg;
 };
