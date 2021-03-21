@@ -61,6 +61,13 @@
                 "name": "Connection layer settings",
                 "icon": "<i class=\"fa fa-road\"></i>",
                 "checkButton": true
+            },
+            {
+                "tool": "geovisto-tool-layer-heat",
+                "enabled": true,
+                "name": "Heatmap layer settings",
+                "icon": "<i class=\"fa fa-fire\"></i>",
+                "checkButton": true
             }
             ]
         },
@@ -95,7 +102,7 @@
         {
             "type": "geovisto-tool-layer-choropleth",
             "id": "geovisto-tool-layer-choropleth",
-            "enabled": true,
+            "enabled": false,
             "layerName": "Choropleth layer",
             "data": {
             "country": "",
@@ -123,6 +130,16 @@
             "data": {
             "from": "",
             "to": ""
+            }
+        },
+        {
+            "type": "geovisto-tool-layer-heat",
+            "id": "geovisto-tool-layer-heat",
+            "enabled": true,
+            "layerName": "Heat layer",
+            "data": {
+                "latitude": "",
+                "longitude": ""
             }
         }
     ]
