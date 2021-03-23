@@ -37,6 +37,7 @@ export const Slider: FC<SliderProps> = ({
     onChange: onChangeProp,
     story,
     tickFormat,
+    disabled,
 }) => {
     const times = useMemo(() => timesDefault.slice(startTimeIndex, endTimeIndex + 1),
         [timesDefault, startTimeIndex, endTimeIndex]);
@@ -78,6 +79,7 @@ export const Slider: FC<SliderProps> = ({
                         getRailProps={getRailProps}
                         activeHandleID={activeHandleID}
                         getEventData={getEventData}
+                        disabled={disabled}
                     />}
                 </Rail>
                 <Handles>
@@ -92,6 +94,7 @@ export const Slider: FC<SliderProps> = ({
                             domain={domain}
                             getHandleProps={getHandleProps}
                             type="inner"
+                            disabled={disabled}
                         />
                     )}
                 </Handles>
@@ -104,6 +107,7 @@ export const Slider: FC<SliderProps> = ({
                                     source={source}
                                     target={target}
                                     getTrackProps={getTrackProps}
+                                    disabled={disabled}
                                 />
                             ))}
                         </>

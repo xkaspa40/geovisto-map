@@ -10,4 +10,12 @@
   &:hover {
     color: rgba(0, 0, 0, 0.8);
   }
+
+  &:disabled,
+  &[disabled]{
+    color: #b0b0b0;
+    cursor: default;
+  }
 }
+
+

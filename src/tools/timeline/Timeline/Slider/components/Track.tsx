@@ -13,8 +13,8 @@ export const Track: FC<TrackProps> = ({ source, target, getTrackProps, disabled 
     const trackRef = useRef<HTMLDivElement>(null);
     const { onMouseDown, onTouchStart } = getTrackProps();
 
-    useEventListener(trackRef, 'mousedown', onMouseDown);
-    useEventListener(trackRef, 'touchstart', onTouchStart);
+    useEventListener(trackRef, 'mousedown', onMouseDown, disabled);
+    useEventListener(trackRef, 'touchstart', onTouchStart, disabled);
 
     const playedTrack = source.id === '$$-0' && target.id === '$$-1';
     const className = [

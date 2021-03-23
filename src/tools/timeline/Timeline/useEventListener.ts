@@ -1,10 +1,19 @@
-import { RefObject, useEffect } from 'react';
+import { RefObject, useEffect } from "react";
 
-export const useEventListener = (ref: RefObject<HTMLElement>, event: string, callback: (event: Event) => any): void => {
+export const useEventListener = (
+    ref: RefObject<HTMLElement>,
+    event: string,
+    callback: (event: Event) => any,
+    disabled = false,
+): void => {
     useEffect(() => {
-        ref.current?.addEventListener(event, callback);
+        if (!disabled) {
+            ref.current?.addEventListener(event, callback);
+        }
         return () => {
-            ref.current?.removeEventListener(event, callback);
+            if (!disabled) {
+                ref.current?.removeEventListener(event, callback);
+            }
         };
-    }, [ref.current, event, callback]);
+    }, [ref.current, event, callback, disabled]);
 };

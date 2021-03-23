@@ -33,9 +33,9 @@ export const Handle: FC<HandleProps> = ({
 
     return (
         <>
-            {/*{mouseOver && (*/}
-            {/*    <Tooltip percent={percent} label={tooltip.label} />*/}
-            {/*)}*/}
+            {mouseOver && (
+                <Tooltip percent={percent} label={label} />
+            )}
             <div
                 ref={handleRef}
                 className="range_slider__handle_wrapper"

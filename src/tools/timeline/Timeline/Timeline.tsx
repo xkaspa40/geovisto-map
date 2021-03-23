@@ -38,13 +38,14 @@ export const Timeline: FC<TimelineProps> = ({
     tickFormat,
 }) => {
     const [compact, setCompact] = useState(true);
+    const hasOnlyOneTimestamp = times.length === 1;
     return (
         <>
-            <div className="timeline__collapse_button_wrapper">
+            {!hasOnlyOneTimestamp && <div className="timeline__collapse_button_wrapper">
                 <button className="timeline__collapse_button" onClick={() => setCompact(c => !c)}>
                     <i className={`fa fa-angle-${compact ? "up" : "down"}`} />
                 </button>
-            </div>
+            </div>}
             <div className={`timeline ${chartData ? "with-chart" : ""}`}>
                 {!compact && <div className="timeline__range_slider_wrapper">
                     <RangeSlider
@@ -55,7 +56,11 @@ export const Timeline: FC<TimelineProps> = ({
                 </div>}
                 <div className="timeline__player_container">
                     <div className="timeline__control_button__wrapper">
-                        <PlayButton isPlaying={isPlaying} onClick={onPlayClick} />
+                        <PlayButton
+                            isPlaying={isPlaying}
+                            onClick={onPlayClick}
+                            disabled={hasOnlyOneTimestamp}
+                        />
                     </div>
                     <div className="timeline__slider__wrapper">
                         <Slider
@@ -68,6 +73,7 @@ export const Timeline: FC<TimelineProps> = ({
                             onCurrentTimeIndexChange={onCurrentTimeIndexChange}
                             story={story}
                             tickFormat={tickFormat}
+                            disabled={hasOnlyOneTimestamp}
                         />
                         {story && (
                             <>

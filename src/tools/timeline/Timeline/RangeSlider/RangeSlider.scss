@@ -1,11 +1,9 @@
 $react-time-range--gray: #C8CACC;
 $react-time-range--highlight-tap: #000000;
-$react-time-range--rail-bg: #e3f2fd;
+$react-time-range--rail-bg: #c4e8ff;
 $react-time-range--rail-bg-played: #cde5f6;
 $react-time-range--handle-bg: #FFFFFF;
 $react-time-range--handle-bg--disabled: #666;
-$react-time-range--track--valid: rgb(98, 203, 102);
-$react-time-range--track--not-valid: rgb(214, 0, 11);
 $react-time-range--tick-label: #77828C;
 $react-time-range--track--disabled: repeating-linear-gradient(-45deg, transparent, transparent 3px, #D0D3D7 4px, #D0D3D7 2px);
 $react-time-range--track--height: 50px;
@@ -86,7 +84,6 @@ $react-time-range--track--height: 50px;
     width: 100%;
     height: $react-time-range--track--height;
     pointer-events: none;
-    //background: $react-time-range--track--disabled;
     border-bottom: 1px solid $react-time-range--gray;
     z-index: 2;
   }
@@ -111,39 +108,4 @@ $react-time-range--track--height: 50px;
     width: 20px;
     height: $react-time-range--track--height;
   }
-}
-
-.tooltip {
-  position: relative;
-  display: inline-block;
-  border-bottom: 1px dotted #444;
-  margin-left: 22px;
-  font-size: 14px;
-  z-index: 1000;
-}
-
-.tooltip .tooltiptext {
-  width: 100px;
-  background-color: #444;
-  color: #f0f0f0;
-  opacity: 0.8;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 0;
-  position: absolute;
-  z-index: 1;
-  bottom: 150%;
-  left: 50%;
-  margin-left: -60px;
-}
-
-.tooltip .tooltiptext::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: #444 transparent transparent transparent;
 }

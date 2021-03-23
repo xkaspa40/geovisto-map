@@ -42,7 +42,7 @@ export const RangeSlider: FC<SliderProps> = ({
     return (
         <div className="range_slider__time_range_container compact">
             <SliderBase
-                mode={1}
+                mode={3}
                 step={1}
                 domain={domain}
                 rootStyle={sliderStyle}

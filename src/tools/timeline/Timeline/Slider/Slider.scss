@@ -1,13 +1,12 @@
 $react-time-range--gray: #C8CACC;
 $react-time-range--highlight-tap: #000000;
-$react-time-range--rail-bg: #e3f2fd;
+$react-time-range--rail-bg: #c4e8ff;
 $react-time-range--rail-bg-played: #cde5f6;
 $react-time-range--handle-bg: #FFFFFF;
 $react-time-range--handle-bg--disabled: #666;
 $react-time-range--track--valid: rgb(98, 203, 102);
-$react-time-range--track--not-valid: rgb(214, 0, 11);
 $react-time-range--tick-label: #77828C;
-$react-time-range--track--disabled: repeating-linear-gradient(-45deg, transparent, transparent 3px, #D0D3D7 4px, #D0D3D7 2px);
+$react-time-range--track--disabled: repeating-linear-gradient(-45deg, transparent, transparent 3px, #bbbbbc 4px, #D0D3D7 2px);
 $react-time-range--track--height: 50px;
 
 .react_time_range__time_range_container {
@@ -63,13 +62,6 @@ $react-time-range--track--height: 50px;
     border-left: 1px solid $react-time-range--gray;
     background-color: $react-time-range--rail-bg-played;
   }
-
-  &__disabled {
-    @extend .react_time_range__track;
-    border-left: 1px solid $react-time-range--gray;
-    border-right: 1px solid $react-time-range--gray;
-    background: $react-time-range--track--disabled;
-  }
 }
 
 .react_time_range__rail {
@@ -79,6 +71,10 @@ $react-time-range--track--height: 50px;
     height: $react-time-range--track--height;
     z-index: 300;
     cursor: pointer;
+    &.disabled {
+      background: $react-time-range--track--disabled;
+      cursor: default;
+    }
   }
 
   &__inner {
@@ -86,9 +82,13 @@ $react-time-range--track--height: 50px;
     width: 100%;
     height: $react-time-range--track--height;
     pointer-events: none;
-    //background: $react-time-range--track--disabled;
+    background: rgba(255, 255, 255, 0.4);
     border-bottom: 1px solid $react-time-range--gray;
     z-index: 2;
+    //&.disabled {
+    //  background: $react-time-range--track--disabled;
+    //  cursor: default;
+    //}
   }
 }
 
@@ -133,11 +133,6 @@ $react-time-range--track--height: 50px;
     &.right {
       margin-right: auto;
     }
-
-    &__disabled {
-      @extend .react_time_range__handle_marker_container;
-      background-color: $react-time-range--handle-bg--disabled;
-    }
   }
 
   &_tick {
@@ -147,28 +142,17 @@ $react-time-range--track--height: 50px;
     transition: background-color .2s ease;
     margin: auto;
   }
-
-  &_marker {
-    width: 2px;
-    height: 12px;
-    margin: auto;
-    border-radius: 2px;
-    background-color: $react-time-range--track--valid;
-    transition: background-color .2s ease;
-
-    &__error {
-      @extend .react_time_range__handle_marker;
-      background-color: $react-time-range--track--not-valid;
-    }
-  }
 }
 
 .react_time_range__story_marker {
-  height: 18px;
-  width: 1px;
   z-index: 3;
-  background-color: $react-time-range--track--valid;
   position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  transform: translate(-50%, -100%);
+  border-top: 10px solid $react-time-range--track--valid;
 }
 
 .react_time_range__tick {
@@ -177,7 +161,7 @@ $react-time-range--track--height: 50px;
     margin-top: 50px;
     width: 1px;
     height: 5px;
-    background-color: $react-time-range--gray;
+    background-color: #8f8f8f;
     z-index: 2;
 
     &__large {
