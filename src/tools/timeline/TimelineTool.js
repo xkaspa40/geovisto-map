@@ -251,8 +251,10 @@ export class TimelineTool extends AbstractLayerTool {
     }
 
     desctructTimeline() {
-        this.timelineControl.remove();
-        this.timelineControl = null;
+        if (this.timelineControl) {
+            this.timelineControl.remove();
+            this.timelineControl = null;
+        }
 
         this.getFiltersTool();
         let mapData = this.getMap().getState().getMapData();
