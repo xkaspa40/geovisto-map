@@ -11,6 +11,10 @@ import { markerCreate } from '../util/Marker';
 import '../style/drawingLayer.scss';
 import paintPoly from './paintPoly';
 
+import '../components/Edit';
+
+import * as turf from '@turf/turf';
+
 const UNABLE_TO_CLICK_DISABLE = ['lineBtn', 'markerBtn', 'polygonBtn'];
 
 export default function useDrawingToolbar() {
@@ -146,8 +150,10 @@ export default function useDrawingToolbar() {
 
     initNodeEdit: function () {
       const currEl = this.options.tool.getState().currEl;
-      console.log({ currEl });
+
       if (currEl.editing) {
+        currEl.editing = new L.Edit.ExtendedPoly(currEl);
+
         if (currEl.editing._enabled) {
           currEl.editing.disable();
           // let paintPoly = this.options.tool.getSidebarTabControl().getState().paintPoly;

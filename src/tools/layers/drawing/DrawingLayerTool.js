@@ -27,6 +27,7 @@ import lineToPolygon from '@turf/line-to-polygon';
 import * as turf from '@turf/turf';
 import * as martinez from 'martinez-polygon-clipping';
 import * as polyClipping from 'polygon-clipping';
+import './components/Edit';
 
 export const DRAWING_TOOL_LAYER_TYPE = 'geovisto-tool-layer-drawing';
 
