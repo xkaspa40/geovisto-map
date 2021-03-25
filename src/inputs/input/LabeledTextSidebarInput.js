@@ -74,11 +74,7 @@ class LabeledTextSidebarInput extends TextSidebarInput {
      * Adds event listeners to the input
      */
     createListeners() {
-        this.input.addEventListener('keydown', (e) => {
-            if (e.keyCode === 13) {
-                this.action(e);
-            }
-        })
+        this.input.oninput = this.action;
     }
 
 }

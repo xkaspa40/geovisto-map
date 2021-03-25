@@ -3,6 +3,7 @@ import AbstractLayerToolDefaults from "../abstract/AbstractLayerToolDefaults";
 import AutocompleteSidebarInput from "../../../inputs/input/AutocompleteSidebarInput";
 import TextSidebarInput from "../../../inputs/input/TextSidebarInput";
 import LabeledTextSidebarInput from "../../../inputs/input/LabeledTextSidebarInput";
+import LabeledSelectSidebarInput from "../../../inputs/select/LabeledSelectSidebarInput";
 
 /**
  * TODO: refactorization needed!
@@ -33,12 +34,37 @@ const MAPPING_MODEL = {
         label: "Intensity",
         input: AutocompleteSidebarInput.ID()
     },
-    radiusStatic: {
-        id: INPUT_ID_PREFIX + "-input-radius-static",
+    radius: {
+        id: INPUT_ID_PREFIX + "-input-radius",
         name: "radius",
         label: "Radius",
         input: LabeledTextSidebarInput.ID()
+    },
+    gradient: {
+        id: INPUT_ID_PREFIX + "input-gradient",
+        name: "gradient",
+        label: "Gradient",
+        input: AutocompleteSidebarInput.ID()
+    },
+    blur: {
+        id: INPUT_ID_PREFIX + "input-blur",
+        name: "blur",
+        label: "Blur",
+        input: LabeledTextSidebarInput.ID()
+    },
+    opacity: {
+        id: INPUT_ID_PREFIX + "input-opacity",
+        name: "opacity",
+        label: "Opacity",
+        input: AutocompleteSidebarInput.ID()
+    },
+    zoom: {
+        id: INPUT_ID_PREFIX + "input-zoom",
+        name: "zoom",
+        label: "Zoom/Intensity",
+        input: AutocompleteSidebarInput.ID()
     }
+
 }
 
 /**

@@ -15,11 +15,30 @@ import ThemesToolEvent from '../../themes/model/event/ThemesToolEvent';
 import SelectionToolEvent from '../../selection/model/event/SelectionToolEvent';
 import DataChangeEvent from '../../../model/event/basic/DataChangeEvent';
 
-const GRADIENT_DEFAULT = {0.4:"blue", 0.6:"cyan", 0.7:"lime", 0.8:"yellow", 1:"red"};
-//                                "blue",          "sky blue"      "blue green",    "yellow",       "orange",     "vermillion"
-const GRADIENT_PROTAN_DEUTRAN = { 0.4: "#00B9F1", 0.6: "#00A875", 0.7: "#ECDE38", 0.8: "#F7931D", 1: "#F15A22"};
+const GRADIENT_DEFAULT = {0.4:"blue", 0.6:"cyan", 0.7:"lime", 0.8:"yellow", 0.9:"red"};
 
-const date = "2021-03-02";
+const GRADIENT_PROTAN_DEUTRAN = { 0.4: "#00B9F1", 0.6: "#00A875", 0.7: "#ECDE38", 0.8: "#F7931D", 0.9: "#F15A22"};
+
+const GRADIENT_TRITAN = { 0.4: "#00e6e6", 0.6: "#009999", 0.7: "#ffe6f2", 0.8: "#ff0066", 0.9: "#66004d"};
+
+const BLUR_DEFAULT = 10;
+const RADIUS_DEFAULT = 10;
+
+const ZOOM_MIN = 1;
+const ZOOM_NORMAL = 7;
+const ZOOM_MAX = undefined;
+
+const ZOOM_LEVELS = [
+    {name: "min", value: ZOOM_MIN},
+    {name: "normal", value: ZOOM_NORMAL},
+    {name: "max", value: ZOOM_MAX}
+]
+
+const GRADIENTS = [
+    {name: "Default", values: GRADIENT_DEFAULT},
+    {name: "Protanopia/Deuteranopia", values: GRADIENT_PROTAN_DEUTRAN},
+    {name: "Tritanopia", values: GRADIENT_TRITAN}
+]
 
 /**
  * This class represents Heatmap layer.
@@ -36,8 +55,11 @@ class HeatLayerTool extends AbstractLayerTool {
     constructor(props) {
         super(props);
         this.maxValue = undefined;
-        this.radius = undefined;
+        this.radius = RADIUS_DEFAULT;
+        this.blur = BLUR_DEFAULT;
         this.gradient = GRADIENT_DEFAULT;
+        this.zoom = ZOOM_NORMAL;
+        this.opacity = undefined;
     }
 
     /**
@@ -79,7 +101,46 @@ class HeatLayerTool extends AbstractLayerTool {
 
             return;
         }
-        this.radius = parseInt(radius);
+        let rad = parseInt(radius);
+        this.radius = rad > 100 ? 100 : rad;
+    }
+
+    getGradients() {
+        return GRADIENTS.map(gradient => gradient.name);
+    }
+
+    setGradient(gradient) {
+        for (let i = 0; i < GRADIENTS.length; i++) {
+            if(gradient === GRADIENTS[i].name) {
+                this.gradient = GRADIENTS[i].values;
+                return;
+            }
+        }
+    }
+
+    setBlur(blur) {
+        if (isNaN(blur) || blur === '') {
+            this.blur = undefined;
+
+            return;
+        }
+        let bl = parseInt(blur);
+        bl = bl > 100 ? 100 : bl;
+        bl = bl < 5 ? 5 : bl;
+        this.blur = bl;
+    }
+
+    getZoomLevels() {
+        return ZOOM_LEVELS.map(zoom => zoom.name);
+    }
+
+    setZoomLevel(value) {
+       for (let i = 0; i < ZOOM_LEVELS.length; i++) {
+           if(value === ZOOM_LEVELS[i].name) {
+               this.zoom = ZOOM_LEVELS[i].value;
+               return;
+           }
+       }
     }
 
     /**
@@ -153,11 +214,10 @@ class HeatLayerTool extends AbstractLayerTool {
         for (let i = 0; i < dataLen; i++) {
             foundLats = mapData.getItemValues(latitudeDataDoman, data[i]);
             foundLongs = mapData.getItemValues(longitudeDataDomain, data[i]);
-            foundRadius = this.radius ? [this.radius] : [];
             foundIntensity = mapData.getItemValues(intensityDataDomain, data[i]);
 
-            if (foundLats.length === 1 && foundLongs.length === 1 && foundIntensity.length === 1 && foundRadius.length === 1) {
-                workData.push({lat: foundLats[0], long: foundLongs[0], intensity: foundIntensity[0], radius: foundRadius[0]});
+            if (foundLats.length === 1 && foundLongs.length === 1 && foundIntensity.length === 1) {
+                workData.push({lat: foundLats[0], long: foundLongs[0], intensity: foundIntensity[0]});
             }
             if (foundIntensity.length === 1 && foundIntensity[0] > this.maxValue) {
                 this.maxValue = foundIntensity[0];
@@ -199,7 +259,7 @@ class HeatLayerTool extends AbstractLayerTool {
     createHeatLayers(workData) {
         let layers = [];
 
-        if ( ! workData.length) {
+        if ( ! workData.length || ! this.radius || ! this.blur) {
             return layers;
         }
 
@@ -212,7 +272,10 @@ class HeatLayerTool extends AbstractLayerTool {
             });
             layers.push(L.heatLayer(data,
                 {
-                    radius: this.radius,
+                    radius: this.radius, //min
+                    maxZoom: this.zoom,
+                    blur: this.blur,
+                    minOpacity: 0.4,
                     gradient: this.gradient,
                     max: this.maxValue,
                 })
@@ -221,16 +284,20 @@ class HeatLayerTool extends AbstractLayerTool {
             return layers;
         }
 
-        workData.forEach((item) => {
-            layers.push(L.heatLayer([
-                [item.lat, item.long, item.intensity]
-            ],
-                {
-                    radius: item.radius,
-                    gradient: this.gradient,
-                    max: this.maxValue
-                }))
-        });
+        /*
+         Multiple layers aren't supported
+         */
+        // workData.forEach((item) => {
+        //     layers.push(L.heatLayer([
+        //         [item.lat, item.long, item.intensity]
+        //     ],
+        //         {
+        //             radius: item.radius,
+        //             maxZoom: 10,
+        //             gradient: this.gradient,
+        //             max: this.maxValue
+        //         }))
+        // });
 
         return layers;
     }

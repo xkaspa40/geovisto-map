@@ -138,10 +138,13 @@
             "enabled": true,
             "layerName": "Heat layer",
             "data": {
-                "latitude": "",
-                "longitude": "",
-                "radius": "",
-                "intensity": ""
+                "latitude": "lat",
+                "longitude": "long",
+                "radius": "10",
+                "intensity": "cases",
+                "gradient": "Default",
+                "blur": "10",
+                "zoom": "normal"
             }
         }
     ]
