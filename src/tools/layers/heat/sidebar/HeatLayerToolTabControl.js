@@ -41,10 +41,9 @@ class HeatLayerToolTabControl extends AbstractLayerToolTabControl {
         let dataMapping = {};
 
         // get selected data domains values
-        dataMapping[model.country.name] = this.inputCountry.getValue();
-        dataMapping[model.value.name] = this.inputValue.getValue();
-        dataMapping[model.aggregation.name] = this.inputAggregation.getValue();
-        dataMapping[model.category.name] = this.inputCategory.getValue();
+        dataMapping[model.latitude.name] = this.inputLatitude.getValue();
+        dataMapping[model.longitude.name] = this.inputLongitude.getValue();
+        dataMapping[model.intensity.name] = this.inputIntensity.getValue();
 
         return dataMapping;
     }
@@ -59,24 +58,15 @@ class HeatLayerToolTabControl extends AbstractLayerToolTabControl {
         let model = this.getDefaults().getDataMappingModel();
 
         // update inputs
-        this.inputCountry.setValue(dataMapping[model.country.name]);
-        this.inputValue.setValue(dataMapping[model.value.name]);
-        this.inputAggregation.setValue(dataMapping[model.aggregation.name]);
-        this.inputCategory.setValue(dataMapping[model.category.name]);
+        this.inputLatitude.setValue(dataMapping[model.latitude.name]);
+        this.inputLongitude.setValue(dataMapping[model.longitude.name]);
+        this.inputIntensity.setValue(dataMapping[model.intensity.name]);
     }
 
     /**
      * It returns the sidebar tab pane.
      */
     getTabContent() {
-        var _this = this;
-
-        // event handler: change dimension action
-        let changeDimensionAction = function(e) {
-            // get selected values and update layer's data mapping
-            _this.getTool().updateDataMapping(_this.getInputValues());
-        }
-        
         // tab content
         let tab = document.createElement('div');
         let elem = tab.appendChild(document.createElement('div'));
@@ -85,26 +75,66 @@ class HeatLayerToolTabControl extends AbstractLayerToolTabControl {
         let model = this.getDefaults().getDataMappingModel();
         let dataDomainLabels = this.getTool().getMap().getState().getMapData().getDataDomainLabels();
 
-        // // select country
-        // this.inputCountry = SidebarInputFactory.createSidebarInput(model.country.input, { label: model.country.label , options: dataDomainLabels, action: changeDimensionAction });
-        // elem.appendChild(this.inputCountry.create());
-        //
-        // // select value
-        // this.inputValue = SidebarInputFactory.createSidebarInput(model.value.input, { label: model.value.label , options: dataDomainLabels, action: changeDimensionAction });
-        // elem.appendChild(this.inputValue.create());
-        //
-        // // select aggregation
-        // this.inputAggregation = SidebarInputFactory.createSidebarInput(model.aggregation.input, { label: model.aggregation.label, options: model.aggregation.options, action: changeDimensionAction });
-        // elem.appendChild(this.inputAggregation.create());
-        //
-        // // select category
-        // this.inputCategory = SidebarInputFactory.createSidebarInput(model.category.input, { label: model.category.label, options: dataDomainLabels, action: changeDimensionAction });
-        // elem.appendChild(this.inputCategory.create());
-        //
-        // this.setInputValues(this.getTool().getState().getDataMapping());
+        this.defineLatLngInputs();
+        // select latitude
+         elem.appendChild(this.inputLatitude.create());
+
+        // select longitude
+        elem.appendChild(this.inputLongitude.create());
+
+        //select radius
+        this.inputRadius = SidebarInputFactory.createSidebarInput(model.radiusStatic.input, {
+            label: model.radiusStatic.label,
+            action: (e) => {this.changeRadiusAction(e.target.value)},
+            placeholder: "enter value:",
+            static: true
+        });
+        elem.appendChild(this.inputRadius.create());
+
+        //select intensity
+        this.inputIntensity = SidebarInputFactory.createSidebarInput(model.intensity.input, { label: model.intensity.label, options: dataDomainLabels, action: () => this.changeDimensionAction() });
+        elem.appendChild(this.inputIntensity.create());
+
+        this.setInputValues(this.getTool().getState().getDataMapping());
         
         return tab;
     }
 
+    /**
+     * Event handler: change dimension action
+     */
+    changeDimensionAction() {
+        // get selected values and update layer's data mapping
+        this.getTool().updateDataMapping(this.getInputValues());
+    }
+
+    /**
+     * Event handler: change radius action
+     *
+     * @param value
+     */
+    changeRadiusAction(value) {
+        this.getTool().setRadius(value);
+        this.changeDimensionAction();
+    }
+
+    /**
+     * Creates Lat and Lng inputs
+     */
+    defineLatLngInputs() {
+        let model = this.getDefaults().getDataMappingModel();
+        let dataDomainLabels = this.getTool().getMap().getState().getMapData().getDataDomainLabels();
+
+        this.inputLatitude = SidebarInputFactory.createSidebarInput(model.latitude.input, {
+            label: model.latitude.label ,
+            options: dataDomainLabels,
+            action: () => this.changeDimensionAction()
+        });
+        this.inputLongitude = SidebarInputFactory.createSidebarInput(model.longitude.input, {
+            label: model.longitude.label ,
+            options: dataDomainLabels,
+            action: () => this.changeDimensionAction()
+        });
+    }
 }
 export default HeatLayerToolTabControl;

@@ -1,55 +1,17 @@
-.leaflet-marker-icon circle {
-    fill: #cccccc;
-    fill-opacity: 0.9;
-    stroke-width: 0;
+.geovisto-input-checkbox {
+    align-items: center;
+    padding-top: 5px;
+    padding-left: 10px;
+    display: flex;
 }
 
-.leaflet-marker-icon text {
-    fill: white;
+.geovisto-input-checkbox-label {
+    padding-top: 2px;
+    padding-left: 4px;
+    padding-right: 10px;
 }
 
-.leaflet-marker-group circle {
-    stroke-width: 2;
-    stroke: black;
-}
-
-.leaflet-marker-level0 circle {
-    fill: #cccccc;
-}
-
-.leaflet-marker-level1 circle {
-    fill: #cccccc;
-}
-
-.leaflet-marker-level2 circle {
-    fill: #aaaaaa;
-}
-
-.leaflet-marker-level3 circle {
-    fill: #555555;
-}
-
-.leaflet-marker-level4 circle {
-    fill: #222222;
-}
-
-.leaflet-marker-level5 circle {
-    fill: #111111;
-}
-
-.leaflet-marker-icon path {
-    stroke-width: 0;
-    opacity: 0.8;
-}
-
-.leaflet-marker-donut1 {
-    fill: darkred;
-}
-
-.leaflet-marker-donut2 {
-    fill: goldenrod;
-}
-
-.leaflet-marker-donut3 {
-    fill: gray;
+.geovisto-checkbox-wrapper {
+    display: flex;
+    margin-bottom: 10px;
 }

@@ -24,7 +24,7 @@ class HeatLayerToolState extends AbstractLayerToolState {
         super.reset(defaults);
 
         // the layer tool properties
-        this.setMarkers([]);
+        this.setLayers([]);
         // TODO
     }
 
@@ -97,19 +97,19 @@ class HeatLayerToolState extends AbstractLayerToolState {
     }
 
     /**
-     * It returns the markers.
+     * It returns the heat layers.
      */
-    getMarkers() {
-        return this.markers;
+    getLayers() {
+        return this.layers;
     }
 
     /**
-     * It sets the markers.
+     * It sets the layers.
      * 
-     * @param {*} markers 
+     * @param {*} layers
      */
-    setMarkers(markers) {
-        this.markers = markers;
+    setLayers(layers) {
+        this.layers = layers;
     }
 
     // TODO

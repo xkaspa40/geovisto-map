@@ -139,7 +139,9 @@
             "layerName": "Heat layer",
             "data": {
                 "latitude": "",
-                "longitude": ""
+                "longitude": "",
+                "radius": "",
+                "intensity": ""
             }
         }
     ]

@@ -1,6 +1,8 @@
 import HeatLayerTool from "./HeatLayerTool";
 import AbstractLayerToolDefaults from "../abstract/AbstractLayerToolDefaults";
 import AutocompleteSidebarInput from "../../../inputs/input/AutocompleteSidebarInput";
+import TextSidebarInput from "../../../inputs/input/TextSidebarInput";
+import LabeledTextSidebarInput from "../../../inputs/input/LabeledTextSidebarInput";
 
 /**
  * TODO: refactorization needed!
@@ -24,6 +26,18 @@ const MAPPING_MODEL = {
         name: "longitude",
         label: "Longitude",
         input: AutocompleteSidebarInput.ID()
+    },
+    intensity: {
+        id: INPUT_ID_PREFIX + "-input-intensity",
+        name: "intensity",
+        label: "Intensity",
+        input: AutocompleteSidebarInput.ID()
+    },
+    radiusStatic: {
+        id: INPUT_ID_PREFIX + "-input-radius-static",
+        name: "radius",
+        label: "Radius",
+        input: LabeledTextSidebarInput.ID()
     }
 }
 

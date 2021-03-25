@@ -6,6 +6,7 @@ import LabeledSelectSidebarInput from "./select/LabeledSelectSidebarInput";
 import FilterSelectSidebarInput from "./filter/FilterSelectSidebarInput";
 import FilterAutocompleteSidebarInput from "./filter/FilterAutocompleteSidebarInput";
 import AutocompleteSidebarInput from "./input/AutocompleteSidebarInput";
+import CheckboxSidebarInput from "./checkbox/CheckboxSidebarInput";
 /**
  * Factory for sidebar inputs.
  * 
@@ -30,15 +31,13 @@ class SidebarInputFactory {
             element = new LabeledSelectSidebarInput(settings);
         } else if(id == FilterSelectSidebarInput.ID()) {
             element = new FilterSelectSidebarInput(settings);
-        } 
-        
-        else if(id == AutocompleteSidebarInput.ID()){
+        } else if(id == AutocompleteSidebarInput.ID()){
             element = new AutocompleteSidebarInput(settings);
         } else if(id == FilterAutocompleteSidebarInput.ID()){
             element = new FilterAutocompleteSidebarInput(settings);
-        } 
-        
-        else {
+        } else if (id == CheckboxSidebarInput.ID()) {
+            element = new CheckboxSidebarInput(settings);
+        } else {
             element = new AbstractSidebarInput(settings);
         }
         return element;
