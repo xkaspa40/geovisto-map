@@ -37,7 +37,7 @@ class AbstractTabControlState extends AbstractMapObjectState {
      */
     reset(defaults) {
         super.reset(defaults);
-        
+
         let props = this.getProps();
 
         // set remaining properties if not set
@@ -54,10 +54,10 @@ class AbstractTabControlState extends AbstractMapObjectState {
      * @param {*} config 
      */
     deserialize(tabControl, config) {
-        if(config.enabled != undefined) this.setEnabled(config.enabled);
-        if(config.name != undefined) this.setName(config.name);
-        if(config.icon != undefined) this.setIcon(config.icon);
-        if(config.checkButton != undefined) this.setCheckButton(config.checkButton);
+        if (config.enabled != undefined) this.setEnabled(config.enabled);
+        if (config.name != undefined) this.setName(config.name);
+        if (config.icon != undefined) this.setIcon(config.icon);
+        if (config.checkButton != undefined) this.setCheckButton(config.checkButton);
 
         this.deserializeFragments(tabControl, config);
     }
@@ -73,15 +73,15 @@ class AbstractTabControlState extends AbstractMapObjectState {
         let fragment;
         let tool;
         // process tab fragments
-        if(config.fragments) {
+        if (config.fragments) {
             let fragmentConfig;
-            for(let i = 0; i != config.fragments.length; i++) {
+            for (let i = 0; i != config.fragments.length; i++) {
                 fragmentConfig = config.fragments[i];
-                if(fragmentConfig.tool) {
+                if (fragmentConfig.tool) {
                     tool = this.getTool().getMap().getState().getTools().getById(fragmentConfig.tool);
-                    if(tool && tool.getSidebarTabFragment) {
+                    if (tool && tool.getSidebarTabFragment) {
                         fragment = tool.getSidebarTabFragment();
-                        if(fragment && fragment.isChild(tabControl)) {
+                        if (fragment && fragment.isChild(tabControl)) {
                             fragment.initialize(tabControl, fragmentConfig);
                             fragments.push(fragment);
                         }
@@ -91,10 +91,10 @@ class AbstractTabControlState extends AbstractMapObjectState {
         } else {
             // try to look for fragments if not specified in config
             let tools = this.getTool().getMap().getState().getTools().getObjects();
-            for(let i = 0; i < tools.length; i++) {
-                if(tools[i].getSidebarTabFragment) {
+            for (let i = 0; i < tools.length; i++) {
+                if (tools[i].getSidebarTabFragment) {
                     fragment = tools[i].getSidebarTabFragment();
-                    if(fragment && fragment.isChild(tabControl)) {
+                    if (fragment && fragment.isChild(tabControl)) {
                         fragment.initialize(tabControl, undefined);
                         fragments.push(fragment);
                     }
@@ -123,9 +123,9 @@ class AbstractTabControlState extends AbstractMapObjectState {
         };
 
         // serialize tab fragments
-        if(this.fragments != undefined) {
+        if (this.fragments != undefined) {
             config.fragments = [];
-            for(let i = 0; i != this.fragments.length; i++) {
+            for (let i = 0; i != this.fragments.length; i++) {
                 config.fragments.push(this.fragments[i].getState().serialize(this.fragments[i].getDefaults()));
             }
         }
@@ -147,7 +147,7 @@ class AbstractTabControlState extends AbstractMapObjectState {
      * @param {*} tool 
      */
     setTool(tool) {
-       this.tool = (this.tool == undefined) ? tool : this.tool;
+        this.tool = (this.tool == undefined) ? tool : this.tool;
     }
 
     /**
@@ -163,7 +163,7 @@ class AbstractTabControlState extends AbstractMapObjectState {
      * @param {*} enabled 
      */
     setEnabled(enabled) {
-       this.enabled = enabled;
+        this.enabled = enabled;
     }
 
     /**
@@ -179,7 +179,7 @@ class AbstractTabControlState extends AbstractMapObjectState {
      * @param {*} name 
      */
     setName(name) {
-       this.name = name;
+        this.name = name;
     }
 
     /**
@@ -195,7 +195,7 @@ class AbstractTabControlState extends AbstractMapObjectState {
      * @param {*} icon
      */
     setIcon(icon) {
-       this.icon = icon;
+        this.icon = icon;
     }
 
     /**
@@ -211,7 +211,7 @@ class AbstractTabControlState extends AbstractMapObjectState {
      * @param {*} checkButton 
      */
     setCheckButton(checkButton) {
-       this.checkButton = checkButton;
+        this.checkButton = checkButton;
     }
 
     /**
@@ -245,7 +245,7 @@ class AbstractTabControlState extends AbstractMapObjectState {
      * @param {*} tabPane 
      */
     setTabPane(tabPane) {
-       this.tabPane = (this.tabPane == undefined) ? tabPane : this.tabPane;
+        this.tabPane = (this.tabPane == undefined) ? tabPane : this.tabPane;
     }
 
     /**

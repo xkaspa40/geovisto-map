@@ -33,7 +33,7 @@ class MarkerLayerToolState extends AbstractLayerToolState {
      */
     resetMapVariables(map, defaults) {
         super.resetMapVariables(map, defaults);
-        
+
         let props = this.getProps();
         this.setCentroids(props.centroids == undefined && defaults && map ? defaults.getCentroids() : props.centroids);
     }

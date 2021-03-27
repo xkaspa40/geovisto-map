@@ -10,16 +10,12 @@ const COMPONENT_VALUE_CLASS = ID + "-value";
 
 const COMPONENT_INPUT_CLASS = ID + "-input";
 
-const RANGE_MIN = 1;
-const RANGE_DEFAULT = 4;
-const RANGE_MAX = 7;
-
 /**
  * This class represents basic text sidebar input.
  * 
  * @author Jiri Hynek
  */
-class RangeSlideInput extends AbstractSidebarInput {
+class RangeSliderInput extends AbstractSidebarInput {
 
     constructor(settings) {
         super(settings);
@@ -28,11 +24,14 @@ class RangeSlideInput extends AbstractSidebarInput {
         this.options = settings.options;
         this.label = settings.label;
         this.setData = settings.setData;
+        this.rangeMin = settings.min;
+        this.rangeMax = settings.max;
+        this.rangeDefault = settings.default;
 
         // div elements
         this.formDiv = undefined;
         this.inputDiv = undefined;
-        this.completionListDiv = undefined;        
+        this.completionListDiv = undefined;
     }
 
     /**
@@ -48,7 +47,7 @@ class RangeSlideInput extends AbstractSidebarInput {
     create() {
         var _this = this;
         // div for the whole autocomplete component
-        this.formDiv = document.createElement('div'); 
+        this.formDiv = document.createElement('div');
         this.formDiv.classList.add(ID);
 
         // label div
@@ -66,24 +65,24 @@ class RangeSlideInput extends AbstractSidebarInput {
         this.input = document.createElement("input");
         this.input.setAttribute("type", "range");
         this.input.setAttribute("class", COMPONENT_INPUT_CLASS);
-        this.input.setAttribute("min", RANGE_MIN);
-        this.input.setAttribute("max", RANGE_MAX);
-        this.input.setAttribute("value", RANGE_DEFAULT );
+        this.input.setAttribute("min", this.rangeMin);
+        this.input.setAttribute("max", this.rangeMax);
+        this.input.setAttribute("value", this.rangeDefault);
         this.input.onchange = this.action;
-        this.input.addEventListener ('change', function(e){
-            value.innerText = this.value;            
+        this.input.addEventListener('change', function (e) {
+            value.innerText = this.value;
         });
-        
+
 
 
         // construct elements
         this.inputDiv.appendChild(this.input);
-        this.inputDiv.appendChild(value);        
+        this.inputDiv.appendChild(value);
         this.formDiv.appendChild(labelDiv);
         this.formDiv.appendChild(this.inputDiv);
- 
 
-        
+
+
         return this.formDiv;
     }
 
@@ -104,4 +103,4 @@ class RangeSlideInput extends AbstractSidebarInput {
     }
 
 }
-export default RangeSlideInput;
+export default RangeSliderInput;

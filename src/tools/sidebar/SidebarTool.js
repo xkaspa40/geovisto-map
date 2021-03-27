@@ -65,7 +65,7 @@ class SidebarTool extends AbstractTool {
     }
 
     createSidebar() {
-        if(this.isEnabled()) {
+        if (this.isEnabled()) {
             let sidebar = undefined;
             // create sidebar control and add it to the map
             sidebar = L.control.sidebar(this.getSidebarStructure()).addTo(this.getMap().getState().getLeafletMap());
@@ -93,7 +93,7 @@ class SidebarTool extends AbstractTool {
      */
     getTabs() {
         let tabs = this.getState().getTabs();
-        if(tabs == undefined) {
+        if (tabs == undefined) {
             this.createTabs();
         }
 
@@ -105,11 +105,11 @@ class SidebarTool extends AbstractTool {
      */
     createTabs() {
         // import tabs
-        if(this.getState().getTabsDescriptions() != undefined) {
+        if (this.getState().getTabsDescriptions() != undefined) {
             let tabsConfigs = this.getState().getTabsDescriptions();
             // based on config
             let tabConfig, tool;
-            for(let i = 0; i < tabsConfigs.length; i++) {
+            for (let i = 0; i < tabsConfigs.length; i++) {
                 tabConfig = tabsConfigs[i];
                 tool = this.getMap().getState().getTools().getById(tabConfig.tool);
                 this.createSidebarTab(tool, tabConfig);
@@ -117,7 +117,7 @@ class SidebarTool extends AbstractTool {
         } else {
             // based on the implicit order of the tools in the list of the tools
             let tools = this.getMap().getState().getTools().getObjects();
-            for(let i = 0; i < tools.length; i++) {
+            for (let i = 0; i < tools.length; i++) {
                 this.createSidebarTab(tools[i], undefined);
             }
         }
@@ -130,10 +130,10 @@ class SidebarTool extends AbstractTool {
      * @param {*} config
      */
     createSidebarTab(tool, config) {
-        if(tool != undefined && tool.getSidebarTabControl) {
+        if (tool != undefined && tool.getSidebarTabControl) {
             // the tool implements the getSidebarTab function
             let sidebarTabControl = tool.getSidebarTabControl();
-            if(sidebarTabControl != undefined) {
+            if (sidebarTabControl != undefined) {
                 // render sidebar
                 sidebarTabControl.initialize(this.getState().getSidebar(), config);
                 sidebarTabControl.create();

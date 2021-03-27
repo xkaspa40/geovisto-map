@@ -19,7 +19,7 @@ class SelectionToolDefaults extends AbstractToolDefaults {
      * Only one selection tool should be present in the Geovisto map.
      */
     isSingleton() {
-       return true; 
+        return true;
     }
 
     /**

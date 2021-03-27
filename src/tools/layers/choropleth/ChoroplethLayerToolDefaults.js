@@ -30,28 +30,28 @@ const MAPPING_MODEL = {
         id: INPUT_ID_PREFIX + "-aggregation",
         name: "aggregation",
         label: "Agregation",
-        options: [ "count", "sum" ],
+        options: ["count", "sum"],
         input: AutocompleteSidebarInput.ID()
     },
     scaling: {
         id: INPUT_ID_PREFIX + "-scaling",
         name: "scaling",
         label: "Scaling style",
-        options: [ "absolute (static scale)", "relative [0-max]", "irelative [min-max]", "median (sorted values)" ],
+        options: ["absolute (static scale)", "relative [0-max]", "irelative [min-max]", "median (sorted values)"],
         input: AutocompleteSidebarInput.ID()
     },
     range: {
         id: INPUT_ID_PREFIX + "-range",
         name: "range",
         label: "Levels",
-        options: [ "orange", "blue", "red" ],
+        options: ["orange", "blue", "red"],
         input: RangeSliderInput.ID()
-    },  
+    },
     strategy: {
         id: INPUT_ID_PREFIX + "-colorStrategy",
         name: "strategy",
         label: "Fill strategy",
-        options: [ "custom color", "predefined colors" ],
+        options: ["custom color", "predefined colors"],
         input: AutocompleteSidebarInput.ID()
     },
     color: {
@@ -95,10 +95,10 @@ class ChoroplethLayerToolDefaults extends AbstractLayerToolDefaults {
      */
     getDataMapping() {
         let dataMapping = {};
-        
+
         let dataMappingModel = this.getDataMappingModel();
         let implicitDataDomainLabel = this.getMapObject().getMap().getState().getMapData().getDataDomainLabels()[0];
-        
+
         dataMapping[dataMappingModel.country.name] = implicitDataDomainLabel;
         dataMapping[dataMappingModel.value.name] = implicitDataDomainLabel;
         dataMapping[dataMappingModel.aggregation.name] = dataMappingModel.aggregation.options[0];
@@ -113,7 +113,7 @@ class ChoroplethLayerToolDefaults extends AbstractLayerToolDefaults {
     getDataMappingModel() {
         return MAPPING_MODEL;
     }
-    
+
     /**
      * It returns default centroids.
      */

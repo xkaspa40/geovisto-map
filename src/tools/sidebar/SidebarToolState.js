@@ -49,7 +49,7 @@ class SidebarToolState extends AbstractToolState {
 
         // serialize sidebar tabs
         config.tabs = [];
-        for(let i = 0; i < this.tabs.length; i++) {
+        for (let i = 0; i < this.tabs.length; i++) {
             config.tabs.push(this.tabs[i].getState().serialize())
         }
 

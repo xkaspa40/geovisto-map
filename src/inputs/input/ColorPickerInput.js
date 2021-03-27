@@ -26,7 +26,7 @@ class ColorPickerInput extends AbstractSidebarInput {
         // div elements
         this.formDiv = undefined;
         this.inputDiv = undefined;
-        this.completionListDiv = undefined;        
+        this.completionListDiv = undefined;
     }
 
     /**
@@ -42,7 +42,7 @@ class ColorPickerInput extends AbstractSidebarInput {
     create() {
         var _this = this;
         // div for the whole autocomplete component
-        this.formDiv = document.createElement('div'); 
+        this.formDiv = document.createElement('div');
         this.formDiv.classList.add(ID);
 
         // label div
@@ -62,17 +62,17 @@ class ColorPickerInput extends AbstractSidebarInput {
         this.input.setAttribute("id", ID);
         this.input.onchange = this.action;
 
-        
+
 
 
         // construct elements
         this.inputDiv.appendChild(this.input);
-        this.inputDiv.appendChild(value);        
+        this.inputDiv.appendChild(value);
         this.formDiv.appendChild(labelDiv);
         this.formDiv.appendChild(this.inputDiv);
- 
 
-        
+
+
         return this.formDiv;
     }
 

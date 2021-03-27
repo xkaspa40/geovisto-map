@@ -36,7 +36,7 @@ class ChoropolethLayerToolTabControl extends AbstractLayerToolTabControl {
     getInputValues() {
         // get data mapping model
         let model = this.getDefaults().getDataMappingModel();
-        
+
         // create new selection
         let dataMapping = {};
 
@@ -47,7 +47,7 @@ class ChoropolethLayerToolTabControl extends AbstractLayerToolTabControl {
         dataMapping[model.scaling.name] = this.scaling.getValue();
         dataMapping[model.range.name] = this.inputRange.getValue();
         dataMapping[model.strategy.name] = this.colorStrategy.getValue();
-        dataMapping[model.color.name] = this.colorPicker.getValue();        
+        dataMapping[model.color.name] = this.colorPicker.getValue();
         // deprecated
         // dataMapping[model.color.name] = this.inputColor.getValue();
 
@@ -70,7 +70,7 @@ class ChoropolethLayerToolTabControl extends AbstractLayerToolTabControl {
         this.scaling.setValue(dataMapping[model.scaling.name]);
         this.inputRange.setValue(dataMapping[model.range.name]);
         this.colorStrategy.setValue(dataMapping[model.strategy.name]);
-        this.colorPicker.setValue(dataMapping[model.color.name]);        
+        this.colorPicker.setValue(dataMapping[model.color.name]);
         // deprecated
         //this.inputColor.setValue(dataMapping[model.color.name]);
     }
@@ -82,17 +82,17 @@ class ChoropolethLayerToolTabControl extends AbstractLayerToolTabControl {
         var _this = this;
 
         // event handler: change color action
-        let changeColorAction = function(e) {
-           // get selected values and update layer's data mapping
-           _this.getTool().updateDataMapping(_this.getInputValues(), true);
+        let changeColorAction = function (e) {
+            // get selected values and update layer's data mapping
+            _this.getTool().updateDataMapping(_this.getInputValues(), true);
         }
 
         // event handler: change dimension action
-        let changeDimensionAction = function(e) {
+        let changeDimensionAction = function (e) {
             // get selected values and update layer's data mapping
             _this.getTool().updateDataMapping(_this.getInputValues());
         }
-        
+
         // tab content
         let tab = document.createElement('div');
         let elem = tab.appendChild(document.createElement('div'));
@@ -102,24 +102,24 @@ class ChoropolethLayerToolTabControl extends AbstractLayerToolTabControl {
         let dataDomainLabels = this.getTool().getMap().getState().getMapData().getDataDomainLabels();
 
         // select country
-        this.inputCountry = SidebarInputFactory.createSidebarInput(model.country.input, { label: model.country.label , options: dataDomainLabels, action: changeDimensionAction });
+        this.inputCountry = SidebarInputFactory.createSidebarInput(model.country.input, { label: model.country.label, options: dataDomainLabels, action: changeDimensionAction });
         elem.appendChild(this.inputCountry.create());
 
         // select value
-        this.inputValue = SidebarInputFactory.createSidebarInput(model.value.input, { label: model.value.label , options: dataDomainLabels, action: changeDimensionAction });
+        this.inputValue = SidebarInputFactory.createSidebarInput(model.value.input, { label: model.value.label, options: dataDomainLabels, action: changeDimensionAction });
         elem.appendChild(this.inputValue.create());
 
         // select aggregation
         this.inputAggregation = SidebarInputFactory.createSidebarInput(model.aggregation.input, { label: model.aggregation.label, options: model.aggregation.options, action: changeDimensionAction });
         elem.appendChild(this.inputAggregation.create());
 
-        
+
         //color strategy
-        this.colorStrategy = SidebarInputFactory.createSidebarInput(model.strategy.input, {label: model.strategy.label, options: model.strategy.options, action: changeDimensionAction });
+        this.colorStrategy = SidebarInputFactory.createSidebarInput(model.strategy.input, { label: model.strategy.label, options: model.strategy.options, action: changeDimensionAction });
         elem.appendChild(this.colorStrategy.create());
-        
+
         //color strategy
-        this.colorPicker = SidebarInputFactory.createSidebarInput(model.color.input, {input:this.colorStrategy, label: model.color.label, options: model.color.options, action: changeDimensionAction });
+        this.colorPicker = SidebarInputFactory.createSidebarInput(model.color.input, { input: this.colorStrategy, label: model.color.label, options: model.color.options, action: changeDimensionAction });
         elem.appendChild(this.colorPicker.create());
 
         // scaling type
@@ -127,8 +127,8 @@ class ChoropolethLayerToolTabControl extends AbstractLayerToolTabControl {
         elem.appendChild(this.scaling.create());
 
         // range 
-        this.inputRange = SidebarInputFactory.createSidebarInput(model.range.input, { label: model.range.label, action: changeDimensionAction, elem:elem });
-        elem.appendChild(this.inputRange.create());        
+        this.inputRange = SidebarInputFactory.createSidebarInput(model.range.input, { min: 1, max: 7, default: 4, label: model.range.label, action: changeDimensionAction, elem: elem });
+        elem.appendChild(this.inputRange.create());
 
         // select color scheme
         // deprecated
@@ -136,7 +136,7 @@ class ChoropolethLayerToolTabControl extends AbstractLayerToolTabControl {
         elem.appendChild(this.inputColor.create());*/
 
         this.setInputValues(this.getTool().getState().getDataMapping());
-        
+
         return tab;
     }
 
