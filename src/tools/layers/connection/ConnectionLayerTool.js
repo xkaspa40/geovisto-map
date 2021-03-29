@@ -288,7 +288,7 @@ class ConnectionLayerTool extends AbstractLayerTool {
             this.onSelectionUpdate(event.getObject())
         } else if(event.getType() == ThemesToolEvent.TYPE()) {
             var map = event.getObject();
-            document.documentElement.style.setProperty('--layer-connection', map.getDataColors().monochromComplement);
+            document.documentElement.style.setProperty('--layer-connection', map.getDataColors().lineColor);
             document.documentElement.style.setProperty('--layer-connection-highlight',map.getHighlightColor().highlight); 
             document.documentElement.style.setProperty('--layer-connection-other', map.getHighlightColor().deempasize);
         }
