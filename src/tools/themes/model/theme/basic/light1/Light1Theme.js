@@ -1,5 +1,5 @@
 import AbstractTheme from '../../abstract/AbstractTheme';
- 
+
 
 /**
  * This class wraps a filter operation.
