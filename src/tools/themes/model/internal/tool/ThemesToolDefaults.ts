@@ -5,7 +5,6 @@ import Light3Theme from "../theme/custom/light3/Light3Theme";
 import Dark1Theme from "../theme/custom/dark1/Dark1Theme";
 import Dark2Theme from "../theme/custom/dark2/Dark2Theme";
 import Dark3Theme from "../theme/custom/dark3/Dark3Theme";
-import ThemesTool from "./ThemesTool";
 import MapToolDefaults from "../../../../../model/internal/tool/MapToolDefaults";
 import IThemesTool from "../../types/tool/IThemesTool";
 import IMapThemesManager from "../../types/theme/IMapThemesManager";
@@ -13,6 +12,7 @@ import IMapTheme from "../../types/theme/IMapTheme";
 import IThemesToolDefaults from "../../types/tool/IThemesToolDefaults";
 import IThemesToolConfig from "../../types/tool/IThemesToolConfig";
 import BasicTheme from "../theme/basic/BasicTheme";
+import { TOOL_TYPE } from "../../..";
 
 /**
  * This class provide functions which return the default state values.
@@ -48,7 +48,7 @@ class ThemesToolDefaults extends MapToolDefaults implements IThemesToolDefaults 
      * It returns a unique string of the tool type.
      */
     public getType(): string {
-        return ThemesTool.TYPE();
+        return TOOL_TYPE;
     }
 
     /**

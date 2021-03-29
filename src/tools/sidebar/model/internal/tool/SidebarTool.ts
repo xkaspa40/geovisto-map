@@ -35,13 +35,6 @@ class SidebarTool extends MapTool implements ISidebarTool {
     }
 
     /**
-     * A unique string of the tool type.
-     */
-    public static TYPE(): string {
-        return "geovisto-tool-sidebar";
-    }
-
-    /**
      * It creates a copy of the uninitialized tool.
      */
     public copy(): ISidebarTool {

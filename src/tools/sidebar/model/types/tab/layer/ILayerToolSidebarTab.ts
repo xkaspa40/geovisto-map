@@ -2,6 +2,7 @@ import { ISidebarTab } from "../../../..";
 import ILayerToolSidebarTabDefaults from "./ILayerToolSidebarTabDefaults";
 import ILayerToolSidebarTabState from "./ILayerToolSidebarTabState";
 import ILayerTool from "../../../../../../model/types/layer/ILayerTool";
+import ILayerToolDimensions from "../../../../../../model/types/layer/ILayerToolDimensions";
 
 /**
  * This interface declares functions for management of a layer sidebar tab.
@@ -26,17 +27,10 @@ interface ILayerToolSidebarTab extends ISidebarTab {
     getTool(): ILayerTool;
 
     /**
-     * It acquire selected data mapping from input values.
-     */
-    getInputValues(): any;
-
-    /**
-     * It updates selected items according to the given selection.
+     * It updates inputs according to the given layer tool dimensions.
      * 
-     * TODO: define type.
-     * 
-     * @param dataMapping 
+     * @param dimensions 
      */
-    setInputValues(dataMapping: any): void;
+    setInputValues(dimensions: ILayerToolDimensions): void;
 }
 export default ILayerToolSidebarTab;

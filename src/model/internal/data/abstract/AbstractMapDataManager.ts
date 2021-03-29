@@ -34,7 +34,7 @@ abstract class AbstractMapDataManager implements IMapDataManager {
     /**
      * It returns list of data domains.
      */
-    public abstract getDataDomains(): IMapDataDomain[];
+    public abstract getDomains(): IMapDataDomain[];
 
     /**
      * It returns list of all values of the selected data domain.
@@ -46,9 +46,9 @@ abstract class AbstractMapDataManager implements IMapDataManager {
     /**
      * Help function which returns the list of data domain string name.
      */
-    public getDataDomainNames(): string[] {
+    public getDomainNames(): string[] {
         const names = [];
-        const dataDomains: IMapDataDomain[] = this.getDataDomains();
+        const dataDomains: IMapDataDomain[] = this.getDomains();
         for(let i = 0; i < dataDomains.length; i++) {
             names.push(dataDomains[i].getName());
         }
@@ -61,8 +61,8 @@ abstract class AbstractMapDataManager implements IMapDataManager {
      * 
      * @param name 
      */
-    public getDataDomain(name : string) : IMapDataDomain | undefined {
-        const dataDomains: IMapDataDomain[] = this.getDataDomains();
+    public getDomain(name : string) : IMapDataDomain | undefined {
+        const dataDomains: IMapDataDomain[] = this.getDomains();
         if(dataDomains != undefined) {
             for(let i = 0; i < dataDomains.length; i++) {
                 if(dataDomains[i].getName() == name) {

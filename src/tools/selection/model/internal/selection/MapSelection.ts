@@ -51,7 +51,7 @@ class MapSelection implements IMapSelection {
      * 
      * @param selection 
      */
-    public equals(selection: IMapSelection): boolean {
+    public equals(selection: IMapSelection | null): boolean {
         if(selection) {
             const srcIds: string[] = this.getSrcIds();
             const srcIds2: string[] = selection.getSrcIds();

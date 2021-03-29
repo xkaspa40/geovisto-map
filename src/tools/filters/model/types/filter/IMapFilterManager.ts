@@ -1,4 +1,4 @@
-import IMapCategoriesManager from "../../../../../model/types/category/IMapCategoriesManager";
+import IMapDomainArrayManager from "../../../../../model/types/domain/IMapDomainArrayManager";
 import IMapDataDomain from "../../../../../model/types/data/IMapDataDomain";
 import IMapFilterOperation from "./IMapFilterOperation";
 import IMapFilterRule from "./IMapFilterRule";
@@ -9,7 +9,7 @@ import IMapDataManager from "../../../../../model/types/data/IMapDataManager";
  * 
  * @author Jiri Hynek
  */
-interface IMapFiltersManager extends IMapCategoriesManager<IMapFilterOperation> {
+interface IMapFiltersManager extends IMapDomainArrayManager<IMapFilterOperation> {
 
     /**
      * The function creates a new filter rule using given operation label.

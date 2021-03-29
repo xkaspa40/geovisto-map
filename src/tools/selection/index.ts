@@ -1,3 +1,18 @@
+import { MapSelection } from '.';
+import IMapTool from '../../model/types/tool/IMapTool';
+import { IMapSelection } from '..';
+
+const TOOL: {
+    getType: () => string,
+    getSelection: (source: IMapTool,ids: string[]) => IMapSelection
+} = {
+    getType: () => "geovisto-tool-selection",
+    getSelection: (source: IMapTool,ids: string[]) => {
+        return new MapSelection(source, ids);
+    }
+};
+export { TOOL };
+
 // types
 export type { default as ISelectionToolEvent } from './model/types/event/ISelectionToolEvent';
 export type { default as IMapSelection } from './model/types/selection/IMapSelection';

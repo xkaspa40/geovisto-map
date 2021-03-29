@@ -32,13 +32,6 @@ class FiltersTool extends MapTool implements IFiltersTool, ISidebarTabControl {
     }
 
     /**
-     * A unique string of the tool type.
-     */
-    public static TYPE(): string {
-        return "geovisto-tool-filters";
-    }
-
-    /**
      * It creates a copy of the uninitialized tool.
      */
     public copy(): IFiltersTool {

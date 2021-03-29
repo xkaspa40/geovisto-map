@@ -4,6 +4,7 @@ import MapToolDefaults from "../../../../../model/internal/tool/MapToolDefaults"
 import ISelectionToolDefaults from "../../types/tool/ISelectionToolDefaults";
 import ISelectionTool from "../../types/tool/ISelectionTool";
 import ISelectionToolConfig from "../../types/tool/ISelectionToolConfig";
+import { TOOL_TYPE } from "../../..";
 
 /**
  * This class provide functions which return the default state values.
@@ -39,7 +40,7 @@ class SelectionToolDefaults extends MapToolDefaults implements ISelectionToolDef
      * It returns a unique string of the tool type.
      */
     public getType(): string {
-        return SelectionTool.TYPE();
+        return TOOL_TYPE;
     }
 
     /**

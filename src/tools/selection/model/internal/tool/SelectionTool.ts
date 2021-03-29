@@ -37,13 +37,6 @@ class SelectionTool extends MapTool implements ISelectionTool, ISidebarFragmentC
     }
 
     /**
-     * A unique string of the tool type.
-     */
-    public static TYPE(): string {
-        return "geovisto-tool-selection";
-    }
-
-    /**
      * It creates a copy of the uninitialized tool.
      */
     public copy(): ISelectionTool {
@@ -98,16 +91,14 @@ class SelectionTool extends MapTool implements ISelectionTool, ISidebarFragmentC
      * 
      * @paramection 
      */
-    public setSelection(selection: IMapSelection): void {
-        if(selection != undefined) {
-            // if the selection tool is enabled, update map selection
-            if(this.isEnabled()) {
-                // update tool state
-                this.getState().setSelection(selection);
+    public setSelection(selection: IMapSelection | null): void {
+        // if the selection tool is enabled, update map selection
+        if(this.isEnabled()) {
+            // update tool state
+            this.getState().setSelection(selection);
 
-                // dispatch event
-                this.getMap().dispatchEvent(new SelectionToolEvent(this, selection));
-            }
+            // dispatch event
+            this.getMap().dispatchEvent(new SelectionToolEvent(this, selection));
         }
     }
 

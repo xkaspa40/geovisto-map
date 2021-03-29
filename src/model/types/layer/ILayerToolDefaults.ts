@@ -1,4 +1,5 @@
 import IMapToolDefaults from "../tool/IMapToolDefaults";
+import ILayerToolDimensions from "./ILayerToolDimensions";
 
 /**
  * This interface declares functions which return the default state values.
@@ -11,19 +12,10 @@ interface ILayerToolDefaults extends IMapToolDefaults {
      * It returns the layer name.
      */
     getLayerName(): string;
-
+    
     /**
-     * It returns the default mapping of data domains to chart dimensions.
-     * 
-     * TODO: specify the type
+     * It returns list of map dimensions.
      */
-    getDataMapping(): any;
-
-    /**
-     * It returns the data mapping model.
-     * 
-     * TODO: define type.
-     */
-    getDataMappingModel(): any;
+    getDimensions(): ILayerToolDimensions;
 }
 export default ILayerToolDefaults;

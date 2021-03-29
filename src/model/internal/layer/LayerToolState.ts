@@ -13,7 +13,6 @@ import ILayerToolConfig from "../../types/layer/ILayerToolConfig";
 class LayerToolState extends MapToolState implements ILayerToolState {
     
     private layerName: string;
-    private dataMapping: any;
     private layerItems: L.Layer[] | undefined;
 
     /**
@@ -26,7 +25,6 @@ class LayerToolState extends MapToolState implements ILayerToolState {
         const defaults = <ILayerToolDefaults> this.getDefaults();
 
         this.layerName = props.name == undefined ? defaults.getLayerName() : props.name;
-        this.dataMapping = props.data == undefined ? defaults.getDataMapping() : props.data;
     }
 
     /**
@@ -40,7 +38,6 @@ class LayerToolState extends MapToolState implements ILayerToolState {
 
         // the layer tool properties
         this.setLayerName(props.name == undefined ? defaults.getLayerName() : props.name);
-        this.setDataMapping(props.data == undefined ? defaults.getDataMapping() : props.data);
     }
 
     /**
@@ -53,8 +50,6 @@ class LayerToolState extends MapToolState implements ILayerToolState {
 
         // the layer tool config
         if(config.name != undefined) this.setLayerName(config.name);
-        if(config.data != undefined) this.setDataMapping(config.data);
-        // TODO data mapping deserialization
     }
 
     /**
@@ -69,8 +64,6 @@ class LayerToolState extends MapToolState implements ILayerToolState {
 
         // serialize the layer tool properties
         config.name = filterDefaults && this.getLayerName() == defaults.getLayerName() ? undefined : this.getLayerName();
-        config.data = this.getDataMapping(); // do not use defaults, always export current data mapping
-        // TODO data mapping serialization
 
         return config;
     }
@@ -89,26 +82,6 @@ class LayerToolState extends MapToolState implements ILayerToolState {
      */
     public setLayerName(layerName: string): void {
        this.layerName = layerName;
-    }
-
-    /**
-     * It returns the data mapping property of the tool state.
-     * 
-     * TODO: specify the type
-     */
-    public getDataMapping(): any {
-        return this.dataMapping;
-    }
-
-    /**
-     * It sets the data mapping property of tool state.
-     * 
-     * TODO: specify the type
-     * 
-     * @param dataMapping 
-     */
-    public setDataMapping(dataMapping: any): void {
-       this.dataMapping = dataMapping;
     }
 
     /**

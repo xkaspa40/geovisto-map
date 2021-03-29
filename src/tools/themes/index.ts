@@ -1,3 +1,6 @@
+const TOOL_TYPE = "geovisto-tool-themes";
+export { TOOL_TYPE };
+
 // types
 export type { default as IThemesToolEvent } from './model/types/event/IThemesToolEvent';
 export type { default as IMapTheme } from './model/types/theme/IMapTheme';

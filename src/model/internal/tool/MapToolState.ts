@@ -19,7 +19,7 @@ class MapToolState extends MapObjectState implements IMapToolState {
     /**
      * map is set during the tool initialization
      */
-    private map!: IMap;
+    private map: IMap | undefined;
 
     /**
      * It creates a map object state.
@@ -90,7 +90,7 @@ class MapToolState extends MapObjectState implements IMapToolState {
     /**
      * It returns the map property of the tool state.
      */
-    public getMap(): IMap {
+    public getMap(): IMap | undefined {
         return this.map;
     }
 

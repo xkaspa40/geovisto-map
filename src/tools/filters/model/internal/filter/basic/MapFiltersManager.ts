@@ -1,4 +1,4 @@
-import MapCategoriesManager from "../../../../../../model/internal/category/generic/MapCategoriesManager";
+import MapDomainArrayManager from "../../../../../../model/internal/domain/generic/MapDomainArrayManager";
 import IMapFiltersManager from "../../../types/filter/IMapFilterManager";
 import IMapFilterOperation from "../../../types/filter/IMapFilterOperation";
 import IMapFilterRule from "../../../types/filter/IMapFilterRule";
@@ -11,7 +11,7 @@ import IMapDataManager from "../../../../../../model/types/data/IMapDataManager"
  * 
  * @author Jiri Hynek
  */
-class MapFiltersManager extends MapCategoriesManager<IMapFilterOperation> implements IMapFiltersManager {
+class MapFiltersManager extends MapDomainArrayManager<IMapFilterOperation> implements IMapFiltersManager {
 
     public constructor(filterOperations: IMapFilterOperation[]) {
         super(filterOperations);
@@ -26,7 +26,7 @@ class MapFiltersManager extends MapCategoriesManager<IMapFilterOperation> implem
      * @param pattern 
      */
     public createRule(dataDomain: IMapDataDomain, opName: string, pattern: any): IMapFilterRule | null {
-        const operation: IMapFilterOperation[] = this.getByName(opName);
+        const operation: IMapFilterOperation[] = this.getDomain(opName);
         if(operation.length > 0) {
             return new MapFilterRule(dataDomain, operation[0], pattern);
         } 

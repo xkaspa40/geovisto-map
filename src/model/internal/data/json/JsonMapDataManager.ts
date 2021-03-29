@@ -61,7 +61,7 @@ class JsonMapDataManager extends AbstractMapDataManager implements IMapDataManag
      * ]
      * 
      */
-    public getDataDomains(): IMapDataDomain[] {
+    public getDomains(): IMapDataDomain[] {
         if(this.dataDomains == undefined) {
             this.dataDomains = this.createDataDomains();
         }
@@ -76,8 +76,8 @@ class JsonMapDataManager extends AbstractMapDataManager implements IMapDataManag
      * 
      * @param name 
      */
-    public getDataDomain(name: string): IMapDataDomain {
-        const dataDomain: IMapDataDomain | undefined = super.getDataDomain(name);
+    public getDomain(name: string): IMapDataDomain {
+        const dataDomain: IMapDataDomain | undefined = super.getDomain(name);
         return dataDomain ? dataDomain : new JsonMapDataDomain(name.split('.'));
     }
 

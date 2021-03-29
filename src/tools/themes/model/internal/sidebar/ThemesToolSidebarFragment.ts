@@ -59,12 +59,12 @@ class ThemesToolSidebarFragment extends AbstractSidebarFragment<IThemesTool> {
         var themesManager: IMapThemesManager = tool.getState().getThemesManager();
         // TODO: define types
         const changeTheme = function(e: any) {
-            const newTheme: IMapTheme[] = themesManager.getByName(e.target.value);
+            const newTheme: IMapTheme[] = themesManager.getDomain(e.target.value);
             if(newTheme && newTheme.length > 0) {
                 tool.setTheme(newTheme[0]);
             }
         };
-        const themeInput = new AutocompleteFormInput({ label: "Theme", options: themesManager.getNames(), onChangeAction: changeTheme });
+        const themeInput = new AutocompleteFormInput({ label: "Theme", options: themesManager.getDomainNames(), onChangeAction: changeTheme });
         htmlContent.appendChild(themeInput.create());
         themeInput.setValue(tool.getState().getTheme().getName());
 

@@ -63,7 +63,7 @@ class ThemesToolState extends MapToolState implements IThemesToolState {
             // get filter and data manegers which are need for proper deserialization of filter rules
             const themesManager = this.getThemesManager();
             if(themesManager != undefined) {
-                const theme = themesManager.getByName(config.theme);
+                const theme = themesManager.getDomain(config.theme);
                 if(theme && theme.length > 0) {
                     this.setTheme(theme[0]);
                 }

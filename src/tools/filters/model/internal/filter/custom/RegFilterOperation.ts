@@ -1,4 +1,4 @@
-import AbstractMapCategory from "../../../../../../model/internal/category/abstract/AbstractMapCategory";
+import AbstractMapDomain from "../../../../../../model/internal/domain/abstract/AbstractMapDomain";
 import IMapFilterOperation from "../../../types/filter/IMapFilterOperation";
 
 /**
@@ -6,7 +6,7 @@ import IMapFilterOperation from "../../../types/filter/IMapFilterOperation";
  * 
  * @author Jiri Hynek
  */
-class RegFilterOperation extends AbstractMapCategory implements IMapFilterOperation {
+class RegFilterOperation extends AbstractMapDomain implements IMapFilterOperation {
 
     /**
      * It creates the regular expression filter operation.

@@ -1,3 +1,6 @@
+const TOOL_TYPE = "geovisto-tool-themes";
+export { TOOL_TYPE };
+
 // types
 export type { default as ISidebarFragmentConfig } from './model/types/fragment/ISidebarFragmentConfig';
 export type { default as ISidebarFragmentControl } from './model/types/fragment/ISidebarFragmentControl';

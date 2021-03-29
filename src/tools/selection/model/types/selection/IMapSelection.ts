@@ -29,7 +29,7 @@ interface IMapSelection {
      * 
      * @param selection
      */
-    equals(selection: IMapSelection): boolean;
+    equals(selection: IMapSelection | null): boolean;
 
     /**
      * It takes geographical items and returns the list of new ids

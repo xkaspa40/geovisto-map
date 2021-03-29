@@ -40,13 +40,6 @@ class ThemesTool extends MapTool implements IThemesTool, ISidebarFragmentControl
     }
 
     /**
-     * A unique string of the tool type.
-     */
-    public static TYPE(): string {
-        return "geovisto-tool-themes";
-    }
-
-    /**
      * It creates a copy of the uninitialized tool.
      */
     public copy(): IThemesTool {

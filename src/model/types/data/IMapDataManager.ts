@@ -1,11 +1,12 @@
 import IMapDataDomain from "./IMapDataDomain";
+import IMapDomainManager from "../domain/IMapDomainManager";
 
 /**
- * The interface declares data used by the map, its metadata and functions to acquire data items.
+ * The interface declares map data domain manager which and data wrapper.
  * 
  * @author Jiri Hynek
  */
-interface IMapDataManager {
+interface IMapDataManager extends IMapDomainManager<IMapDataDomain> {
 
     /**
      * It returns the original input data.
@@ -23,24 +24,6 @@ interface IMapDataManager {
      * @param dataDomain
      */
     getValues(dataDomain: IMapDataDomain): string[];
-
-    /**
-     * It returns list of data domains.
-     */
-    getDataDomains(): IMapDataDomain[];
-
-    /**
-     * Help function which returns the list of data domain names. 
-     */
-    getDataDomainNames(): string[];
-
-    /**
-     * It returns the data domain which corresponds to the given string
-     * or creates a new one.
-     * 
-     * @param label 
-     */
-    getDataDomain(label: string): IMapDataDomain | undefined;
 
     /**
      * It returns list of all values of the selected data domain stored in the given data records.

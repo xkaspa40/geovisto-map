@@ -57,7 +57,7 @@ interface IMapTool extends IMapObject {
     /**
      * Help function which returns map which uses this tool.
      */
-    getMap(): IMap;
+    getMap(): IMap | undefined;
 
     /**
      * It creates a tool.

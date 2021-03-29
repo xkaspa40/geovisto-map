@@ -1,16 +1,18 @@
 import IMapDimension from "../../types/dimension/IMapDimension";
-import AbstractMapCategory from "../category/abstract/AbstractMapCategory";
-import IMapDataDomain from "../../types/data/IMapDataDomain";
+import AbstractMapDomain from "../domain/abstract/AbstractMapDomain";
+import IMapDomainManager from "../../types/domain/IMapDomainManager";
+import IMapDomain from "../../types/domain/IMapDomain";
 
 /**
  * The class wraps a map dimension and its properties.
  * 
  * @author Jiri Hynek
  */
-class MapDimension extends AbstractMapCategory implements IMapDimension {
+class MapDimension<T extends IMapDomain> extends AbstractMapDomain implements IMapDimension<T> {
     
     private name: string;
-    private dataDomain: IMapDataDomain | undefined;
+    private domainManager: IMapDomainManager<T>;
+    private domain: T | undefined;
 
     /**
      * It creates a new map dimension.
@@ -18,33 +20,57 @@ class MapDimension extends AbstractMapCategory implements IMapDimension {
      * @param name 
      * @param dataDomain 
      */
-    public constructor(name: string, dataDomain: IMapDataDomain | undefined) {
+    public constructor(name: string, domainManager: IMapDomainManager<T>, dataDomain: T | undefined) {
         super();
         this.name = name;
-        this.dataDomain = dataDomain;
+        this.domainManager = domainManager;
+        this.domain = dataDomain;
     }
 
     /**
-     * It return the name of the dimension
+     * It returns the name of the dimension
      */
     public getName(): string {
         return this.name;
     }
 
     /**
-     * It returns the data domain which is set to the map dimension.
+     * It sets the name of the dimension
      */
-    public getDataDomain(): IMapDataDomain | undefined {
-        return this.dataDomain;
+    public setName(): void {
+        this.name = name;
     }
 
     /**
-     * It sets the data domain which is set to the map dimension.
-     * 
-     * @param dataDomain 
+     * It returns the map domain manager which is set to the map dimension.
      */
-    public setDataDomain(dataDomain: IMapDataDomain | undefined): void {
-        this.dataDomain = dataDomain;
+    public getDomainManager(): IMapDomainManager<T> {
+        return this.domainManager;
+    }
+
+    /**
+     * It sets a map domain manager which is set to the map dimension.
+     * 
+     * @param domainManager 
+     */
+    public setDomainManager(domainManager: IMapDomainManager<T>): void {
+        this.domainManager = domainManager;
+    }
+
+    /**
+     * It returns the map domain which is set to the map dimension.
+     */
+    public getDomain(): T | undefined {
+        return this.domain;
+    }
+
+    /**
+     * It sets a map domain which is set to the map dimension.
+     * 
+     * @param domain 
+     */
+    public setDomain(domain: T | undefined): void {
+        this.domain = domain;
     }
 }
 export default MapDimension;

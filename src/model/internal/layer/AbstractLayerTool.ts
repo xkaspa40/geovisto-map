@@ -1,6 +1,5 @@
 import MapTool from "../tool/MapTool";
 import ILayerTool from "../../types/layer/ILayerTool";
-import ILayerToolSidebarTab from "../../../tools/sidebar/model/types/tab/layer/ILayerToolSidebarTab";
 import ILayerToolProps from "../../types/layer/ILayerToolProps";
 import ILayerToolDefaults from "../../types/layer/ILayerToolDefaults";
 import ILayerToolState from "../../types/layer/ILayerToolState";
@@ -69,13 +68,6 @@ abstract class AbstractLayerTool extends MapTool implements ILayerTool {
     protected createState(): ILayerToolState {
         return new LayerToolState(this);
     }
-
-    /**
-     * It creates new tab control.
-     * 
-     * This function can be extended.
-     */
-    protected abstract createSidebarTabControl(): ILayerToolSidebarTab
 
     /**
      * It creates new layer with respect to configuration

@@ -5,16 +5,21 @@ export { default as ReactGeovistoMap } from './react/ReactGeovistoMap';
 
 // MODEL / TYPES
 
-// category
-export type { default as IMapCategoriesManager } from './model/types/category/IMapCategoriesManager';
-export type { default as IMapCategory } from './model/types/category/IMapCategory';
-
 // config
 export type { default as IMapConfigManager } from './model/types/config/IMapConfigManager';
 
 // data
 export type { default as IMapDataDomain } from './model/types/data/IMapDataDomain';
 export type { default as IMapDataManager } from './model/types/data/IMapDataManager';
+
+// domain
+export type { default as IMapDomain } from './model/types/domain/IMapDomain';
+export type { default as IMapDomainArrayManager } from './model/types/domain/IMapDomainArrayManager';
+export type { default as IMapDomainManager } from './model/types/domain/IMapDomainManager';
+
+// dimension
+export type { default as IMapDimension } from './model/types/dimension/IMapDimension';
+export type { default as IMapDimensionManager } from './model/types/dimension/IMapDimensionManager';
 
 // event
 export type { default as IMapEvent } from './model/types/event/IMapEvent';
@@ -65,10 +70,6 @@ export type { default as IMapToolState } from './model/types/tool/IMapToolState'
 
 // MODEL / INTERNAL
 
-// category
-export { default as AbstractMapCategory } from './model/internal/category/abstract/AbstractMapCategory';
-export { default as MapCategoriesManager } from './model/internal/category/generic/MapCategoriesManager';
-
 // config
 export { default as AbstractMapConfigManager } from './model/internal/config/abstract/AbstractMapConfigManager';
 export { default as MapConfigManager } from './model/internal/config/basic/MapConfigManager';
@@ -79,8 +80,13 @@ export { default as AbstractMapDataManager } from './model/internal/data/abstrac
 export { default as JsonMapDataDomain } from './model/internal/data/json/JsonMapDataDomain';
 export { default as JsonMapDataManager } from './model/internal/data/json/JsonMapDataManager';
 
+// domain
+export { default as AbstractMapDomain } from './model/internal/domain/abstract/AbstractMapDomain';
+export { default as MapDomainArrayManager } from './model/internal/domain/generic/MapDomainArrayManager';
+
 // dimension
-export { default as AbstractDimension } from './model/internal/dimension/MapDimension';
+export { default as MapDimension } from './model/internal/dimension/MapDimension';
+export { default as MapDimensionManager } from './model/internal/dimension/MapDimensionManager';
 
 // event
 export { default as DataChangeEvent } from './model/internal/event/data/DataChangeEvent';

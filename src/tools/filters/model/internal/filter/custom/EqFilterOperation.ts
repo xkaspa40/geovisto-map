@@ -1,12 +1,12 @@
 import IMapFilterOperation from "../../../types/filter/IMapFilterOperation";
-import AbstractMapCategory from "../../../../../../model/internal/category/abstract/AbstractMapCategory";
+import AbstractMapDomain from "../../../../../../model/internal/domain/abstract/AbstractMapDomain";
 
 /**
  * This class wraps the equals filter operation.
  * 
  * @author Jiri Hynek
  */
-class EqFilterOperation extends AbstractMapCategory implements IMapFilterOperation {
+class EqFilterOperation extends AbstractMapDomain implements IMapFilterOperation {
 
     /**
      * It creates the equals filter operation.

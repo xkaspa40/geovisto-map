@@ -3,6 +3,7 @@ import ISettingsToolDefaults from "../../types/tool/ISettingsToolDefaults";
 import ISettingsTool from "../../types/tool/ISettingsTool";
 import SettingsTool from "./SettingsTool";
 import ISettingsToolConfig from "../../types/tool/ISettingsToolConfig";
+import { TOOL_TYPE } from "../../..";
 
 /**
  * This class provide functions which return the default state values.
@@ -36,7 +37,7 @@ class SettingsToolDefaults extends MapToolDefaults implements ISettingsToolDefau
      * It returns a unique string of the tool type.
      */
     public getType(): string {
-        return SettingsTool.TYPE();
+        return TOOL_TYPE;
     }
 }
 export default SettingsToolDefaults;

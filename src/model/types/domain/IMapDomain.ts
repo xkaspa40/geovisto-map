@@ -3,11 +3,11 @@
  * 
  * @author Jiri Hynek
  */
-interface IMapCategory {
+interface IMapDomain {
 
     /**
-     * It returns the name of the category.
+     * It returns the name of the map domain.
      */
     getName(): string;
 }
-export default IMapCategory;
+export default IMapDomain;

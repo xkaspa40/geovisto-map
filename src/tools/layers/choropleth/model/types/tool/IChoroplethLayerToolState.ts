@@ -1,5 +1,6 @@
 import LayerToolState from "../../../../../../model/internal/layer/LayerToolState";
 import IChoroplethLayerToolConfig from "./IChoroplethLayerToolConfig";
+import IChoroplethLayerToolDimensions from "./IChoroplethLayerToolDimensions";
 
 /**
  * This interface declares functions for using the state of the layer tool.
@@ -7,6 +8,8 @@ import IChoroplethLayerToolConfig from "./IChoroplethLayerToolConfig";
  * @author Jiri Hynek
  */
 interface IChoroplethLayerToolState extends LayerToolState {
+    getLayer();
+    getDataMapping();
 
     /**
      * The metod takes config and deserializes the values.
@@ -16,6 +19,15 @@ interface IChoroplethLayerToolState extends LayerToolState {
     deserialize(config: IChoroplethLayerToolConfig): void;
 
     /**
+     * It sets the map layer dimensions property of tool state.
+     * 
+     * @param geo 
+     * @param value
+     * @param aggregation
+     */
+    deserializeDimensions(geo: string | undefined, value: string | undefined, aggregation: string | undefined): void
+
+    /**
      * The method serializes the tool state. Optionally, defaults can be set if property is undefined.
      * 
      * @param filterDefaults
@@ -23,9 +35,21 @@ interface IChoroplethLayerToolState extends LayerToolState {
     serialize(filterDefaults: boolean): IChoroplethLayerToolConfig;
 
     /**
+     * It returns the map layer dimensions property of the tool state.
+     */
+    getDimensions(): IChoroplethLayerToolDimensions;
+
+    /**
+     * It sets the map layer dimensions property of tool state.
+     * 
+     * @param dimensions 
+     */
+    setDimension(dimensions: IChoroplethLayerToolDimensions): void;
+
+    /**
      * It returns a Leaflet geoJSON layer.
      */
-    getGeoJSONLayer(): L.GeoJSON;
+    getGeoJSONLayer(): L.GeoJSON | undefined;
 
     /**
      * It sets a Leaflet geoJSON layer.
@@ -36,19 +60,15 @@ interface IChoroplethLayerToolState extends LayerToolState {
 
     /**
      * It returns a Leaflet popup control.
-     * 
-     * TODO: specify the type
      */
-    getPopup(): any;
+    getPopup(): L.Control | undefined;
 
     /**
      * It sets a Leaflet popup control.
      * 
-     * TODO: specify the type
-     * 
      * @param popup 
      */
-    setPopup(popup: any): void;
+    setPopup(popup: L.Control): void;
 
     /**
      * It returns the polygons.

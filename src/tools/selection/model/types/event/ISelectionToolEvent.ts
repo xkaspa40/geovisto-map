@@ -1,11 +1,9 @@
 import IMapChangeEvent from "../../../../../model/types/event/IMapChangeEvent";
-import IMapSelection from "../selection/IMapSelection";
-import IMapTool from "../../../../../model/types/tool/IMapTool";
 
 /**
  * This class provides the map selection change event.
  * 
  * @author Jiri Hynek
  */
-type ISelectionToolEvent = IMapChangeEvent<IMapTool, IMapSelection>
+type ISelectionToolEvent = IMapChangeEvent
 export default ISelectionToolEvent;

@@ -41,10 +41,10 @@ class FiltersToolSidebarTab extends AbstractSidebarTab<IFiltersTool> implements 
         
         // help variables (TODO: move to the tab control state)
         this.mapDataManager = this.getTool().getMap().getState().getMapData();
-        this.dataDomainNames = this.mapDataManager.getDataDomainNames();
+        this.dataDomainNames = this.mapDataManager.getDomainNames();
         
         this.filterManager = this.getTool().getState().getFiltersManager();
-        this.operationNames = this.filterManager.getNames();
+        this.operationNames = this.filterManager.getDomainNames();
 
         this.htmlContent = null;
         this.btnGroup = null;

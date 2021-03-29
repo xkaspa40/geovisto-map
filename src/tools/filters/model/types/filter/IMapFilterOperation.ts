@@ -1,11 +1,11 @@
-import IMapCategory from "../../../../../model/types/category/IMapCategory";
+import IMapDomain from "../../../../../model/types/domain/IMapDomain";
 
 /**
  * This interface declares a filter operation.
  * 
  * @author Jiri Hynek
  */
-interface IMapFilterOperation extends IMapCategory {
+interface IMapFilterOperation extends IMapDomain {
 
     /**
      * It performs the filter operation which compare a value with a pattern.

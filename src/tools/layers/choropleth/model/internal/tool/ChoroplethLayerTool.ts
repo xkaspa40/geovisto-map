@@ -8,8 +8,19 @@ import ChoropolethLayerToolSidebarTab from '../sidebar/ChoroplethLayerToolSideba
 import ThemesToolEvent from '../../../../../themes/model/internal/event/ThemesToolEvent';
 import SelectionToolEvent from '../../../../../selection/model/internal/event/SelectionToolEvent';
 import DataChangeEvent from '../../../../../../model/internal/event/data/DataChangeEvent';
-import MapSelection from '../../../../../selection/model/internal/selection/MapSelection';
-import SelectionTool from '../../../../../selection/model/internal/tool/SelectionTool';
+import IChoroplethLayerTool from '../../types/tool/IChoroplethLayerTool';
+import IChoroplethLayerToolProps from '../../types/tool/IChoroplethLayerToolProps';
+import IChoroplethLayerToolDefaults from '../../types/tool/IChoroplethLayerToolDefaults';
+import IChoroplethLayerToolState from '../../types/tool/IChoroplethLayerToolState';
+import { TOOL as SELECTION_TOOL, ISelectionTool, IMapSelection } from '../../../../../selection';
+import { ILayerToolSidebarTab, ISidebarTab, ISidebarTabControl } from '../../../../../sidebar';
+import IMapDataManager from '../../../../../../model/types/data/IMapDataManager';
+import IMapDataManager from '../../../../../../model/types/data/IMapDataManager';
+import IMapDataDomain from '../../../../../../model/types/data/IMapDataDomain';
+import IChoroplethLayerToolDimensions from '../../types/tool/IChoroplethLayerToolDimensions';
+import IMapAggregationFunction from '../../../../../../model/types/aggregation/IMapAggregationFunction';
+import IMapAggregationBucket from '../../../../../../model/types/aggregation/IMapAggregationBucket';
+import IMapEvent from '../../../../../../model/types/event/IMapEvent';
 
 // TODO: move to defaults
 const COLOR_orange = ['#8c8c8c','#ffffcc','#ffff99','#ffcc99','#ff9966','#ff6600','#ff0000','#cc0000'];
@@ -23,253 +34,267 @@ const SCALE = [1, 100, 1000, 10000, 100000, 1000000, 10000000];
  * 
  * @author Jiri Hynek
  */
-class ChoroplethLayerTool extends AbstractLayerTool {
+class ChoroplethLayerTool extends AbstractLayerTool implements IChoroplethLayerTool, ISidebarTabControl {
+
+    private selectionTool: ISelectionTool | undefined;
+    private sidebarTab: ISidebarTab | undefined;
+    private bucketData: Map<string, IMapAggregationBucket> | undefined;
 
     /**
      * It creates a new tool with respect to the props.
      * 
      * @param props 
      */
-    constructor(props) {
+    public constructor(props: IChoroplethLayerToolProps) {
         super(props);
-    }
-
-    /**
-     * A unique string of the tool type.
-     */
-    static TYPE() {
-        return "geovisto-tool-layer-choropleth"; 
     }
 
     /**
      * It creates a copy of the uninitialized tool.
      */
-    copy() {
+    public copy(): IChoroplethLayerTool {
         return new ChoroplethLayerTool(this.getProps());
+    }
+
+    /**
+     * It returns default values of the state properties.
+     */
+    public getDefaults(): IChoroplethLayerToolDefaults {
+        return <IChoroplethLayerToolDefaults> super.getDefaults();
     }
 
     /**
      * It creates new defaults of the tool.
      */
-    createDefaults() {
-        return new ChoroplethLayerToolDefaults();
+    public createDefaults(): IChoroplethLayerToolDefaults {
+        return new ChoroplethLayerToolDefaults(this);
+    }
+
+    /**
+     * It returns the layer tool state.
+     */
+    public getState(): IChoroplethLayerToolState {
+        return <IChoroplethLayerToolState> super.getState();
     }
 
     /**
      * It returns default tool state.
      */
-    createState() {
-        return new ChoroplethLayerToolState();
+    public createState(): IChoroplethLayerToolState {
+        return new ChoroplethLayerToolState(this);
     }
 
     /**
      * Help function which acquires and returns the selection tool if available.
      */
-    getSelectionTool() {
+    private getSelectionTool(): ISelectionTool | undefined {
         if(this.selectionTool == undefined) {
-            let tools = this.getMap().getState().getTools().getByType(SelectionTool.TYPE());
+            const tools = this.getMap()?.getState().getTools().getByType(SELECTION_TOOL.getType());
             if(tools.length > 0) {
-                this.selectionTool = tools[0];
+                this.selectionTool = <ISelectionTool> tools[0];
             }
         }
         return this.selectionTool;
     }
 
     /**
+     * It returns a sidebar tab with respect to the configuration.
+     */
+    public getSidebarTab(): ILayerToolSidebarTab {
+        if(this.sidebarTab == undefined) {
+            this.sidebarTab = this.createSidebarTabControl();
+        }
+        return this.sidebarTab;
+    }
+
+    /**
      * It creates new tab control.
      */
-    createSidebarTabControl() {
-        return new ChoropolethLayerToolSidebarTab({ tool: this });
+    protected createSidebarTabControl(): ILayerToolSidebarTab {
+        // override if needed
+        return new ChoropolethLayerToolSidebarTab(this, {
+            // defined by the sidebar tab defaults
+            id: undefined,
+            enabled: undefined,
+            name: undefined,
+            icon: undefined,
+            checkButton: undefined
+        });
     }
 
     /**
      * It creates layer items.
      */
-    createLayerItems() {
-        var _this = this;
+    public createLayerItems(): L.Layer[] {
+        const map: L.Map | undefined = this.getMap()?.getState().getLeafletMap();
+        if(map) {
+            //var _this = this;
 
-        // ----------------- TODO: refactorization needed
+            // ----------------- TODO: refactorization needed
 
-        function thousands_separator(num) {
-            var num_parts = num.toString().split(".");
-            num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-            return num_parts.join(".");
-        }
-       
-        let mouseOver = function(e) {
-            let layerItem = e.target;
-            _this.getState().setHoveredItem(layerItem.feature.id);
-            _this.updateItemStyle(layerItem);
-            var popup = "<b>" + e.target.feature.name + "</b>";
-            if(e.target.feature.value != undefined){
-                popup += "<br>";
-                if (_this.getState().getDataMapping()[_this.getDefaults().getDataMappingModel().aggregation.name] == "sum") {
-                    popup+= "sum: ";
-                    popup+=thousands_separator(e.target.feature.value);
+            const thousands_separator = (num: number): string => {
+                const num_parts = num.toString().split(".");
+                num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+                return num_parts.join(".");
+            };
+        
+            // TODO specify the types
+            const mouseOver = (e: any): any => {
+                const layerItem: any = e.target;
+                this.getState().setHoveredItem(layerItem.feature.id);
+                this.updateItemStyle(layerItem);
+                const popupText: string = "<b>" + e.target.feature.name + "</b><br>"
+                                    + this.getState().getDimensions().aggregation.getDomain()?.getName() + ": "
+                                    + thousands_separator(e.target.feature.value ?? 0);
+                e.target.bindTooltip(popupText,{className: 'leaflet-popup-content', sticky: true}).openTooltip();
+            
+                if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                    layerItem.bringToFront();
+                }
+            };
+        
+            // TODO specify the types
+            const mouseOut = (e: any): any => {
+                const layerItem: any = e.target;
+                this.getState().setHoveredItem(undefined);
+                this.updateItemStyle(layerItem);
+                (this.getState().getPopup() as any).update();
 
-                } else {
-                    popup+=thousands_separator(e.target.feature.value);
-                    if (e.target.feature.value>1){
-                        popup+= " records";
+                if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                    layerItem.bringToBack();
+                }
+            };
+        
+            // TODO specify the types
+            const click = (e: any): any => {
+                //_this.getMap().getState().getLeafletMap().fitBounds(e.target.getBounds());
+                //console.log("fire click event");
+                // notify selection tool
+                const selectionTool: ISelectionTool | undefined = this.getSelectionTool();
+                if(selectionTool) {
+                    const selection: IMapSelection = SELECTION_TOOL.getSelection(this, [ e.target.feature.id ]);
+                    //console.log("select:", selection, selection.equals(selectionTool.getState().getSelection()));
+                    if(selection.equals(selectionTool.getState().getSelection())) {
+                        this.getSelectionTool()?.setSelection(null);
                     } else {
-                        popup+= " record";
+                        this.getSelectionTool()?.setSelection(selection);
                     }
                 }
-            }
-            e.target.bindTooltip(popup,{className: 'leaflet-popup-content', sticky: true}).openTooltip();
+            };
         
-            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-                layerItem.bringToFront();
-            }
-        }
-    
-        let mouseOut = function(e) {
-            let layerItem = e.target;
-            _this.getState().setHoveredItem(undefined);
-            _this.updateItemStyle(layerItem);
-            _this.getState().getLayerPopup().update();
+            // TODO specify the types
+            const onEachFeature = (feature: any, layer: any): any => {
+                layer.on({
+                    mouseover: mouseOver,
+                    mouseout: mouseOut,
+                    click: click
+                });
+            };
+        
+            const paneId: string = this.getId();
+            const pane: HTMLElement | undefined = this.getMap()?.getState().getLeafletMap()?.createPane(paneId);
+            if(pane) {
+                pane.style.zIndex = this.getState().getZIndex().toString();
+                // create Choropleth layer
+                const layer = L.geoJSON(this.getState().getPolygons(), {
+                    onEachFeature: onEachFeature,
+                    pane: this.getId()
+                });
+                //layer._layerComponent = this;
+            
+                // create info control that shows country info on hover
+                // TODO specify the types
+                const layerPopup: any = new L.control();
+            
+                // TODO specify the types
+                layerPopup.onAdd = function (map: any) {
+                    this._div = L.DomUtil.create('div', 'info');
+                    this.update();
+                    return this._div;
+                };
+            
+                // TODO specify the types
+                layerPopup.update = function (props: any) {
+                    this.innerHTML =  (props ?
+                        '<b>' + props.name + '</b><br />' + props.value + '</sup>'
+                        : 'Hover over a state');
+                };
 
-            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-                layerItem.bringToBack();
+                // update state
+                this.getState().setGeoJSONLayer(layer);
+                this.getState().setPopup(layerPopup);
+            
+                return [ layer, layerPopup ];
             }
         }
-    
-        let click = function(e) {
-            //_this.getMap().getState().getLeafletMap().fitBounds(e.target.getBounds());
-            //console.log("fire click event");
-            // notify selection tool
-            let selectionTool = _this.getSelectionTool();
-            if(selectionTool) {
-                let selection = new MapSelection(_this, [ e.target.feature.id ]);
-                //console.log("select:", selection, selection.equals(selectionTool.getState().getSelection()));
-                if(selection.equals(selectionTool.getState().getSelection())) {
-                    _this.getSelectionTool().setSelection(SelectionTool.EMPTY_SELECTION());
-                } else {
-                    _this.getSelectionTool().setSelection(selection);
-                }
-            }
-        }
-    
-        let onEachFeature = function(feature, layer) {
-            layer.on({
-                mouseover: mouseOver,
-                mouseout: mouseOut,
-                click: click
-            });
-        }
-    
-        // combine geo with data
-        this.updatePolygons(this);
-    
-        var paneId = this.getId();
-        let pane = this.getMap().getState().getLeafletMap().createPane(paneId);
-        pane.style.zIndex = this.getState().getZIndex();
-        // create Choropleth layer
-        let layer = L.geoJSON(this.getState().getPolygons(), {
-            onEachFeature: onEachFeature,
-            pane: paneId
-        });
-        //layer._layerComponent = this;
-    
-        // create info control that shows country info on hover
-        let layerPopup = L.control();
-    
-        layerPopup.onAdd = function (map) {
-            this._div = L.DomUtil.create('div', 'info');
-            this.update();
-            return this._div;
-        };
-    
-        layerPopup.update = function (props) {
-            this.innerHTML =  (props ?
-                '<b>' + props.name + '</b><br />' + props.value + '</sup>'
-                : 'Hover over a state');
-        };
-
-        // update state
-        this.getState().setLayer(layer);
-        this.getState().setLayerPopup(layerPopup);
-    
-        return [ layer, layerPopup ];
+        return [];
     }
 
     /**
      * It updates polygons so they represent current data.
      */
-    updatePolygons() {
-        //console.log("updating map data", this);
+    protected processData(): Map<string, IMapAggregationBucket> {
+        // initialize a hash map of aggreation buckets
+        const bucketMap = new Map<string, IMapAggregationBucket>();
 
-        // delete the 'value' property of every geo feature object if defined
-        let polygons = this.getState().getPolygons();
-        // TODO create new map and do not modify polygons structure
-        for (var i = 0; i < polygons.length; i++) {
-            polygons[i].value = undefined;
+        // get dimensions
+        const dimensions: IChoroplethLayerToolDimensions = this.getState().getDimensions();
+        const geoDimension: IMapDataDomain | undefined = dimensions.geo.getDomain();
+        const valueDimension: IMapDataDomain | undefined = dimensions.value.getDomain();
+        const aggregationDimension: IMapAggregationFunction | undefined = dimensions.aggregation.getDomain();
+
+        // test whether the dimension are set
+        if(geoDimension && valueDimension && aggregationDimension) {
+            // and go through all data records
+            const mapData: IMapDataManager = this.getMap().getState().getMapData();
+            const data: any[] = this.getMap().getState().getCurrentData();
+            const dataLen: number = data.length;
+            let foundGeos: any[], foundValues: any[];
+            let aggregationBucket: IMapAggregationBucket | undefined;
+            for (let i = 0; i < dataLen; i++) {
+                // find the 'geo' properties of data record
+                foundGeos = mapData.getDataRecordValues(geoDimension,  data[i]);
+                // since the data are flattened we can expect max one found item
+                if(foundGeos.length == 1) {
+                    // get aggregation bucket for the country or create a new one
+                    aggregationBucket = bucketMap.get(foundGeos[0]);
+                    // test if country exists in the map
+                    if(!aggregationBucket) {
+                        bucketMap.set(foundGeos[0], aggregationDimension.getAggregationBucket());
+                    }
+                    // find the 'value' properties
+                    foundValues = mapData.getDataRecordValues(valueDimension, data[i]);
+                    
+                    // since the data are flattened we can expect max one found item
+                    aggregationBucket?.addValue(foundValues.length == 1 ? foundValues[0] : 0);
+                }   
+            }
         }
 
-        // set a new value of the 'value' property of every geo feature
-        let geoCountry;
-        let data = this.getMap().getState().getCurrentData();
-        let dataLen = data.length;
-        let mapData = this.getMap().getState().getMapData();
-        let dataMappingModel = this.getDefaults().getDataMappingModel();
-        let dataMapping = this.getState().getDataMapping();
-        let countryDataDomain = mapData.getDataDomain(dataMapping[dataMappingModel.country.name]);
-        let valueDataDomain = mapData.getDataDomain(dataMapping[dataMappingModel.value.name]);
-        //console.log(countryDataDomain, valueDataDomain);
-        let foundCountries, foundValues;
-        //console.log(data);
-        for (let i = 0; i < dataLen; i++) {
-            // find the 'country' properties
-            foundCountries = mapData.getItemValues(countryDataDomain,  data[i]);
-            //console.log("search: ", countryDataDomain, data[i], foundCountries);
-            //console.log("search: ", foundCountries);
-            // find the 'value' properties
-            foundValues = mapData.getItemValues(valueDataDomain, data[i]);
-            //console.log("search: ", foundValues);
-
-            // since the data are flattened we can expect max one found item
-            if(foundCountries.length == 1) {
-                geoCountry = polygons.find(x => x.id == foundCountries[0]);
-                // test if country exists in the map
-                if(geoCountry != undefined) {
-                    // initilizace map country value property
-                    if(geoCountry.value == undefined) {
-                        geoCountry.value = 0;
-                    }
-                    // set value with respect to the aggregation function
-                    if(dataMapping[dataMappingModel.aggregation.name] == "sum") {
-                        if(foundValues.length == 1 && foundValues[0] != null && typeof foundValues[0] === 'number') {
-                            geoCountry.value += foundValues[0];
-                        }
-                    } else {
-                        // count
-                        geoCountry.value++;
-                    }
-                }
-            }   
-        }
+        return bucketMap;
     }
 
     /**
      * This function is called when layer items are rendered.
      */
-    postCreateLayerItems() {
+    public postCreateLayerItems(): void {
         if(this.getState().getLayer()) {
-            this.updateStyle();
+            this.bucketData = this.processData();
+            this.updateStyle(this.bucketData);
         }
     }
 
     /**
      * It reloads data and redraw the layer.
      */
-    redraw(onlyStyle) {
+    public redraw(onlyStyle: boolean): void {
         if(!onlyStyle) {
             // combine geo with data
-            this.updatePolygons();
+            this.bucketData = this.processData();
         }
 
         // update style
-        this.updateStyle();
+        this.updateStyle(this.bucketData);
     }
 
     /**
@@ -277,10 +302,10 @@ class ChoroplethLayerTool extends AbstractLayerTool {
      * 
      * @param event 
      */
-    handleEvent(event) {
+    public handleEvent(event: IMapEvent): void {
         if(event.getType() == DataChangeEvent.TYPE()) {
             // data change
-            this.redraw();
+            this.redraw(false);
         } else if(event.getType() == SelectionToolEvent.TYPE()) {
             // selection change
             this.redraw(true);

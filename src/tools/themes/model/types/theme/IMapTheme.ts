@@ -1,11 +1,11 @@
-import IMapCategory from "../../../../../model/types/category/IMapCategory";
+import IMapDomain from "../../../../../model/types/domain/IMapDomain";
 
 /**
  * This interface declares a map theme API.
  * 
  * @author Jiri Hynek
  */
-interface IMapTheme extends IMapCategory {
+interface IMapTheme extends IMapDomain {
 
     /**
      * It returns the url of the preferred base map.

@@ -16,7 +16,7 @@ class MapObjectDefaults implements IMapObjectDefaults {
     /**
      * reference to the map object - some defaults can be derived from map object
      */
-    protected mapObject: IMapObject | undefined;
+    protected mapObject: IMapObject;
 
     /**
      * It creates map object defaults.
@@ -28,7 +28,7 @@ class MapObjectDefaults implements IMapObjectDefaults {
     /**
      * It returns the map object which works with the defaults.
      */
-    protected getMapObject(): IMapObject | undefined {
+    protected getMapObject(): IMapObject {
         return this.mapObject;
     }
 

@@ -8,12 +8,12 @@ import IMapTool from "../../../../../model/types/tool/IMapTool";
  * 
  * @author Jiri Hynek
  */
-class SelectionToolEvent extends MapChangeEvent<IMapTool, IMapSelection> implements ISelectionToolEvent {
+class SelectionToolEvent extends MapChangeEvent<IMapTool, IMapSelection | null> implements ISelectionToolEvent {
 
     /**
      * It initializes event.
      */
-    public constructor(selectionTool: IMapTool, selection: IMapSelection) {
+    public constructor(selectionTool: IMapTool, selection: IMapSelection | null) {
         super(SelectionToolEvent.TYPE(), selectionTool, selection);
     }
 

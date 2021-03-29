@@ -1,3 +1,6 @@
+const TOOL_TYPE = "geovisto-tool-settings";
+export { TOOL_TYPE };
+
 // types
 export type { default as ISettingsTool } from './model/types/tool/ISettingsTool';
 export type { default as ISettingsToolConfig } from './model/types/tool/ISettingsToolConfig';

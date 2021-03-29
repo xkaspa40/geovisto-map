@@ -1,4 +1,4 @@
-import AbstractMapCategory from "../../../../../../model/internal/category/abstract/AbstractMapCategory";
+import AbstractMapDomain from "../../../../../../model/internal/domain/abstract/AbstractMapDomain";
 import IMapFilterOperation from "../../../types/filter/IMapFilterOperation";
 
 /**
@@ -6,7 +6,7 @@ import IMapFilterOperation from "../../../types/filter/IMapFilterOperation";
  * 
  * @author Jiri Hynek
  */
-class MapFilterOperation extends AbstractMapCategory implements IMapFilterOperation {
+class MapFilterOperation extends AbstractMapDomain implements IMapFilterOperation {
     
     private label: string;
 

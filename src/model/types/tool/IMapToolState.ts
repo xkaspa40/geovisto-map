@@ -39,7 +39,7 @@ interface IMapToolState extends IMapObjectState {
     /**
      * It returns the map property of the tool state.
      */
-    getMap(): IMap;
+    getMap(): IMap | undefined;
 
     /**
      * It sets the map property of the tool state.

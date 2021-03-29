@@ -9,6 +9,7 @@ import MapToolDefaults from "../../../../../model/internal/tool/MapToolDefaults"
 import IFiltersTool from "../../types/tool/IFiltersTool";
 import IFiltersToolConfig from "../../types/tool/IFiltersToolConfig";
 import IFiltersToolDefaults from "../../types/tool/IFiltersToolDefaults";
+import { TOOL_TYPE } from "../../..";
 
 /**
  * This class provide functions which return the default state values.
@@ -44,7 +45,7 @@ class FiltersToolDefaults extends MapToolDefaults implements IFiltersToolDefault
      * It returns a unique string of the tool type.
      */
     public getType(): string {
-        return FiltersTool.TYPE();
+        return TOOL_TYPE;
     }
 
     /**

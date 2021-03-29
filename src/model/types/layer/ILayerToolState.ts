@@ -1,5 +1,6 @@
 import IMapToolState from "../tool/IMapToolState";
 import ILayerToolConfig from "./ILayerToolConfig";
+import ILayerToolDimensions from "./ILayerToolDimensions";
 
 /**
  * This interface declares functions for using the state of the layer tool.
@@ -33,22 +34,6 @@ interface ILayerToolState extends IMapToolState {
      * @param layerName 
      */
     setLayerName(layerName: string): void;
-
-    /**
-     * It returns the data mapping property of the tool state.
-     * 
-     * TODO: specify the type.
-     */
-    getDataMapping(): any;
-
-    /**
-     * It sets the data mapping property of tool state.
-     * 
-     * TODO: specify the type.
-     * 
-     * @param dataMapping 
-     */
-    setDataMapping(dataMapping: any): void;
 
     /**
      * It returns the layer items property of the tool state.

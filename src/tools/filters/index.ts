@@ -1,6 +1,9 @@
 // styles
 import "./styles/style.scss";
 
+const TOOL_TYPE = "geovisto-tool-filters";
+export { TOOL_TYPE };
+
 // types
 export type { default as IMapFilterManager } from './model/types/filter/IMapFilterManager';
 export type { default as IMapFilterOperation } from './model/types/filter/IMapFilterOperation';

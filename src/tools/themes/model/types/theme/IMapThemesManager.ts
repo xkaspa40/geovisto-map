@@ -1,12 +1,12 @@
 import IMapTheme from "./IMapTheme";
-import IMapCategoriesManager from "../../../../../model/types/category/IMapCategoriesManager";
+import IMapDomainArrayManager from "../../../../../model/types/domain/IMapDomainArrayManager";
 
 /**
  * This interface declares a manager for using themes.
  * 
  * @author Jiri Hynek
  */
-interface IMapThemesManager extends IMapCategoriesManager<IMapTheme> {
+interface IMapThemesManager extends IMapDomainArrayManager<IMapTheme> {
 
     /**
      * It returns the default theme.

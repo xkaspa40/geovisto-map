@@ -33,13 +33,6 @@ class SettingsTool extends MapTool implements ISettingsTool, ISidebarTabControl 
     }
 
     /**
-     * A unique string of the tool type.
-     */
-    public static TYPE(): string {
-        return "geovisto-tool-settings";
-    }
-
-    /**
      * It creates a copy of the uninitialized tool.
      */
     public copy(): ISettingsTool {

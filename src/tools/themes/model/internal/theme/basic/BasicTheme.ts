@@ -1,4 +1,4 @@
-import AbstractMapCategory from "../../../../../../model/internal/category/abstract/AbstractMapCategory";
+import AbstractMapDomain from "../../../../../../model/internal/domain/abstract/AbstractMapDomain";
 import IMapTheme from "../../../types/theme/IMapTheme";
 
 /**
@@ -6,7 +6,7 @@ import IMapTheme from "../../../types/theme/IMapTheme";
  * 
  * @author Jiri Hynek
  */
-class BasicTheme extends AbstractMapCategory implements IMapTheme {
+class BasicTheme extends AbstractMapDomain implements IMapTheme {
 
     /**
      * It initializes the theme.

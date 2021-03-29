@@ -36,6 +36,6 @@ interface ISelectionTool extends IMapTool {
      * 
      * @param
      */
-    setSelection(selection: IMapSelection): void;
+    setSelection(selection: IMapSelection | null): void;
 }
 export default ISelectionTool;

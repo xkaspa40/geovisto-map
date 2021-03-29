@@ -2,6 +2,7 @@ import AbstractLayerTool from "./AbstractLayerTool";
 import ILayerTool from "../../types/layer/ILayerTool";
 import MapToolDefaults from "../tool/MapToolDefaults";
 import ILayerToolDefaults from "../../types/layer/ILayerToolDefaults";
+import ILayerToolDimensions from "../../types/layer/ILayerToolDimensions";
 
 /**
  * This class provide functions which return the default state values.
@@ -32,21 +33,10 @@ class LayerToolDefaults extends MapToolDefaults implements ILayerToolDefaults {
     }
 
     /**
-     * It returns the default mapping of data domains to chart dimensions.
-     * 
-     * TODO: specify the type
+     * It returns the default layer tool dimensions.
      */
-    public getDataMapping(): any {
-        return undefined;
-    }
-
-    /**
-     * It returns the data mapping model.
-     * 
-     * TODO: specify the type
-     */
-    public getDataMappingModel(): any {
-        return undefined;
+    public getDimensions(): ILayerToolDimensions {
+        return {};
     }
 }
 export default LayerToolDefaults;

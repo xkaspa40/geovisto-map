@@ -9,6 +9,5 @@ import IMapToolConfig from "../tool/IMapToolConfig";
  */
 interface ILayerToolConfig extends IMapToolConfig {
     name: string | undefined;
-    data: any;
 }
 export default ILayerToolConfig;

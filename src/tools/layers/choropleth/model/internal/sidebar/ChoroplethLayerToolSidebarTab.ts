@@ -1,15 +1,26 @@
 import ChoroplethLayerToolSidebarTabDefaults from "./ChoroplethLayerToolSidebarTabDefaults";
 import IChoroplethLayerTool from "../../types/tool/IChoroplethLayerTool";
 import { ILayerToolSidebarTabProps, AbstractLayerToolSidebarTab, ILayerToolSidebarTab, ILayerToolSidebarTabDefaults } from "../../../../../sidebar";
+import IMapFormInput from "../../../../../../model/types/inputs/IMapFormInput";
+import IMapDimension from "../../../../../../model/types/dimension/IMapDimension";
+import IMapDataDomain from "../../../../../../model/types/data/IMapDataDomain";
+import IChoroplethLayerToolDimensions from "../../types/tool/IChoroplethLayerToolDimensions";
+import IMapAggregationFunction from "../../../../../../model/types/aggregation/IMapAggregationFunction";
 
 /**
  * This class provides controls for management of the layer sidebar tab.
  * 
  * @author Jiri Hynek
  */
-class ChoropolethLayerToolSidebarTab extends AbstractLayerToolSidebarTab implements ILayerToolSidebarTab {
+class ChoropolethLayerToolSidebarTab extends AbstractLayerToolSidebarTab<IChoroplethLayerTool> implements ILayerToolSidebarTab {
     
-    private htmlContent: undefined;
+    private htmlContent: HTMLDivElement | undefined;
+    
+    private inputs: {
+        geo: IMapFormInput;
+        value: IMapFormInput;
+        aggregation: IMapFormInput;
+    } | undefined
 
     public constructor(tool: IChoroplethLayerTool, props: ILayerToolSidebarTabProps) {
         super(tool, props);
@@ -23,93 +34,73 @@ class ChoropolethLayerToolSidebarTab extends AbstractLayerToolSidebarTab impleme
     }
 
     /**
-     * It acquire selected data mapping from input values.
-     * 
-     * TODO: specify data types
-     */
-    public getInputValues(): any {
-        // get data mapping model
-        let model = this.getDefaults().getDataMappingModel();
-        
-        // create new selection
-        let dataMapping = {};
-
-        // get selected data domains values
-        dataMapping[model.country.name] = this.inputCountry.getValue();
-        dataMapping[model.value.name] = this.inputValue.getValue();
-        dataMapping[model.aggregation.name] = this.inputAggregation.getValue();
-        // deprecated
-        // dataMapping[model.color.name] = this.inputColor.getValue();
-
-        return dataMapping;
-    }
-
-    /**
      * It updates selected input values according to the given data mapping.
-     * 
-     * TODO: specify data types
      * 
      * @param dataMapping 
      */
-    public setInputValues(dataMapping: any): void {
-        // get data model
-        let model = this.getDefaults().getDataMappingModel();
-
+    public setInputValues(dimensions: IChoroplethLayerToolDimensions): void {
         // update inputs
-        this.inputCountry.setValue(dataMapping[model.country.name]);
-        this.inputValue.setValue(dataMapping[model.value.name]);
-        this.inputAggregation.setValue(dataMapping[model.aggregation.name]);
-        // deprecated
-        //this.inputColor.setValue(dataMapping[model.color.name]);
+        this.inputs?.geo.setValue((dimensions.geo.getDomain()?.getName())?? "");
+        this.inputs?.value.setValue((dimensions.value.getDomain()?.getName())?? "");
+        this.inputs?.aggregation.setValue((dimensions.aggregation.getDomain()?.getName())?? "");
     }
 
     /**
      * It returns the sidebar tab pane.
      */
     public getContent(): HTMLDivElement {
-        var _this = this;
+        if(this.htmlContent == undefined) {
+            // tab content
+            this.htmlContent = document.createElement('div');
+            const elem = this.htmlContent.appendChild(document.createElement('div'));
+    
+            // get data mapping model
+            const dimensions: IChoroplethLayerToolDimensions = this.getTool().getState().getDimensions();
 
-        // event handler: change color action
-        const changeColorAction = function(e) {
-           // get selected values and update layer's data mapping
-           _this.getTool().updateDataMapping(_this.getInputValues(), true);
-        };
-
-        // event handler: change dimension action
-        const changeDimensionAction = function(e) {
-            // get selected values and update layer's data mapping
-            _this.getTool().updateDataMapping(_this.getInputValues());
-        };
+            // create inputs
+            this.inputs = {
+                geo: this.getInputGeo(dimensions.geo),
+                value: this.getInputValue(dimensions.value),
+                aggregation: this.getInputAggregation(dimensions.aggregation)
+            };
+            
+            // append to DOM
+            elem.appendChild(this.inputs.geo.create());        
+            elem.appendChild(this.inputs.value.create());            
+            elem.appendChild(this.inputs.aggregation.create());
+    
+            // set input values
+            this.setInputValues(dimensions);
+        }
         
-        // tab content
-        let tab = document.createElement('div');
-        let elem = tab.appendChild(document.createElement('div'));
-
-        // get data mapping model
-        let model = this.getDefaults().getDataMappingModel();
-        let dataDomainLabels = this.getTool().getMap().getState().getMapData().getDataDomainLabels();
-
-        // select country
-        this.inputCountry = SidebarInputFactory.createSidebarInput(model.country.input, { label: model.country.label , options: dataDomainLabels, action: changeDimensionAction });
-        elem.appendChild(this.inputCountry.create());
-
-        // select value
-        this.inputValue = SidebarInputFactory.createSidebarInput(model.value.input, { label: model.value.label , options: dataDomainLabels, action: changeDimensionAction });
-        elem.appendChild(this.inputValue.create());
-
-        // select aggregation
-        this.inputAggregation = SidebarInputFactory.createSidebarInput(model.aggregation.input, { label: model.aggregation.label, options: model.aggregation.options, action: changeDimensionAction });
-        elem.appendChild(this.inputAggregation.create());
-
-        // select color scheme
-        // deprecated
-        /*this.inputColor = SidebarInputFactory.createSidebarInput(model.color.input, { label: model.color.label, options: model.color.options, action: changeColorAction });
-        elem.appendChild(this.inputColor.create());*/
-
-        this.setInputValues(this.getTool().getState().getDataMapping());
-        
-        return tab;
+        return this.htmlContent;
     }
 
+    /**
+     * It returns new input for the geo dimension.
+     * 
+     * @param dimension
+     */
+    public getInputGeo(dimension: IMapDimension<IMapDataDomain>): IMapFormInput {
+        return this.getAutocompleteInput(dimension);
+    }
+
+    /**
+     * It returns new input for the geo dimension.
+     * 
+     * @param dimension
+     */
+    public getInputValue(dimension: IMapDimension<IMapDataDomain>): IMapFormInput {
+        return this.getAutocompleteInput(dimension);
+    }
+
+    /**
+     * It returns new input for the geo dimension.
+     * 
+     * @param dimension
+     */
+    public getInputAggregation(dimension: IMapDimension<IMapAggregationFunction>): IMapFormInput {
+        return this.getAutocompleteInput(dimension);
+    }
 }
 export default ChoropolethLayerToolSidebarTab;

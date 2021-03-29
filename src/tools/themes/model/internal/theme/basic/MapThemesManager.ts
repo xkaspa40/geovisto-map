@@ -1,4 +1,4 @@
-import MapCategoriesManager from "../../../../../../model/internal/category/generic/MapCategoriesManager";
+import MapDomainArrayManager from "../../../../../../model/internal/domain/generic/MapDomainArrayManager";
 import IMapTheme from "../../../types/theme/IMapTheme";
 import IMapThemesManager from "../../../types/theme/IMapThemesManager";
 
@@ -7,7 +7,7 @@ import IMapThemesManager from "../../../types/theme/IMapThemesManager";
  * 
  * @author Jiri Hynek
  */
-class MapThemesManager extends MapCategoriesManager<IMapTheme> implements IMapThemesManager {
+class MapThemesManager extends MapDomainArrayManager<IMapTheme> implements IMapThemesManager {
 
     public constructor(themes: IMapTheme[]) {
         super(themes);
@@ -16,8 +16,8 @@ class MapThemesManager extends MapCategoriesManager<IMapTheme> implements IMapTh
     /**
      * The function returns the default theme.
      */
-    getDefault(): IMapTheme | undefined {
-        const objects: IMapTheme[] = this.getAll();
+    public getDefault(): IMapTheme | undefined {
+        const objects: IMapTheme[] = this.getDomains();
         return objects && objects.length > 0 ? objects[0] : undefined;
     }
 }

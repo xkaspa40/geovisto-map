@@ -8,5 +8,10 @@ import ILayerToolConfig from "../../../../../../model/types/layer/ILayerToolConf
  * @author Jiri Hynek
  */
 interface IChoroplethLayerToolConfig extends ILayerToolConfig {
+    data: {
+        geo: string | undefined,
+        value: string | undefined,
+        aggregation: string | undefined
+    };
 }
 export default IChoroplethLayerToolConfig;
