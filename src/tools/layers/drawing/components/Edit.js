@@ -25,6 +25,33 @@ L.Edit.ReducedPolyVerticesEdit = L.Edit.PolyVerticesEdit.extend({
       len,
       marker;
 
+    // const DECIMAL_PLACE = 4;
+    // const TRESHOLD = 0.5;
+    // const res = new Set();
+    // for (let index = 0; index < latlngs.length; index++) {
+    //   let currIdx = index;
+    //   let prevIdx = index - 1;
+    //   if (prevIdx !== -1) {
+    //     let currEl = latlngs[currIdx];
+    //     let prevEl = latlngs[prevIdx];
+    //     let prevLat = Number(prevEl.lat.toFixed(DECIMAL_PLACE));
+    //     let currLat = Number(currEl.lat.toFixed(DECIMAL_PLACE));
+    //     let prevLng = Number(prevEl.lng.toFixed(DECIMAL_PLACE));
+    //     let currLng = Number(currEl.lng.toFixed(DECIMAL_PLACE));
+    //     let timesLat = (prevLat > 0 && currLat > 0) || (prevLat < 0 && currLat < 0) ? -1 : 1;
+    //     let timesLng = (prevLng > 0 && currLng > 0) || (prevLng < 0 && currLng < 0) ? -1 : 1;
+    //     let diffLats = currLat + prevLat * timesLat;
+    //     let diffLngs = currLng + prevLng * timesLng;
+    //     if (diffLats < 0) diffLats = diffLats * -1;
+    //     if (diffLngs < 0) diffLngs = diffLngs * -1;
+    //     if (diffLats > TRESHOLD && diffLngs > TRESHOLD) {
+    //       let temp = L.latLng(currEl.lat, currEl.lng);
+    //       res.add(temp);
+    //     }
+    //   }
+    // }
+    // latlngs = Array.from(res);
+
     console.log({ latlngs, shape: this._defaultShape() });
 
     for (i = 0, len = latlngs.length; i < len; i++) {

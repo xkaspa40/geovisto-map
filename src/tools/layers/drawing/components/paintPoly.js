@@ -8,6 +8,7 @@ import difference from '@turf/difference';
 import { convertOptionsToProperties, getGeoJSONFeatureFromLayer } from '../util/Poly';
 
 const DEFAULT_COLOR = '#333333';
+const DEFAULT_RADIUS = 30;
 
 class PaintPoly {
   constructor(props) {
@@ -18,16 +19,36 @@ class PaintPoly {
     this._circle = null;
     this._mouseDown = false;
     this._latlng = [0, 0];
-    this._circleRadius = 30;
+
+    this._maxCircleRadius = 100;
+    this._minCircleRadius = 10;
+    this._circleRadius = DEFAULT_RADIUS;
 
     this.keyIndex = 0;
 
     this._accumulatedShapes = {};
     this._shapeLayers = {};
+
+    this._active = false;
   }
 
   getMouseDown = () => {
     return this._mouseDown;
+  };
+
+  getBrushSize = () => {
+    return this._circleRadius;
+  };
+
+  getBrushSizeConstraints = () => {
+    return { maxBrushSize: this._maxCircleRadius, minBrushSize: this._minCircleRadius };
+  };
+
+  resizeBrush = (val) => {
+    if (val && val <= this._maxCircleRadius && val >= this._minCircleRadius) {
+      this._circleRadius = val;
+      this._circle.setRadius(val);
+    }
   };
 
   stop = () => {
@@ -183,9 +204,15 @@ class PaintPoly {
     }
     if (this._action == 'draw') {
       this.stop();
+      this._active = false;
     } else {
       this.startPaint();
+      this._active = true;
     }
+  };
+
+  isActive = () => {
+    return this._active;
   };
 
   renderButton = (options = {}) => {

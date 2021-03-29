@@ -63,6 +63,13 @@ export default function useDrawingToolbar() {
         'fa fa-mouse-pointer',
       );
 
+      this.options.drawingBtns.deselectBtn = this.createToolbarBtn(
+        'deselectBtn',
+        toolContainer,
+        'Deselect',
+        'fa fa-star-half-o',
+      );
+
       this.options.drawingBtns.transformBtn = this.createToolbarBtn(
         'transformBtn',
         toolContainer,
@@ -100,22 +107,24 @@ export default function useDrawingToolbar() {
     onRemove: function (map) {},
 
     _dispatchClickEvent: function (btn, sidebar) {
-      let enabled = sidebar.getState().enabledEl;
+      let enabled = sidebar.getState().getEnabledEl();
+      console.log({ enabled });
       if (enabled) {
         enabled.disable();
-      } else if (this.lastClickedBtn && btn !== this.lastClickedBtn) {
-        let className = this.lastClickedBtn.className;
-        if (UNABLE_TO_CLICK_DISABLE.includes(className)) {
-          this.lastClickedBtn = btn;
-          return;
-        }
-        if (className === 'selectBtn' && !this.getSelecting()) {
-          this.lastClickedBtn = btn;
-          return;
-        }
-        this.lastClickedBtn.dispatchEvent(new Event('click'));
       }
-      this.lastClickedBtn = btn;
+      // else if (this.lastClickedBtn && btn !== this.lastClickedBtn) {
+      //   let className = this.lastClickedBtn.className;
+      //   if (UNABLE_TO_CLICK_DISABLE.includes(className)) {
+      //     this.lastClickedBtn = btn;
+      //     return;
+      //   }
+      //   if (className === 'selectBtn' && !this.getSelecting()) {
+      //     this.lastClickedBtn = btn;
+      //     return;
+      //   }
+      //   this.lastClickedBtn.dispatchEvent(new Event('click'));
+      // }
+      // this.lastClickedBtn = btn;
     },
 
     addEventListeners: function () {
@@ -127,6 +136,7 @@ export default function useDrawingToolbar() {
         transformBtn,
         editBtn,
         sliceBtn,
+        deselectBtn,
       } = this.options.drawingBtns;
       const map = this.options.map;
       const sidebar = this.options.tool.getSidebarTabControl();
@@ -137,23 +147,62 @@ export default function useDrawingToolbar() {
       //   L.DomEvent.on(btn, 'click', () => this._dispatchClickEvent(btn, sidebar), this);
       // });
 
-      L.DomEvent.on(lineBtn, 'click', () => polylineCreate(map, sidebar), this);
+      L.DomEvent.on(lineBtn, 'click', () => this.initCreatePolyline(map, sidebar), this);
       L.DomEvent.on(markerBtn, 'click', L.DomEvent.stopPropagation)
         .on(markerBtn, 'click', L.DomEvent.preventDefault)
-        .on(markerBtn, 'click', () => markerCreate(map, sidebar), this);
-      L.DomEvent.on(polygonBtn, 'click', () => polygonCreate(map, sidebar), this);
+        .on(markerBtn, 'click', () => this.initCreateMarker(map, sidebar), this);
+      L.DomEvent.on(polygonBtn, 'click', () => this.initCreatePolygon(map, sidebar), this);
       L.DomEvent.on(selectBtn, 'click', this.initSelecting, this);
       L.DomEvent.on(transformBtn, 'click', this.initTransform, this);
       L.DomEvent.on(editBtn, 'click', this.initNodeEdit, this);
-      L.DomEvent.on(sliceBtn, 'click', () => slicePoly(map, sidebar), this);
+      L.DomEvent.on(sliceBtn, 'click', () => this.initSlicePoly(map, sidebar), this);
+      L.DomEvent.on(deselectBtn, 'click', this.deselect, this);
+    },
+
+    initCreatePolyline: function (map, sidebar) {
+      let enabled = sidebar.getState().getEnabledEl();
+      if (enabled?.layerType === 'polyline') this._dispatchClickEvent(map, sidebar);
+      else polylineCreate(map, sidebar);
+    },
+    initCreatePolygon: function (map, sidebar) {
+      let enabled = sidebar.getState().getEnabledEl();
+      console.log({ enab: enabled });
+      if (enabled?.layerType === 'polygon') this._dispatchClickEvent(map, sidebar);
+      else polygonCreate(map, sidebar);
+    },
+    initCreateMarker: function (map, sidebar) {
+      let enabled = sidebar.getState().getEnabledEl();
+      if (enabled?.layerType === 'marker') this._dispatchClickEvent(map, sidebar);
+      else markerCreate(map, sidebar);
+    },
+    initSlicePoly: function (map, sidebar) {
+      let enabled = sidebar.getState().getEnabledEl();
+      if (enabled?.layerType === 'knife') this._dispatchClickEvent(map, sidebar);
+      else slicePoly(map, sidebar);
+    },
+
+    deselect: function () {
+      const currEl = this.getCurrEl();
+      console.log({ currEl });
+
+      if (currEl?.editing?._enabled) {
+        currEl.editing.disable();
+      }
+      let selected = this.options.tool.getState().selectedLayer;
+      if (selected) {
+        if (selected.setStyle) selected.setStyle(normalStyles);
+        this.options.tool.getState().clearSelectedLayer();
+        this.options.tool.redrawSidebarTabControl();
+        this.setCurrEl(null);
+        document.querySelector('.leaflet-container').style.cursor = '';
+      }
     },
 
     initNodeEdit: function () {
-      const currEl = this.options.tool.getState().currEl;
+      const currEl = this.getCurrEl();
 
       if (currEl.editing) {
-        currEl.editing = new L.Edit.ExtendedPoly(currEl);
-
+        // currEl.editing = new L.Edit.ExtendedPoly(currEl);
         if (currEl.editing._enabled) {
           currEl.editing.disable();
           // let paintPoly = this.options.tool.getSidebarTabControl().getState().paintPoly;
@@ -162,6 +211,12 @@ export default function useDrawingToolbar() {
           currEl.editing.enable();
         }
       }
+    },
+
+    initTransform: function () {
+      const currEl = this.getCurrEl();
+
+      this.options.tool.initTransform(currEl);
     },
 
     initSelecting: function () {
@@ -184,27 +239,16 @@ export default function useDrawingToolbar() {
       });
     },
 
-    initTransform: function () {
-      const layer = this.options.tool.getState().currEl;
-      if (layer?.transform) {
-        if (layer.transform._enabled) {
-          layer.transform.disable();
-          layer.dragging.disable();
-          let paintPoly = this.options.tool.getSidebarTabControl().getState().paintPoly;
-          paintPoly.updatePaintedPolys(layer.kIdx, layer);
-        } else {
-          layer.transform.enable({ rotation: true, scaling: true });
-          layer.dragging.enable();
-        }
-      }
-    },
-
     createToolbarBtn: function (className, btnContainer, title, icon) {
       const returnBtn = L.DomUtil.create('a', className, btnContainer);
       returnBtn.title = title;
       returnBtn.innerHTML = `<i class="${icon}" aria-hidden="true"></i>`;
       returnBtn.role = 'button';
       return returnBtn;
+    },
+
+    getCurrEl: function () {
+      return this.options.tool.getState().currEl;
     },
 
     setCurrEl: function (el) {
@@ -215,7 +259,7 @@ export default function useDrawingToolbar() {
       this.options.tool.getState().setSelecting(is);
     },
 
-    getSelecting: function (is) {
+    getSelecting: function () {
       return this.options.tool.getState().getSelecting();
     },
   });

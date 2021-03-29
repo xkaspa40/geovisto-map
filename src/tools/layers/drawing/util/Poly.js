@@ -27,8 +27,9 @@ export const polygonCreate = (map, sidebar) => {
       draggable: true,
       transform: true,
     },
+    repeatMode: true,
   });
-  sidebar.getState().setEnabledEl(x);
+  if (x) sidebar.getState().setEnabledEl(x);
   x.enable();
   return x;
 };
@@ -41,9 +42,10 @@ export const polylineCreate = (map, sidebar) => {
       draggable: true,
       transform: true,
     },
+    repeatMode: true,
   });
+  if (x) sidebar.getState().setEnabledEl(x);
   x.enable();
-  sidebar.getState().setEnabledEl(x);
   return x;
 };
 

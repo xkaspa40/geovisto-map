@@ -308,7 +308,7 @@ class DrawingLayerTool extends AbstractLayerTool {
 
     let prevLayer = this.getState().getPrevLayer();
     if (prevLayer?.layerType !== e.layerType) this.redrawSidebarTabControl(e.layerType);
-    this.getSidebarTabControl().getState().setEnabledEl(null);
+    // this.getSidebarTabControl().getState().setEnabledEl(null);
 
     if (e.layerType === 'polygon' || e.layerType === 'painted') {
       // * JOIN
@@ -317,6 +317,11 @@ class DrawingLayerTool extends AbstractLayerTool {
       // * DIFFERENCE
       this.polyDiff(layer);
     }
+
+    // if (e.layerType === 'painted') {
+    //   // * for reducing editing nodes
+    //   layer.editing = new L.Edit.ExtendedPoly(layer);
+    // }
 
     // * SLICE
     if (e.layerType === 'knife') {
@@ -371,16 +376,39 @@ class DrawingLayerTool extends AbstractLayerTool {
 
   initChangeStyle(e) {
     const drawObject = e.target;
-    if (this.getState().getSelecting()) {
-      let fgLayers = this.getState().featureGroup._layers;
-      Object.values(fgLayers).forEach((_) => {
-        if (_.setStyle) _.setStyle(normalStyles);
-      });
-      this.getState().setSelectedLayer(drawObject);
-      this.redrawSidebarTabControl(e.target.layerType);
-      this.getState().setCurrEl(drawObject);
-    }
+    // if (this.getState().getSelecting()) {
+    let fgLayers = this.getState().featureGroup._layers;
+    Object.values(fgLayers).forEach((_) => {
+      if (_.setStyle) _.setStyle(normalStyles);
+      if (_?.transform?._enabled) {
+        _.transform.disable();
+        _.dragging.disable();
+        let paintPoly = this.getSidebarTabControl().getState().paintPoly;
+        paintPoly.updatePaintedPolys(_.kIdx, _);
+      }
+    });
+    this.getState().setSelectedLayer(drawObject);
+    this.redrawSidebarTabControl(e.target.layerType);
+    this.getState().setCurrEl(drawObject);
+    this.initTransform(drawObject);
+    // }
     document.querySelector('.leaflet-container').style.cursor = '';
+  }
+
+  initTransform(drawObject) {
+    console.log({ drawObject });
+    const layer = drawObject;
+    if (layer?.transform) {
+      if (layer.transform._enabled) {
+        layer.transform.disable();
+        layer.dragging.disable();
+        let paintPoly = this.getSidebarTabControl().getState().paintPoly;
+        paintPoly.updatePaintedPolys(layer.kIdx, layer);
+      } else {
+        layer.transform.enable({ rotation: true, scaling: true });
+        layer.dragging.enable();
+      }
+    }
   }
 
   /**

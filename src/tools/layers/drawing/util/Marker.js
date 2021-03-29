@@ -26,8 +26,9 @@ export const markerCreate = (map, sidebar) => {
     icon,
     draggable: true,
     transform: true,
+    repeatMode: true,
   });
+  if (x) sidebar.getState().setEnabledEl(x);
   x.enable();
-  sidebar.getState().setEnabledEl(x);
   return x;
 };

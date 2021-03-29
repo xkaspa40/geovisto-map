@@ -63,7 +63,12 @@ class DrawingLayerToolTabControlState extends AbstractLayerToolTabControlState {
     });
   }
   setEnabledEl(val) {
+    console.log({ val });
     this.enabledEl = val;
+  }
+
+  getEnabledEl() {
+    return this.enabledEl;
   }
 
   getSelectedColor() {

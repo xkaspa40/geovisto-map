@@ -57,6 +57,17 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     return inputPalette;
   }
 
+  createColorPicker() {
+    const inputWrapper = document.createElement('div');
+    inputWrapper.appendChild(document.createTextNode('Pick color: '));
+    const colorPicker = document.createElement('input');
+    colorPicker.setAttribute('type', 'color');
+    colorPicker.onchange = (e) => this.changeColorAction(e.target.value);
+    colorPicker.value = this.getState().getSelectedColor();
+    inputWrapper.appendChild(colorPicker);
+    return inputWrapper;
+  }
+
   createColorPalette() {
     const colors = this.getState().colors;
     const activeColor = this.getState().getSelectedColor();
@@ -186,6 +197,25 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     return this.getTool().getState().currEl;
   }
 
+  createBrushSizeControl = () => {
+    let paintPoly = this.getState().paintPoly;
+
+    if (!paintPoly.isActive()) return null;
+
+    let { maxBrushSize, minBrushSize } = paintPoly.getBrushSizeConstraints();
+
+    const controlWrapper = document.createElement('div');
+    controlWrapper.appendChild(document.createTextNode('Brush size: '));
+    const brushSizeControl = document.createElement('input');
+    brushSizeControl.setAttribute('type', 'range');
+    brushSizeControl.setAttribute('min', minBrushSize);
+    brushSizeControl.setAttribute('max', maxBrushSize);
+    brushSizeControl.onchange = (e) => paintPoly.resizeBrush(e.target.value);
+    brushSizeControl.value = paintPoly.getBrushSize();
+    controlWrapper.appendChild(brushSizeControl);
+    return controlWrapper;
+  };
+
   /**
    * It returns the sidebar tab pane.
    */
@@ -197,6 +227,9 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
 
     // get data mapping model
     let model = this.getDefaults().getDataMappingModel();
+
+    let paintPolyControl = this.createBrushSizeControl();
+    if (paintPolyControl) elem.appendChild(paintPolyControl);
 
     if (!layerType) return tab;
 
@@ -217,10 +250,6 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     elem.appendChild(this.inputDesc.create());
 
     if (layerType === 'polyline' || layerType === 'polygon' || layerType === 'painted') {
-      // palette Colors
-      this.inputColor = this.createColorPalette();
-      elem.appendChild(this.inputColor);
-
       // select stroke thickness
       const thicknessOpts = this.getState().strokes;
       this.inputThickness = SidebarInputFactory.createSidebarInput(model.strokeThickness.input, {
@@ -230,6 +259,10 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
         value: this._getCurrEl()?.options?.weight,
       });
       elem.appendChild(this.inputThickness.create());
+
+      // palette Colors
+      this.inputColor = this.createColorPicker();
+      elem.appendChild(this.inputColor);
     }
 
     if (layerType === 'marker') {
