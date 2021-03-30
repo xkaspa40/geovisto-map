@@ -15,11 +15,17 @@ const INPUT_ID_PREFIX = 'geovisto-input-' + TYPE;
  * Data mapping model which can be used in the sidebar form.
  */
 const MAPPING_MODEL = {
+  idKey: {
+    id: INPUT_ID_PREFIX + '-idKey',
+    name: 'idKey',
+    label: 'ID key',
+    input: LabeledSelectSidebarInput.ID(),
+  },
   identifier: {
     id: INPUT_ID_PREFIX + '-identifier',
     name: 'identifier',
     label: 'Identifier',
-    input: LabeledTextSidebarInput.ID(),
+    input: LabeledSelectSidebarInput.ID(),
   },
   description: {
     id: INPUT_ID_PREFIX + '-description',

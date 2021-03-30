@@ -58,6 +58,8 @@ class DrawingLayerToolTabControlState extends AbstractLayerToolTabControlState {
     // * element/layer that was enabled and not created yet
     this.enabledEl = null;
 
+    this.identifierType = '';
+
     this.paintPoly = new PaintPoly({
       tabState: this,
     });
@@ -65,6 +67,14 @@ class DrawingLayerToolTabControlState extends AbstractLayerToolTabControlState {
   setEnabledEl(val) {
     console.log({ val });
     this.enabledEl = val;
+  }
+
+  getIdentifierType() {
+    return this.identifierType;
+  }
+
+  setIdentifierType(val) {
+    this.identifierType = val;
   }
 
   getEnabledEl() {

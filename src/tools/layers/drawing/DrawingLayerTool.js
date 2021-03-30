@@ -396,7 +396,6 @@ class DrawingLayerTool extends AbstractLayerTool {
   }
 
   initTransform(drawObject) {
-    console.log({ drawObject });
     const layer = drawObject;
     if (layer?.transform) {
       if (layer.transform._enabled) {

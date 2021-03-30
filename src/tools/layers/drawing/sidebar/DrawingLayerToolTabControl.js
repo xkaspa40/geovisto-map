@@ -159,17 +159,18 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
 
   changeDesc = (inputText) => {
     const currEl = this._getCurrEl();
+    const modInputText = this.convertDescToPopText(inputText);
 
     let popup1 = currEl.getPopup();
     if (popup1) {
-      popup1.setContent(inputText);
+      popup1.setContent(modInputText);
     } else {
-      currEl.bindPopup(inputText);
+      currEl.bindPopup(modInputText);
     }
     // store for import
-    currEl.popupContent = inputText;
+    currEl.popupContent = modInputText;
     // this.getState().setSelectedColor(color);
-    if (currEl?.setStyle) currEl.setStyle(inputText);
+    if (currEl?.setStyle) currEl.setStyle(modInputText);
   };
 
   changeWeightAction = (e) => {
@@ -191,6 +192,16 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
       popupText += `${key}: ${found[key]}<br />`;
     });
     this.changeDesc(popupText);
+    this.redrawTabContent(currEl?.layerType);
+  };
+
+  changeWhichIdUseAction = (e) => {
+    const id = e.target.value;
+    const currEl = this._getCurrEl();
+
+    this.state.setIdentifierType(id);
+
+    this.redrawTabContent(currEl?.layerType);
   };
 
   _getCurrEl() {
@@ -216,6 +227,48 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     return controlWrapper;
   };
 
+  createIdentifierInput = (model) => {
+    const data = this.getTool()?.getState()?.map?.state?.data;
+
+    const idKey = this.state.getIdentifierType();
+
+    const idOpts = data[0][idKey] ? data?.map((d) => ({ value: d[idKey], label: d[idKey] })) : [];
+
+    const result = SidebarInputFactory.createSidebarInput(model.identifier.input, {
+      label: model.identifier.label,
+      action: this.changeIdentifierAction,
+      value: this._getCurrEl()?.identifier,
+      options: [{ value: '', label: '' }, ...idOpts],
+    });
+
+    return result;
+  };
+
+  createPickIdentifier = (model) => {
+    const data = this.getTool()?.getState()?.map?.state?.data;
+
+    const idOpts = data[0] ? Object.keys(data[0]).map((k) => ({ value: k, label: k })) : [];
+
+    const result = SidebarInputFactory.createSidebarInput(model.idKey.input, {
+      label: model.idKey.label,
+      action: this.changeWhichIdUseAction,
+      value: this.state.getIdentifierType(),
+      options: [{ value: '', label: '' }, ...idOpts],
+    });
+
+    return result;
+  };
+
+  convertDescToPopText = (descText) => {
+    if (!descText) return '';
+    return descText.replaceAll('\n', '<br />');
+  };
+
+  convertDescfromPopText = (popText) => {
+    if (!popText) return '';
+    return popText.replaceAll('<br />', '\n');
+  };
+
   /**
    * It returns the sidebar tab pane.
    */
@@ -234,18 +287,17 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     if (!layerType) return tab;
 
     // textfield Identifier
-    this.inputId = SidebarInputFactory.createSidebarInput(model.identifier.input, {
-      label: model.identifier.label,
-      action: this.changeIdentifierAction,
-      value: this._getCurrEl()?.identifier,
-    });
+    this.inputPickIdentifier = this.createPickIdentifier(model);
+    elem.appendChild(this.inputPickIdentifier.create());
+    // textfield Identifier
+    this.inputId = this.createIdentifierInput(model);
     elem.appendChild(this.inputId.create());
 
     // textarea Description
     this.inputDesc = SidebarInputFactory.createSidebarInput(model.description.input, {
       label: model.description.label,
       action: this.changeDescriptionAction,
-      value: this._getCurrEl()?.getPopup()?.getContent(),
+      value: this.convertDescfromPopText(this._getCurrEl()?.getPopup()?.getContent()),
     });
     elem.appendChild(this.inputDesc.create());
 

@@ -127,6 +127,17 @@ export default function useDrawingToolbar() {
       // this.lastClickedBtn = btn;
     },
 
+    _disableTransform: function () {
+      const layer = this.getCurrEl();
+
+      if (layer?.transform?._enabled) {
+        layer.transform.disable();
+        layer.dragging.disable();
+        let paintPoly = this.options.tool.getSidebarTabControl().getState().paintPoly;
+        paintPoly.updatePaintedPolys(layer.kIdx, layer);
+      }
+    },
+
     addEventListeners: function () {
       const {
         lineBtn,
@@ -142,10 +153,12 @@ export default function useDrawingToolbar() {
       const sidebar = this.options.tool.getSidebarTabControl();
 
       // TODO: think of better solution
-      // const btnsArr = Object.values(this.options.drawingBtns);
-      // btnsArr.forEach((btn) => {
-      //   L.DomEvent.on(btn, 'click', () => this._dispatchClickEvent(btn, sidebar), this);
-      // });
+      const btnsArr = Object.values(this.options.drawingBtns);
+      btnsArr.forEach((btn) => {
+        if (btn.className !== 'transformBtn') {
+          L.DomEvent.on(btn, 'click', this._disableTransform, this);
+        }
+      });
 
       L.DomEvent.on(lineBtn, 'click', () => this.initCreatePolyline(map, sidebar), this);
       L.DomEvent.on(markerBtn, 'click', L.DomEvent.stopPropagation)
