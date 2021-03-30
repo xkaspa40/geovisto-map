@@ -67,3 +67,14 @@
     stroke-dasharray: none;
     fill-opacity: 0.9;
 }
+
+#choropleth-range-input {
+    width: 80%;
+    height: 100%;
+    margin-right: 5px;
+}
+
+#choropleth-range-value {
+    text-align: center;
+    width: 20%;
+}

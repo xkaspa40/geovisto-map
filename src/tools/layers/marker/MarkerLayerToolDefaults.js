@@ -29,7 +29,7 @@ const MAPPING_MODEL = {
         id: INPUT_ID_PREFIX + "-input-aggregation",
         name: "aggregation",
         label: "Agregation",
-        options: [ "count", "sum" ],
+        options: ["count", "sum"],
         input: AutocompleteSidebarInput.ID()
     },
     category: {
@@ -73,10 +73,10 @@ class MarkerLayerToolDefaults extends AbstractLayerToolDefaults {
      */
     getDataMapping() {
         let dataMapping = {};
-        
+
         let dataMappingModel = this.getDataMappingModel();
         let implicitDataDomainLabel = this.getMapObject().getMap().getState().getMapData().getDataDomainLabels()[0];
-        
+
         dataMapping[dataMappingModel.country.name] = implicitDataDomainLabel;
         dataMapping[dataMappingModel.value.name] = implicitDataDomainLabel;
         dataMapping[dataMappingModel.aggregation.name] = dataMappingModel.aggregation.options[0];
@@ -91,7 +91,7 @@ class MarkerLayerToolDefaults extends AbstractLayerToolDefaults {
     getDataMappingModel() {
         return MAPPING_MODEL;
     }
-    
+
     /**
      * It returns default centroids.
      */

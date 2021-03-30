@@ -24,7 +24,7 @@ class TextSidebarInput extends AbstractSidebarInput {
      * It returns input element.
      */
     create() {
-        if(this.input == undefined) {
+        if (this.input == undefined) {
             this.input = document.createElement("input");
             this.input.setAttribute("type", "text");
             this.input.onchange = this.action;

@@ -57,7 +57,7 @@ class SettingsTool extends AbstractTool {
      * It returns tab control with respect to the configuration.
      */
     getSidebarTabControl() {
-        if(this.tabControl == undefined) {
+        if (this.tabControl == undefined) {
             this.tabControl = this.createSidebarTabControl();
         }
         return this.tabControl;

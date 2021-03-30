@@ -26,7 +26,7 @@ class LabeledTextSidebarInput extends TextSidebarInput {
      * It returns input element.
      */
     create() {
-        if(this.div == undefined) {
+        if (this.div == undefined) {
             // create input element
             super.create();
 
@@ -34,14 +34,14 @@ class LabeledTextSidebarInput extends TextSidebarInput {
             this.div = document.createElement("div");
 
             // append label
-            if(this.label != undefined) {
+            if (this.label != undefined) {
                 this.div.appendChild(document.createTextNode(this.label + ": "))
             }
 
             // append input element
             this.div.appendChild(this.input);
         }
-        
+
         return this.div;
     }
 

@@ -26,7 +26,7 @@ class MapLayerTool extends AbstractLayerTool {
      * A unique string of the tool type.
      */
     static TYPE() {
-        return "geovisto-tool-layer-map"; 
+        return "geovisto-tool-layer-map";
     }
 
     /**
@@ -67,7 +67,7 @@ class MapLayerTool extends AbstractLayerTool {
         // update state
         this.getState().setLayer(layer);
 
-        return [ layer ];
+        return [layer];
     }
 
     /**
@@ -77,7 +77,7 @@ class MapLayerTool extends AbstractLayerTool {
      */
     createTileLayer(tileID) {
         // ----------------- TODO: refactorization needed
-        let layer = L.tileLayer(tileID, {    
+        let layer = L.tileLayer(tileID, {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
             subdomains: 'abcd',
             maxZoom: 19,
@@ -107,7 +107,7 @@ class MapLayerTool extends AbstractLayerTool {
         this.getState().setBaseMap(theme.getBaseMap());
 
         let layer = this.getState().getLayer();
-        if(layer && layer._url != theme.getBaseMap()) {
+        if (layer && layer._url != theme.getBaseMap()) {
             // remove the old layer
             this.getMap().getState().getLeafletMap().removeLayer(layer);
 
@@ -120,7 +120,7 @@ class MapLayerTool extends AbstractLayerTool {
             // add the new layer to the leaflet map
             layer.addTo(this.getMap().getState().getLeafletMap());
         } else {
-            
+
         }
     }
 }
