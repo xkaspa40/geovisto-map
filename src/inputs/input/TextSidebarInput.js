@@ -27,6 +27,7 @@ class TextSidebarInput extends AbstractSidebarInput {
     create() {
         if (this.input == undefined) {
             this.input = document.createElement("input");
+            this.input.setAttribute("class", `${ID}-input`)
             this.input.setAttribute("type", this.inputType);
             this.input.onchange = this.action;
         }
@@ -50,4 +51,5 @@ class TextSidebarInput extends AbstractSidebarInput {
     }
 
 }
+
 export default TextSidebarInput;

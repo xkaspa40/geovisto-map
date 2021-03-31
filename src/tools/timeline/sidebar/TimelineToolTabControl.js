@@ -129,7 +129,7 @@ class TimelineToolTabControl extends AbstractLayerToolTabControl {
                     .getStories()
                     .map(({ name }) => name));
             },
-            "timeline-add-story-button"
+            "geovisto-timeline-add-story-button"
         );
         this.realTimeCheckbox = SidebarInputFactory.createSidebarInput(
             model.realTimeEnabled.input,

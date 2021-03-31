@@ -26,7 +26,7 @@ class CheckboxSidebarInput extends AbstractSidebarInput {
      */
     create() {
         this.elementWrapper = document.createElement('div');
-        this.elementWrapper.setAttribute('class', 'ElementWrapper');
+        this.elementWrapper.setAttribute('class', ID);
 
         const labelElement = this.createLabel();
         this.input = this.createCheckbox();
@@ -38,12 +38,14 @@ class CheckboxSidebarInput extends AbstractSidebarInput {
     }
 
     createLabel() {
-        return document.createTextNode(this.label);
+        const labelElement = document.createElement('div');
+        labelElement.innerHTML = this.label;
+        labelElement.setAttribute("class", `${ID}-label`);
+        return labelElement;
     }
 
     createCheckbox() {
         const input = document.createElement('input');
-        input.setAttribute('class', 'ElementValue-checkbox');
         input.type = 'checkbox';
         input.onchange = this.action;
         input.name = this.name;

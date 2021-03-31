@@ -76,7 +76,9 @@
 // Autocomplete sidebar tab inputs
 .geovisto-input-autocomplete,
 .geovisto-input-range,
-.geovisto-input-colorPicker {
+.geovisto-input-colorPicker,
+.geovisto-input-checkbox,
+.geovisto-input-text-labeled {
     height: 30px;
     padding-bottom: 0px;
     align-items: center;
@@ -86,7 +88,9 @@
 
 .geovisto-input-autocomplete-label,
 .geovisto-input-range-label,
-.geovisto-input-colorPicker-label {
+.geovisto-input-colorPicker-label,
+.geovisto-input-checkbox-label,
+.geovisto-input-text-labeled-label {
     width: 25%;
     height: 30px;
     float: left;
@@ -94,10 +98,13 @@
     justify-content: flex-end;
     padding-right: 10px;
     display: flex;
+    min-width: 95px;
+    text-align: right;
 }
 
 .geovisto-input-autocomplete-component,
-.geovisto-input-range-component {
+.geovisto-input-range-component,
+.geovisto-input-text-labeled-component {
     position: relative;
     height: 30px;
     float: left;
@@ -110,7 +117,8 @@
     color: var(--geovisto-input-autocomplete-value-placeholder);
 }
 
-.geovisto-input-autocomplete-value {
+.geovisto-input-autocomplete-value,
+.geovisto-input-text-input {
     position: relative;
     width: 100%;
     height: 25px;
@@ -172,4 +180,10 @@
 .geovisto-input-autocomplete-option-n:hover,
 .geovisto-input-autocomplete-option-a {
     background: var(--geovisto-input-autocomplete-value-hover);
+}
+
+.geovisto-timeline-add-story-button {
+    position: absolute;
+    top: 0;
+    right: 15%;
 }

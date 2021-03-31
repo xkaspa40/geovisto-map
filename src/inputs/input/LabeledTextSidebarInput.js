@@ -4,7 +4,7 @@ const ID = "geovisto-input-text-labeled";
 
 /**
  * This class represents labeled text sidebar input.
- * 
+ *
  * @author Jiri Hynek
  */
 class LabeledTextSidebarInput extends TextSidebarInput {
@@ -32,18 +32,30 @@ class LabeledTextSidebarInput extends TextSidebarInput {
 
             // create div block
             this.div = document.createElement("div");
+            this.div.setAttribute("class", ID);
+
 
             // append label
-            if (this.label != undefined) {
-                this.div.appendChild(document.createTextNode(this.label + ": "))
+            if (this.label != null) {
+                this.div.appendChild(this.createLabel())
             }
 
             // append input element
-            this.div.appendChild(this.input);
+            const inputWrapper = document.createElement("div");
+            inputWrapper.setAttribute("class", `${ID}-component`);
+            inputWrapper.appendChild(this.input);
+            this.div.appendChild(inputWrapper);
         }
 
         return this.div;
     }
 
+    createLabel() {
+        const labelElement = document.createElement("div");
+        labelElement.innerHTML = this.label;
+        labelElement.setAttribute("class", `${ID}-label`);
+        return labelElement;
+    }
 }
+
 export default LabeledTextSidebarInput;
