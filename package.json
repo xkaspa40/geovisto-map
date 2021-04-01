@@ -78,6 +78,7 @@
     "leaflet": "^1.7.1",
     "leaflet-draw": "^1.0.4",
     "leaflet-draw-drag": "^0.4.5",
+    "leaflet-geosearch": "^3.2.2",
     "leaflet-overpass-layer": "^2.8.3",
     "leaflet-path-drag": "^1.1.0",
     "leaflet-path-transform": "^1.1.3",

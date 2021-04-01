@@ -4,6 +4,8 @@ import AbstractLayerToolTabControl from '../../abstract/sidebar/AbstractLayerToo
 import SidebarInputFactory from '../../../../inputs/SidebarInputFactory';
 
 import '../style/drawingLayer.scss';
+import { geoSearch, putMarkerOnMap } from '../util/Marker';
+import { debounce } from '../util/functionUtils';
 
 const C_sidebar_tab_content_class = 'leaflet-sidebar-tab-content';
 
@@ -269,6 +271,28 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     return popText.replaceAll('<br />', '\n');
   };
 
+  searchAction = async (e) => {
+    const value = e.target.value;
+    const featureGroup = this.getTool()?.getState().featureGroup;
+
+    const opts = await geoSearch(featureGroup, value);
+
+    this.getState().setSearchOpts(opts);
+    this.inputSearch.changeOptions(opts.map((opt) => opt.label || ''));
+  };
+
+  onInputOptClick = (value) => {
+    const featureGroup = this.getTool()?.getState().featureGroup;
+    const opts = this.getState().searchOpts;
+
+    const found = opts.find((opt) => opt.label === value);
+
+    let latlng = L.latLng(0, 0);
+    latlng.lat = found?.y || 0;
+    latlng.lng = found?.x || 0;
+    putMarkerOnMap(featureGroup, latlng, found?.label, found?.raw?.icon);
+  };
+
   /**
    * It returns the sidebar tab pane.
    */
@@ -285,6 +309,19 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     if (paintPolyControl) elem.appendChild(paintPolyControl);
 
     if (!layerType) return tab;
+
+    if (layerType === 'search') {
+      // labeld text Search
+      this.inputSearch = SidebarInputFactory.createSidebarInput(model.search.input, {
+        label: model.search.label,
+        action: this.searchAction,
+        options: [],
+        placeholder: 'Search',
+        setData: this.onInputOptClick,
+      });
+      elem.appendChild(this.inputSearch.create());
+      return tab;
+    }
 
     // textfield Identifier
     this.inputPickIdentifier = this.createPickIdentifier(model);

@@ -1,7 +1,7 @@
 import AbstractLayerToolTabControlState from '../../abstract/sidebar/AbstractLayerToolTabControlState';
 import PaintPoly from '../components/paintPoly';
 
-const ICON_SRCS = [
+export const ICON_SRCS = [
   'https://upload.wikimedia.org/wikipedia/commons/0/0a/Marker_location.png',
   'https://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Flag-1-Right-Azure-icon.png',
 ];
@@ -60,6 +60,8 @@ class DrawingLayerToolTabControlState extends AbstractLayerToolTabControlState {
 
     this.identifierType = '';
 
+    this.searchOpts = [];
+
     this.paintPoly = new PaintPoly({
       tabState: this,
     });
@@ -103,6 +105,10 @@ class DrawingLayerToolTabControlState extends AbstractLayerToolTabControlState {
 
   setSelectedIcon(value) {
     this.selectedIcon = value;
+  }
+
+  setSearchOpts(opts) {
+    this.searchOpts = opts;
   }
 }
 export default DrawingLayerToolTabControlState;

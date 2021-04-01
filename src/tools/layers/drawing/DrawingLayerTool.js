@@ -153,6 +153,10 @@ class DrawingLayerTool extends AbstractLayerTool {
     return;
   }
 
+  search() {
+    this.redrawSidebarTabControl('search');
+  }
+
   applyEventListeners(layer) {
     layer.on('click', L.DomEvent.stopPropagation).on('click', this.initChangeStyle, this);
     layer.on('mouseover', this.hightlightPoly, this);

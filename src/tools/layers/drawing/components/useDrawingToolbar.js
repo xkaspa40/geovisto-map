@@ -98,6 +98,13 @@ export default function useDrawingToolbar() {
         'fa fa-sitemap',
       );
 
+      this.options.drawingBtns.searchBtn = this.createToolbarBtn(
+        'searchBtn',
+        toolContainer,
+        'Search',
+        'fa fa-search',
+      );
+
       const sidebar = this.options.tool.getSidebarTabControl();
 
       this.options.drawingBtns.paintBtn = sidebar.getState().paintPoly.renderButton({
@@ -156,6 +163,7 @@ export default function useDrawingToolbar() {
         sliceBtn,
         deselectBtn,
         connectBtn,
+        searchBtn,
       } = this.options.drawingBtns;
       const map = this.options.map;
       const sidebar = this.options.tool.getSidebarTabControl();
@@ -181,6 +189,11 @@ export default function useDrawingToolbar() {
       L.DomEvent.on(connectBtn, 'click', L.DomEvent.stopPropagation)
         .on(connectBtn, 'click', L.DomEvent.preventDefault)
         .on(connectBtn, 'click', () => connectClick(map, sidebar), this);
+      L.DomEvent.on(searchBtn, 'click', this.initSearch, this);
+    },
+
+    initSearch: function () {
+      this.options.tool.search();
     },
 
     initCreatePolyline: function (map, sidebar) {

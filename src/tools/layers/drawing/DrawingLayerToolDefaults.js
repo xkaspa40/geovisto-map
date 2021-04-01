@@ -3,6 +3,7 @@ import DrawingLayerTool from './DrawingLayerTool';
 import LabeledTextSidebarInput from '../../../inputs/input/LabeledTextSidebarInput';
 import LabeledTextAreaSidebarInput from '../../../inputs/input/LabeledTextAreaSidebarInput';
 import LabeledSelectSidebarInput from '../../../inputs/select/LabeledSelectSidebarInput';
+import AutocompleteSidebarInput from '../../../inputs/input/AutocompleteSidebarInput';
 
 /**
  * TODO: refactorization needed!
@@ -38,6 +39,12 @@ const MAPPING_MODEL = {
     name: 'stroke-thickness',
     label: 'Stroke thickness',
     input: LabeledSelectSidebarInput.ID(),
+  },
+  search: {
+    id: INPUT_ID_PREFIX + '-search',
+    name: 'search',
+    label: 'Search',
+    input: AutocompleteSidebarInput.ID(),
   },
 };
 
