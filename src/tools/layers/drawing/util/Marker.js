@@ -10,10 +10,11 @@ export const iconStarter = {
   iconSize: new L.Point(24, 24),
 };
 
-export const markerCreate = (map, sidebar) => {
+export const markerCreate = (map, sidebar, connectClick = false) => {
   const iconOptions = {
     ...iconStarter,
     iconUrl: sidebar.getState().getSelectedIcon(),
+    connectClick,
   };
   // define custom marker
   let MyCustomMarker = L.Icon.extend({
@@ -26,9 +27,14 @@ export const markerCreate = (map, sidebar) => {
     icon,
     draggable: true,
     transform: true,
-    repeatMode: true,
+    // repeatMode: true,
   });
   if (x) sidebar.getState().setEnabledEl(x);
   x.enable();
   return x;
+};
+
+export const connectClick = (map, sidebar) => {
+  // event.stopPropagation();
+  const marker = markerCreate(map, sidebar, true);
 };

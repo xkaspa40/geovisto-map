@@ -22,6 +22,9 @@ class DrawingLayerToolState extends AbstractLayerToolState {
     this.selecting = false;
     // * for knowing if we already selected layer
     this.selectedLayer = null;
+
+    this.createdVertices = [];
+    this.mappedMarkersToVertices = {};
   }
 
   setActiveIndex(idx) {
@@ -56,6 +59,7 @@ class DrawingLayerToolState extends AbstractLayerToolState {
 
   addLayer(layer) {
     this.featureGroup.addLayer(layer);
+    return layer;
   }
 
   removeLayer(layer) {

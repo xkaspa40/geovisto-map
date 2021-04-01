@@ -6,7 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import { normalStyles, polygonCreate, polylineCreate, slicePoly } from '../util/Poly';
-import { markerCreate } from '../util/Marker';
+import { connectClick, markerCreate } from '../util/Marker';
 
 import '../style/drawingLayer.scss';
 import paintPoly from './paintPoly';
@@ -91,6 +91,13 @@ export default function useDrawingToolbar() {
         'fa fa-cutlery',
       );
 
+      this.options.drawingBtns.connectBtn = this.createToolbarBtn(
+        'connectBtn',
+        toolContainer,
+        'Connect',
+        'fa fa-sitemap',
+      );
+
       const sidebar = this.options.tool.getSidebarTabControl();
 
       this.options.drawingBtns.paintBtn = sidebar.getState().paintPoly.renderButton({
@@ -148,6 +155,7 @@ export default function useDrawingToolbar() {
         editBtn,
         sliceBtn,
         deselectBtn,
+        connectBtn,
       } = this.options.drawingBtns;
       const map = this.options.map;
       const sidebar = this.options.tool.getSidebarTabControl();
@@ -170,6 +178,9 @@ export default function useDrawingToolbar() {
       L.DomEvent.on(editBtn, 'click', this.initNodeEdit, this);
       L.DomEvent.on(sliceBtn, 'click', () => this.initSlicePoly(map, sidebar), this);
       L.DomEvent.on(deselectBtn, 'click', this.deselect, this);
+      L.DomEvent.on(connectBtn, 'click', L.DomEvent.stopPropagation)
+        .on(connectBtn, 'click', L.DomEvent.preventDefault)
+        .on(connectBtn, 'click', () => connectClick(map, sidebar), this);
     },
 
     initCreatePolyline: function (map, sidebar) {
@@ -238,18 +249,18 @@ export default function useDrawingToolbar() {
       if (!selecting) document.querySelector('.leaflet-container').style.cursor = 'crosshair';
       else document.querySelector('.leaflet-container').style.cursor = '';
 
-      this.options.map.on('click', () => {
-        const sidebar = this.options.tool.getSidebarTabControl();
-        if (Boolean(sidebar.getState().enabledEl) || !this.getSelecting()) return;
-        let selected = this.options.tool.getState().selectedLayer;
-        if (selected) {
-          if (selected.setStyle) selected.setStyle(normalStyles);
-          this.options.tool.getState().clearSelectedLayer();
-          this.options.tool.redrawSidebarTabControl();
-          this.setCurrEl(null);
-          document.querySelector('.leaflet-container').style.cursor = '';
-        }
-      });
+      // this.options.map.on('click', () => {
+      //   const sidebar = this.options.tool.getSidebarTabControl();
+      //   if (Boolean(sidebar.getState().enabledEl) || !this.getSelecting()) return;
+      //   let selected = this.options.tool.getState().selectedLayer;
+      //   if (selected) {
+      //     if (selected.setStyle) selected.setStyle(normalStyles);
+      //     this.options.tool.getState().clearSelectedLayer();
+      //     this.options.tool.redrawSidebarTabControl();
+      //     this.setCurrEl(null);
+      //     document.querySelector('.leaflet-container').style.cursor = '';
+      //   }
+      // });
     },
 
     createToolbarBtn: function (className, btnContainer, title, icon) {

@@ -301,6 +301,87 @@ class DrawingLayerTool extends AbstractLayerTool {
     }
   }
 
+  haveSameVertice(current) {
+    const found = this.state.createdVertices.find((vertice) => {
+      // console.log({ vertice, current });
+      return (
+        (vertice._latlngs[0].equals(current._latlngs[0]) &&
+          vertice._latlngs[1].equals(current._latlngs[1])) ||
+        (vertice._latlngs[0].equals(current._latlngs[1]) &&
+          vertice._latlngs[1].equals(current._latlngs[0]))
+      );
+    });
+
+    return Boolean(found);
+  }
+
+  plotTopology(added) {
+    const combinedMap = this.getMap();
+    const map = combinedMap.state.map;
+
+    const layersObj = this.state.featureGroup._layers;
+    const layerArr = [...Object.values(layersObj)];
+    const _markers = layerArr.filter(
+      (_) => _.layerType === 'marker' && _?.options?.icon?.options?.connectClick,
+    );
+    // console.log({ _markers });
+    const topologyVertices = [];
+    for (let index = 0; index < _markers.length; index++) {
+      const firstMarker = _markers[index];
+
+      const secondMarker = _markers[index + 1];
+      if (!secondMarker) break;
+
+      const { lat: fLat, lng: fLng } = firstMarker.getLatLng();
+      const { lat: sLat, lng: sLng } = secondMarker.getLatLng();
+
+      let _latlng = [L.latLng(fLat, fLng), L.latLng(sLat, sLng)];
+      let poly = new L.polyline(_latlng, {
+        color: '#563412',
+        weight: 3,
+      });
+      if (this.haveSameVertice(poly)) continue;
+      poly.addTo(map);
+      topologyVertices.push(poly);
+      this.state.createdVertices.push(poly);
+      map.fire(L.Draw.Event.CREATED, { layer: poly, layerType: 'vertice' });
+    }
+
+    this.mapMarkersToVertices(_markers);
+  }
+
+  mapMarkersToVertices(_markers) {
+    _markers
+      .map((marker) => ({ latlng: marker.getLatLng(), lId: marker._leaflet_id, marker }))
+      .forEach(({ latlng, lId, marker }) => {
+        this.state.createdVertices.forEach((layer) => {
+          // * used indexing instead of another loop (vertices have only 2 points)
+          let spread = this.state.mappedMarkersToVertices[lId] || [];
+          if (layer.getLatLngs()[0].equals(latlng)) {
+            this.state.mappedMarkersToVertices[lId] = [...spread, { layer, index: 0 }];
+          } else if (layer.getLatLngs()[1].equals(latlng)) {
+            this.state.mappedMarkersToVertices[lId] = [...spread, { layer, index: 1 }];
+          }
+        });
+      });
+  }
+
+  changeVerticesLocation(latlng, oldlatlng, markerID) {
+    const markerVertices = this.state.mappedMarkersToVertices[markerID];
+    console.log({ markerVertices, markerID });
+    if (!markerVertices || !markerVertices?.length) return;
+
+    this.setVerticesCoordinates(markerVertices, latlng);
+  }
+
+  setVerticesCoordinates(markerVertices, latlng) {
+    markerVertices.forEach((vertice) => {
+      let latLngs = L.LatLngUtil.cloneLatLngs(vertice.layer._latlngs);
+      latLngs[vertice.index] = latlng;
+      vertice.layer.setLatLngs(latLngs);
+    });
+  }
+
   createdListener = (e) => {
     let layer = e.layer;
     layer.layerType = e.layerType;
@@ -308,7 +389,7 @@ class DrawingLayerTool extends AbstractLayerTool {
 
     let prevLayer = this.getState().getPrevLayer();
     if (prevLayer?.layerType !== e.layerType) this.redrawSidebarTabControl(e.layerType);
-    // this.getSidebarTabControl().getState().setEnabledEl(null);
+    this.getSidebarTabControl().getState().setEnabledEl(null);
 
     if (e.layerType === 'polygon' || e.layerType === 'painted') {
       // * JOIN
@@ -328,12 +409,28 @@ class DrawingLayerTool extends AbstractLayerTool {
       this.polySlice(layer);
     }
 
-    if (layer.dragging) layer.dragging.disable();
+    if (layer.dragging && e.layerType !== 'marker') layer.dragging.disable();
     // this.getState().removeLayerByIdx(layer.kIdx);
+    let added;
     if (e.layerType !== 'knife') {
-      this.getState().addLayer(layer);
+      added = this.getState().addLayer(layer);
       this.getState().setCurrEl(layer);
       this.applyEventListeners(layer);
+    }
+
+    // * MARKER
+    if (e.layerType === 'marker') {
+      // TODO:
+      layer.on('drag', (event) => {
+        const { latlng, oldLatLng, target } = event;
+
+        // console.log({ lat: latlng.lat, lng: latlng.lng, oldlat: oldLatLng.lat, oldlng: oldLatLng.lng });
+
+        this.changeVerticesLocation(latlng, oldLatLng, target._leaflet_id);
+      });
+      if (layer?.options?.icon?.options?.connectClick) {
+        this.plotTopology(added);
+      }
     }
   };
 
@@ -347,6 +444,21 @@ class DrawingLayerTool extends AbstractLayerTool {
     map.addControl(L.control.drawingToolbar({ tool: this }));
     // * eventlistener for when object is created
     map.on('draw:created', this.createdListener);
+
+    map.on('click', () => {
+      const sidebar = this.getSidebarTabControl();
+      if (Boolean(sidebar.getState().enabledEl)) return;
+      let selected = this.getState().selectedLayer;
+      if (selected) {
+        console.log('clicked');
+        if (selected.setStyle) selected.setStyle(normalStyles);
+        this.getState().clearSelectedLayer();
+        this.redrawSidebarTabControl();
+        this.getState().setCurrEl(null);
+        this.initTransform(selected);
+        document.querySelector('.leaflet-container').style.cursor = '';
+      }
+    });
 
     const layer = this.getState().featureGroup;
     layer.eachLayer((layer) => {
@@ -380,9 +492,12 @@ class DrawingLayerTool extends AbstractLayerTool {
     let fgLayers = this.getState().featureGroup._layers;
     Object.values(fgLayers).forEach((_) => {
       if (_.setStyle) _.setStyle(normalStyles);
+      if (_._icon) {
+        L.DomUtil.removeClass(_._icon, 'highlight-marker');
+        _.dragging.disable();
+      }
       if (_?.transform?._enabled) {
         _.transform.disable();
-        _.dragging.disable();
         let paintPoly = this.getSidebarTabControl().getState().paintPoly;
         paintPoly.updatePaintedPolys(_.kIdx, _);
       }
@@ -405,6 +520,12 @@ class DrawingLayerTool extends AbstractLayerTool {
         paintPoly.updatePaintedPolys(layer.kIdx, layer);
       } else {
         layer.transform.enable({ rotation: true, scaling: true });
+        layer.dragging.enable();
+      }
+    } else if (layer.layerType === 'marker') {
+      if (layer.dragging._enabled) {
+        layer.dragging.disable();
+      } else {
         layer.dragging.enable();
       }
     }
