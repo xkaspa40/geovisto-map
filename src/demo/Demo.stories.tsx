@@ -40,6 +40,7 @@ import "./Demo.scss";
 const C_ID_select_data = "leaflet-combined-map-select-data";
 const C_ID_check_data = "leaflet-combined-map-check-data";
 const C_ID_input_data = "leaflet-combined-map-input-data";
+const C_ID_select_geo = "leaflet-combined-map-select-geo";
 const C_ID_check_config = "leaflet-combined-map-check-config";
 const C_ID_input_config = "leaflet-combined-map-input-config";
 const C_ID_input_import = "leaflet-combined-map-input-import";
@@ -51,8 +52,8 @@ class Demo extends Component {
     super(props);
 
     // initialize geo objects
-    this.polygons = require("/static/geo/okresy_polygons.json");
-    this.centroids = require("/static/geo/districts_centroids.json");
+    const jsonPolygons = require("/static/geo/country_polygons.json");
+    const jsonCentroids = require("/static/geo/country_centroids.json");
 
     // // implicit file
     const jsonData = require("/static/data/covidDataCategoric.json");
@@ -67,15 +68,14 @@ class Demo extends Component {
     this.state = {
       data: jsonData,
       config: jsonConfig,
+      centroids: jsonCentroids,
+      polygons: jsonPolygons,
     };
   }
 
   componentDidMount() {
-    const _this = this;
-
     // ------ enable check boxes ------ //
-
-    const enableInput = function (checked, id) {
+    const enableInput = (checked, id) => {
       if (checked) {
         document.getElementById(id).removeAttribute("disabled");
       } else {
@@ -84,16 +84,12 @@ class Demo extends Component {
     };
 
     // enable data check box
-    const enableDataInput = function (e) {
-      enableInput(e.target.checked, C_ID_input_data);
-    };
+    const enableDataInput = (e) => enableInput(e.target.checked, C_ID_input_data);
     document.getElementById(C_ID_input_data).setAttribute("disabled", "disabled");
     document.getElementById(C_ID_check_data).onchange = enableDataInput;
 
     // enable config check box
-    const enableConfigInput = function (e) {
-      enableInput(e.target.checked, C_ID_input_config);
-    };
+    const enableConfigInput = (e) => enableInput(e.target.checked, C_ID_input_config);;
     document.getElementById(C_ID_input_config).setAttribute("disabled", "disabled");
     document.getElementById(C_ID_check_config).onchange = enableConfigInput;
 
@@ -139,18 +135,19 @@ class Demo extends Component {
     // ------ import ------ //
 
     // import action
-    const importAction = function (e) {
-
-      console.log(e);
-      console.log("data: ", data);
-      console.log("config: ", config);
-
+    const importAction = () => {
       // process data json
       if (!document.getElementById(C_ID_check_data).checked || data.json == undefined) {
         const fileName = document.getElementById(C_ID_select_data).value;
-        console.log(fileName);
         data.json = require("/static/data/" + fileName);
       }
+
+      const geoType = document.getElementById(C_ID_select_geo).value;
+      const polygonsFileName = geoType === "czech_districts" ? "czech_districts_polygons" : "country_polygons";
+      const centroidsFileName = geoType === "czech_districts" ? "czech_districts_centroids" : "country_centroids";
+      const polygons = require("/static/geo/" + polygonsFileName + ".json");
+      const centroids = require("/static/geo/" + centroidsFileName + ".json");
+      console.log("POLYG", polygonsFileName);
 
       // process config json
       if (!document.getElementById(C_ID_check_config).checked || config.json == undefined) {
@@ -158,9 +155,11 @@ class Demo extends Component {
       }
 
       // update state
-      _this.setState({
+      this.setState({
         data: data.json,
         config: config.json,
+        polygons,
+        centroids,
       });
     };
     document.getElementById(C_ID_input_import).addEventListener("click", importAction);
@@ -168,11 +167,9 @@ class Demo extends Component {
     // ------ export ------ //
 
     // export action
-    const exportAction = function (e) {
-      console.log(e);
-
+    const exportAction = () => {
       // expert map configuration
-      const config = JSON.stringify(_this.map.current.getMap().export(), null, 2);
+      const config = JSON.stringify(this.map.current.getMap().export(), null, 2);
 
       // download file
       const element = document.createElement("a");
@@ -196,17 +193,24 @@ class Demo extends Component {
         <div className="demo-toolbar">
           <span>Data file: </span>
           <select id={C_ID_select_data}>
-            <option value="covidOkresyCRCumulative.json">covid cumulative</option>
-            <option value="covidDataCategoric.json">covid categoric</option>
-            <option value="covidOkresyCR.json">covid</option>
             <option value="timeData.json">timeData.json</option>
             <option value="demo1.json">demo1.json</option>
             <option value="demo2.json">demo2.json</option>
+            <option value="covidOkresyCR.json">covid czech districts</option>
+            <option value="covidOkresyCRcumulative.json">covid czech districts (cumulative)</option>
+            <option value="covidDataCategoric.json">covid czech districts (categoric)</option>
             <option disabled></option>
           </select>
 
           <span> or <input id={C_ID_check_data} type="checkbox" /> custom file: </span>
           <input id={C_ID_input_data} type="file" accept=".json" size="3" />
+
+          <span>Geo file: </span>
+          <select id={C_ID_select_geo}>
+            <option value="world">World</option>
+            <option value="czech_districts">czech districts</option>
+            <option disabled></option>
+          </select> |
 
           <input id={C_ID_check_config} type="checkbox" />
           <span> Configuration file: </span>
@@ -219,8 +223,8 @@ class Demo extends Component {
           <ReactGeovistoMap
             ref={this.map}
             id="my-geovisto-map"
-            polygons={this.polygons}
-            centroids={this.centroids}
+            polygons={this.state.polygons}
+            centroids={this.state.centroids}
             data={new FlattenedMapData(this.state.data)}
             config={new BasicMapConfig(this.state.config)}
             globals={undefined}
