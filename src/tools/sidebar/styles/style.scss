@@ -129,11 +129,13 @@
     color: var(--geovisto-input-autocomplete-value-fg);
 }
 
-.geovisto-input-autocomplete-value:focus {
+.geovisto-input-autocomplete-value:focus,
+.geovisto-input-text-input:focus {
     outline: none;
 }
 
-.geovisto-input-autocomplete-value:disabled {
+.geovisto-input-autocomplete-value:disabled,
+.geovisto-input-text-input:disabled {
     background-color: #c2c2c29d;
 }
 

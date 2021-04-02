@@ -115,16 +115,16 @@ class TimelineToolDefaults extends AbstractLayerToolDefaults {
 
         let dataMappingModel = this.getDataMappingModel();
 
-        dataMapping[dataMappingModel.timePath.name] = null;
+        dataMapping[dataMappingModel.timePath.name] = "";
         dataMapping[dataMappingModel.stepTimeLength.name] = 1000;
         dataMapping[dataMappingModel.storyEnabled.name] = false;
         dataMapping[dataMappingModel.transitionTimeLength.name] = 2500;
-        dataMapping[dataMappingModel.story.name] = null;
+        dataMapping[dataMappingModel.story.name] = "";
         dataMapping[dataMappingModel.realTimeEnabled.name] = false;
-        dataMapping[dataMappingModel.granularity.name] = null;
+        dataMapping[dataMappingModel.granularity.name] = "";
         dataMapping[dataMappingModel.chartEnabled.name] = false;
-        dataMapping[dataMappingModel.chartValuePath.name] = null;
-        dataMapping[dataMappingModel.chartAggregationFn.name] = null;
+        dataMapping[dataMappingModel.chartValuePath.name] = "";
+        dataMapping[dataMappingModel.chartAggregationFn.name] = "";
 
         return dataMapping;
     }

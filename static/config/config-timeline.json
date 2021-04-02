@@ -1,8 +1,8 @@
 {
-  "zoom": 1,
-  "mapCenter": {
-    "lat": 39.90973623453719,
-    "lng": 24.257812500000004
+  "zoom": 2,
+  "center": {
+    "lat": 50.064191736659104,
+    "lng": 0
   },
   "tools": [
     {
@@ -56,17 +56,17 @@
           "checkButton": true
         },
         {
+          "tool": "geovisto-tool-timeline",
+          "enabled": true,
+          "name": "Timeline",
+          "icon": "<i class=\"fa fa-clock-o\" />",
+          "checkButton": true
+        },
+        {
           "tool": "geovisto-tool-layer-connection",
           "enabled": true,
           "name": "Connection layer settings",
           "icon": "<i class=\"fa fa-road\"></i>",
-          "checkButton": true
-        },
-        {
-          "tool": "geovisto-tool-timeline",
-          "enabled": false,
-          "name": "Timeline",
-          "icon": "<i class=\"fa fa-clock-o\" />",
           "checkButton": true
         }
       ]
@@ -80,13 +80,7 @@
       "type": "geovisto-tool-filters",
       "id": "geovisto-tool-filters",
       "enabled": true,
-      "filterRules": [
-        {
-          "dataDomain": "state",
-          "operation": "!=",
-          "pattern": "finished"
-        }
-      ]
+      "filterRules": []
     },
     {
       "type": "geovisto-tool-themes",
@@ -97,13 +91,7 @@
     {
       "type": "geovisto-tool-selection",
       "id": "geovisto-tool-selection",
-      "enabled": true,
-      "selection": {
-        "tool": "geovisto-tool-layer-choropleth",
-        "ids": [
-          "RUS"
-        ]
-      }
+      "enabled": true
     },
     {
       "type": "geovisto-tool-layer-map",
@@ -117,9 +105,13 @@
       "enabled": true,
       "layerName": "Choropleth layer",
       "data": {
-        "country": "targets.country",
-        "value": "interest",
-        "aggregation": "count"
+        "country": "to",
+        "value": "value",
+        "aggregation": "sum",
+        "scaling": "median (sorted values)",
+        "range": "7",
+        "strategy": "custom color",
+        "color": "#e32400"
       }
     },
     {
@@ -128,10 +120,10 @@
       "enabled": true,
       "layerName": "Marker layer",
       "data": {
-        "country": "sources.country",
-        "value": "interest",
-        "aggregation": "sum",
-        "category": "state"
+        "country": "",
+        "value": "",
+        "aggregation": "",
+        "category": ""
       }
     },
     {
@@ -140,8 +132,8 @@
       "enabled": true,
       "layerName": "Connection layer",
       "data": {
-        "from": "sources.country",
-        "to": "targets.country"
+        "from": "",
+        "to": ""
       }
     },
     {

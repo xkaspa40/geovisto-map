@@ -60,6 +60,13 @@
           "name": "Connection layer settings",
           "icon": "<i class=\"fa fa-road\"></i>",
           "checkButton": true
+        },
+        {
+          "tool": "geovisto-tool-timeline",
+          "enabled": true,
+          "name": "Timeline",
+          "icon": "<i class=\"fa fa-clock-o\" />",
+          "checkButton": true
         }
       ]
     },
@@ -139,6 +146,25 @@
         "from": "from",
         "to": "to"
       }
+    },
+    {
+      "type": "geovisto-tool-timeline",
+      "id": "geovisto-tool-timeline",
+      "enabled": false,
+      "layerName": "Timeline",
+      "data": {
+        "timePath": "",
+        "stepTimeLength": 1000,
+        "storyEnabled": false,
+        "transitionTimeLength": 2500,
+        "story": "",
+        "realTimeEnabled": false,
+        "granularity": "",
+        "chartEnabled": false,
+        "chartValuePath": "",
+        "chartAggregationFn": ""
+      },
+      "stories": []
     }
   ]
 }

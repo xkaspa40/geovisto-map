@@ -52,12 +52,12 @@ class FiltersToolState extends AbstractToolState {
                     for(let i = 0; i < config.filterRules.length; i++) {
                         configFilterRule = config.filterRules[i];
 
-                        let dimension = mapData.getDataDomain(configFilterRule.domain);
+                        let dataDomain = mapData.getDataDomain(configFilterRule.domain);
                         let operation = filterManager.getOperation(configFilterRule.operation);
 
-                        if(dimension != undefined && operation != undefined) {
+                        if(dataDomain != undefined && operation != undefined) {
                             filterRules.push(filterManager.createRule({
-                                dimension,
+                                dataDomain,
                                 label: operation,
                                 pattern: configFilterRule.pattern
                             }));
