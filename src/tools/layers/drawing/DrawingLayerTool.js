@@ -134,12 +134,8 @@ class DrawingLayerTool extends AbstractLayerTool {
             iconUrl: this.getSidebarTabControl().getState().getSelectedIcon(),
             ...f.properties,
           };
-          let MyCustomMarker = L.Icon.extend({
-            options,
-          });
 
-          let icon = new MyCustomMarker();
-          icon.options = options;
+          let icon = new L.Icon(options);
           result = new L.Marker.Touch(f.geometry.coordinates, { icon });
         }
         if (result) {
@@ -492,7 +488,7 @@ class DrawingLayerTool extends AbstractLayerTool {
 
   initChangeStyle(e) {
     const drawObject = e.target;
-    // if (this.getState().getSelecting()) {
+
     let fgLayers = this.getState().featureGroup._layers;
     Object.values(fgLayers).forEach((_) => {
       if (_.setStyle) _.setStyle(normalStyles);
@@ -507,10 +503,10 @@ class DrawingLayerTool extends AbstractLayerTool {
       }
     });
     this.getState().setSelectedLayer(drawObject);
-    this.redrawSidebarTabControl(e.target.layerType);
     this.getState().setCurrEl(drawObject);
     this.initTransform(drawObject);
-    // }
+    this.redrawSidebarTabControl(e.target.layerType);
+
     document.querySelector('.leaflet-container').style.cursor = '';
   }
 

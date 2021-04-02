@@ -67,6 +67,7 @@ class AutocompleteSidebarInput extends AbstractSidebarInput {
    */
   changeOptions(newOptions) {
     this.options = newOptions;
+    this.redrawMenu();
   }
 
   /*
@@ -217,6 +218,10 @@ class AutocompleteSidebarInput extends AbstractSidebarInput {
         _this.selectedCompletionItem != -1;
       }
     });
+  }
+
+  redrawMenu() {
+    this.createMenu();
   }
 
   /*

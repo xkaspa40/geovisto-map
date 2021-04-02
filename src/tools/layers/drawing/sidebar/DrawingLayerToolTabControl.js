@@ -3,7 +3,7 @@ import DrawingLayerToolTabControlState from './DrawingLayerToolTabControlState';
 import AbstractLayerToolTabControl from '../../abstract/sidebar/AbstractLayerToolTabControl';
 import SidebarInputFactory from '../../../../inputs/SidebarInputFactory';
 
-import '../style/drawingLayer.scss';
+import '../style/drawingLayerTabControl.scss';
 import { geoSearch, putMarkerOnMap } from '../util/Marker';
 import { debounce } from '../util/functionUtils';
 
@@ -79,10 +79,13 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
   }
 
   createIconPalette() {
-    const icons = this.getState().iconSrcs;
+    const icons = new Set(this.getState().iconSrcs);
+    const iconUrl = this._getCurrEl()?.options?.icon?.options?.iconUrl;
+    if (iconUrl) icons.add(iconUrl);
     const activeIcon = this.getState().getSelectedIcon();
-    const activeIndex = icons.indexOf(activeIcon);
-    const res = this.createPalette('Pick icon', icons, activeIndex, this.changeIconAction, true);
+    const iconsArr = Array.from(icons);
+    const activeIndex = iconsArr.indexOf(activeIcon);
+    const res = this.createPalette('Pick icon', iconsArr, activeIndex, this.changeIconAction, true);
     return res;
   }
 
@@ -141,16 +144,13 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     const currEl = this._getCurrEl();
     this.getState().setSelectedIcon(icon);
 
-    let newOptions = {
-      ...currEl.markerOptions,
+    let oldIconOptions = currEl?.options?.icon?.options || {};
+    let newIconOptions = {
+      ...oldIconOptions,
       iconUrl: icon,
     };
-    let MyCustomMarker = L.Icon.extend({
-      options: newOptions,
-    });
 
-    const marker = new MyCustomMarker();
-    marker.options = newOptions;
+    const marker = new L.Icon(newIconOptions);
     currEl.setIcon(marker);
     this.redrawTabContent(currEl?.layerType);
   };
@@ -278,7 +278,8 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     const opts = await geoSearch(featureGroup, value);
 
     this.getState().setSearchOpts(opts);
-    this.inputSearch.changeOptions(opts.map((opt) => opt.label || ''));
+    this.inputSearch.changeOptions(opts ? opts.map((opt) => opt.label || '') : []);
+    // this.inputSearch.redrawMenu();
   };
 
   onInputOptClick = (value) => {
@@ -290,7 +291,11 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     let latlng = L.latLng(0, 0);
     latlng.lat = found?.y || 0;
     latlng.lng = found?.x || 0;
-    putMarkerOnMap(featureGroup, latlng, found?.label, found?.raw?.icon);
+    const iconUrl = found?.raw?.icon || ICON_SRCS[0];
+    const marker = putMarkerOnMap(featureGroup, latlng, found?.label, iconUrl);
+    this.getTool().applyEventListeners(marker);
+    this.getState().setSelectedIcon(iconUrl);
+    this.getState().appendToIconSrcs(iconUrl);
   };
 
   /**

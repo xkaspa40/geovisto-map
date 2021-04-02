@@ -5,6 +5,7 @@ import 'leaflet-path-drag';
 import 'leaflet/dist/leaflet.css';
 import { ICON_SRCS } from '../sidebar/DrawingLayerToolTabControlState';
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
+import { MapLayerTool } from '../../map';
 
 export const iconStarter = {
   shadowUrl: null,
@@ -12,18 +13,15 @@ export const iconStarter = {
   iconSize: new L.Point(24, 24),
 };
 
+// * opted for this approach instead of extending L.Icon
+// * it led to some bugs/errors and this way we have an access to icon options
+const iconOptions = {
+  ...iconStarter,
+};
+
 export const markerCreate = (map, sidebar, connectClick = false) => {
-  const iconOptions = {
-    ...iconStarter,
-    iconUrl: sidebar.getState().getSelectedIcon(),
-    connectClick,
-  };
-  // define custom marker
-  let MyCustomMarker = L.Icon.extend({
-    options: iconOptions,
-  });
-  const icon = new MyCustomMarker();
-  icon.options = iconOptions;
+  const additionalOpts = { iconUrl: sidebar.getState().getSelectedIcon(), connectClick };
+  const icon = new L.Icon({ ...iconOptions, ...additionalOpts });
 
   const x = new L.Draw.Marker(map, {
     icon,
@@ -40,25 +38,24 @@ export const connectClick = (map, sidebar) => {
   const marker = markerCreate(map, sidebar, true);
 };
 
-export const putMarkerOnMap = (featureGroup, latlng, popup, icon) => {
-  const iconOptions = {
-    ...iconStarter,
-    iconUrl: icon || ICON_SRCS[0],
-  };
-  let MyCustomMarker = L.Icon.extend({
-    options: iconOptions,
+export const putMarkerOnMap = (featureGroup, latlng, popup, iconUrl) => {
+  const additionalOpts = { iconUrl: iconUrl || ICON_SRCS[0] };
+  const icon = new L.Icon({
+    ...iconOptions,
+    ...additionalOpts,
   });
 
-  let marker = new L.Marker.Touch(latlng, { icon: new MyCustomMarker() });
+  let marker = new L.Marker.Touch(latlng, { icon });
   if (popup) {
     marker.bindPopup(popup);
     marker.popupContent = popup;
   }
 
   marker.layerType = 'marker';
+  console.log({ marker });
   featureGroup.addLayer(marker);
-  // marker.addTo(map);
   // map.fire(L.Draw.Event.CREATED, { layer: marker, layerType: 'marker' });
+  return marker;
 };
 
 export const geoSearch = async (featureGroup, query = '') => {
@@ -66,18 +63,9 @@ export const geoSearch = async (featureGroup, query = '') => {
 
   // setup
   const provider = new OpenStreetMapProvider();
-  // let latlng = L.latLng(0, 0);
 
   // search
   const results = await provider.search({ query });
-  console.log({ results });
-  // const res = results[0];
-  // // console.log(res);
-  // latlng.lat = res?.y || 0;
-  // latlng.lng = res?.x || 0;
 
-  // if (res?.label) {
-  //   putMarkerOnMap(featureGroup, latlng, res.label);
-  // }
   return results;
 };

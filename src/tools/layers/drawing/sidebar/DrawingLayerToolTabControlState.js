@@ -110,5 +110,9 @@ class DrawingLayerToolTabControlState extends AbstractLayerToolTabControlState {
   setSearchOpts(opts) {
     this.searchOpts = opts;
   }
+
+  appendToIconSrcs(iconUrl) {
+    this.iconSrcs = [...this.iconSrcs, iconUrl];
+  }
 }
 export default DrawingLayerToolTabControlState;
