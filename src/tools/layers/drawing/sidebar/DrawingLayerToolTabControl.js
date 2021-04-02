@@ -186,13 +186,16 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     const id = e.target.value;
     const currEl = this._getCurrEl();
     if (currEl) currEl.identifier = id;
+
     const data = this.getTool()?.getState()?.map?.state?.data;
 
     const found = data.find(({ identifier }) => identifier === id);
+
     let popupText = '';
     Object.keys(found).forEach((key) => {
       popupText += `${key}: ${found[key]}<br />`;
     });
+
     this.changeDesc(popupText);
     this.redrawTabContent(currEl?.layerType);
   };
@@ -234,13 +237,14 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
 
     const idKey = this.state.getIdentifierType();
 
-    const idOpts = data[0][idKey] ? data?.map((d) => ({ value: d[idKey], label: d[idKey] })) : [];
+    const idOpts = data && data[0][idKey] ? data.map((d) => d[idKey]) : [];
 
     const result = SidebarInputFactory.createSidebarInput(model.identifier.input, {
       label: model.identifier.label,
       action: this.changeIdentifierAction,
       value: this._getCurrEl()?.identifier,
-      options: [{ value: '', label: '' }, ...idOpts],
+      options: idOpts,
+      placeholder: 'e.g. CZ',
     });
 
     return result;
@@ -298,6 +302,14 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     this.getState().appendToIconSrcs(iconUrl);
   };
 
+  addIconAction = (e) => {
+    const iconUrl = e.target.value;
+
+    const currEl = this._getCurrEl();
+    this.getState().appendToIconSrcs(iconUrl);
+    this.redrawTabContent(currEl?.layerType);
+  };
+
   /**
    * It returns the sidebar tab pane.
    */
@@ -321,7 +333,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
         label: model.search.label,
         action: this.searchAction,
         options: [],
-        placeholder: 'Search',
+        placeholder: 'e.g. Brno',
         setData: this.onInputOptClick,
       });
       elem.appendChild(this.inputSearch.create());
@@ -363,6 +375,13 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
       // palette Icons
       this.inputIcon = this.createIconPalette();
       elem.appendChild(this.inputIcon);
+
+      this.inputUrl = SidebarInputFactory.createSidebarInput(model.iconUrl.input, {
+        label: model.iconUrl.label,
+        action: this.addIconAction,
+        value: '',
+      });
+      elem.appendChild(this.inputUrl.create());
     }
 
     // this.setInputValues(this.getTool().getState().getDataMapping());

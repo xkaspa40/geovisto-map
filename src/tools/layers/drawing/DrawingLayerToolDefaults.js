@@ -26,7 +26,7 @@ const MAPPING_MODEL = {
     id: INPUT_ID_PREFIX + '-identifier',
     name: 'identifier',
     label: 'Identifier',
-    input: LabeledSelectSidebarInput.ID(),
+    input: AutocompleteSidebarInput.ID(),
   },
   description: {
     id: INPUT_ID_PREFIX + '-description',
@@ -45,6 +45,12 @@ const MAPPING_MODEL = {
     name: 'search',
     label: 'Search',
     input: AutocompleteSidebarInput.ID(),
+  },
+  iconUrl: {
+    id: INPUT_ID_PREFIX + '-iconUrl',
+    name: 'iconUrl',
+    label: 'Icon URL',
+    input: LabeledTextSidebarInput.ID(),
   },
 };
 

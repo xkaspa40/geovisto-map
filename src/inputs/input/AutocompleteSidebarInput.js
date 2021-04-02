@@ -33,6 +33,7 @@ class AutocompleteSidebarInput extends AbstractSidebarInput {
     this.setData = settings.setData;
 
     this.placeholder = settings.placeholder;
+    this.inputValue = settings.value;
 
     // div elements
     this.formDiv = undefined;
@@ -120,8 +121,14 @@ class AutocompleteSidebarInput extends AbstractSidebarInput {
     this.input = document.createElement('input');
     TabDOMUtil.setAttributes(
       this.input,
-      ['class', 'type', 'placeholder', 'type'],
-      [COMPONENT_INPUT_CLASS, 'text', this.placeholder || 'choose dimension: ', 'hidden'],
+      ['class', 'type', 'placeholder', 'type', 'value'],
+      [
+        COMPONENT_INPUT_CLASS,
+        'text',
+        this.placeholder || 'choose dimension: ',
+        'hidden',
+        this.inputValue || '',
+      ],
     );
 
     // construct elements
