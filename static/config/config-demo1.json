@@ -144,7 +144,8 @@
       "layerName": "Connection layer",
       "data": {
         "from": "from",
-        "to": "to"
+        "to": "to",
+        "animateDirection": false
       }
     },
     {

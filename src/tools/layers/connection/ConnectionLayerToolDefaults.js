@@ -1,6 +1,7 @@
 import ConnectionLayerTool from "./ConnectionLayerTool";
 import AbstractLayerToolDefaults from "../abstract/AbstractLayerToolDefaults";
 import AutocompleteSidebarInput from "../../../inputs/input/AutocompleteSidebarInput";
+import CheckboxSidebarInput from "../../../inputs/input/CheckboxSidebarInput";
 
 /**
  * TODO: refactorization needed!
@@ -24,13 +25,19 @@ const MAPPING_MODEL = {
         name: "to",
         label: "To",
         input: AutocompleteSidebarInput.ID()
-    }
+    },
+    animateDirection: {
+        id: `${INPUT_ID_PREFIX}-animateDirection`,
+        name: "animateDirection",
+        label: "Animate direction",
+        input: CheckboxSidebarInput.ID()
+    },
 }
 
 
 /**
  * This class provide functions which return the default state values.
- * 
+ *
  * @author Jiri Hynek
  */
 class ConnectionLayerToolDefaults extends AbstractLayerToolDefaults {
@@ -61,12 +68,13 @@ class ConnectionLayerToolDefaults extends AbstractLayerToolDefaults {
      */
     getDataMapping() {
         let dataMapping = {};
-        
+
         let dataMappingModel = this.getDataMappingModel();
         let implicitDataDomainLabel = this.getMapObject().getMap().getState().getMapData().getDataDomainLabels()[0];
-        
+
         dataMapping[dataMappingModel.from.name] = implicitDataDomainLabel;
         dataMapping[dataMappingModel.to.name] = implicitDataDomainLabel;
+        dataMapping[dataMappingModel.animateDirection.name] = false;
 
         return dataMapping;
     }
@@ -77,14 +85,14 @@ class ConnectionLayerToolDefaults extends AbstractLayerToolDefaults {
     getDataMappingModel() {
         return MAPPING_MODEL;
     }
-    
+
     /**
      * It returns optiomal zoom for D3 projections.
      */
     getProjectionZoom() {
         return 2;
     }
-    
+
     /**
      * It returns default centroids.
      */

@@ -141,7 +141,8 @@
       "layerName": "Connection layer",
       "data": {
         "from": "sources.country",
-        "to": "targets.country"
+        "to": "targets.country",
+        "animateDirection": false
       }
     },
     {

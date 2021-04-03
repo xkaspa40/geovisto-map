@@ -224,13 +224,13 @@ class ConnectionLayerTool extends AbstractLayerTool {
             var projectionPathFunction = ProjectionUtil.getPathProjectionFunction(map, this.getDefaults().getProjectionZoom());
 
             // draw paths
-            g.selectAll("path.abc")
+            this.connectionsPaths = g.selectAll("path.abc")
                 .data(d3ForceSimulator.getPaths())
                 .enter()
                 .append("path")
                 .attr("d", projectionPathFunction)
-                //.attr("data-countries", function(d) { return d[0].id + " " + d[d.length-1].id; })
-                .attr("class", "leaflet-layer-connection");
+                .attr("class", "leaflet-layer-connection")
+                .style("stroke-opacity", 0);
 
             // update paths with respect to actual map state (zoom, move)
             let updatePaths = function() {
@@ -250,10 +250,17 @@ class ConnectionLayerTool extends AbstractLayerTool {
             // run force layout algorithm
             d3ForceSimulator.run(
                 updatePaths,
-                function(d) {
-                    // print message when finishes
-                    console.log("Force layout algorithm completed!");
-                }
+                () => {
+                    const animateDirection = this.tabControl.getInputValues()[this.getDefaults()
+                        .getDataMappingModel().animateDirection.name]
+                    if (animateDirection) {
+                        this.animateDirection(true);
+                    }
+                    this.connectionsPaths
+                        .transition()
+                        .duration(300)
+                        .style("stroke-opacity", 0.4)
+                },
             );
         }
     }
@@ -296,6 +303,24 @@ class ConnectionLayerTool extends AbstractLayerTool {
         } else if (event.getType() === TimeChangeEvent.TYPE()) {
             this.onTimeChange(event.getObject());
         }
+    }
+
+    animateDirection(animate) {
+        if (animate) {
+            this.animationInterval && clearInterval(this.animationInterval);
+            let offset = 0;
+            this.connectionsPaths.style("stroke-dasharray", "10,4")
+            this.animationInterval = setInterval(() => {
+                this.connectionsPaths.style("stroke-dashoffset", offset);
+                offset += 1;
+            }, 100);
+        }
+        if (!animate && this.animationInterval) {
+            clearInterval(this.animationInterval);
+            this.animationInterval = null;
+            this.connectionsPaths.style("stroke-dasharray", "none")
+        }
+
     }
 
     onTimeChange(data) {
