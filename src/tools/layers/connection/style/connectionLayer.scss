@@ -9,6 +9,10 @@
     stroke: var(--layer-connection);
     stroke-width: 0.5;
     stroke-opacity: 0.4;
+
+    &-dashed {
+        stroke-dasharray: 10,4;
+    }
 }
 
 .leaflet-layer-connection-highlight {

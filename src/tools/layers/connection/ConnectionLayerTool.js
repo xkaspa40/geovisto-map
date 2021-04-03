@@ -29,6 +29,7 @@ class ConnectionLayerTool extends AbstractLayerTool {
      */
     constructor(props) {
         super(props);
+        this.connectionsPaths = {};
     }
 
     /**
@@ -90,7 +91,8 @@ class ConnectionLayerTool extends AbstractLayerTool {
         this.getState().setLayer(layer);
 
         // prepare data
-        this.prepareMapData(this);
+        const data = this.getMap().getState().getCurrentData();
+        this.prepareMapData(data);
 
         return [ layer ];
     }
@@ -114,10 +116,7 @@ class ConnectionLayerTool extends AbstractLayerTool {
     /**
      * It prepares data for connections.
      */
-    prepareMapData() {
-        //console.log("updating map data", this);
-
-        //this.getState().getlayer()._container.remove();
+    prepareMapData(data) {
         let workData = {
             nodes: [],
             connections: []
@@ -132,7 +131,6 @@ class ConnectionLayerTool extends AbstractLayerTool {
          let toDataDomain = mapData.getDataDomain(this.getState().getDataMapping()[this.getDefaults().getDataMappingModel().to.name]);
          let geoFrom, geoTo, actFrom, actTo, actConnection;
          let foundFrom, foundTo;
-         let data = this.getMap().getState().getCurrentData();
          let dataLen = data.length;
          let clone = new rfdc();
          let centroids = this.getState().getCentroids();
@@ -203,12 +201,9 @@ class ConnectionLayerTool extends AbstractLayerTool {
             let overlayPane = d3.select(layer._map.getPanes().overlayPane);
 
             // get <svg> element (expect L.svg() layer)
-            let svg = overlayPane.select("svg");
-            let g = svg.select("g")
+            this.layerSvg = overlayPane.select("svg");
                 // uncoment this in case of non-smooth zoom animation
                 //.attr("class", "leaflet-zoom-hide")
-            ;
-            g.selectAll("*").remove();
 
             // create d3 force layout simulator
             let workData = this.getState().getWorkData();
@@ -223,19 +218,36 @@ class ConnectionLayerTool extends AbstractLayerTool {
             var map = this.getMap().getState().getLeafletMap();
             var projectionPathFunction = ProjectionUtil.getPathProjectionFunction(map, this.getDefaults().getProjectionZoom());
 
+            // const pathData = Object.values(d3ForceSimulator.getPaths())
+            // const pathsData = Object.values(d3ForceSimulator.getPaths())
+            //     .reduce((paths, connectionPaths) => ([...paths, ...connectionPaths]), []);
+            const connectionsIds = [
+                ...Object.keys(this.connectionsPaths),
+                ...Object.keys(d3ForceSimulator.getPaths())
+            ];
+            const pathsData = connectionsIds.reduce((acc, connectionId) => ({
+                ...acc,
+                [connectionId]: d3ForceSimulator.getPaths()[connectionId] || [],
+            }), {});
             // draw paths
-            this.connectionsPaths = g.selectAll("path.abc")
-                .data(d3ForceSimulator.getPaths())
-                .enter()
-                .append("path")
-                .attr("d", projectionPathFunction)
-                .attr("class", "leaflet-layer-connection")
-                .style("stroke-opacity", 0);
+            const animateDirection = this.tabControl.getInputValues()[this.getDefaults()
+                .getDataMappingModel().animateDirection.name]
+            Object.entries(pathsData).forEach(([id, paths]) => {
+                this.connectionsPaths[id] = this.layerSvg.selectAll(`path.leaflet-layer-connection.${id}`)
+                    .data(paths)
+                    .enter()
+                    .append("path")
+                    .attr("d", projectionPathFunction)
+                    .attr("class", `leaflet-layer-connection ${id}`)
+                    .classed("leaflet-layer-connection-dashed", animateDirection)
+                    .style("stroke-opacity", 0)
+                    .transition()
+                    .duration(300)
+                    .style("stroke-opacity", 0.4);
+            })
 
             // update paths with respect to actual map state (zoom, move)
-            let updatePaths = function() {
-                g.selectAll("path").attr("d", projectionPathFunction);
-            }
+            let updatePaths = () => this.layerSvg.selectAll("path").attr("d", projectionPathFunction);
 
             // highlight connections with respect to the selection of the selection tool if available
             if(this.getSelectionTool()) {
@@ -251,15 +263,9 @@ class ConnectionLayerTool extends AbstractLayerTool {
             d3ForceSimulator.run(
                 updatePaths,
                 () => {
-                    const animateDirection = this.tabControl.getInputValues()[this.getDefaults()
-                        .getDataMappingModel().animateDirection.name]
                     if (animateDirection) {
                         this.animateDirection(true);
                     }
-                    this.connectionsPaths
-                        .transition()
-                        .duration(300)
-                        .style("stroke-opacity", 0.4)
                 },
             );
         }
@@ -275,7 +281,8 @@ class ConnectionLayerTool extends AbstractLayerTool {
             this.deleteLayerItems();
 
             // prepare data
-            this.prepareMapData();
+            const data = this.getMap().getState().getCurrentData();
+            this.prepareMapData(data);
 
             // update map
             this.postCreateLayerItems();
@@ -301,60 +308,92 @@ class ConnectionLayerTool extends AbstractLayerTool {
             document.documentElement.style.setProperty('--layer-connection-highlight',map.getHighlightColor().highlight);
             document.documentElement.style.setProperty('--layer-connection-other', map.getHighlightColor().deempasize);
         } else if (event.getType() === TimeChangeEvent.TYPE()) {
+            this.prepareMapData(event.getObject());
             this.onTimeChange(event.getObject());
         }
     }
 
     animateDirection(animate) {
+        const connections = this.layerSvg.selectAll("path.leaflet-layer-connection");
         if (animate) {
             this.animationInterval && clearInterval(this.animationInterval);
             let offset = 0;
-            this.connectionsPaths.style("stroke-dasharray", "10,4")
+            connections.style("stroke-dasharray", "10,4")
             this.animationInterval = setInterval(() => {
-                this.connectionsPaths.style("stroke-dashoffset", offset);
+                connections.style("stroke-dashoffset", offset);
                 offset += 1;
             }, 100);
         }
         if (!animate && this.animationInterval) {
             clearInterval(this.animationInterval);
             this.animationInterval = null;
-            this.connectionsPaths.style("stroke-dasharray", "none")
+            connections.selectAll("path.leaflet-layer-connection").style("stroke-dasharray", "none")
         }
-
     }
 
-    onTimeChange(data) {
-        let layer = this.getState().getLayer();
-        if(layer != undefined && layer._container != undefined) {
-            // get overleay pane, svg g element and paths
-            let paths = d3.select(layer._map.getPanes().overlayPane)
-                .select("svg")
-                .select("g")
-                .selectAll("path");
+    onTimeChange() {
+        let workData = this.getState().getWorkData();
+        var d3ForceSimulator = new D3PathForceSimulator({
+            nodes: workData.nodes,
+            connections: workData.connections
+        });
 
-            const fromPath = this.getState().getDataMapping()[this.getDefaults().getDataMappingModel().from.name];
-            const toPath = this.getState().getDataMapping()[this.getDefaults().getDataMappingModel().to.name];
+        // get projection path function
+        // geographic locations [lat, lng] of nodes needs to be projected to leaflet map
+        // we use the zoom preferred for the force layout simulation
+        const map = this.getMap().getState().getLeafletMap();
+        const projectionPathFunction = ProjectionUtil.getPathProjectionFunction(map, this.getDefaults().getProjectionZoom());
+        const connectionsIds = [...new Set([
+            ...Object.keys(this.connectionsPaths),
+            ...Object.keys(d3ForceSimulator.getPaths())
+        ])];
+        const pathsData = connectionsIds.reduce((acc, connectionId) => ({
+            ...acc,
+            [connectionId]: d3ForceSimulator.getPaths()[connectionId] || [],
+        }), {});
+        // draw paths
+        const animateDirection = this.tabControl.getInputValues()[this.getDefaults()
+            .getDataMappingModel().animateDirection.name]
 
-            const getPath = (obj, pathString) => pathString.split('.').reduce((o, i) => o[i], obj);
+        Object.entries(pathsData).forEach(([id, paths]) => {
+            this.connectionsPaths[id] = this.layerSvg.selectAll(`path.leaflet-layer-connection.${id}`)
+                .data(paths);
+            this.connectionsPaths[id].enter()
+                .append("path")
+                .attr("d", projectionPathFunction)
+                .attr("class", `leaflet-layer-connection ${id}`)
+                .classed("leaflet-layer-connection-dashed", animateDirection)
+                .style("stroke-opacity", 0)
+                .transition()
+                .duration(200)
+                .style("stroke-opacity", 0.4)
+            this.connectionsPaths[id].exit()
+                .transition()
+                .duration(500)
+                .style("stroke-opacity", 0)
+                .remove()
+        })
 
-            if(data && data.length > 0) {
-                // process all paths and find the affected ones
-                paths.each((path) => {
-                    const from = path[0].id;
-                    const to = path[path.length - 1].id;
-                    if(data.some(
-                        (item) => from === getPath(item, fromPath) && to === getPath(item, toPath)
-                    )) {
-                        paths.attr("class", "leaflet-layer-connection-other");
-                    } else {
-                        paths.attr("class", "leaflet-layer-connection");
-                    }
-                });
-            } else {
-                // set the default path style
-                paths.attr("class", "leaflet-layer-connection");
-            }
+        // update paths with respect to actual map state (zoom, move)
+        let updatePaths = () => this.layerSvg.selectAll("path").attr("d", projectionPathFunction);
+
+
+        // highlight connections with respect to the selection of the selection tool if available
+        if(this.getSelectionTool()) {
+            this.onSelectionUpdate(this.getSelectionTool().getState().getSelection());
         }
+
+        // map move/zoom listener
+        map.on("moveend", updatePaths);
+        // initial update
+        updatePaths();
+
+        if (animateDirection) {
+            this.animateDirection(true);
+        }
+
+        // run force layout algorithm
+        d3ForceSimulator.run(updatePaths, undefined);
     }
 
     /**
@@ -363,12 +402,8 @@ class ConnectionLayerTool extends AbstractLayerTool {
     onSelectionUpdate(selection) {
         let layer = this.getState().getLayer();
         if(layer != undefined && layer._container != undefined) {
-
             // get overleay pane, svg g element and paths
-            let paths = d3.select(layer._map.getPanes().overlayPane)
-                            .select("svg")
-                            .select("g")
-                            .selectAll("path");
+            let paths = this.layerSvg.selectAll("path.leaflet-layer-connection");
 
             if(selection && selection.getSrcIds().length > 0) {
                 let selectionSrcIds = selection.getSrcIds();
@@ -382,14 +417,16 @@ class ConnectionLayerTool extends AbstractLayerTool {
                     to = d[d.length-1].id;
                     if(selectionSrcIds.includes(from)) {
                         // highlight
-                        this.setAttribute("class", "leaflet-layer-connection-highlight");
+                        this.classList.add("leaflet-layer-connection-highlight");
+                        this.classList.remove("leaflet-layer-connection-other");
                         // check affected country
                         if(!affectedIds.includes(to)) {
                             affectedIds.push(to);
                         }
                     } else if(selectionSrcIds.includes(to)) {
                         // highlight
-                        this.setAttribute("class", "leaflet-layer-connection-highlight");
+                        this.classList.add("leaflet-layer-connection-highlight");
+                        this.classList.remove("leaflet-layer-connection-other");
                         // check affected country
                         if(!affectedIds.includes(from)) {
                             affectedIds.push(from);
@@ -397,7 +434,8 @@ class ConnectionLayerTool extends AbstractLayerTool {
                     } else {
                         //if(this.getAttribute("class") == "leaflet-layer-connection") {
                             // deemphasize if it is not already highlighted
-                            this.setAttribute("class", "leaflet-layer-connection-other");
+                            this.classList.add("leaflet-layer-connection-other");
+                            this.classList.remove("leaflet-layer-connection-highlight");
                         //}
                     }
                 });
@@ -419,7 +457,9 @@ class ConnectionLayerTool extends AbstractLayerTool {
                 }
             } else {
                 // set the default path style
-                paths.attr("class", "leaflet-layer-connection");
+                paths
+                    .classed("leaflet-layer-connection-highlight", false)
+                    .classed("leaflet-layer-connection-other", false);
             }
         }
     }

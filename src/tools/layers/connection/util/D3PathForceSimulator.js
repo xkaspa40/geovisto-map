@@ -4,18 +4,19 @@ import * as d3 from "d3";
  * This class represents the force layout simulator powered by the d3-force library.
  * It takes the nodes and connections and prepares the list paths
  * which can be bent by the D3 force simulation.
- * 
+ *
  * A former idea to split the lines into line segments and use the D3 force simulation can be found
- * in the prototype writen by S. Engle (https://gist.github.com/ericfischer/dafc36a3d212da4619dde2d392553c7a)
- * demonstarting force‐directed edge bundling for graph visualization (by Danny Holten and Jarke J. van Wijk).
+ * in the prototype writen by S. Engle
+ * (https://gist.github.com/ericfischer/dafc36a3d212da4619dde2d392553c7a) demonstarting
+ * force‐directed edge bundling for graph visualization (by Danny Holten and Jarke J. van Wijk).
  * Further ideas were found in the D3 docs and examples.
- * 
+ *
  * Our approach implements a very simple segmentation of the connections
  * which works with the constant maximal length of segments.
  * This causes that short connections won't be segmented,
  * which improves the performance of the simulation.
  * The preferred maximal length of the line segments can be adjusted using props.
- * 
+ *
  * @author Jiri Hynek
  */
 class D3PathForceSimulator {
@@ -29,7 +30,7 @@ class D3PathForceSimulator {
         // maximum number of path items
         this.props.segmentLength = (props.segmentLength ? props.segmentLength : this.getDefaultSegmentLength());
     }
-    
+
     /**
      * It returns default size of the segment
      */
@@ -51,22 +52,19 @@ class D3PathForceSimulator {
      * It creates paths (split connections into segments).
      */
     createPaths() {
-        let paths = [];
+        if (!this.props.connections || this.props.connections.length < 1) return {};
 
-        // go through all map connections and create paths for every connection
-        // connections represented by a path can be bent
-        for(let i = 0; i < this.props.connections.length; i++) {
-            paths.push(this.createPath(this.props.connections[i]));
-        };
-
-        return paths;
+        return this.props.connections.reduce((paths, connection) => {
+            const { id, path } = this.createPath(connection)
+            return { ...paths, [id]: [...(paths[id] || []), path] };
+        }, {});
     }
 
     /**
      * Help function which takes a connection and split the connection into segments.
      * The number of segments is based on the preferred maximal length of segment.
-     * 
-     * @param {*} connection 
+     *
+     * @param {*} connection
      */
     createPath(connection) {
         let path = [];
@@ -75,13 +73,13 @@ class D3PathForceSimulator {
         let source = connection.source;
         let target = connection.target;
 
-        // add the first point 
+        // add the first point
         path.push(source);
 
         // length of the connection: sqrt((x2-x1)^2 + (y2-y1)^2)
         let length = Math.sqrt((target.x - source.x) * (target.x - source.x)
                                  + (target.y - source.y) * (target.y - source.y));
-        
+
         // preferred number of segments
         let numberOfSegments = Math.round(length/this.props.segmentLength);
 
@@ -107,19 +105,20 @@ class D3PathForceSimulator {
         // add the last point
         path.push(target);
 
-        return path;
+        const id = `${source.id}-${target.id}`;
+        return { id, path };
     }
 
     /**
      * It creates creates and runs the D3 force layout simulation.
-     * 
+     *
      * @param {*} onTickAction
      * @param {*} onEndAction
      */
     run(onTickAction, onEndAction) {
         // get D3 force layout simulator
         let simulation = this.getSimulation();
-        
+
         // set run properties to run the simulation
         simulation
             .on("tick", onTickAction)
@@ -206,9 +205,10 @@ class D3PathForceSimulator {
 
             nodes.push(node);
         };
-        
+
         // go throught all paths and add the remaining points between the end nodes
-        let paths = this.getPaths();
+        const paths = Object.values(this.getPaths()).map((connectionPaths) => connectionPaths[0]);
+
         let path;
         for(let i = 0; i < paths.length; i++) {
             path = paths[i];
@@ -238,7 +238,8 @@ class D3PathForceSimulator {
         let links = [];
 
         // go throught all paths and contruct links
-        let paths = this.getPaths();
+        const paths = Object.values(this.getPaths()).map((connectionPaths) => connectionPaths[0]);
+        console.log(this.getPaths());
         let path;
         for(let i = 0; i < paths.length; i++) {
             path = paths[i];
