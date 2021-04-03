@@ -38,8 +38,8 @@ export const connectClick = (map, sidebar) => {
   const marker = markerCreate(map, sidebar, true);
 };
 
-export const putMarkerOnMap = (featureGroup, latlng, popup, iconUrl) => {
-  const additionalOpts = { iconUrl: iconUrl || ICON_SRCS[0] };
+export const putMarkerOnMap = (featureGroup, latlng, popup, iconUrl, connectClick = false) => {
+  const additionalOpts = { iconUrl: iconUrl || ICON_SRCS[0], connectClick };
   const icon = new L.Icon({
     ...iconOptions,
     ...additionalOpts,

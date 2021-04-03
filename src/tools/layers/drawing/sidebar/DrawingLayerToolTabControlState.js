@@ -62,9 +62,21 @@ class DrawingLayerToolTabControlState extends AbstractLayerToolTabControlState {
 
     this.searchOpts = [];
 
+    this.guideLayers = [];
+
+    this.connectActivated = false;
+
     this.paintPoly = new PaintPoly({
       tabState: this,
     });
+  }
+
+  setConnectActivated(val) {
+    this.connectActivated = val;
+  }
+
+  pushGuideLayer(layer) {
+    this.guideLayers.push(layer);
   }
 
   setEnabledEl(val) {

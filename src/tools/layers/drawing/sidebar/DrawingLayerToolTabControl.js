@@ -288,7 +288,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
 
   onInputOptClick = (value) => {
     const featureGroup = this.getTool()?.getState().featureGroup;
-    const opts = this.getState().searchOpts;
+    const { searchOpts: opts, connectActivated } = this.getState();
 
     const found = opts.find((opt) => opt.label === value);
 
@@ -296,10 +296,15 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     latlng.lat = found?.y || 0;
     latlng.lng = found?.x || 0;
     const iconUrl = found?.raw?.icon || ICON_SRCS[0];
-    const marker = putMarkerOnMap(featureGroup, latlng, found?.label, iconUrl);
+    const marker = putMarkerOnMap(featureGroup, latlng, found?.label, iconUrl, connectActivated);
     this.getTool().applyEventListeners(marker);
+    this.getTool().applyTopologyMarkerListeners(marker);
     this.getState().setSelectedIcon(iconUrl);
     this.getState().appendToIconSrcs(iconUrl);
+    if (connectActivated) {
+      this.getTool().plotTopology();
+    }
+    this.redrawTabContent('search');
   };
 
   addIconAction = (e) => {
@@ -308,6 +313,31 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     const currEl = this._getCurrEl();
     this.getState().appendToIconSrcs(iconUrl);
     this.redrawTabContent(currEl?.layerType);
+  };
+
+  createConnectCheck = () => {
+    const onChange = (e) => {
+      const val = e.target.checked;
+      console.log({ val });
+      this.getState().setConnectActivated(val);
+    };
+    const { connectActivated } = this.getState();
+
+    const ID = 'connect-check-input';
+    const inputWrapper = document.createElement('div');
+    inputWrapper.className = ID + '-wrapper';
+    const connectCheck = document.createElement('input');
+    connectCheck.type = 'checkbox';
+    connectCheck.checked = connectActivated;
+    connectCheck.id = ID;
+    connectCheck.onchange = onChange;
+    const connectCheckLabel = document.createElement('label');
+    connectCheckLabel.for = ID;
+    connectCheckLabel.innerText =
+      'By creating new marker while having this choice selected, you will create path between newly created marker and selected marker or last created marker via Topology tool';
+    inputWrapper.appendChild(connectCheck);
+    inputWrapper.appendChild(connectCheckLabel);
+    return inputWrapper;
   };
 
   /**
@@ -328,6 +358,8 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     if (!layerType) return tab;
 
     if (layerType === 'search') {
+      this.inputConnect = this.createConnectCheck();
+      elem.appendChild(this.inputConnect);
       // labeld text Search
       this.inputSearch = SidebarInputFactory.createSidebarInput(model.search.input, {
         label: model.search.label,

@@ -28,6 +28,14 @@ import * as turf from '@turf/turf';
 import * as martinez from 'martinez-polygon-clipping';
 import * as polyClipping from 'polygon-clipping';
 import './components/Edit';
+import 'leaflet-snap';
+import 'leaflet-geometryutil';
+import 'leaflet-draw';
+
+// * as advised in https://github.com/makinacorpus/Leaflet.Snap/issues/52
+L.Draw.Feature.include(L.Evented.prototype);
+L.Draw.Feature.include(L.Draw.Feature.SnapMixin);
+L.Draw.Feature.addInitHook(L.Draw.Feature.SnapMixin._snap_initialize);
 
 export const DRAWING_TOOL_LAYER_TYPE = 'geovisto-tool-layer-drawing';
 
@@ -303,7 +311,6 @@ class DrawingLayerTool extends AbstractLayerTool {
 
   haveSameVertice(current) {
     const found = this.state.createdVertices.find((vertice) => {
-      // console.log({ vertice, current });
       return (
         (vertice._latlngs[0].equals(current._latlngs[0]) &&
           vertice._latlngs[1].equals(current._latlngs[1])) ||
@@ -315,23 +322,23 @@ class DrawingLayerTool extends AbstractLayerTool {
     return Boolean(found);
   }
 
-  plotTopology(added) {
+  plotTopology() {
     const combinedMap = this.getMap();
     const map = combinedMap.state.map;
+    let selectedLayer = this.getState().selectedLayer;
 
     const layersObj = this.state.featureGroup._layers;
     const layerArr = [...Object.values(layersObj)];
-    const _markers = layerArr.filter(
-      (_) => _.layerType === 'marker' && _?.options?.icon?.options?.connectClick,
-    );
+    const _markers = layerArr
+      .filter((_) => _.layerType === 'marker' && _?.options?.icon?.options?.connectClick)
+      .reverse();
     // console.log({ _markers });
     const topologyVertices = [];
-    for (let index = 0; index < _markers.length; index++) {
-      const firstMarker = _markers[index];
+    const index = 0;
+    const firstMarker = _markers[index];
 
-      const secondMarker = _markers[index + 1];
-      if (!secondMarker) break;
-
+    const secondMarker = selectedLayer || _markers[index + 1];
+    if (secondMarker) {
       const { lat: fLat, lng: fLng } = firstMarker.getLatLng();
       const { lat: sLat, lng: sLng } = secondMarker.getLatLng();
 
@@ -340,11 +347,12 @@ class DrawingLayerTool extends AbstractLayerTool {
         color: '#563412',
         weight: 3,
       });
-      if (this.haveSameVertice(poly)) continue;
-      poly.addTo(map);
-      topologyVertices.push(poly);
-      this.state.createdVertices.push(poly);
-      map.fire(L.Draw.Event.CREATED, { layer: poly, layerType: 'vertice' });
+      if (!this.haveSameVertice(poly)) {
+        poly.addTo(map);
+        topologyVertices.push(poly);
+        this.state.createdVertices.push(poly);
+        map.fire(L.Draw.Event.CREATED, { layer: poly, layerType: 'vertice' });
+      }
     }
 
     this.mapMarkersToVertices(_markers);
@@ -368,7 +376,6 @@ class DrawingLayerTool extends AbstractLayerTool {
 
   changeVerticesLocation(latlng, oldlatlng, markerID) {
     const markerVertices = this.state.mappedMarkersToVertices[markerID];
-    console.log({ markerVertices, markerID });
     if (!markerVertices || !markerVertices?.length) return;
 
     this.setVerticesCoordinates(markerVertices, latlng);
@@ -385,6 +392,7 @@ class DrawingLayerTool extends AbstractLayerTool {
   createdListener = (e) => {
     let layer = e.layer;
     layer.layerType = e.layerType;
+    console.log({ layer });
     if (e.keyIndex) layer.kIdx = e.keyIndex;
 
     let prevLayer = this.getState().getPrevLayer();
@@ -411,9 +419,9 @@ class DrawingLayerTool extends AbstractLayerTool {
 
     if (layer.dragging && e.layerType !== 'marker') layer.dragging.disable();
     // this.getState().removeLayerByIdx(layer.kIdx);
-    let added;
+
     if (e.layerType !== 'knife') {
-      added = this.getState().addLayer(layer);
+      this.getState().addLayer(layer);
       this.getState().setCurrEl(layer);
       this.applyEventListeners(layer);
     }
@@ -421,18 +429,24 @@ class DrawingLayerTool extends AbstractLayerTool {
     // * MARKER
     if (e.layerType === 'marker') {
       // TODO:
-      layer.on('drag', (event) => {
-        const { latlng, oldLatLng, target } = event;
-
-        // console.log({ lat: latlng.lat, lng: latlng.lng, oldlat: oldLatLng.lat, oldlng: oldLatLng.lng });
-
-        this.changeVerticesLocation(latlng, oldLatLng, target._leaflet_id);
-      });
+      this.applyTopologyMarkerListeners(layer);
       if (layer?.options?.icon?.options?.connectClick) {
-        this.plotTopology(added);
+        this.plotTopology();
       }
     }
+
+    this.getSidebarTabControl().getState().pushGuideLayer(layer);
   };
+
+  applyTopologyMarkerListeners(layer) {
+    layer.on('drag', (event) => {
+      const { latlng, oldLatLng, target } = event;
+
+      // console.log({ lat: latlng.lat, lng: latlng.lng, oldlat: oldLatLng.lat, oldlng: oldLatLng.lng });
+
+      this.changeVerticesLocation(latlng, oldLatLng, target._leaflet_id);
+    });
+  }
 
   /**
    * It creates layer items.

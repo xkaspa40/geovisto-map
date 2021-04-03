@@ -1,6 +1,7 @@
 import L from 'leaflet';
 import 'leaflet-path-drag';
 import 'leaflet-path-transform';
+import 'leaflet-draw';
 
 import 'leaflet/dist/leaflet.css';
 
@@ -27,6 +28,8 @@ export const polygonCreate = (map, sidebar) => {
       draggable: true,
       transform: true,
     },
+    guideLayers: sidebar.getState().guideLayers,
+    snapDistance: 5,
     // repeatMode: true,
   });
   if (x) sidebar.getState().setEnabledEl(x);
@@ -42,6 +45,7 @@ export const polylineCreate = (map, sidebar) => {
       draggable: true,
       transform: true,
     },
+    guideLayers: sidebar.getState().guideLayers,
     // repeatMode: true,
   });
   if (x) sidebar.getState().setEnabledEl(x);
