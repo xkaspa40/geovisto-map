@@ -2,7 +2,7 @@
  * This class provide functions for using themes.
  * 
  * @author Jiri Hynek
- */
+ */ 
 class AbstractThemesManager {
 
     /**

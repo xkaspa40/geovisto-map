@@ -84,7 +84,7 @@
       "type": "geovisto-tool-themes",
       "id": "geovisto-tool-themes",
       "enabled": true,
-      "theme": "dark1"
+      "theme": "light1"
     },
     {
       "type": "geovisto-tool-selection",
@@ -111,7 +111,11 @@
       "data": {
         "country": "from",
         "value": "value",
-        "aggregation": "sum"
+        "aggregation": "sum",
+        "scaling": "median (sorted values)",
+        "range": "7",
+        "strategy": "custom color",
+        "color": "#e32400"
       }
     },
     {

@@ -75,9 +75,9 @@ class SelectionTool extends AbstractTool {
      * @param {*} selection 
      */
     setSelection(selection) {
-        if(selection != undefined) {
+        if (selection != undefined) {
             // if the selection tool is enabled, update map selection
-            if(this.isEnabled()) {
+            if (this.isEnabled()) {
                 // update tool state
                 this.getState().setSelection(selection);
 
@@ -91,7 +91,7 @@ class SelectionTool extends AbstractTool {
      * It returns a tab fragment.
      */
     getSidebarTabFragment() {
-        if(this.tabFragment == undefined) {
+        if (this.tabFragment == undefined) {
             this.tabFragment = this.createSidebarTabFragment();
         }
         return this.tabFragment;
@@ -103,7 +103,7 @@ class SelectionTool extends AbstractTool {
      * This function can be extended.
      */
     createSidebarTabFragment() {
-        return new SelectionToolTabFragment({ tool: this});
+        return new SelectionToolTabFragment({ tool: this });
     }
 }
 export default SelectionTool;

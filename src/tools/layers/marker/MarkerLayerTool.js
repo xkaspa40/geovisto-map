@@ -3,7 +3,7 @@ import LL from 'leaflet.markercluster';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
-import './style/markerLayer.scss'; 
+import './style/markerLayer.scss';
 import * as d3 from "d3";
 import MarkerLayerToolTabControl from './sidebar/MarkerLayerToolTabControl';
 import MarkerLayerToolDefaults from './MarkerLayerToolDefaults';
@@ -61,38 +61,38 @@ var CountryIcon = L.DivIcon.extend({
         useDonut: true
     },
 
-    round: function(value, align) {
-        return Math.round(value*align)/align;
+    round: function (value, align) {
+        return Math.round(value * align) / align;
     },
 
-    formatValue: function(value, level) {
-        if(level == undefined || level < 0) {
+    formatValue: function (value, level) {
+        if (level == undefined || level < 0) {
             return this.levels[0][this._SUFFIX];
         } else {
-            if(this.levels[level][this._LEVEL] == -Infinity) {
+            if (this.levels[level][this._LEVEL] == -Infinity) {
                 return this.levels[level][this._SUFFIX];
-            } else if(this.levels[level][this._LEVEL] == 1) {
+            } else if (this.levels[level][this._LEVEL] == 1) {
                 return this.round(value, this.levels[level][this._LEVEL]);
             } else {
-                value = value/(this.levels[level][this._LEVEL]*10);
+                value = value / (this.levels[level][this._LEVEL] * 10);
                 var align = (value >= 10) ? 1 : 10;
                 return this.round(value, align) + this.levels[level][this._SUFFIX];
             }
         }
     },
 
-    getColor: function(level) {
-        if(level == null || level < 0) {
+    getColor: function (level) {
+        if (level == null || level < 0) {
             return this.levels[0][this._COLOR];
         } else {
             return this.levels[level][this._COLOR];
         }
     },
 
-    getLevel: function(value) {
-        for(var i = this.levels.length-1; i >= 0; i--) {
-            if(value > this.levels[i][this._LEVEL]) {
-            return i;
+    getLevel: function (value) {
+        for (var i = this.levels.length - 1; i >= 0; i--) {
+            if (value > this.levels[i][this._LEVEL]) {
+                return i;
             }
         }
         return -1;
@@ -103,19 +103,19 @@ var CountryIcon = L.DivIcon.extend({
             options = this.options;
 
         var size = options.useDonut ? options.sizeDonut : (options.isGroup ? options.sizeGroup : options.sizeBasic);
-        options.iconSize = [size,size];
-        options.iconAnchor = [size/2,size/2];
-        var rCircle = options.sizeBasic/2;
-        var center = size/2;
+        options.iconSize = [size, size];
+        options.iconAnchor = [size / 2, size / 2];
+        var rCircle = options.sizeBasic / 2;
+        var center = size / 2;
         // moved to css
         //var strokeWidth = options.isGroup ? ((options.sizeGroup-options.sizeBasic)/2) : 0;
         var level = this.getLevel(options.values.value);
 
         var divContent = div.appendChild(document.createElement('div'));
-        divContent.classList.value = 
+        divContent.classList.value =
             "leaflet-marker-level" + level // level
             + (options.isGroup ? " leaflet-marker-group" : "") // group of several markers
-        ;
+            ;
 
 
         //console.log(size);
@@ -130,11 +130,11 @@ var CountryIcon = L.DivIcon.extend({
             .attr("cx", center)
             .attr("cy", center)
             .attr("r", rCircle)
-            // moved to css
-            //.attr("fill", this.getColor(level))
-            //.attr("fill-opacity", 0.9)
-            //.attr("stroke-width", strokeWidth)
-            //.attr("stroke", "black");
+        // moved to css
+        //.attr("fill", this.getColor(level))
+        //.attr("fill-opacity", 0.9)
+        //.attr("stroke-width", strokeWidth)
+        //.attr("stroke", "black");
 
         // value label
         svg.append("text")
@@ -145,34 +145,34 @@ var CountryIcon = L.DivIcon.extend({
             .attr("font-size", "12px")
             .attr("dy", "0.3em")
             .attr("font-family", "Arial");
-            // moved to css
-            //.attr("fill", "white")
-
-        if(options.values.value != null && options.values.value != 0) {
-        //var values = { a: 0.5, b: 0.3, c: 0.2 };
         // moved to css
-        //var color = d3.scaleOrdinal()
-        //    .domain(options.values.subvalues)
-        //    .range(this.donutColors);
-        var pie = d3.pie().value(function(d) { return d[1]; });
-        var values_ready = pie(Object.entries(options.values.subvalues));
-        // donut chart
-        svg.append("g")
-            .attr("transform", "translate(" + size / 2 + "," + size / 2 + ")")
-            .selectAll("abc")
-            .data(values_ready)
-            .enter()
-            .append("path")
-            .attr("d", d3.arc()
-            .innerRadius(size/4+6)
-            .outerRadius(size/2)
-            )
+        //.attr("fill", "white")
+
+        if (options.values.value != null && options.values.value != 0) {
+            //var values = { a: 0.5, b: 0.3, c: 0.2 };
             // moved to css
-            .attr('class', function(d, i) { return "leaflet-marker-donut" + (i % 3 + 1); })
-            //.attr('fill', function(d) { return(color(d.data.key)) })
-            //.attr("stroke-width", "0px")
-            //.attr("opacity", 0.8)
-            ;
+            //var color = d3.scaleOrdinal()
+            //    .domain(options.values.subvalues)
+            //    .range(this.donutColors);
+            var pie = d3.pie().value(function (d) { return d[1]; });
+            var values_ready = pie(Object.entries(options.values.subvalues));
+            // donut chart
+            svg.append("g")
+                .attr("transform", "translate(" + size / 2 + "," + size / 2 + ")")
+                .selectAll("abc")
+                .data(values_ready)
+                .enter()
+                .append("path")
+                .attr("d", d3.arc()
+                    .innerRadius(size / 4 + 6)
+                    .outerRadius(size / 2)
+                )
+                // moved to css
+                .attr('class', function (d, i) { return "leaflet-marker-donut" + (i % 3 + 1); })
+                //.attr('fill', function(d) { return(color(d.data.key)) })
+                //.attr("stroke-width", "0px")
+                //.attr("opacity", 0.8)
+                ;
         }
 
         /*const icon = <svg width={size} height={size}>
@@ -213,7 +213,7 @@ class MarkerLayerTool extends AbstractLayerTool {
      * A unique string of the tool type.
      */
     static TYPE() {
-        return "geovisto-tool-layer-marker"; 
+        return "geovisto-tool-layer-marker";
     }
 
     /**
@@ -241,9 +241,9 @@ class MarkerLayerTool extends AbstractLayerTool {
      * Help function which acquires and returns the selection tool if available.
      */
     getSelectionTool() {
-        if(this.selectionTool == undefined) {
+        if (this.selectionTool == undefined) {
             let tools = this.getMap().getState().getTools().getByType(SelectionTool.TYPE());
-            if(tools.length > 0) {
+            if (tools.length > 0) {
                 this.selectionTool = tools[0];
             }
         }
@@ -271,8 +271,8 @@ class MarkerLayerTool extends AbstractLayerTool {
                 let data = { id: "<Group>", value: 0, subvalues: {} };
                 for (var i = 0; i < markers.length; i++) {
                     data.value += markers[i].options.icon.options.values.value;
-                    for(let [key, value] of Object.entries(markers[i].options.icon.options.values.subvalues)) {
-                        if(data.subvalues[key] == undefined) {
+                    for (let [key, value] of Object.entries(markers[i].options.icon.options.values.subvalues)) {
+                        if (data.subvalues[key] == undefined) {
                             data.subvalues[key] = value;
                         } else {
                             data.subvalues[key] += value;
@@ -280,11 +280,11 @@ class MarkerLayerTool extends AbstractLayerTool {
                     }
                 }
                 // create custom icon
-                return new CountryIcon( { 
+                return new CountryIcon({
                     countryName: "<Group>",
                     values: data,
                     isGroup: true,
-                } );
+                });
             }
         });
 
@@ -293,7 +293,7 @@ class MarkerLayerTool extends AbstractLayerTool {
 
         this.redraw();
 
-        return [ layer ];
+        return [layer];
     }
 
     /**
@@ -305,10 +305,10 @@ class MarkerLayerTool extends AbstractLayerTool {
 
         // delete the 'value' property of every geo feature object if defined
         let layer = this.getState().getLayer();
-        for(let i = 0; i < markers.length; i++) {
+        for (let i = 0; i < markers.length; i++) {
             layer.removeLayer(markers[i]);
         }
-        
+
         this.getState().setMarkers([]);
     }
 
@@ -329,7 +329,7 @@ class MarkerLayerTool extends AbstractLayerTool {
         let geoCountry, actResultItem;
         let foundCountries, foundValues, foundCategories;
         let highlightedIds = this.getSelectionTool() && this.getSelectionTool().getState().getSelection() ?
-                                this.getSelectionTool().getState().getSelection().getIds() : [];
+            this.getSelectionTool().getState().getSelection().getIds() : [];
         let data = this.getMap().getState().getCurrentData();
         let dataLen = data.length;
         let centroids = this.getState().getCentroids();
@@ -348,7 +348,7 @@ class MarkerLayerTool extends AbstractLayerTool {
 
             // since the data are flattened we can expect max one found item
             //console.log("abc", highlightedIds);
-            if(foundCountries.length == 1 && (highlightedIds.length == 0 || highlightedIds.indexOf(foundCountries[0]) >= 0)) {
+            if (foundCountries.length == 1 && (highlightedIds.length == 0 || highlightedIds.indexOf(foundCountries[0]) >= 0)) {
                 // test if country respects highlighting selection
                 /*if(highlightedIds != undefined) {
                     console.log(highlightedIds.indexOf(foundCountries[0]) >= 0);
@@ -356,26 +356,26 @@ class MarkerLayerTool extends AbstractLayerTool {
 
                 // test if country exists in the map
                 geoCountry = centroids.find(x => x.id == foundCountries[0]);
-                if(geoCountry != undefined) {
+                if (geoCountry != undefined) {
                     // test if country exists in the results array
                     actResultItem = workData.find(x => x.id == foundCountries[0]);
-                    if(actResultItem == undefined) {
+                    if (actResultItem == undefined) {
                         actResultItem = { id: foundCountries[0], value: 0, subvalues: {} };
                         workData.push(actResultItem);
                     }
                     // initialize category if does not exists yet
-                    if(foundCategories.length == 1) {
-                        if(actResultItem.subvalues[foundCategories[0]] == undefined) {
+                    if (foundCategories.length == 1) {
+                        if (actResultItem.subvalues[foundCategories[0]] == undefined) {
                             actResultItem.subvalues[foundCategories[0]] = 0;
                         }
                     }
                     // set value with respect to the aggregation function
-                    if(dataMapping[dataMappingModel.aggregation.name] == "sum") {
+                    if (dataMapping[dataMappingModel.aggregation.name] == "sum") {
                         // test if value is valid
-                        if(foundValues.length == 1 && foundValues[0] != null && typeof foundValues[0] === 'number') {
+                        if (foundValues.length == 1 && foundValues[0] != null && typeof foundValues[0] === 'number') {
                             actResultItem.value += foundValues[0];
                             // set category
-                            if(foundCategories.length == 1) {
+                            if (foundCategories.length == 1) {
                                 actResultItem.subvalues[foundCategories[0]] += foundValues[0];
                             }
                         }
@@ -402,7 +402,7 @@ class MarkerLayerTool extends AbstractLayerTool {
         let geoCountry;
         let layer = this.getState().getLayer();
         let centroids = this.getState().getCentroids();
-        for(let i = 0; i < workData.length; i++) {
+        for (let i = 0; i < workData.length; i++) {
             // get centroid
             // note: the centroid exists since invalid countries has been filtered
             geoCountry = centroids.find(x => x.id == workData[i].id);
@@ -422,17 +422,16 @@ class MarkerLayerTool extends AbstractLayerTool {
      * @param {*} data 
      */
     createMarker(centroid, data) {
-        function thousands_separator(num)
-          {
+        function thousands_separator(num) {
             var num_parts = num.toString().split(".");
             num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
             return num_parts.join(".");
-          }
+        }
 
         // build popup message
         let popupMsg = "<b>" + centroid.name + "</b><br>";
         popupMsg += (data.value != null ? thousands_separator(data.value) : "N/A") + "<br>";
-        for(let [key, value] of Object.entries(data.subvalues)) {
+        for (let [key, value] of Object.entries(data.subvalues)) {
             popupMsg += key + ": " + thousands_separator(value) + "<br>";
         }
 
@@ -440,9 +439,9 @@ class MarkerLayerTool extends AbstractLayerTool {
         let point = L.marker([centroid.lat, centroid.long], {
             // create basic icon 
             id: centroid.name,
-            icon: new CountryIcon( {
+            icon: new CountryIcon({
                 values: data
-            } ) 
+            })
         }).bindPopup(popupMsg);
         return point;
     }
@@ -451,7 +450,7 @@ class MarkerLayerTool extends AbstractLayerTool {
      * It reloads data and redraw the layer.
      */
     redraw(onlyStyle) {
-        if(this.getState().getLayer()) {
+        if (this.getState().getLayer()) {
             // delete actual items
             this.deleteLayerItems();
 
@@ -472,15 +471,17 @@ class MarkerLayerTool extends AbstractLayerTool {
      * @param {AbstractEvent} event 
      */
     handleEvent(event) {
-        if(event.getType() == DataChangeEvent.TYPE()) {
+        if (event.getType() == DataChangeEvent.TYPE()) {
             // data change
             this.redraw();
-        } else if(event.getType() == SelectionToolEvent.TYPE()) {
+        } else if (event.getType() == SelectionToolEvent.TYPE()) {
             this.redraw();
             // TODO
         } else if(event.getType() == ThemesToolEvent.TYPE()) {
-            // theme change
-            // TODO
+            var map = event.getObject();
+            document.documentElement.style.setProperty('--leaflet-marker-donut1', map.getDataColors().triadic1);
+            document.documentElement.style.setProperty('--leaflet-marker-donut2', map.getDataColors().triadic2);
+            document.documentElement.style.setProperty('--leaflet-marker-donut3', map.getDataColors().triadic3);
         }
     }
 }
