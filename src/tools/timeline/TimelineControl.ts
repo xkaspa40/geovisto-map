@@ -9,7 +9,7 @@ export class TimelineControl extends L.Control {
     private readonly leafletMap: any;
     private readonly formState: any;
 
-    private constructor(
+    constructor(
         timelineService: TimelineService,
         leafletMap: any,
         formState: any,
@@ -33,10 +33,10 @@ export class TimelineControl extends L.Control {
                 latitude: this.leafletMap.getCenter().lat,
                 longitude: this.leafletMap.getCenter().lng,
             }),
-            onRecordDeleteClick: (time) => this.timelineService.deleteState(time),
+            onRecordDeleteClick: (time: number) => this.timelineService.deleteState(time),
             timeGranularity: this.formState.realTimeEnabled ? this.formState.granularity : null,
         };
-        const timelineComponent = TimelineComponent.create(container, props);
+        const timelineComponent = new TimelineComponent(container, props);
 
         timelineComponent.onTimesChanged.subscribe(
             ({ currentTimeIndex, startTimeIndex, endTimeIndex }: OnTimesChangedParams) => {

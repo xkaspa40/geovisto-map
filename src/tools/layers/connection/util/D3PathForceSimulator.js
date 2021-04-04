@@ -239,7 +239,6 @@ class D3PathForceSimulator {
 
         // go throught all paths and contruct links
         const paths = Object.values(this.getPaths()).map((connectionPaths) => connectionPaths[0]);
-        console.log(this.getPaths());
         let path;
         for(let i = 0; i < paths.length; i++) {
             path = paths[i];

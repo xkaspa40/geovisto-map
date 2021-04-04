@@ -4,9 +4,11 @@ import { PlayButton } from "./PlayButton";
 import { RangeSlider } from "./RangeSlider/RangeSlider";
 
 import "./Timeline.scss";
+import { Story } from "../TimelineService";
+import { ChartData } from "../TimelineComponent";
 
 export type TimelineProps = {
-    times: Date[],
+    times: number[],
     start?: number,
     end?: number,
     currentTime: number,
@@ -14,12 +16,16 @@ export type TimelineProps = {
     endTimeIndex: number,
     step?: number,
     formatTick?: (time: number) => string,
-    onCurrentTimeIndexChange: ([currentTimeIndex]: ReadonlyArray<number>) => void,
-    onRangeTimesIndexChange: ([startTimeIndex, endTimeIndex]: ReadonlyArray<number>) => void,
+    onCurrentTimeIndexChange: (currentTimeIndex: number) => void,
+    onRangeTimesIndexChange: ([startTimeIndex, endTimeIndex]: [number, number]) => void,
     isPlaying: boolean,
     onPlayClick: () => void,
     data?: number[],
-    chartData: Array<any>,
+    chartData?: ChartData,
+    onRecordClick: () => void;
+    onRecordDeleteClick: () => void;
+    tickFormat: string;
+    story?: Story;
 }
 
 export const Timeline: FC<TimelineProps> = ({
@@ -70,7 +76,6 @@ export const Timeline: FC<TimelineProps> = ({
                             endTimeIndex={endTimeIndex}
                             onChange={onCurrentTimeIndexChange}
                             chartData={chartData}
-                            onCurrentTimeIndexChange={onCurrentTimeIndexChange}
                             story={story}
                             tickFormat={tickFormat}
                             disabled={hasOnlyOneTimestamp}

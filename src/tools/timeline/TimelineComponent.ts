@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Timeline } from "./Timeline";
 import { Subject } from "./Subject";
-import { TimeData } from "./TimelineService";
+import { Story, TimeData } from "./TimelineService";
 import { path as getFromPath } from "./utils";
 import { TimeGranularity } from "./contants";
 
@@ -12,12 +12,17 @@ export type OnTimesChangedParams = {
     endTimeIndex: number,
 }
 
+export type ChartData = Array<{ name: string, values: Map<number, number | undefined> }>
+
 export type TimelineProps = {
     data: TimeData;
     startTimeIndex: number;
     endTimeIndex: number;
     currentTimeIndex?: number;
     onPlayClick: () => void;
+    onRecordClick: () => void;
+    onRecordDeleteClick: (time: number) => void;
+    timeGranularity: string;
 }
 
 const TickFormat = {
@@ -32,24 +37,24 @@ export class TimelineComponent {
     onTimesChanged = new Subject<OnTimesChangedParams>();
 
     private readonly container: HTMLElement;
-    private _times: Date[];
-    private _story: any;
+    private _times: number[];
+    private _story?: Story;
     private _currentTimeIndex: number;
     private _startTimeIndex: number;
     private _endTimeIndex: number;
     private _isPlaying = false;
-    private tickFormat = "hh:mm dd/MM/yyyy";
-    private _onPlayClick: () => void;
-    private _onRecordClick: () => void;
-    private _onRecordDeleteClick: (times: Date) => void;
-    private chartData?: Array<{ name: string, values: Map<Date, number> }>;
+    private readonly tickFormat: string = "hh:mm dd/MM/yyyy";
+    private readonly _onPlayClick: () => void;
+    private readonly _onRecordClick: () => void;
+    private readonly _onRecordDeleteClick: (time: number) => void;
+    private readonly chartData?: ChartData;
 
     set story(value: any) {
         this._story = value;
         this.render();
     }
 
-    set times(value: Date[]) {
+    set times(value: number[]) {
         this._times = value;
         this.render();
     }
@@ -74,7 +79,7 @@ export class TimelineComponent {
         this.render();
     }
 
-    private constructor(container: HTMLElement, props: TimelineProps) {
+    constructor(container: HTMLElement, props: TimelineProps) {
         this.container = container;
         this._times = [...props.data.values.keys()];
         this._startTimeIndex = props.startTimeIndex;
@@ -88,10 +93,6 @@ export class TimelineComponent {
             this.chartData = this.createChartData(props.data);
         }
         this.render();
-    }
-
-    static create(container: HTMLElement, props: TimelineProps): TimelineComponent {
-        return new TimelineComponent(container, props);
     }
 
     destroy(): void {
@@ -116,12 +117,13 @@ export class TimelineComponent {
                     onRecordDeleteClick: () => this._onRecordDeleteClick(this._times[this._currentTimeIndex]),
                     story: this._story,
                     tickFormat: this.tickFormat,
-                }),
+                },
+            ),
             this.container,
         );
     }
 
-    private onCurrentTimeIndexChange = ([currentTimeIndex]: [number]) => {
+    private onCurrentTimeIndexChange = (currentTimeIndex: number) => {
         this._currentTimeIndex = currentTimeIndex;
         this.onTimesChanged.notify({
             currentTimeIndex,

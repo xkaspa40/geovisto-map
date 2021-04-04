@@ -6,10 +6,9 @@ interface TrackProps {
     source: SliderItem;
     target: SliderItem;
     getTrackProps: GetTrackProps;
-    disabled?: boolean;
 }
 
-export const Track: FC<TrackProps> = ({ source, target, getTrackProps, disabled = false }) => {
+export const Track: FC<TrackProps> = ({ source, target, getTrackProps }) => {
     const trackRef = useRef<HTMLDivElement>(null);
     const { onMouseDown, onTouchStart } = getTrackProps();
 

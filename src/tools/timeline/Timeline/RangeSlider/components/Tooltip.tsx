@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 
 type TooltipProps = {
     percent: number;
-    label: { time: string, values: Array<{ name: string, value: number }> };
+    label: string;
 }
 
 export const Tooltip: FC<TooltipProps> = ({ percent, label }) => {
@@ -17,10 +17,7 @@ export const Tooltip: FC<TooltipProps> = ({ percent, label }) => {
         >
             <div className="tooltip">
                 <div className="tooltiptext">
-                    {label.time}
-                    {label.values?.map(value => (
-                        <div key={value.name}>{`${value.name}: ${value.value ?? '-'}`}</div>
-                    ))}
+                    {label}
                 </div>
             </div>
         </div>

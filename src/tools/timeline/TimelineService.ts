@@ -22,19 +22,20 @@ export type StoryState = {
     longitude: number,
 }
 
+export type Story = Map<number, StoryState>
+
 export class TimelineService {
-    onCurrentTimeIndexChanged = new Subject<{ currentTimeIndex: number, state: StoryState }>();
+    onCurrentTimeIndexChanged = new Subject<{ currentTimeIndex: number, state: StoryState | undefined }>();
     onStartTimeIndexChanged = new Subject<number>();
     onEndTimeIndexChanged = new Subject<number>();
     onIsPlayingChanged = new Subject<boolean>();
-    onStoryChanged = new Subject<Map<number, StoryState | undefined>>();
+    onStoryChanged = new Subject<Story>();
 
-    private readonly times: Date[];
+    private readonly times: number[];
     private readonly data: TimeData;
     private readonly stepTimeLength: number;
     private readonly transitionTimeLength: number;
-    private onStoryChange: () => void;
-    private story: Map<number, StoryState | undefined>;
+    private story?: Story;
     private _currentTimeIndex = START_INDEX;
     private _startTimeIndex = START_INDEX;
     private _endTimeIndex = START_INDEX;
@@ -57,7 +58,7 @@ export class TimelineService {
             this._currentTimeIndex = currentTimeIndex;
             this.onCurrentTimeIndexChanged.notify({
                 currentTimeIndex,
-                state: this.story ? this.story.get(this.times[currentTimeIndex]) : null,
+                state: this.story?.get(this.times[currentTimeIndex]),
             });
         }
     }
@@ -76,12 +77,12 @@ export class TimelineService {
         }
     }
 
-    private constructor({
+    constructor({
         stepTimeLength,
         transitionTimeLength = 0,
         times,
         data,
-    }: { stepTimeLength: number, transitionTimeLength: number, times: Date[], data: TimeData }) {
+    }: { stepTimeLength: number, transitionTimeLength: number, times: number[], data: TimeData }) {
         this.times = times;
         this.stepTimeLength = stepTimeLength;
         this.transitionTimeLength = transitionTimeLength;
@@ -128,22 +129,26 @@ export class TimelineService {
         }
     }
 
-    setStory(story: Map<number, StoryState | undefined>): void {
+    setStory(story: Story): void {
         this.story = story;
         this.onStoryChanged.notify(this.story);
     }
 
-    recordState({ zoom, latitude, longitude }: StoryState): void {
-        this.story.set(this.times[this._currentTimeIndex], { zoom, latitude, longitude });
-        this.onStoryChanged.notify(this.story);
+    recordState(storyState: StoryState): void {
+        if (this.story) {
+            this.story.set(this.times[this._currentTimeIndex], storyState);
+            this.onStoryChanged.notify(this.story);
+        }
     }
 
-    deleteState(time: Date): void {
-        this.story.delete(time);
-        this.onStoryChanged.notify(this.story);
+    deleteState(time: number): void {
+        if (this.story) {
+            this.story.delete(time);
+            this.onStoryChanged.notify(this.story);
+        }
     }
 
-    getState(): State & { times: Date[], data: TimeData, isPlaying: boolean } {
+    getState(): State & { times: number[], data: TimeData, isPlaying: boolean } {
         return {
             times: this.times,
             data: this.data,

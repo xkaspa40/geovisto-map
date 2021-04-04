@@ -7,7 +7,7 @@ export interface HandleProps {
     domain: number[];
     handle: SliderItem;
     getHandleProps: GetHandleProps;
-    label?: string;
+    label: string;
 }
 
 export const Handle: FC<HandleProps> = ({

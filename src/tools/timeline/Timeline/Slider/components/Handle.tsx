@@ -12,11 +12,9 @@ export interface HandleProps {
     labelText?: string;
     tooltip?: {
         isActive: boolean,
-        text: string,
+        label: { time: string, values: any },
     }
 }
-
-const getText = ({ time, values }) => `${time} \n`;
 
 export const Handle: FC<HandleProps> = ({
     domain: [min, max],

@@ -137,16 +137,10 @@ export class TimelineTool extends AbstractLayerTool {
                 { duration: this.formState.transitionTimeLength / 1000 }
             );
             setTimeout(() => {
-                // this.getMap()
-                //     .updateData(this.data.values.get(this.times[currentTimeIndex]), "timeline");
-                // create and dispatch event
                 this.getMap()
                     .dispatchEvent(new TimeChangeEvent(this.data.values.get(this.times[currentTimeIndex])));
             }, this.formState.transitionTimeLength);
         } else {
-            // this.getMap()
-            //     .updateData(this.data.values.get(this.times[currentTimeIndex]), "timeline");
-            // create and dispatch event
             this.getMap()
                 .dispatchEvent(new TimeChangeEvent(this.data.values.get(this.times[currentTimeIndex])));
         }

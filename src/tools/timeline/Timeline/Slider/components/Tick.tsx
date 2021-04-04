@@ -5,6 +5,7 @@ interface TickProps {
     tick: SliderItem;
     count: number;
     format?: (val: number) => string | null;
+    hasStory: boolean;
 }
 
 export const Tick: FC<TickProps> = ({ tick, count, format = (d) => d, hasStory }) => {

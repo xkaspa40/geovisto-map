@@ -7,10 +7,10 @@ interface TooltipRailProps {
     activeHandleID: string;
     getRailProps: GetRailProps;
     getEventData: GetEventData;
-    labels: Array<{time: string, values: any[]}>;
+    labels: string[];
 }
 
-export const TooltipRail: FC<TooltipRailProps> = ({ labels, activeHandleID, getEventData, getRailProps, tickFormat }) => {
+export const TooltipRail: FC<TooltipRailProps> = ({ labels, activeHandleID, getEventData, getRailProps }) => {
     const sliderRef = useRef<HTMLDivElement>(null);
     const [state, setState] = useState<{ value: number | null, percent: number | null }>({
         value: null,

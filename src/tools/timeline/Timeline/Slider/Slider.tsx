@@ -8,6 +8,8 @@ import { format } from "date-fns";
 import "./Slider.scss";
 import { TooltipRail } from "./components/TooltipRail";
 import { Chart } from "../Chart/Chart";
+import { Story } from "../../TimelineService";
+import { ChartData } from "../../TimelineComponent";
 
 const sliderStyle = {
     position: "relative",
@@ -16,14 +18,15 @@ const sliderStyle = {
 };
 
 export type SliderProps = {
-    times: Date[],
+    times: number[],
     currentTime: number,
     startTimeIndex: number,
     endTimeIndex: number,
-    startTimeOffset: number,
-    formatTick?: (time: number) => string,
-    onChange: (values: ReadonlyArray<number>) => void,
-    chartData?: Array<{ name: string, values: Map<Date, number | undefined> }>,
+    onChange: (value: number) => void,
+    chartData?: ChartData,
+    story?: Story,
+    tickFormat: string,
+    disabled: boolean,
 }
 
 const NUMBER_OF_TICKS = 5;
@@ -44,19 +47,25 @@ export const Slider: FC<SliderProps> = ({
     const domain = useMemo(() => [0, times.length - 1], [times]);
     const values = useMemo(() => [currentTime - startTimeIndex], undefined); //, [currentTime, startTimeOffset]);
     const onUpdate = (values: ReadonlyArray<number>) => {
-        onChangeProp(values.map(value => value + startTimeIndex));
+        onChangeProp(values.map(value => value + startTimeIndex)[0]);
     };
     const onChange = (values: ReadonlyArray<number>) => {
-        onChangeProp(values.map(value => value + startTimeIndex));
+        onChangeProp(values.map(value => value + startTimeIndex)[0]);
     };
 
     const chartData = chartDataDefault?.reduce((acc, { name, values }) => (
-        [...acc, {
-            name,
-            values: new Map([...values.entries()].filter(([time]) => times.map(t => +t).includes(+time))),
-        }]
+        [
+            ...acc,
+            {
+                name,
+                values: new Map([...values.entries()].filter(([time]) => times.map(t => +t).includes(+time))),
+            },
+        ]
     ), []);
-    const getChartValues = (time: Date) => chartData?.map(({ name, values }) => ({ name, value: values.get(time) }));
+    const getChartValues = (time: number) => chartData?.map(({
+        name,
+        values,
+    }: { name: string, values: Map<number, number | undefined> }) => ({ name, value: values.get(time) }));
     const labels = times.map((time) => ({ time: format(time, tickFormat), values: getChartValues(time) }));
     const ticksIndexes = scaleLinear()
         .domain([domain[0], domain[1]])
@@ -121,7 +130,7 @@ export const Slider: FC<SliderProps> = ({
                                     key={tick.id}
                                     tick={tick}
                                     format={formatTick}
-                                    hasStory={story && story.has(times[tick.value])}
+                                    hasStory={!!story?.has(times[tick.value])}
                                     count={0}
                                 />
                             ))}

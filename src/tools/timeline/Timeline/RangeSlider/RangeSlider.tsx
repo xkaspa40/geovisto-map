@@ -13,16 +13,12 @@ const sliderStyle = {
 };
 
 export type SliderProps = {
-    times: Date[],
+    times: number[],
     start?: number,
     end?: number,
-    currentTime?: number,
-    step?: number,
-    formatTick?: (time: number) => string,
-    onChange: (values: ReadonlyArray<number>) => void,
+    tickFormat: string,
+    onChange: ([startTimeIndex, endTimeIndex]: [number, number]) => void,
 }
-
-const NUMBER_OF_TICKS = 5;
 
 export const RangeSlider: FC<SliderProps> = ({
     times,
@@ -34,10 +30,10 @@ export const RangeSlider: FC<SliderProps> = ({
     const domain = useMemo(() => [0, times.length - 1], [times]);
     const values = useMemo(() => [start, end], [start, end]);
 
-    const onChange = (newValues: ReadonlyArray<number>) => {
-        onChangeProp(newValues);
+    const onChange = ([startTimeIndex, endTimeIndex]: ReadonlyArray<number>) => {
+        onChangeProp([startTimeIndex, endTimeIndex]);
     };
-    const labels = times.map((date) => ({ time: format(date, tickFormat), values: [] }));
+    const labels = times.map(date => format(date, tickFormat));
 
     return (
         <div className="range_slider__time_range_container compact">
