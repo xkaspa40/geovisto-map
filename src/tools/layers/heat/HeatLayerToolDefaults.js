@@ -106,6 +106,11 @@ class HeatLayerToolDefaults extends AbstractLayerToolDefaults {
         
         dataMapping[dataMappingModel.latitude.name] = implicitDataDomainLabel;
         dataMapping[dataMappingModel.longitude.name] = implicitDataDomainLabel;
+        dataMapping[dataMappingModel.intensity.name] = implicitDataDomainLabel;
+        dataMapping[dataMappingModel.radius.name] = '';
+        dataMapping[dataMappingModel.gradient.name] = '';
+        dataMapping[dataMappingModel.blur.name] = '';
+        dataMapping[dataMappingModel.zoom.name] = '';
 
         return dataMapping;
     }

@@ -109,7 +109,7 @@ class HeatLayerToolTabControl extends AbstractLayerToolTabControl {
         this.inputBlur = SidebarInputFactory.createSidebarInput(model.blur.input, {
             label: model.blur.label,
             action: (e) => {this.changeBlurAction(e.target.value)},
-            placeholder: "(5 - 100)|default 15:"
+            placeholder: "(5 - 100)|default 10:"
         });
         elem.appendChild(this.inputBlur.create());
 

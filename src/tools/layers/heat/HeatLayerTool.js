@@ -216,8 +216,17 @@ class HeatLayerTool extends AbstractLayerTool {
         this.maxValue = 0;
         for (let i = 0; i < dataLen; i++) {
             foundLats = mapData.getItemValues(latitudeDataDoman, data[i]);
+            if (foundLats.length !== 1 || isNaN(foundLats[0])) {
+                foundLats = [];
+            }
             foundLongs = mapData.getItemValues(longitudeDataDomain, data[i]);
+            if (foundLongs.length !== 1 || isNaN(foundLongs[0])) {
+                foundLongs = [];
+            }
             foundIntensity = mapData.getItemValues(intensityDataDomain, data[i]);
+            if (foundIntensity.length !== 1 || isNaN(foundIntensity[0])) {
+                foundIntensity = [];
+            }
 
             if (foundLats.length === 1 && foundLongs.length === 1 && foundIntensity.length === 1) {
                 workData.push({lat: foundLats[0], long: foundLongs[0], intensity: foundIntensity[0]});
@@ -286,21 +295,6 @@ class HeatLayerTool extends AbstractLayerTool {
 
             return layers;
         }
-
-        /*
-         Multiple layers aren't supported
-         */
-        // workData.forEach((item) => {
-        //     layers.push(L.heatLayer([
-        //         [item.lat, item.long, item.intensity]
-        //     ],
-        //         {
-        //             radius: item.radius,
-        //             maxZoom: 10,
-        //             gradient: this.gradient,
-        //             max: this.maxValue
-        //         }))
-        // });
 
         return layers;
     }
