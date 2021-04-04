@@ -211,6 +211,14 @@ class PaintPoly {
     }
   };
 
+  enable = () => {
+    this.startPaint();
+  };
+
+  disable = () => {
+    this.stop();
+  };
+
   isActive = () => {
     return this._active;
   };

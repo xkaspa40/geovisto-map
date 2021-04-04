@@ -164,6 +164,7 @@ export default function useDrawingToolbar() {
         deselectBtn,
         connectBtn,
         searchBtn,
+        paintBtn,
       } = this.options.drawingBtns;
       const map = this.options.map;
       const sidebar = this.options.tool.getSidebarTabControl();
@@ -190,6 +191,18 @@ export default function useDrawingToolbar() {
         .on(connectBtn, 'click', L.DomEvent.preventDefault)
         .on(connectBtn, 'click', () => connectClick(map, sidebar), this);
       L.DomEvent.on(searchBtn, 'click', this.initSearch, this);
+      L.DomEvent.on(paintBtn, 'click', this.initPainting, this);
+    },
+
+    initPainting: function () {
+      let paintPoly = this.options.tool.getSidebarTabControl().getState().paintPoly;
+      let sidebar = this.options.tool.getSidebarTabControl();
+      let paintBtn = this.options.drawingBtns.paintBtn;
+      if (paintPoly?.isActive()) {
+        sidebar.getState().setEnabledEl(paintPoly);
+      } else {
+        sidebar.getState().setEnabledEl(null);
+      }
     },
 
     initSearch: function () {
@@ -203,7 +216,6 @@ export default function useDrawingToolbar() {
     },
     initCreatePolygon: function (map, sidebar) {
       let enabled = sidebar.getState().getEnabledEl();
-      console.log({ enab: enabled });
       if (enabled?.layerType === 'polygon') this._dispatchClickEvent(map, sidebar);
       else polygonCreate(map, sidebar);
     },
@@ -220,7 +232,7 @@ export default function useDrawingToolbar() {
 
     deselect: function () {
       const currEl = this.getCurrEl();
-      console.log({ currEl });
+      // console.log({ currEl });
 
       if (currEl?.editing?._enabled) {
         currEl.editing.disable();

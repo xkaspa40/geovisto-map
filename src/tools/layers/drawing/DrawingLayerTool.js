@@ -37,6 +37,8 @@ L.Draw.Feature.include(L.Evented.prototype);
 L.Draw.Feature.include(L.Draw.Feature.SnapMixin);
 L.Draw.Feature.addInitHook(L.Draw.Feature.SnapMixin._snap_initialize);
 
+const SPACE_BAR = 32;
+
 export const DRAWING_TOOL_LAYER_TYPE = 'geovisto-tool-layer-drawing';
 
 /**
@@ -125,7 +127,7 @@ class DrawingLayerTool extends AbstractLayerTool {
 
   // ? possibly move to state
   deserializeGeoJSON(geojson) {
-    console.log({ geojson });
+    // console.log({ geojson });
     if (geojson.type === 'FeatureCollection' && geojson.features) {
       geojson.features.forEach((f) => {
         let opts = convertPropertiesToOptions(f.properties);
@@ -186,7 +188,7 @@ class DrawingLayerTool extends AbstractLayerTool {
 
           if (l?._leaflet_id !== selectedLayer?._leaflet_id) {
             let diffFeature = difference(feature, layerFeature);
-            console.log({ diffFeature });
+            // console.log({ diffFeature });
             if (diffFeature) {
               let coords;
               let latlngs;
@@ -392,12 +394,12 @@ class DrawingLayerTool extends AbstractLayerTool {
   createdListener = (e) => {
     let layer = e.layer;
     layer.layerType = e.layerType;
-    console.log({ layer });
+    // console.log({ layer });
     if (e.keyIndex) layer.kIdx = e.keyIndex;
 
     let prevLayer = this.getState().getPrevLayer();
     if (prevLayer?.layerType !== e.layerType) this.redrawSidebarTabControl(e.layerType);
-    this.getSidebarTabControl().getState().setEnabledEl(null);
+    if (e.layerType !== 'painted') this.getSidebarTabControl().getState().setEnabledEl(null);
 
     if (e.layerType === 'polygon' || e.layerType === 'painted') {
       // * JOIN
@@ -464,13 +466,31 @@ class DrawingLayerTool extends AbstractLayerTool {
       if (Boolean(sidebar.getState().enabledEl)) return;
       let selected = this.getState().selectedLayer;
       if (selected) {
-        console.log('clicked');
         if (selected.setStyle) selected.setStyle(normalStyles);
         this.getState().clearSelectedLayer();
         this.redrawSidebarTabControl();
         this.getState().setCurrEl(null);
         this.initTransform(selected);
         document.querySelector('.leaflet-container').style.cursor = '';
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.keyCode === SPACE_BAR) {
+        let enabledEl = this.getSidebarTabControl().getState().enabledEl;
+        if (enabledEl) {
+          enabledEl.disable();
+          // map.dragging.enable(); // we do not have to do this, it is already on always
+        }
+      }
+    });
+    document.addEventListener('keyup', (e) => {
+      if (e.keyCode === SPACE_BAR) {
+        let enabledEl = this.getSidebarTabControl().getState().enabledEl;
+        if (enabledEl) {
+          enabledEl.enable();
+          // map.dragging.disable(); // we do not have to do this, it is already on always
+        }
       }
     });
 
