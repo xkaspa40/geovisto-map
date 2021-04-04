@@ -326,7 +326,7 @@ class ChoroplethLayerTool extends AbstractLayerTool {
             if (this.getState().getLayer()) {
                 this.getState().getLayer().eachLayer((item) => {
                     if (item._path != null) {
-                        item._path.style.transitionDuration = '500ms'
+                        item._path.style.transitionDuration = '0'
                     }
                 });
             }

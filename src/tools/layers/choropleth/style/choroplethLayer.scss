@@ -14,7 +14,8 @@
     stroke-linejoin: round;
     fill-opacity: 1;
     fill: #8c8c8c;
-    transition: fill 500ms ease;
+    transition-property: fill;
+    transition-timing-function: ease;
 }
 
 .leaflet-choropleth-item-clr1 {
