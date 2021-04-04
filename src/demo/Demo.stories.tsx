@@ -58,7 +58,7 @@ class Demo extends Component {
     const jsonData = require("/static/data/covidDataCategoric.json");
 
     // // implicit config
-    const jsonConfig = require("/static/config/config.json");
+    const jsonConfig = require("/static/config/config-demo1.json");
 
     // reference to the rendered map
     this.map = React.createRef();
@@ -154,7 +154,7 @@ class Demo extends Component {
 
       // process config json
       if (!document.getElementById(C_ID_check_config).checked || config.json == undefined) {
-        config.json = require("/static/config/config.json");
+        config.json = require("/static/config/config-demo1.json");
       }
 
       // update state

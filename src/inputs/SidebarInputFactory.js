@@ -6,6 +6,8 @@ import LabeledSelectSidebarInput from "./select/LabeledSelectSidebarInput";
 import FilterSelectSidebarInput from "./filter/FilterSelectSidebarInput";
 import FilterAutocompleteSidebarInput from "./filter/FilterAutocompleteSidebarInput";
 import AutocompleteSidebarInput from "./input/AutocompleteSidebarInput";
+import RangeSliderInput from "./input/RangeSliderInput";
+import ColorPickerInput from "./input/ColorPickerInput";
 import CheckboxSidebarInput from './input/CheckboxSidebarInput';
 /**
  * Factory for sidebar inputs.
@@ -21,23 +23,27 @@ class SidebarInputFactory {
      */
     static createSidebarInput(id, settings) {
         let element = null;
-        if(id == TextSidebarInput.ID()) {
+        if (id == TextSidebarInput.ID()) {
             element = new TextSidebarInput(settings);
-        } else if(id == LabeledTextSidebarInput.ID()) {
+        } else if (id == LabeledTextSidebarInput.ID()) {
             element = new LabeledTextSidebarInput(settings);
-        } else if(id == SelectSidebarInput.ID()) {
+        } else if (id == SelectSidebarInput.ID()) {
             element = new SelectSidebarInput(settings);
-        } else if(id == LabeledSelectSidebarInput.ID()) {
+        } else if (id == LabeledSelectSidebarInput.ID()) {
             element = new LabeledSelectSidebarInput(settings);
-        } else if(id == FilterSelectSidebarInput.ID()) {
+        } else if (id == FilterSelectSidebarInput.ID()) {
             element = new FilterSelectSidebarInput(settings);
-        }  else if (id === CheckboxSidebarInput.ID()) {
+        } else if (id == RangeSliderInput.ID()) {
+            element = new RangeSliderInput(settings);
+        } else if (id == ColorPickerInput.ID()) {
+            element = new ColorPickerInput(settings);
+        } else if (id === CheckboxSidebarInput.ID()) {
             element = new CheckboxSidebarInput(settings);
         }
 
-        else if(id == AutocompleteSidebarInput.ID()){
+        else if (id == AutocompleteSidebarInput.ID()) {
             element = new AutocompleteSidebarInput(settings);
-        } else if(id == FilterAutocompleteSidebarInput.ID()){
+        } else if (id == FilterAutocompleteSidebarInput.ID()) {
             element = new FilterAutocompleteSidebarInput(settings);
         }
 

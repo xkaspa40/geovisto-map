@@ -1,23 +1,20 @@
 {
-    "zoom": 8,
-    "mapCenter": {
-        "lat": 49.81869909245758,
-        "lng": 15.347900390625002
+    "zoom": 2,
+    "center": {
+        "lat": 50.064191736659104,
+        "lng": 0
     },
-    "tools": [
-        {
+    "tools": [{
             "type": "geovisto-tool-sidebar",
             "id": "geovisto-tool-sidebar",
             "enabled": true,
-            "tabs": [
-                {
+            "tabs": [{
                     "tool": "geovisto-tool-settings",
                     "enabled": true,
                     "name": "General settings",
                     "icon": "<i class=\"fa fa-gear\"></i>",
                     "checkButton": false,
-                    "fragments": [
-                        {
+                    "fragments": [{
                             "tool": "geovisto-tool-themes",
                             "enabled": true
                         },
@@ -53,13 +50,6 @@
                     "enabled": true,
                     "name": "Marker layer settings",
                     "icon": "<i class=\"fa fa-map-marker\"></i>",
-                    "checkButton": true
-                },
-                {
-                    "tool": "geovisto-tool-timeline",
-                    "enabled": true,
-                    "name": "Timeline",
-                    "icon": "<i class=\"fa fa-clock-o\" />",
                     "checkButton": true
                 },
                 {
@@ -105,9 +95,13 @@
             "enabled": true,
             "layerName": "Choropleth layer",
             "data": {
-                "country": "",
-                "value": "",
-                "aggregation": ""
+                "country": "to",
+                "value": "value",
+                "aggregation": "sum",
+                "scaling": "median (sorted values)",
+                "range": "7",
+                "strategy": "custom color",
+                "color": "#e32400"
             }
         },
         {
@@ -116,49 +110,21 @@
             "enabled": true,
             "layerName": "Marker layer",
             "data": {
-                "country": "okres",
-                "value": "pocet",
-                "aggregation": "sum",
-                "category": "typ"
+                "country": "",
+                "value": "",
+                "aggregation": "",
+                "category": ""
             }
         },
         {
             "type": "geovisto-tool-layer-connection",
             "id": "geovisto-tool-layer-connection",
-            "enabled": false,
-            "layerName": "Connection layer",
-            "data": {}
-        },
-        {
-            "type": "geovisto-tool-timeline",
-            "id": "geovisto-tool-timeline",
             "enabled": true,
-            "layerName": "Timeline",
+            "layerName": "Connection layer",
             "data": {
-                "timePath": null,
-                "stepTimeLength": 1000,
-                "storyEnabled": false,
-                "transitionTimeLength": 2500,
-                "story": null,
-                "realTimeEnabled": false,
-                "granularity": null,
-                "chartEnabled": false,
-                "chartValuePath": null,
-                "chartAggregationFn": null
-            },
-            "stories": [
-                {
-                    "name": "covid story",
-                    "config": [
-                        {
-                            "time": "2020-03-24T00:00:00.000Z",
-                            "zoom": 4,
-                            "latitude": 1000,
-                            "longitude": 1500
-                        }
-                    ]
-                }
-            ]
+                "from": "",
+                "to": ""
+            }
         }
     ]
 }

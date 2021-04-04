@@ -63,12 +63,12 @@ const CountryIcon = L.DivIcon.extend({
         useDonut: true,
     },
 
-    round: function(value, align) {
-        return Math.round(value*align)/align;
+    round: function (value, align) {
+        return Math.round(value * align) / align;
     },
 
-    formatValue: function(value, level) {
-        if(level == null || level < 0) {
+    formatValue: function (value, level) {
+        if (level == null || level < 0) {
             return this.levels[0].suffix;
         }
         if (this.levels[level].level === -Infinity) {
@@ -82,7 +82,7 @@ const CountryIcon = L.DivIcon.extend({
         return `${this.round(value, align)}${this.levels[level].suffix}`;
     },
 
-    getColor: function(level) {
+    getColor: function (level) {
         return level == null || level < 0 ?
             this.levels[0].color:
             this.levels[level].color;
@@ -112,9 +112,9 @@ const CountryIcon = L.DivIcon.extend({
 
         const size = this.getSize(this);
         const center = size / 2;
-        options.iconSize = [size,size];
+        options.iconSize = [size, size];
         options.iconAnchor = [center, center];
-        const rCircle = options.sizeBasic/2;
+        const rCircle = options.sizeBasic / 2;
         // moved to css
         const level = this.getLevel(options.values.value);
 
@@ -244,9 +244,9 @@ class MarkerLayerTool extends AbstractLayerTool {
      * Help function which acquires and returns the selection tool if available.
      */
     getSelectionTool() {
-        if(this.selectionTool == undefined) {
+        if (this.selectionTool == undefined) {
             let tools = this.getMap().getState().getTools().getByType(SelectionTool.TYPE());
-            if(tools.length > 0) {
+            if (tools.length > 0) {
                 this.selectionTool = tools[0];
             }
         }
@@ -294,7 +294,7 @@ class MarkerLayerTool extends AbstractLayerTool {
         const data = this.getMap().getState().getCurrentData();
         this.redraw(data);
 
-        return [ layer ];
+        return [layer];
     }
 
     /**
@@ -306,7 +306,7 @@ class MarkerLayerTool extends AbstractLayerTool {
 
         // delete the 'value' property of every geo feature object if defined
         let layer = this.getState().getLayer();
-        for(let i = 0; i < markers.length; i++) {
+        for (let i = 0; i < markers.length; i++) {
             layer.removeLayer(markers[i]);
         }
 
@@ -330,7 +330,7 @@ class MarkerLayerTool extends AbstractLayerTool {
         let geoCountry, actResultItem;
         let foundCountries, foundValues, foundCategories;
         let highlightedIds = this.getSelectionTool() && this.getSelectionTool().getState().getSelection() ?
-                                this.getSelectionTool().getState().getSelection().getIds() : [];
+            this.getSelectionTool().getState().getSelection().getIds() : [];
         let dataLen = data.length;
         let centroids = this.getState().getCentroids();
         for (let i = 0; i < dataLen; i++) {
@@ -339,7 +339,7 @@ class MarkerLayerTool extends AbstractLayerTool {
             foundCategories = mapData.getItemValues(categoryDataDomain, data[i]);
 
             // since the data are flattened we can expect max one found item
-            if(foundCountries.length == 1 && (highlightedIds.length == 0 || highlightedIds.indexOf(foundCountries[0]) >= 0)) {
+            if (foundCountries.length == 1 && (highlightedIds.length == 0 || highlightedIds.indexOf(foundCountries[0]) >= 0)) {
                 // test if country respects highlighting selection
                 /*if(highlightedIds != undefined) {
                     console.log(highlightedIds.indexOf(foundCountries[0]) >= 0);
@@ -347,26 +347,26 @@ class MarkerLayerTool extends AbstractLayerTool {
 
                 // test if country exists in the map
                 geoCountry = centroids.find(x => x.id == foundCountries[0]);
-                if(geoCountry != undefined) {
+                if (geoCountry != undefined) {
                     // test if country exists in the results array
                     actResultItem = workData[foundCountries[0]];
-                    if(actResultItem == undefined) {
+                    if (actResultItem == undefined) {
                         actResultItem = { id: foundCountries[0], value: 0, subvalues: {} };
                         workData[foundCountries[0]] = actResultItem;
                     }
                     // initialize category if does not exists yet
-                    if(foundCategories.length == 1) {
-                        if(actResultItem.subvalues[foundCategories[0]] == undefined) {
+                    if (foundCategories.length == 1) {
+                        if (actResultItem.subvalues[foundCategories[0]] == undefined) {
                             actResultItem.subvalues[foundCategories[0]] = 0;
                         }
                     }
                     // set value with respect to the aggregation function
-                    if(dataMapping[dataMappingModel.aggregation.name] == "sum") {
+                    if (dataMapping[dataMappingModel.aggregation.name] == "sum") {
                         // test if value is valid
-                        if(foundValues.length == 1 && foundValues[0] != null && typeof foundValues[0] === 'number') {
+                        if (foundValues.length == 1 && foundValues[0] != null && typeof foundValues[0] === 'number') {
                             actResultItem.value += foundValues[0];
                             // set category
-                            if(foundCategories.length == 1) {
+                            if (foundCategories.length == 1) {
                                 actResultItem.subvalues[foundCategories[0]] += foundValues[0];
                             }
                         }
@@ -424,7 +424,7 @@ class MarkerLayerTool extends AbstractLayerTool {
      * It reloads data and redraw the layer.
      */
     redraw(data) {
-        if(this.getState().getLayer()) {
+        if (this.getState().getLayer()) {
             // delete actual items
             this.deleteLayerItems();
             // prepare data
@@ -471,19 +471,21 @@ class MarkerLayerTool extends AbstractLayerTool {
      * @param {AbstractEvent} event
      */
     handleEvent(event) {
-        if(event.getType() === DataChangeEvent.TYPE()) {
+        if (event.getType() === DataChangeEvent.TYPE()) {
             // data change
             if (event.getSource() !== "timeline") {
                 let data = this.getMap().getState().getCurrentData();
                 this.redraw(data);
             }
-        } else if(event.getType() === SelectionToolEvent.TYPE()) {
+        } else if (event.getType() === SelectionToolEvent.TYPE()) {
             let data = this.getMap().getState().getCurrentData();
             this.redraw(data);
             // TODO
         } else if(event.getType() === ThemesToolEvent.TYPE()) {
-            // theme change
-            // TODO
+            var map = event.getObject();
+            document.documentElement.style.setProperty('--leaflet-marker-donut1', map.getDataColors().triadic1);
+            document.documentElement.style.setProperty('--leaflet-marker-donut2', map.getDataColors().triadic2);
+            document.documentElement.style.setProperty('--leaflet-marker-donut3', map.getDataColors().triadic3);
         } else if (event.getType() === TimeChangeEvent.TYPE()) {
             // this.redraw(event.getObject());
 

@@ -1,6 +1,5 @@
 import AbstractTheme from '../../abstract/AbstractTheme';
 
-import './style.scss';
 
 /**
  * This class wraps a filter operation.
@@ -22,7 +21,6 @@ class Light1Theme extends AbstractTheme {
     getType() {
         return "light1";
     }
-
     /**
      * It returns the preferred base map.
      */

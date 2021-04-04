@@ -9,6 +9,8 @@ import "./styles/style.scss";
 import SidebarToolState from "./SidebarToolState";
 import SidebarToolDefaults from "./SidebarToolDefaults";
 import AbstractTool from "../../model/tool/abstract/AbstractTool";
+import ThemesToolEvent from '../themes/model/event/ThemesToolEvent';
+
 
 /**
  * This class provides the sidebar tool.
@@ -65,7 +67,7 @@ class SidebarTool extends AbstractTool {
     }
 
     createSidebar() {
-        if(this.isEnabled()) {
+        if (this.isEnabled()) {
             let sidebar = undefined;
             // create sidebar control and add it to the map
             sidebar = L.control.sidebar(this.getSidebarStructure()).addTo(this.getMap().getState().getLeafletMap());
@@ -93,7 +95,7 @@ class SidebarTool extends AbstractTool {
      */
     getTabs() {
         let tabs = this.getState().getTabs();
-        if(tabs == undefined) {
+        if (tabs == undefined) {
             this.createTabs();
         }
 
@@ -105,11 +107,11 @@ class SidebarTool extends AbstractTool {
      */
     createTabs() {
         // import tabs
-        if(this.getState().getTabsDescriptions() != undefined) {
+        if (this.getState().getTabsDescriptions() != undefined) {
             let tabsConfigs = this.getState().getTabsDescriptions();
             // based on config
             let tabConfig, tool;
-            for(let i = 0; i < tabsConfigs.length; i++) {
+            for (let i = 0; i < tabsConfigs.length; i++) {
                 tabConfig = tabsConfigs[i];
                 tool = this.getMap().getState().getTools().getById(tabConfig.tool);
                 this.createSidebarTab(tool, tabConfig);
@@ -117,9 +119,33 @@ class SidebarTool extends AbstractTool {
         } else {
             // based on the implicit order of the tools in the list of the tools
             let tools = this.getMap().getState().getTools().getObjects();
-            for(let i = 0; i < tools.length; i++) {
+            for (let i = 0; i < tools.length; i++) {
                 this.createSidebarTab(tools[i], undefined);
             }
+        }
+    }
+
+        /**
+     * This function is called when a custom event is invoked.
+     * 
+     * @param {AbstractEvent} event 
+     */
+    handleEvent(event) {
+        if(event.getType() == ThemesToolEvent.TYPE()) {            
+            var map = event.getObject()
+            document.documentElement.style.setProperty('--leaflet-sidebar-primary-bg', map.getBackgroundColors().primary);
+            document.documentElement.style.setProperty('--leaflet-sidebar-primary-fg', map.getForegroundColors().primary);            
+            document.documentElement.style.setProperty('--leaflet-sidebar-secondary-bg', map.getBackgroundColors().secondary);
+            document.documentElement.style.setProperty('--leaflet-sidebar-secondary-fg', map.getForegroundColors().secondary);
+            document.documentElement.style.setProperty('--leaflet-sidebar-disabled-bg', map.getBackgroundColors().disabled);
+            document.documentElement.style.setProperty('--leaflet-sidebar-disabled-fg', map.getForegroundColors().disabled);
+
+            document.documentElement.style.setProperty('--geovisto-input-autocomplete-value-bg', map.getTextInputColor().matchBg);            
+            document.documentElement.style.setProperty('--geovisto-input-autocomplete-value-fg', map.getTextInputColor().matchFg);
+            document.documentElement.style.setProperty('--geovisto-input-autocomplete-value-notmatch-bg', map.getTextInputColor().notMatchBg);
+            document.documentElement.style.setProperty('--geovisto-input-autocomplete-value-notmatch-fg', map.getTextInputColor().notMatchFg);
+            document.documentElement.style.setProperty('--geovisto-input-autocomplete-value-placeholder', map.getTextInputColor().placeholder);            
+            document.documentElement.style.setProperty('--geovisto-input-autocomplete-value-hover', map.getTextInputColor().hover);            
         }
     }
 
@@ -130,10 +156,10 @@ class SidebarTool extends AbstractTool {
      * @param {*} config
      */
     createSidebarTab(tool, config) {
-        if(tool != undefined && tool.getSidebarTabControl) {
+        if (tool != undefined && tool.getSidebarTabControl) {
             // the tool implements the getSidebarTab function
             let sidebarTabControl = tool.getSidebarTabControl();
-            if(sidebarTabControl != undefined) {
+            if (sidebarTabControl != undefined) {
                 // render sidebar
                 sidebarTabControl.initialize(this.getState().getSidebar(), config);
                 sidebarTabControl.create();
