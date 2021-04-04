@@ -19,7 +19,7 @@ class SettingsToolDefaults extends AbstractToolDefaults {
      * Only one settings tool should be present in the Geovisto map.
      */
     isSingleton() {
-       return true; 
+        return true;
     }
 
     /**

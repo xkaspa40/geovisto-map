@@ -1,3 +1,9 @@
+:root {
+    --leaflet-marker-donut1: undefined;
+    --leaflet-marker-donut2: undefined;
+    --leaflet-marker-donut3: undefined;
+}
+
 .leaflet-marker-icon circle {
     fill: #cccccc;
     fill-opacity: 0.9;
@@ -43,13 +49,13 @@
 }
 
 .leaflet-marker-donut1 {
-    fill: darkred;
+    fill: var(--leaflet-marker-donut1);
 }
 
 .leaflet-marker-donut2 {
-    fill: goldenrod;
+    fill: var(--leaflet-marker-donut2);
 }
 
 .leaflet-marker-donut3 {
-    fill: gray;
+    fill: var(--leaflet-marker-donut3);
 }

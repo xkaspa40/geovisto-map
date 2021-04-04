@@ -33,7 +33,7 @@ class ChoroplethLayerToolState extends AbstractLayerToolState {
      */
     resetMapVariables(map, defaults) {
         super.resetMapVariables(map, defaults);
-        
+
         let props = this.getProps();
         this.setPolygons(props.polygons == undefined && defaults && map ? defaults.getPolygons() : props.polygons);
     }

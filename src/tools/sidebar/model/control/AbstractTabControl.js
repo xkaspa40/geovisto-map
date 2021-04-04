@@ -66,7 +66,7 @@ class AbstractTabControl extends AbstractMapObject {
      */
     create() {
         let state = this.getState();
-        if(state.getSidebar() != undefined && state.isEnabled()) {
+        if (state.getSidebar() != undefined && state.isEnabled()) {
             // render sidebar tab pane
             state.getSidebar().addPanel(this.getTabStructure());
 
@@ -104,33 +104,33 @@ class AbstractTabControl extends AbstractMapObject {
 
         // append tab fragments if defined
         let tabFragments = this.getState().getTabFragments();
-        if(tabFragments) {
-            for(let i = 0; i < tabFragments.length; i++) {
+        if (tabFragments) {
+            for (let i = 0; i < tabFragments.length; i++) {
                 tabContent.appendChild(tabFragments[i].getTabContent());
             }
         }
 
         // enable/disable button
         let tabHeader = tabElement.getElementsByClassName(C_sidebar_header_class)[0];
-        if(this.getState().hasCheckButton()) {
+        if (this.getState().hasCheckButton()) {
             // create enable button in sidebar tab header
             let tabEnableBtn = document.createElement("input");
             tabEnableBtn.setAttribute("type", "checkbox");
             tabEnableBtn.setAttribute("id", this.getState().getId() + '-enable-btn');
             var _this = this;
-            tabEnableBtn.onclick = function() {
+            tabEnableBtn.onclick = function () {
                 // onclick event handler enables/disables its items
                 _this.setChecked(this.checked);
             }
             tabHeader.insertBefore(tabEnableBtn, tabHeader.firstChild);
 
-            if(this.getState().getTool().isEnabled()) {
+            if (this.getState().getTool().isEnabled()) {
                 tabEnableBtn.setAttribute(C_checked_class, "true");
             }
         }
 
         //  initial state
-        if(this.getState().getTool().isEnabled()) {
+        if (this.getState().getTool().isEnabled()) {
             tabHeader.classList.add(C_enabled_class);
             tabElement.classList.add(C_enabled_class);
         } else {
@@ -157,10 +157,10 @@ class AbstractTabControl extends AbstractMapObject {
      */
     setChecked(checked) {
         let tool = this.getState().getTool();
-        if(checked != tool.isEnabled()) {
+        if (checked != tool.isEnabled()) {
             // enable/disable sidebar tab
             let sidebarTab = d3.select("#" + this.getState().getId());
-            if(sidebarTab != undefined) {
+            if (sidebarTab != undefined) {
                 // emhasize tab
                 sidebarTab.classed(C_enabled_class, checked);
                 sidebarTab.select("." + C_sidebar_header_class).classed(C_enabled_class, checked);

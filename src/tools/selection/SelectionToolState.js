@@ -38,9 +38,9 @@ class SelectionToolState extends AbstractToolState {
         super.deserialize(config);
 
         // deserialize selection
-        if(config.selection) {
+        if (config.selection) {
             let tool = this.getMap().getState().getTools().getById(config.selection.tool);
-            if(tool) {
+            if (tool) {
                 this.setSelection(new MapSelection(tool, config.selection.ids));
             }
         }
@@ -56,7 +56,7 @@ class SelectionToolState extends AbstractToolState {
 
         // serialize the selection
         let selection = this.getSelection();
-        if(selection && selection.getSrcIds().length > 0) {
+        if (selection && selection.getSrcIds().length > 0) {
             config.selection = {
                 tool: selection.getTool().getId(),
                 ids: selection.getSrcIds()
@@ -79,7 +79,7 @@ class SelectionToolState extends AbstractToolState {
      * @param {AbstractMapSelection} selection
      */
     setSelection(selection) {
-       this.selection = selection;
+        this.selection = selection;
     }
 }
 export default SelectionToolState;

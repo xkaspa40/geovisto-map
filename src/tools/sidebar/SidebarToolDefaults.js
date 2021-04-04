@@ -19,7 +19,7 @@ class SidebarToolDefaults extends AbstractToolDefaults {
      * Only one sidebar tool should be present in the Geovisto map.
      */
     isSingleton() {
-       return true; 
+        return true;
     }
 
     /**
