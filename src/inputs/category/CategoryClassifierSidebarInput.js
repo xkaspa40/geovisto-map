@@ -43,9 +43,8 @@ class CategoryClassifierSidebarInput extends AbstractSidebarInput {
             action: this.opModel.action,
             placeholder: "choose operation"
         });
-        this.valInput = new AutocompleteSidebarInput({
+        this.valInput = new LabeledTextSidebarInput({
             label: "Value",
-            options: this.valModel.options,
             action: this.valModel.action,
             placeholder: "enter value"
         });
