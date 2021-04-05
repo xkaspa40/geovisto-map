@@ -327,7 +327,7 @@ class ConnectionLayerTool extends AbstractLayerTool {
         if (!animate && this.animationInterval) {
             clearInterval(this.animationInterval);
             this.animationInterval = null;
-            connections.selectAll("path.leaflet-layer-connection").style("stroke-dasharray", "none")
+            connections.style("stroke-dasharray", "none")
         }
     }
 

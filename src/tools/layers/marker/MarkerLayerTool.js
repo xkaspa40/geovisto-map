@@ -144,23 +144,23 @@ const CountryIcon = L.DivIcon.extend({
             .attr("dy", "0.3em")
             .attr("font-family", "Arial");
 
-        if (options.values.value != null && options.values.value !== 0) {
-            const pie = d3.pie().value((d) => d[1]).sort(null);
-            // donut chart
-            this._svgGroup = svg
-                .append("g")
-                .attr("transform", `translate(${center}, ${center})`);
+        // donut chart if value is null, the donut chart is created but is empty (i.e. not visible),
+        // this is needed behaviour since when using timeline the next time step updates existing donut chart
+        this._svgGroup = svg
+            .append("g")
+            .attr("transform", `translate(${center}, ${center})`);
 
-            this._svgGroup
-                .datum(Object.entries(options.values.subvalues))
-                .selectAll("path")
-                .data(pie)
-                .enter()
-                .append("path")
-                .attr("class", function (d, i) { return "leaflet-marker-donut" + (i % 3 + 1); })
-                .attr("d", this.arc(size))
-                .each(function (d) { this._current = d });
-        }
+        const pie = d3.pie().value((d) => d[1]).sort(null);
+        this._svgGroup
+            .datum(Object.entries(options.values.subvalues))
+            .selectAll("path")
+            .data(pie)
+            .enter()
+            .append("path")
+            .attr("class", function (d, i) { return "leaflet-marker-donut" + (i % 3 + 1); })
+            .attr("d", this.arc(size))
+            .each(function (d) { this._current = d });
+
         if (options.bgPos) {
             const bgPos = point(options.bgPos);
             div.style.backgroundPosition = (-bgPos.x) + 'px ' + (-bgPos.y) + 'px';
