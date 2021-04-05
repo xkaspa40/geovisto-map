@@ -38,9 +38,17 @@ export class TimelineControl extends L.Control {
         };
         const timelineComponent = new TimelineComponent(container, props);
 
+        timelineComponent.onCurrentTimeIndexChange.subscribe(
+            (currentTimeIndex: number) => this.timelineService.setCurrentTimeIndex(currentTimeIndex),
+        );
+
         timelineComponent.onTimesChanged.subscribe(
             ({ currentTimeIndex, startTimeIndex, endTimeIndex }: OnTimesChangedParams) => {
-                this.timelineService.setState({ currentTimeIndex, startTimeIndex, endTimeIndex });
+                this.timelineService.setTimeState({
+                    current: currentTimeIndex,
+                    start: startTimeIndex,
+                    end: endTimeIndex,
+                });
             },
         );
 
@@ -49,15 +57,11 @@ export class TimelineControl extends L.Control {
         });
 
         this.timelineService.onCurrentTimeIndexChanged.subscribe(({ currentTimeIndex }) => {
-            timelineComponent.currentTimeIndex = currentTimeIndex;
+            timelineComponent.setCurrentTimeIndex(currentTimeIndex);
         });
 
-        this.timelineService.onStartTimeIndexChanged.subscribe((startTimeIndex) => {
-            timelineComponent.startTimeIndex = startTimeIndex;
-        });
-
-        this.timelineService.onEndTimeIndexChanged.subscribe((endTimeIndex) => {
-            timelineComponent.endTimeIndex = endTimeIndex;
+        this.timelineService.onTimeStateChanged.subscribe((timeState) => {
+            timelineComponent.timeState = timeState;
         });
 
         this.timelineService.onIsPlayingChanged.subscribe((isPlaying) => {

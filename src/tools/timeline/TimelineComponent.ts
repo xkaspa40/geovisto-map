@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Timeline } from "./Timeline";
 import { Subject } from "./Subject";
-import { Story, TimeData } from "./TimelineService";
+import { Story, TimeData, TimeState } from "./TimelineService";
 import { path as getFromPath } from "./utils";
 import { TimeGranularity } from "./contants";
 
@@ -16,9 +16,7 @@ export type ChartData = Array<{ name: string, values: Map<number, number | undef
 
 export type TimelineProps = {
     data: TimeData;
-    startTimeIndex: number;
-    endTimeIndex: number;
-    currentTimeIndex?: number;
+    timeState: TimeState;
     onPlayClick: () => void;
     onRecordClick: () => void;
     onRecordDeleteClick: (time: number) => void;
@@ -35,13 +33,12 @@ const TickFormat = {
 
 export class TimelineComponent {
     onTimesChanged = new Subject<OnTimesChangedParams>();
+    onCurrentTimeIndexChange = new Subject<number>();
 
     private readonly container: HTMLElement;
     private _times: number[];
     private _story?: Story;
-    private _currentTimeIndex: number;
-    private _startTimeIndex: number;
-    private _endTimeIndex: number;
+    private _timeState: TimeState;
     private _isPlaying = false;
     private readonly tickFormat: string = "hh:mm dd/MM/yyyy";
     private readonly _onPlayClick: () => void;
@@ -59,32 +56,20 @@ export class TimelineComponent {
         this.render();
     }
 
-    set currentTimeIndex(value: number) {
-        this._currentTimeIndex = value;
-        this.render();
-    }
-
-    set startTimeIndex(value: number) {
-        this._startTimeIndex = value;
-        this.render();
-    }
-
-    set endTimeIndex(value: number) {
-        this._endTimeIndex = value;
-        this.render();
-    }
-
     set isPlaying(value: boolean) {
         this._isPlaying = value;
+        this.render();
+    }
+
+    set timeState(timeState: TimeState) {
+        this._timeState = timeState;
         this.render();
     }
 
     constructor(container: HTMLElement, props: TimelineProps) {
         this.container = container;
         this._times = [...props.data.values.keys()];
-        this._startTimeIndex = props.startTimeIndex;
-        this._endTimeIndex = props.endTimeIndex;
-        this._currentTimeIndex = props.currentTimeIndex ?? this._startTimeIndex;
+        this._timeState = props.timeState;
         this._onPlayClick = props.onPlayClick;
         this._onRecordClick = props.onRecordClick;
         this._onRecordDeleteClick = props.onRecordDeleteClick;
@@ -105,16 +90,16 @@ export class TimelineComponent {
                 Timeline,
                 {
                     times: this._times,
-                    startTimeIndex: this._startTimeIndex,
-                    endTimeIndex: this._endTimeIndex,
-                    currentTime: this._currentTimeIndex,
-                    onCurrentTimeIndexChange: this.onCurrentTimeIndexChange,
-                    onRangeTimesIndexChange: this.onRangeTimesIndexChange,
+                    startTimeIndex: this._timeState.start,
+                    endTimeIndex: this._timeState.end,
+                    currentTime: this._timeState.current,
+                    onCurrentTimeIndexChange: this.handleCurrentTimeIndexChange.bind(this),
+                    onRangeTimesIndexChange: this.handleRangeTimesIndexChange.bind(this),
                     isPlaying: this._isPlaying,
                     onPlayClick: this._onPlayClick,
                     chartData: this.chartData,
                     onRecordClick: this._onRecordClick,
-                    onRecordDeleteClick: () => this._onRecordDeleteClick(this._times[this._currentTimeIndex]),
+                    onRecordDeleteClick: () => this._onRecordDeleteClick(this._times[this._timeState.current]),
                     story: this._story,
                     tickFormat: this.tickFormat,
                 },
@@ -123,22 +108,17 @@ export class TimelineComponent {
         );
     }
 
-    private onCurrentTimeIndexChange = (currentTimeIndex: number) => {
-        this._currentTimeIndex = currentTimeIndex;
-        this.onTimesChanged.notify({
-            currentTimeIndex,
-            startTimeIndex: this._startTimeIndex,
-            endTimeIndex: this._endTimeIndex,
-        });
+    private handleCurrentTimeIndexChange = (currentTimeIndex: number) => {
+        this.onCurrentTimeIndexChange.notify(currentTimeIndex);
     };
 
-    private onRangeTimesIndexChange = ([startTimeIndex, endTimeIndex]: [number, number]) => {
-        if (this._startTimeIndex === startTimeIndex && this._endTimeIndex === endTimeIndex) return;
+    private handleRangeTimesIndexChange = ([startTimeIndex, endTimeIndex]: [number, number]) => {
+        if (this._timeState.start === startTimeIndex && this._timeState.end === endTimeIndex) return;
 
-        let currentTimeIndex = this._currentTimeIndex;
-        if (this._currentTimeIndex < startTimeIndex) {
+        let currentTimeIndex = this._timeState.current;
+        if (this._timeState.current < startTimeIndex) {
             currentTimeIndex = 0;
-        } else if (this._currentTimeIndex > endTimeIndex) {
+        } else if (this._timeState.current > endTimeIndex) {
             currentTimeIndex = endTimeIndex;
         }
 
@@ -171,5 +151,10 @@ export class TimelineComponent {
             return chartValue / values.length;
         }
         return chartValue;
+    }
+
+    setCurrentTimeIndex(currentTimeIndex: number): void {
+        this._timeState.current = currentTimeIndex;
+        this.render();
     }
 }
