@@ -28,7 +28,9 @@ class DotLayerTool extends AbstractLayerTool {
      */
     constructor(props) {
         super(props);
-
+        this.zoomLevel = undefined;
+        this.workData = [];
+        this.radius = 10;
         this.categoryFilters = [];
     }
 
@@ -90,9 +92,16 @@ class DotLayerTool extends AbstractLayerTool {
         // update state
         this.getState().setLayer(layer);
 
+        this.getMap().addEventListener('zoom', (e) => this.handleZoom(e));
+
         this.redraw();
 
         return [ layer ];
+    }
+
+    handleZoom(e) {
+       this.zoomLevel = e.target._zoom;
+        this.redraw(true);
     }
 
     /**
@@ -169,15 +178,62 @@ class DotLayerTool extends AbstractLayerTool {
      * @param data
      * @returns {Circle}
      */
-    createDot(data) {
+    createDot(data, renderer) {
         // TODO set color based on Category colour passed in data
-        let point = L.circle([data.lat, data.long], {
-            radius: 10,
+        let point = L.circleMarker([data.lat, data.long], {
+            renderer: renderer,
+            radius: this.radius,
             weight: 0,
             fillOpacity: 1.0,
             color: data.color ?? 'green'
         });
         return point;
+    }
+
+    calculateRadius() {
+        switch (this.zoomLevel) {
+            case 1:
+            case 2:
+                this.radius = 1;
+                break;
+            case 3:
+            case 4:
+                this.radius = 1;
+                break;
+            case 5:
+                this.radius = 1;
+                break;
+            case 6:
+                this.radius = 1;
+                break;
+            case 7:
+                this.radius = 1;
+                break;
+            case 8:
+            case 9:
+                this.radius = 2;
+                break;
+            case 10:
+            case 11:
+                this.radius = 4;
+                break;
+            case 12:
+            case 13:
+            case 14:
+                this.radius = 5;
+                break;
+            case 15:
+            case 16:
+            case 17:
+                this.radius = 6;
+                break;
+            case 18:
+            case 19:
+                this.radius = 7;
+                break;
+            default:
+                this.radius = 1;
+        }
     }
 
     /**
@@ -186,49 +242,16 @@ class DotLayerTool extends AbstractLayerTool {
     createMarkers(workData) {
         // create markers
         let markers = [];
-
-        let geoCountry;
+        this.calculateRadius();
+        let renderer = L.canvas({ padding: 0.5 });
         let layer = this.getState().getLayer();
-        let centroids = this.getState().getCentroids();
         for(let i = 0; i < workData.length; i++) {
-            let point = this.createDot(workData[i]);
-            layer.addLayer(point);
+            let point = this.createDot(workData[i], renderer);
+            point.addTo(layer);
             markers.push(point);
         }
 
         return markers;
-    }
-
-    /**
-     * It creates one marker with respect to the given centroid and data.
-     * 
-     * @param {*} centroid 
-     * @param {*} data 
-     */
-    createMarker(centroid, data) {
-        function thousands_separator(num)
-          {
-            var num_parts = num.toString().split(".");
-            num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-            return num_parts.join(".");
-          }
-
-        // build popup message
-        let popupMsg = "<b>" + centroid.name + "</b><br>";
-        popupMsg += (data.value != null ? thousands_separator(data.value) : "N/A") + "<br>";
-        for(let [key, value] of Object.entries(data.subvalues)) {
-            popupMsg += key + ": " + thousands_separator(value) + "<br>";
-        }
-
-        // create marker
-        let point = L.marker([centroid.lat, centroid.long], {
-            // create basic icon 
-            id: centroid.name,
-            icon: new CountryIcon( {
-                values: data
-            } ) 
-        }).bindPopup(popupMsg);
-        return point;
     }
 
     /**
@@ -240,10 +263,12 @@ class DotLayerTool extends AbstractLayerTool {
             this.deleteLayerItems();
 
             // prepare data
-            let workData = this.prepareMapData();
+            if ( ! onlyStyle) {
+                this.workData = this.prepareMapData();
+            }
 
             // update map
-            let markers = this.createMarkers(workData);
+            let markers = this.createMarkers(this.workData);
 
             // update state
             this.getState().setMarkers(markers);
