@@ -14,6 +14,8 @@ import ThemesToolEvent from "../../themes/model/event/ThemesToolEvent";
 import D3PathForceSimulator from "./util/D3PathForceSimulator";
 import ProjectionUtil from "./util/ProjectionUtil";
 import TimeChangeEvent from "../../timeline/model/TimeChangeEvent";
+import { ToolInitializedEvent } from "../../../model/event/basic/ToolInitializedEvent";
+import { TimelineTool } from "../../timeline";
 
 /**
  * This class represents Connection layer tool. It uses SVG layer and D3 to draw the lines.
@@ -310,6 +312,11 @@ class ConnectionLayerTool extends AbstractLayerTool {
         } else if (event.getType() === TimeChangeEvent.TYPE()) {
             this.prepareMapData(event.getObject());
             this.onTimeChange(event.getObject());
+        } else if (event.getType() === ToolInitializedEvent.TYPE()) {
+            if (event.getSource() === TimelineTool.TYPE()) {
+                const { transitionDuration } = event.getObject();
+                this._transitionDuration = transitionDuration;
+            }
         }
     }
 
@@ -365,11 +372,11 @@ class ConnectionLayerTool extends AbstractLayerTool {
                 .classed("leaflet-layer-connection-dashed", animateDirection)
                 .style("stroke-opacity", 0)
                 .transition()
-                .duration(250)
+                .duration(this._transitionDuration)
                 .style("stroke-opacity", 0.4)
             this.connectionsPaths[id].exit()
                 .transition()
-                .duration(250)
+                .duration(this._transitionDuration)
                 .style("stroke-opacity", 0)
                 .remove()
         })

@@ -43,7 +43,7 @@ class TimelineToolTabControl extends AbstractLayerToolTabControl {
             [model.timePath.name]: this.timePathInput.getValue(),
             [model.stepTimeLength.name]: parseInt(this.stepTimeLengthInput.getValue()),
             [model.storyEnabled.name]: this.storyEnabledCheckbox.getValue(),
-            [model.transitionTimeLength.name]: parseInt(this.transitionTimeLengthInput.getValue()),
+            [model.transitionDuration.name]: parseInt(this.transitionDurationInput.getValue()),
             [model.story.name]: this.getTool()
                 .getState()
                 .getStoryByName(this.storySelect.getValue()),
@@ -69,8 +69,8 @@ class TimelineToolTabControl extends AbstractLayerToolTabControl {
         // update inputs
         this.timePathInput.setValue(dataMapping[model.timePath.name]);
         this.stepTimeLengthInput.setValue(dataMapping[model.stepTimeLength.name]);
+        this.transitionDurationInput.setValue(dataMapping[model.transitionDuration.name]);
         this.storyEnabledCheckbox.setValue(dataMapping[model.storyEnabled.name]);
-        this.transitionTimeLengthInput.setValue(dataMapping[model.transitionTimeLength.name]);
         this.storySelect.setValue(dataMapping[model.story.name]);
         this.realTimeCheckbox.setValue(dataMapping[model.realTimeEnabled.name]);
         this.granularityInput.setValue(dataMapping[model.granularity.name]);
@@ -104,9 +104,9 @@ class TimelineToolTabControl extends AbstractLayerToolTabControl {
             model.stepTimeLength.input,
             { label: model.stepTimeLength.label, type: "number" }
         );
-        this.transitionTimeLengthInput = SidebarInputFactory.createSidebarInput(
-            model.transitionTimeLength.input,
-            { label: model.transitionTimeLength.label, type: "number" }
+        this.transitionDurationInput = SidebarInputFactory.createSidebarInput(
+            model.transitionDuration.input,
+            { label: model.transitionDuration.label, type: "number" }
         );
         this.storyEnabledCheckbox = SidebarInputFactory.createSidebarInput(
             model.storyEnabled.input,
@@ -167,6 +167,7 @@ class TimelineToolTabControl extends AbstractLayerToolTabControl {
 
         formElement.appendChild(this.timePathInput.create());
         formElement.appendChild(this.stepTimeLengthInput.create());
+        formElement.appendChild(this.transitionDurationInput.create());
         formElement.appendChild(document.createElement("hr"));
 
         formElement.appendChild(this.storyEnabledCheckbox.create());
@@ -175,7 +176,6 @@ class TimelineToolTabControl extends AbstractLayerToolTabControl {
         storyWrapper.appendChild(this.storySelect.create());
         storyWrapper.appendChild(this.addStoryButton);
         formElement.appendChild(storyWrapper);
-        formElement.appendChild(this.transitionTimeLengthInput.create());
         formElement.appendChild(document.createElement("hr"));
 
         formElement.appendChild(this.realTimeCheckbox.create());
@@ -227,9 +227,9 @@ class TimelineToolTabControl extends AbstractLayerToolTabControl {
             realTimeEnabled,
             timePath,
             stepTimeLength,
+            transitionDuration,
             storyEnabled,
             story,
-            transitionTimeLength,
             chartEnabled,
             chartValuePath,
             granularity,
@@ -239,15 +239,14 @@ class TimelineToolTabControl extends AbstractLayerToolTabControl {
         this.chartValuePathInput.setDisabled(!chartEnabled);
         this.chartAggregationFnInput.setDisabled(!chartEnabled);
 
-        const isStorySectionValid =  !storyEnabled || (storyEnabled && story && transitionTimeLength > 0);
+        const isStorySectionValid =  !storyEnabled || (storyEnabled && story);
         this.storySelect.setDisabled(!storyEnabled);
         this.addStoryButton.disabled = !storyEnabled;
-        this.transitionTimeLengthInput.setDisabled(!storyEnabled);
 
         this.submitButton.disabled = !timePath ||
             !isStorySectionValid ||
             !stepTimeLength || stepTimeLength <= 0 ||
-            !transitionTimeLength || transitionTimeLength <= 0 ||
+            !transitionDuration || transitionDuration < 0 ||
             (chartEnabled && (!chartValuePath || !chartAggregationFn)) ||
             (realTimeEnabled && !granularity);
     }

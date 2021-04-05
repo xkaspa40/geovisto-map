@@ -155,9 +155,9 @@
       "layerName": "Timeline",
       "data": {
         "timePath": "",
-        "stepTimeLength": 1000,
+        "stepTimeLength": 3000,
+        "transitionTime": 2500,
         "storyEnabled": false,
-        "transitionTimeLength": 2500,
         "story": "",
         "realTimeEnabled": false,
         "granularity": "",

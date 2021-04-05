@@ -492,10 +492,7 @@ class MarkerLayerTool extends AbstractLayerTool {
             this.updateMarkers(event.getObject());
         } else if (event.getType() === ToolInitializedEvent.TYPE()) {
             if (event.getSource() === TimelineTool.TYPE()) {
-                const { stepTimeLength } = event.getObject();
-                const transitionDuration = stepTimeLength / 2 < 500 ?
-                    stepTimeLength / 2 :
-                    500;
+                const { transitionDuration } = event.getObject();
                 this._transitionDuration = transitionDuration;
             }
         } else if (event.getType() === TimeDestroyedEvent.TYPE()) {

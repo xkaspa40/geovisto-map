@@ -27,17 +27,17 @@ const MAPPING_MODEL = {
         label: "Step time (ms)*",
         input: LabeledTextSidebarInput.ID()
     },
+    transitionDuration: {
+        id: `${INPUT_ID_PREFIX}-transition_time`,
+        name: "transitionDuration",
+        label: "Transition time (ms)*",
+        input: LabeledTextSidebarInput.ID()
+    },
     storyEnabled: {
         id: `${INPUT_ID_PREFIX}-story_enabled`,
         name: "storyEnabled",
         label: "Story",
         input: CheckboxSidebarInput.ID()
-    },
-    transitionTimeLength: {
-        id: `${INPUT_ID_PREFIX}-transition_time`,
-        name: "transitionTimeLength",
-        label: "Transition time (ms)*",
-        input: LabeledTextSidebarInput.ID()
     },
     story: {
         id: `${INPUT_ID_PREFIX}-story`,
@@ -117,8 +117,8 @@ class TimelineToolDefaults extends AbstractLayerToolDefaults {
 
         dataMapping[dataMappingModel.timePath.name] = "";
         dataMapping[dataMappingModel.stepTimeLength.name] = 1000;
+        dataMapping[dataMappingModel.transitionDuration.name] = 500;
         dataMapping[dataMappingModel.storyEnabled.name] = false;
-        dataMapping[dataMappingModel.transitionTimeLength.name] = 2500;
         dataMapping[dataMappingModel.story.name] = "";
         dataMapping[dataMappingModel.realTimeEnabled.name] = false;
         dataMapping[dataMappingModel.granularity.name] = "";

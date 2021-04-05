@@ -134,13 +134,14 @@ export class TimelineTool extends AbstractLayerTool {
             leafletMap.flyTo(
                 new LatLng(state.latitude, state.longitude),
                 state.zoom,
-                { duration: this.formState.transitionTimeLength / 1000 }
+                { duration: this.formState.transitionDuration / 1000 }
             );
             setTimeout(() => {
                 this.getMap()
                     .dispatchEvent(new TimeChangeEvent(this.data.values.get(this.times[currentTimeIndex])));
-            }, this.formState.transitionTimeLength);
+            }, this.formState.transitionDuration);
         } else {
+            // TODO unite after adding transition delay
             this.getMap()
                 .dispatchEvent(new TimeChangeEvent(this.data.values.get(this.times[currentTimeIndex])));
         }
@@ -206,9 +207,7 @@ export class TimelineTool extends AbstractLayerTool {
         this.data = this.createData();
         this.timelineService = new TimelineService({
             stepTimeLength: this.formState.stepTimeLength,
-            transitionTimeLength: this.formState.storyEnabled ?
-                this.formState.transitionTimeLength :
-                null,
+            transitionDuration: this.formState.transitionDuration,
             times: this.times,
             data: this.data,
         })
@@ -240,7 +239,7 @@ export class TimelineTool extends AbstractLayerTool {
         }
         this.timelineService.onStoryChanged.subscribe(this.onStoryChange.bind(this));
         this.getMap()
-            .dispatchEvent(new ToolInitializedEvent(TimelineTool.TYPE(), { stepTimeLength: this.formState.stepTimeLength }));
+            .dispatchEvent(new ToolInitializedEvent(TimelineTool.TYPE(), { stepTimeLength: this.formState.stepTimeLength, transitionDuration: this.formState.transitionDuration }));
         this.getMap().dispatchEvent(new TimeChangeEvent(this.data.values.get(this.times[0])));
     }
 

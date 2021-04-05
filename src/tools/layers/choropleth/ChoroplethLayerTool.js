@@ -309,14 +309,12 @@ class ChoroplethLayerTool extends AbstractLayerTool {
         }
         if (event.getType() === ToolInitializedEvent.TYPE()) {
             if (event.getSource() === TimelineTool.TYPE()) {
-                const { stepTimeLength } = event.getObject();
+                const { transitionDuration } = event.getObject();
 
                 if (this.getState().getLayer()) {
                     this.getState().getLayer().eachLayer((item) => {
                         if (item._path != undefined) {
-                            item._path.style.transitionDuration = stepTimeLength / 2 < 500 ?
-                                `${stepTimeLength / 2}ms` :
-                                '500ms'
+                            item._path.style.transitionDuration = `${transitionDuration}ms`;
                         }
                     });
                 }

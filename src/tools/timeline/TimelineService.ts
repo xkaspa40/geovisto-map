@@ -35,7 +35,7 @@ export class TimelineService {
     private readonly times: number[];
     private readonly data: TimeData;
     private readonly stepTimeLength: number;
-    private readonly transitionTimeLength: number;
+    private readonly transitionDuration: number;
     private story?: Story;
     private timeState: TimeState = {
         current: START_INDEX,
@@ -54,13 +54,13 @@ export class TimelineService {
 
     constructor({
         stepTimeLength,
-        transitionTimeLength = 0,
+        transitionDuration = 0,
         times,
         data,
-    }: { stepTimeLength: number, transitionTimeLength: number, times: number[], data: TimeData }) {
+    }: { stepTimeLength: number, transitionDuration: number, times: number[], data: TimeData }) {
         this.times = times;
         this.stepTimeLength = stepTimeLength;
-        this.transitionTimeLength = transitionTimeLength;
+        this.transitionDuration = transitionDuration;
         this.timeState.end = times.length - 1;
         this.data = data;
     }
@@ -87,7 +87,7 @@ export class TimelineService {
         };
         this.timeout = setTimeout(
             tick.bind(this),
-            this.stepTimeLength + (this.story && this.story.has(this.times[this.timeState.current]) ? this.transitionTimeLength : 0),
+            this.stepTimeLength + (this.story && this.story.has(this.times[this.timeState.current]) ? this.transitionDuration : 0),
         );
     }
 
