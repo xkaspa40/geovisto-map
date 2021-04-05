@@ -53,7 +53,7 @@ class Demo extends Component {
     const jsonData = require('/static/data/coordinatesDemo.json');
 
     // // implicit config
-    const jsonConfig = require('/static/config/config-demo1.json');
+    const jsonConfig = require('/static/config/config.json');
 
     // reference to the rendered map
     this.map = React.createRef();

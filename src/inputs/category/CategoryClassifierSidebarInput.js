@@ -1,6 +1,7 @@
 import AbstractSidebarInput from "../AbstractSidebarInput";
 import AutocompleteSidebarInput from "../input/AutocompleteSidebarInput";
 import LabeledTextSidebarInput from "../input/LabeledTextSidebarInput";
+import ColorPickerInput from "../input/ColorPickerInput";
 
 const ID = "geovisto-input-category-classifier";
 
@@ -48,10 +49,9 @@ class CategoryClassifierSidebarInput extends AbstractSidebarInput {
             action: this.valModel.action,
             placeholder: "enter value"
         });
-        this.colorInput = new AutocompleteSidebarInput({
+        this.colorInput = new ColorPickerInput({
             label: "Color",
             options: this.colorModel.options,
-            placeholder: "enter color"
         });
 
         this.input.appendChild(this.opInput.create());
