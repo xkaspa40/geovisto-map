@@ -19,7 +19,7 @@ const sliderStyle = {
 
 export type SliderProps = {
     times: number[],
-    currentTime: number,
+    currentTimeIndex: number,
     startTimeIndex: number,
     endTimeIndex: number,
     onChange: (value: number) => void,
@@ -36,7 +36,7 @@ export const Slider: FC<SliderProps> = ({
     times: timesDefault,
     startTimeIndex,
     endTimeIndex,
-    currentTime,
+    currentTimeIndex,
     onChange: onChangeProp,
     story,
     tickFormat,
@@ -45,7 +45,7 @@ export const Slider: FC<SliderProps> = ({
     const times = useMemo(() => timesDefault.slice(startTimeIndex, endTimeIndex + 1),
         [timesDefault, startTimeIndex, endTimeIndex]);
     const domain = useMemo(() => [0, times.length - 1], [times]);
-    const values = useMemo(() => [currentTime - startTimeIndex], undefined); //, [currentTime, startTimeOffset]);
+    const values = useMemo(() => [currentTimeIndex - startTimeIndex], undefined); //, [currentTime, startTimeOffset]);
     const onUpdate = (values: ReadonlyArray<number>) => {
         onChangeProp(values.map(value => value + startTimeIndex)[0]);
     };

@@ -1,6 +1,6 @@
 import L, { ControlOptions } from "leaflet";
 import { OnTimesChangedParams, TimelineComponent } from "./TimelineComponent";
-import { TimelineService } from "./TimelineService";
+import { StoryState, TimelineService } from "./TimelineService";
 
 import "./TimelineControl.scss";
 
@@ -28,10 +28,19 @@ export class TimelineControl extends L.Control {
         const props = {
             ...this.timelineService.getState(),
             onPlayClick: this.timelineService.togglePlay.bind(this.timelineService),
-            onRecordClick: () => this.timelineService.recordState({
+            onRecordClick: ({
+                stepTimeLength,
+                flyToDuration,
+                transitionDelay,
+                transitionDuration,
+            }: Partial<StoryState>) => this.timelineService.recordState({
                 zoom: this.leafletMap.getZoom(),
                 latitude: this.leafletMap.getCenter().lat,
                 longitude: this.leafletMap.getCenter().lng,
+                stepTimeLength,
+                flyToDuration,
+                transitionDelay,
+                transitionDuration,
             }),
             onRecordDeleteClick: (time: number) => this.timelineService.deleteState(time),
             timeGranularity: this.formState.realTimeEnabled ? this.formState.granularity : null,

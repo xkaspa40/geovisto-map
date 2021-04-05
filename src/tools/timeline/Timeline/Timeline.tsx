@@ -4,14 +4,15 @@ import { PlayButton } from "./PlayButton";
 import { RangeSlider } from "./RangeSlider/RangeSlider";
 
 import "./Timeline.scss";
-import { Story } from "../TimelineService";
+import { Story, StoryState } from "../TimelineService";
 import { ChartData } from "../TimelineComponent";
+import { StoryConfigurator } from "./StoryConfigurator";
 
 export type TimelineProps = {
     times: number[],
     start?: number,
     end?: number,
-    currentTime: number,
+    currentTimeIndex: number,
     startTimeIndex: number,
     endTimeIndex: number,
     step?: number,
@@ -22,7 +23,12 @@ export type TimelineProps = {
     onPlayClick: () => void,
     data?: number[],
     chartData?: ChartData,
-    onRecordClick: () => void;
+    onRecordClick: ({
+        stepTimeLength,
+        flyToDuration,
+        transitionDelay,
+        transitionDuration,
+    }: Partial<StoryState>) => void;
     onRecordDeleteClick: () => void;
     tickFormat: string;
     story?: Story;
@@ -33,7 +39,7 @@ export const Timeline: FC<TimelineProps> = ({
     isPlaying,
     onPlayClick,
     times,
-    currentTime,
+    currentTimeIndex,
     startTimeIndex,
     endTimeIndex,
     onCurrentTimeIndexChange,
@@ -45,6 +51,7 @@ export const Timeline: FC<TimelineProps> = ({
 }) => {
     const [compact, setCompact] = useState(true);
     const hasOnlyOneTimestamp = times.length === 1;
+
     return (
         <>
             {!hasOnlyOneTimestamp && <div className="timeline__collapse_button_wrapper">
@@ -53,13 +60,20 @@ export const Timeline: FC<TimelineProps> = ({
                 </button>
             </div>}
             <div className={`timeline ${chartData ? "with-chart" : ""}`}>
-                {!compact && <div className="timeline__range_slider_wrapper">
-                    <RangeSlider
-                        times={times}
-                        onChange={onRangeTimesIndexChange}
-                        tickFormat={tickFormat}
-                    />
-                </div>}
+                {!compact && (
+                    <div className="timeline__range_slider_wrapper">
+                        {story && <StoryConfigurator
+                            storyState={story?.get(times[currentTimeIndex])}
+                            onRecordClick={onRecordClick}
+                            onRecordDeleteClick={onRecordDeleteClick}
+                        />}
+                        <RangeSlider
+                            times={times}
+                            onChange={onRangeTimesIndexChange}
+                            tickFormat={tickFormat}
+                        />
+                    </div>
+                )}
                 <div className="timeline__player_container">
                     <div className="timeline__control_button__wrapper">
                         <PlayButton
@@ -71,7 +85,7 @@ export const Timeline: FC<TimelineProps> = ({
                     <div className="timeline__slider__wrapper">
                         <Slider
                             times={times}
-                            currentTime={currentTime}
+                            currentTimeIndex={currentTimeIndex}
                             startTimeIndex={startTimeIndex}
                             endTimeIndex={endTimeIndex}
                             onChange={onCurrentTimeIndexChange}
@@ -80,12 +94,6 @@ export const Timeline: FC<TimelineProps> = ({
                             tickFormat={tickFormat}
                             disabled={hasOnlyOneTimestamp}
                         />
-                        {story && (
-                            <>
-                                <button onClick={onRecordClick}><i className="fa fa-save" /></button>
-                                <button onClick={onRecordDeleteClick}><i className="fa fa-trash" /></button>
-                            </>
-                        )}
                     </div>
                 </div>
             </div>

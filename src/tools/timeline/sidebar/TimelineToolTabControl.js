@@ -128,6 +128,7 @@ class TimelineToolTabControl extends AbstractLayerToolTabControl {
                     .getState()
                     .getStories()
                     .map(({ name }) => name));
+                this.updateFields();
             },
             "geovisto-timeline-add-story-button"
         );

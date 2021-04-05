@@ -128,23 +128,23 @@ export class TimelineTool extends AbstractLayerTool {
         return interval.map(d => d.getTime());
     }
 
-    onCurrentTimeChange({ currentTimeIndex, state }) {
-        if (state) {
+    handleCurrentTimeChange({ currentTimeIndex, story }) {
+        if (story) {
             const leafletMap = this.getMap().getState().getLeafletMap();
-            leafletMap.flyTo(
-                new LatLng(state.latitude, state.longitude),
-                state.zoom,
-                { duration: this.formState.transitionDuration / 1000 }
-            );
-            setTimeout(() => {
-                this.getMap()
-                    .dispatchEvent(new TimeChangeEvent(this.data.values.get(this.times[currentTimeIndex])));
-            }, this.formState.transitionDuration);
-        } else {
-            // TODO unite after adding transition delay
-            this.getMap()
-                .dispatchEvent(new TimeChangeEvent(this.data.values.get(this.times[currentTimeIndex])));
+            const center = new LatLng(story.latitude, story.longitude);
+            if (story.flyToDuration != null && story.flyToDuration > 0) {
+                leafletMap.flyTo(center, story.zoom, { duration: story.flyToDuration / 1000 });
+            } else {
+                leafletMap.setView(center, story.zoom);
+            }
         }
+        this.getMap().dispatchEvent(new TimeChangeEvent({
+            data: this.data.values.get(this.times[currentTimeIndex]),
+            transitionDuration: story && story.transitionDuration ?
+                story.transitionDuration :
+                this.formState.transitionDuration,
+            transitionDelay: story && story.transitionDelay ? story.transitionDelay : 0,
+        }));
     }
 
 
@@ -211,7 +211,7 @@ export class TimelineTool extends AbstractLayerTool {
             times: this.times,
             data: this.data,
         })
-        this.timelineService.onCurrentTimeIndexChanged.subscribe(this.onCurrentTimeChange.bind(
+        this.timelineService.onCurrentTimeIndexChanged.subscribe(this.handleCurrentTimeChange.bind(
             this));
         if (!this.timelineControl) {
             this.timelineControl = new TimelineControl(
@@ -239,8 +239,15 @@ export class TimelineTool extends AbstractLayerTool {
         }
         this.timelineService.onStoryChanged.subscribe(this.onStoryChange.bind(this));
         this.getMap()
-            .dispatchEvent(new ToolInitializedEvent(TimelineTool.TYPE(), { stepTimeLength: this.formState.stepTimeLength, transitionDuration: this.formState.transitionDuration }));
-        this.getMap().dispatchEvent(new TimeChangeEvent(this.data.values.get(this.times[0])));
+            .dispatchEvent(new ToolInitializedEvent(
+                TimelineTool.TYPE(),
+                {
+                    stepTimeLength: this.formState.stepTimeLength,
+                    transitionDuration: this.formState.transitionDuration
+                }
+            ));
+
+        this.timelineService.initialize();
     }
 
     desctructTimeline() {
@@ -270,8 +277,12 @@ export class TimelineTool extends AbstractLayerTool {
 
             const { currentTimeIndex } = this.timelineService.getState();
             this.getMap()
-                .dispatchEvent(new ToolInitializedEvent(TimelineTool.TYPE(), { stepTimeLength: this.formState.stepTimeLength }));
-            this.getMap().dispatchEvent(new TimeChangeEvent(this.data.values.get(this.times[currentTimeIndex])));
+                .dispatchEvent(new ToolInitializedEvent(
+                    TimelineTool.TYPE(),
+                    { stepTimeLength: this.formState.stepTimeLength }
+                ));
+            this.getMap()
+                .dispatchEvent(new TimeChangeEvent(this.data.values.get(this.times[currentTimeIndex])));
         }
     }
 }

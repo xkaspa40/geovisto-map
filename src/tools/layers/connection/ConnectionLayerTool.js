@@ -310,13 +310,9 @@ class ConnectionLayerTool extends AbstractLayerTool {
             document.documentElement.style.setProperty('--layer-connection-highlight',map.getHighlightColor().highlight);
             document.documentElement.style.setProperty('--layer-connection-other', map.getHighlightColor().deempasize);
         } else if (event.getType() === TimeChangeEvent.TYPE()) {
-            this.prepareMapData(event.getObject());
-            this.onTimeChange(event.getObject());
-        } else if (event.getType() === ToolInitializedEvent.TYPE()) {
-            if (event.getSource() === TimelineTool.TYPE()) {
-                const { transitionDuration } = event.getObject();
-                this._transitionDuration = transitionDuration;
-            }
+            const { data, transitionDuration, transitionDelay } = event.getObject();
+            this.prepareMapData(data);
+            this.handleTimeChange(transitionDuration, transitionDelay);
         }
     }
 
@@ -338,7 +334,7 @@ class ConnectionLayerTool extends AbstractLayerTool {
         }
     }
 
-    onTimeChange() {
+    handleTimeChange(transitionDuration, transitionDelay) {
         let workData = this.getState().getWorkData();
         var d3ForceSimulator = new D3PathForceSimulator({
             nodes: workData.nodes,
@@ -372,11 +368,13 @@ class ConnectionLayerTool extends AbstractLayerTool {
                 .classed("leaflet-layer-connection-dashed", animateDirection)
                 .style("stroke-opacity", 0)
                 .transition()
-                .duration(this._transitionDuration)
+                .delay(transitionDelay)
+                .duration(transitionDuration)
                 .style("stroke-opacity", 0.4)
             this.connectionsPaths[id].exit()
                 .transition()
-                .duration(this._transitionDuration)
+                .delay(transitionDelay)
+                .duration(transitionDuration)
                 .style("stroke-opacity", 0)
                 .remove()
         })
@@ -400,7 +398,11 @@ class ConnectionLayerTool extends AbstractLayerTool {
         }
 
         // run force layout algorithm
-        d3ForceSimulator.run(updatePaths, undefined);
+        if (transitionDelay > 0) {
+            setTimeout(() => d3ForceSimulator.run(updatePaths, undefined), transitionDelay);
+        } else {
+            d3ForceSimulator.run(updatePaths, undefined);
+        }
     }
 
     /**

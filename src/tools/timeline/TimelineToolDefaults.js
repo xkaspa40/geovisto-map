@@ -116,8 +116,8 @@ class TimelineToolDefaults extends AbstractLayerToolDefaults {
         let dataMappingModel = this.getDataMappingModel();
 
         dataMapping[dataMappingModel.timePath.name] = "";
-        dataMapping[dataMappingModel.stepTimeLength.name] = 1000;
-        dataMapping[dataMappingModel.transitionDuration.name] = 500;
+        dataMapping[dataMappingModel.stepTimeLength.name] = 3000;
+        dataMapping[dataMappingModel.transitionDuration.name] = 2500;
         dataMapping[dataMappingModel.storyEnabled.name] = false;
         dataMapping[dataMappingModel.story.name] = "";
         dataMapping[dataMappingModel.realTimeEnabled.name] = false;

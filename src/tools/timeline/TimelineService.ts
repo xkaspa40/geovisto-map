@@ -20,12 +20,16 @@ export type StoryState = {
     zoom: number,
     latitude: number,
     longitude: number,
+    stepTimeLength?: number,
+    flyToDuration?: number,
+    transitionDelay?: number,
+    transitionDuration?: number,
 }
 
 export type Story = Map<number, StoryState>
 
 export class TimelineService {
-    onCurrentTimeIndexChanged = new Subject<{ currentTimeIndex: number, state: StoryState | undefined }>();
+    onCurrentTimeIndexChanged = new Subject<{ currentTimeIndex: number, defaultTransitionDuration: number, story: StoryState | undefined }>();
     onStartTimeIndexChanged = new Subject<number>();
     onEndTimeIndexChanged = new Subject<number>();
     onTimeStateChanged = new Subject<TimeState>();
@@ -65,12 +69,21 @@ export class TimelineService {
         this.data = data;
     }
 
+    initialize() {
+        this.onCurrentTimeIndexChanged.notify({
+            currentTimeIndex: this.timeState.current,
+            defaultTransitionDuration: this.transitionDuration,
+            story: this.story?.get(this.times[this.timeState.current]),
+        });
+    }
+
     setCurrentTimeIndex(currentTimeIndex: number): void {
         if (this.timeState.current !== currentTimeIndex) {
             this.timeState.current = currentTimeIndex;
             this.onCurrentTimeIndexChanged.notify({
                 currentTimeIndex,
-                state: this.story?.get(this.times[currentTimeIndex]),
+                defaultTransitionDuration: this.transitionDuration,
+                story: this.story?.get(this.times[currentTimeIndex]),
             });
         }
     }
@@ -87,9 +100,10 @@ export class TimelineService {
         };
         this.timeout = setTimeout(
             tick.bind(this),
-            this.stepTimeLength + (this.story && this.story.has(this.times[this.timeState.current]) ? this.transitionDuration : 0),
+            this.story?.get(this.times[this.timeState.current])?.stepTimeLength ?? this.stepTimeLength,
         );
     }
+
 
     private clearTimeout() {
         this.timeout && clearTimeout(this.timeout);
@@ -150,7 +164,8 @@ export class TimelineService {
         if (hasCurrentTimeIndexChanged) {
             this.onCurrentTimeIndexChanged.notify({
                 currentTimeIndex: timeState.current,
-                state: this.story?.get(this.times[timeState.current]),
+                defaultTransitionDuration: this.transitionDuration,
+                story: this.story?.get(this.times[timeState.current]),
             });
         }
     }

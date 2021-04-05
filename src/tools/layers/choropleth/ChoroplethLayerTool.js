@@ -11,7 +11,6 @@ import DataChangeEvent from "../../../model/event/basic/DataChangeEvent";
 import MapSelection from "../../selection/model/item/generic/MapSelection";
 import SelectionTool from "../../selection/SelectionTool";
 import TimeChangeEvent from "../../timeline/model/TimeChangeEvent";
-import TimeInitializedEvent from "../../timeline/model/TimeInitializedEvent";
 import { TimeDestroyedEvent } from "../../timeline/model/TimeDestroyedEvent";
 import { ToolInitializedEvent } from "../../../model/event/basic/ToolInitializedEvent";
 import { TimelineTool } from "../../timeline";
@@ -304,7 +303,15 @@ class ChoroplethLayerTool extends AbstractLayerTool {
             document.documentElement.style.setProperty('--choropleth-item-deempasize', map.getHighlightColor().deempasize);
         }
         if (event.getType() === TimeChangeEvent.TYPE()) {
-            this.updatePolygons(event.getObject());
+            const { data, transitionDuration, transitionDelay } = event.getObject();
+            this.getState().getLayer().eachLayer((item) => {
+                if (item._path != undefined) {
+                    item._path.style.transitionDuration = `${transitionDuration}ms`;
+                    item._path.style.transitionDelay = `${transitionDelay}ms`;
+                }
+            });
+
+            this.updatePolygons(data);
             this.updateStyle();
         }
         if (event.getType() === ToolInitializedEvent.TYPE()) {
@@ -324,7 +331,8 @@ class ChoroplethLayerTool extends AbstractLayerTool {
             if (this.getState().getLayer()) {
                 this.getState().getLayer().eachLayer((item) => {
                     if (item._path != null) {
-                        item._path.style.transitionDuration = '0'
+                        item._path.style.transitionDuration = '0ms';
+                        item._path.style.transitionDelay = '0ms';
                     }
                 });
             }

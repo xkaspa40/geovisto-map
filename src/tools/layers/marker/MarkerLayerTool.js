@@ -169,7 +169,7 @@ const CountryIcon = L.DivIcon.extend({
         return div;
     },
 
-    updateData: function(values, transitionDuration) {
+    updateData: function(values, transitionDuration, transitionDelay) {
         this.options.values = values;
         if (this._label) {
             const level = this.getLevel(this.options.values.value);
@@ -185,6 +185,7 @@ const CountryIcon = L.DivIcon.extend({
                 .selectAll("path")
                 .data(pie)
                 .transition()
+                .delay(transitionDelay)
                 .duration(transitionDuration)
                 .attrTween("d", function(a) {
                     const i = d3.interpolate(this._current, a);
@@ -413,8 +414,8 @@ class MarkerLayerTool extends AbstractLayerTool {
             id: centroid.id,
             name: centroid.name,
             icon: new CountryIcon({ values: data }),
-            updateData: function (values, transitionDuration) {
-                this.icon.updateData.call(this.icon, values, transitionDuration);
+            updateData: function (values, transitionDuration, transitionDelay) {
+                this.icon.updateData.call(this.icon, values, transitionDuration, transitionDelay);
             },
         }).bindPopup(createMarkerPopupContent(centroid.name, data.value, data.subvalues));
         return point;
@@ -436,8 +437,7 @@ class MarkerLayerTool extends AbstractLayerTool {
         }
     }
 
-    updateMarkers(data) {
-        const transitionDuration = this._transitionDuration;
+    updateMarkers({ data, transitionDuration, transitionDelay }) {
         const markersData = this.prepareMapData(data);
 
         this.getState().getMarkers().forEach((marker) => {
@@ -448,7 +448,7 @@ class MarkerLayerTool extends AbstractLayerTool {
                     .reduce((subValues, key) => ({ ...subValues, [key]: null }), {}),
             };
 
-            marker.options.updateData(markerData, transitionDuration)
+            marker.options.updateData(markerData, transitionDuration, transitionDelay)
             marker._popup.setContent(createMarkerPopupContent(
                 marker.options.name,
                 markerData.value,
@@ -460,7 +460,7 @@ class MarkerLayerTool extends AbstractLayerTool {
             if (marker instanceof L.MarkerCluster) {
                 const markers = marker.getAllChildMarkers();
                 const markerData = createClusterMarkersData(markers);
-                marker._iconObj.updateData.call(marker._iconObj, markerData, transitionDuration)
+                marker._iconObj.updateData.call(marker._iconObj, markerData, transitionDuration, transitionDelay)
             }
         });
     }
@@ -487,16 +487,7 @@ class MarkerLayerTool extends AbstractLayerTool {
             document.documentElement.style.setProperty('--leaflet-marker-donut2', map.getDataColors().triadic2);
             document.documentElement.style.setProperty('--leaflet-marker-donut3', map.getDataColors().triadic3);
         } else if (event.getType() === TimeChangeEvent.TYPE()) {
-            // this.redraw(event.getObject());
-
             this.updateMarkers(event.getObject());
-        } else if (event.getType() === ToolInitializedEvent.TYPE()) {
-            if (event.getSource() === TimelineTool.TYPE()) {
-                const { transitionDuration } = event.getObject();
-                this._transitionDuration = transitionDuration;
-            }
-        } else if (event.getType() === TimeDestroyedEvent.TYPE()) {
-            this._transitionDuration = 500;
         }
     }
 }

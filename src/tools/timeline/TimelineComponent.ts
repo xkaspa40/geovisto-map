@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Timeline } from "./Timeline";
 import { Subject } from "./Subject";
-import { Story, TimeData, TimeState } from "./TimelineService";
+import { Story, StoryState, TimeData, TimeState } from "./TimelineService";
 import { path as getFromPath } from "./utils";
 import { TimeGranularity } from "./contants";
 
@@ -18,7 +18,12 @@ export type TimelineProps = {
     data: TimeData;
     timeState: TimeState;
     onPlayClick: () => void;
-    onRecordClick: () => void;
+    onRecordClick: ({
+        stepTimeLength,
+        flyToDuration,
+        transitionDelay,
+        transitionDuration,
+    }: Partial<StoryState>) => void;
     onRecordDeleteClick: (time: number) => void;
     timeGranularity: string;
 }
@@ -42,7 +47,12 @@ export class TimelineComponent {
     private _isPlaying = false;
     private readonly tickFormat: string = "hh:mm dd/MM/yyyy";
     private readonly _onPlayClick: () => void;
-    private readonly _onRecordClick: () => void;
+    private readonly _onRecordClick: ({
+        stepTimeLength,
+        flyToDuration,
+        transitionDelay,
+        transitionDuration,
+    }: Partial<StoryState>) => void;
     private readonly _onRecordDeleteClick: (time: number) => void;
     private readonly chartData?: ChartData;
 
@@ -92,7 +102,7 @@ export class TimelineComponent {
                     times: this._times,
                     startTimeIndex: this._timeState.start,
                     endTimeIndex: this._timeState.end,
-                    currentTime: this._timeState.current,
+                    currentTimeIndex: this._timeState.current,
                     onCurrentTimeIndexChange: this.handleCurrentTimeIndexChange.bind(this),
                     onRangeTimesIndexChange: this.handleRangeTimesIndexChange.bind(this),
                     isPlaying: this._isPlaying,

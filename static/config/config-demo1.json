@@ -156,7 +156,7 @@
       "data": {
         "timePath": "",
         "stepTimeLength": 3000,
-        "transitionTime": 2500,
+        "transitionDuration": 2500,
         "storyEnabled": false,
         "story": "",
         "realTimeEnabled": false,
