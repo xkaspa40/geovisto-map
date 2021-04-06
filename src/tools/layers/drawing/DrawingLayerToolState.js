@@ -29,6 +29,13 @@ class DrawingLayerToolState extends AbstractLayerToolState {
     this.mappedMarkersToVertices = {};
   }
 
+  selectedLayerIsConnectMarker = () => {
+    return (
+      this.selectedLayer?.layerType === 'marker' &&
+      this.selectedLayer?.options?.icon?.options?.connectClick
+    );
+  };
+
   setActiveIndex(idx) {
     this.activeIndex = idx;
   }
@@ -70,7 +77,7 @@ class DrawingLayerToolState extends AbstractLayerToolState {
   }
 
   removeSelectedLayer(layer) {
-    this.featureGroup.removeLayer(layer);
+    this.featureGroup.removeLayer(layer || this.selectedLayer);
     this.selectedLayer = null;
   }
 

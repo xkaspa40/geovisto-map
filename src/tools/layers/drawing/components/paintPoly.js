@@ -9,6 +9,8 @@ import { convertOptionsToProperties, getGeoJSONFeatureFromLayer } from '../util/
 
 const DEFAULT_COLOR = '#333333';
 const DEFAULT_RADIUS = 30;
+const ERASE_KEY = 'X';
+const ERASER_COLOR = '#ee000055';
 
 class PaintPoly {
   constructor(props) {
@@ -70,6 +72,17 @@ class PaintPoly {
       .addTo(this._map);
   };
 
+  startErase = () => {
+    this.stop();
+    this._action = 'erase';
+    this._addMouseListener();
+    this._circle = L.circleMarker(this._latlng, {
+      color: ERASER_COLOR,
+    })
+      .setRadius(this._circleRadius)
+      .addTo(this._map);
+  };
+
   clearPaintedPolys = (kIdx) => {
     if (kIdx === undefined) return;
 
@@ -101,27 +114,26 @@ class PaintPoly {
     return this._circleRadius * metersPerPixel;
   };
 
-  drawCircle = () => {
+  drawCircle = (erase) => {
     const brushColor = this.tabState.getSelectedColor() || DEFAULT_COLOR;
     const turfCircle = circle([this._latlng.lng, this._latlng.lat], this._pixelsToMeters(), {
       steps: 16,
       units: 'meters',
     });
 
-    if (!this._accumulatedShapes[this.keyIndex]) {
-      this._accumulatedShapes[this.keyIndex] = turfCircle;
+    const kIdx = erase ? ERASE_KEY : this.keyIndex;
+
+    if (!this._accumulatedShapes[kIdx]) {
+      this._accumulatedShapes[kIdx] = turfCircle;
     } else {
-      this._accumulatedShapes[this.keyIndex] = union(
-        this._accumulatedShapes[this.keyIndex],
-        turfCircle,
-      );
+      this._accumulatedShapes[kIdx] = union(this._accumulatedShapes[kIdx], turfCircle);
     }
 
-    this._accumulatedShapes[this.keyIndex].properties = { fill: brushColor };
+    this._accumulatedShapes[kIdx].properties = { fill: brushColor };
     // console.log({
     //   accShapes: this._accumulatedShapes,
-    //   shape: this._accumulatedShapes[this.keyIndex],
-    //   kIdx: this.keyIndex,
+    //   shape: this._accumulatedShapes[kIdx],
+    //   kIdx: kIdx,
     // });
     this._redrawShapes();
   };
@@ -130,14 +142,20 @@ class PaintPoly {
     Object.keys(this._accumulatedShapes).forEach((key) => {
       const coords = this._accumulatedShapes[key].geometry.coordinates;
       const latlngs = L.GeoJSON.coordsToLatLngs(coords, 1);
+      const color = this._accumulatedShapes[key]?.properties?.fill || DEFAULT_COLOR;
 
-      let result = new L.polygon(latlngs, {
-        color: this._accumulatedShapes[key]?.properties?.fill || DEFAULT_COLOR,
-        draggable: true,
-        transform: true,
-      });
+      const opts =
+        key === ERASE_KEY
+          ? { color: ERASER_COLOR, draggable: false, transform: false }
+          : {
+              color,
+              draggable: true,
+              transform: true,
+            };
 
-      result.dragging.disable();
+      let result = new L.polygon(latlngs, opts);
+
+      result?.dragging?.disable();
 
       if (this._shapeLayers[key] !== undefined) {
         this._shapeLayers[key].remove();
@@ -145,10 +163,6 @@ class PaintPoly {
 
       this._shapeLayers[key] = result.addTo(this._map);
     });
-  };
-
-  getShapeIdxs = () => {
-    return Object.keys(this._shapeLayers);
   };
 
   _fireCreatedShapes = () => {
@@ -164,7 +178,7 @@ class PaintPoly {
       } else {
         this._map.fire(L.Draw.Event.CREATED, {
           layer: this._shapeLayers[key],
-          layerType: 'painted',
+          layerType: key === ERASE_KEY ? 'erased' : 'painted',
           keyIndex: key,
         });
       }
@@ -196,7 +210,7 @@ class PaintPoly {
   _onMouseMove = (event) => {
     this._setLatLng(event.latlng);
     if (this._mouseDown) {
-      this.drawCircle();
+      this.drawCircle(this._action === 'erase');
     }
   };
   // ================= EVENT LISTENERS END =================
@@ -220,6 +234,20 @@ class PaintPoly {
       this._active = false;
     } else {
       this.startPaint();
+      this._active = true;
+    }
+  };
+
+  erase = (event) => {
+    if (event.type == 'mousedown') {
+      L.DomEvent.stop(event);
+      return;
+    }
+    if (this._action == 'erase') {
+      this.stop();
+      this._active = false;
+    } else {
+      this.startErase();
       this._active = true;
     }
   };

@@ -7,6 +7,8 @@ import '../style/drawingLayerTabControl.scss';
 import { geoSearch, putMarkerOnMap } from '../util/Marker';
 import { debounce } from '../util/functionUtils';
 
+const POLYS = ['polyline', 'polygon', 'painted', 'vertice'];
+
 const C_sidebar_tab_content_class = 'leaflet-sidebar-tab-content';
 
 /**
@@ -65,7 +67,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     const colorPicker = document.createElement('input');
     colorPicker.setAttribute('type', 'color');
     colorPicker.onchange = (e) => this.changeColorAction(e.target.value);
-    colorPicker.value = this.getState().getSelectedColor();
+    colorPicker.value = this._getCurrEl()?.options?.color || this.getState().getSelectedColor();
     inputWrapper.appendChild(colorPicker);
     return inputWrapper;
   }
@@ -365,7 +367,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
         label: model.search.label,
         action: this.searchAction,
         options: [],
-        placeholder: 'e.g. Brno',
+        placeholder: 'Press enter for search',
         setData: this.onInputOptClick,
       });
       elem.appendChild(this.inputSearch.create());
@@ -387,7 +389,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     });
     elem.appendChild(this.inputDesc.create());
 
-    if (layerType === 'polyline' || layerType === 'polygon' || layerType === 'painted') {
+    if (POLYS.includes(layerType)) {
       // select stroke thickness
       const thicknessOpts = this.getState().strokes;
       this.inputThickness = SidebarInputFactory.createSidebarInput(model.strokeThickness.input, {

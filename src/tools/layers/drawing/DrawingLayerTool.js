@@ -172,9 +172,13 @@ class DrawingLayerTool extends AbstractLayerTool {
     let selectedLayer = this.getState().selectedLayer;
     let paintPoly = this.getSidebarTabControl().getState().paintPoly;
     let fgLayers = this.getState().featureGroup._layers;
+
     let layerFeature = getGeoJSONFeatureFromLayer(layer);
     let currentLayerType = layerFeature ? layerFeature.geometry.type.toLowerCase() : '';
     let isCurrentLayerPoly = currentLayerType === 'polygon' || currentLayerType === 'multipolygon';
+
+    // let createdIsNotEraser = layer.layerType !== 'erased';
+
     if (isCurrentLayerPoly) {
       Object.values(fgLayers)
         .filter((l) => {
@@ -185,7 +189,9 @@ class DrawingLayerTool extends AbstractLayerTool {
         .forEach((l) => {
           let feature = getGeoJSONFeatureFromLayer(l);
 
-          if (l?._leaflet_id !== selectedLayer?._leaflet_id) {
+          let layerIsNotSelected = l?._leaflet_id !== selectedLayer?._leaflet_id;
+          // let canDiff = !createdIsNotEraser ? true : layerIsNotSelected;
+          if (layerIsNotSelected) {
             let diffFeature = difference(feature, layerFeature);
             if (diffFeature) {
               let coords;
@@ -193,7 +199,6 @@ class DrawingLayerTool extends AbstractLayerTool {
               try {
                 coords = diffFeature.geometry.coordinates;
                 // * when substracting you can basically slice polygon into more parts then we have to increase depth by one
-                // TODO: split polygon's parts are supposed to be individual
                 let depth = coords.length === 1 ? 1 : 2;
                 coords.forEach((coord) => {
                   latlngs = L.GeoJSON.coordsToLatLngs([coord], depth);
@@ -305,7 +310,6 @@ class DrawingLayerTool extends AbstractLayerTool {
             });
             result.layerType = 'polygon';
             this.getState().removeSelectedLayer(selectedLayer);
-            this.getState().selectedLayer = null;
             this.getState().addLayer(result);
           });
         } catch (error) {
@@ -331,7 +335,7 @@ class DrawingLayerTool extends AbstractLayerTool {
   plotTopology() {
     const combinedMap = this.getMap();
     const map = combinedMap.state.map;
-    let selectedLayer = this.getState().selectedLayer;
+    const selectedLayer = this.getState().selectedLayer;
 
     const layersObj = this.state.featureGroup._layers;
     const layerArr = [...Object.values(layersObj)];
@@ -343,7 +347,9 @@ class DrawingLayerTool extends AbstractLayerTool {
     const index = 0;
     const firstMarker = _markers[index];
 
-    const secondMarker = selectedLayer || _markers[index + 1];
+    const selectedLayerIsConnectMarker = this.getState().selectedLayerIsConnectMarker();
+
+    const secondMarker = selectedLayerIsConnectMarker ? selectedLayer : _markers[index + 1];
     if (secondMarker) {
       const { lat: fLat, lng: fLng } = firstMarker.getLatLng();
       const { lat: sLat, lng: sLng } = secondMarker.getLatLng();
@@ -352,6 +358,7 @@ class DrawingLayerTool extends AbstractLayerTool {
       let poly = new L.polyline(_latlng, {
         color: '#563412',
         weight: 3,
+        ...normalStyles,
       });
       if (!this.haveSameVertice(poly)) {
         poly.addTo(map);
@@ -407,7 +414,9 @@ class DrawingLayerTool extends AbstractLayerTool {
     if (e.layerType === 'polygon' || e.layerType === 'painted') {
       // * JOIN
       layer = this.polyJoin(layer, e.keyIndex);
+    }
 
+    if (e.layerType === 'polygon' || e.layerType === 'painted' || e.layerType === 'erased') {
       // * DIFFERENCE
       this.polyDiff(layer);
     }
@@ -422,23 +431,29 @@ class DrawingLayerTool extends AbstractLayerTool {
       this.polySlice(layer);
     }
 
-    if (layer.dragging && e.layerType !== 'marker') layer.dragging.disable();
+    if (layer.dragging) layer.dragging.disable();
 
-    if (e.layerType !== 'knife') {
+    if (e.layerType !== 'knife' && e.layerType !== 'erased') {
       this.getState().addLayer(layer);
       this.getState().setCurrEl(layer);
+      this.getSidebarTabControl().getState().pushGuideLayer(layer);
+    }
+
+    if (e.layerType === 'erased') {
+      const combinedMap = this.getMap();
+      const map = combinedMap.state.map;
+      map.removeLayer(layer);
+      let paintPoly = this.getSidebarTabControl().getState().paintPoly;
+      paintPoly.clearPaintedPolys(e.keyIndex);
     }
 
     // * MARKER
     if (e.layerType === 'marker') {
-      // TODO:
       this.applyTopologyMarkerListeners(layer);
       if (layer?.options?.icon?.options?.connectClick) {
         this.plotTopology();
       }
     }
-
-    this.getSidebarTabControl().getState().pushGuideLayer(layer);
   };
 
   applyTopologyMarkerListeners(layer) {
@@ -564,6 +579,23 @@ class DrawingLayerTool extends AbstractLayerTool {
         layer.dragging.enable();
       }
     }
+  }
+
+  removeElement() {
+    if (this.getState().selectedLayerIsConnectMarker()) {
+      const selectedLayer = this.getState().selectedLayer;
+      const markerVertices = this.state.mappedMarkersToVertices[selectedLayer._leaflet_id];
+      console.log({ markerVertices });
+      markerVertices?.forEach((v) => this.getState().removeLayer(v?.layer));
+    }
+    this.getState().removeSelectedLayer();
+  }
+
+  selectElement() {
+    const selecting = this.getState().getSelecting();
+    this.getState().setSelecting(!selecting);
+    if (!selecting) document.querySelector('.leaflet-container').style.cursor = 'crosshair';
+    else document.querySelector('.leaflet-container').style.cursor = '';
   }
 
   /**

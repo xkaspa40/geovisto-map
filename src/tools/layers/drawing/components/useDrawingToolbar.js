@@ -113,6 +113,20 @@ export default function useDrawingToolbar() {
         map: this.options.map,
       });
 
+      this.options.drawingBtns.eraserBtn = this.createToolbarBtn(
+        'eraseBtn',
+        toolContainer,
+        'Erase',
+        'fa fa-eraser',
+      );
+
+      this.options.drawingBtns.removeBtn = this.createToolbarBtn(
+        'removeBtn',
+        toolContainer,
+        'Remove',
+        'fa fa-fire',
+      );
+
       this.addEventListeners();
       L.DomEvent.disableClickPropagation(topContainer);
       return topContainer;
@@ -165,6 +179,8 @@ export default function useDrawingToolbar() {
         connectBtn,
         searchBtn,
         paintBtn,
+        eraserBtn,
+        removeBtn,
       } = this.options.drawingBtns;
       const map = this.options.map;
       const sidebar = this.options.tool.getSidebarTabControl();
@@ -192,6 +208,17 @@ export default function useDrawingToolbar() {
         .on(connectBtn, 'click', () => connectClick(map, sidebar), this);
       L.DomEvent.on(searchBtn, 'click', this.initSearch, this);
       L.DomEvent.on(paintBtn, 'click', this.initPainting, this);
+      L.DomEvent.on(eraserBtn, 'click', this.initErasing, this);
+      L.DomEvent.on(removeBtn, 'click', this.initRemove, this);
+    },
+
+    initRemove: function (evt) {
+      this.options.tool.removeElement();
+    },
+
+    initErasing: function (evt) {
+      let paintPoly = this.options.tool.getSidebarTabControl().getState().paintPoly;
+      paintPoly.erase(evt);
     },
 
     initPainting: function () {
@@ -269,10 +296,7 @@ export default function useDrawingToolbar() {
     },
 
     initSelecting: function () {
-      const selecting = this.getSelecting();
-      this.setSelecting(!selecting);
-      if (!selecting) document.querySelector('.leaflet-container').style.cursor = 'crosshair';
-      else document.querySelector('.leaflet-container').style.cursor = '';
+      this.options.tool.selectElement();
 
       // this.options.map.on('click', () => {
       //   const sidebar = this.options.tool.getSidebarTabControl();
