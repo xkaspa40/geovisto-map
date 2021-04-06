@@ -11,7 +11,7 @@ class DrawingLayerToolState extends AbstractLayerToolState {
   /**
    * It creates a tool state.
    */
-  constructor() {
+  constructor(tool) {
     super();
     // * element/layer that was created
     this.currEl = null;
@@ -22,6 +22,8 @@ class DrawingLayerToolState extends AbstractLayerToolState {
     this.selecting = false;
     // * for knowing if we already selected layer
     this.selectedLayer = null;
+
+    this.tool = tool;
 
     this.createdVertices = [];
     this.mappedMarkersToVertices = {};
@@ -59,6 +61,7 @@ class DrawingLayerToolState extends AbstractLayerToolState {
 
   addLayer(layer) {
     this.featureGroup.addLayer(layer);
+    this.tool.applyEventListeners(layer);
     return layer;
   }
 
@@ -69,6 +72,11 @@ class DrawingLayerToolState extends AbstractLayerToolState {
   removeSelectedLayer(layer) {
     this.featureGroup.removeLayer(layer);
     this.selectedLayer = null;
+  }
+
+  getLayerByIdx(idx) {
+    const found = Object.values(this.featureGroup._layers).find((l) => l.kIdx === idx);
+    return found;
   }
 
   removeLayerByIdx(idx) {

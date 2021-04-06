@@ -13,7 +13,7 @@ import {
   getLeafletTypeFromFeature,
   highlightStyles,
   normalStyles,
-  getUnkinkedFeatFromLayer,
+  getFeatFromLayer,
   isFeaturePoly,
 } from './util/Poly';
 
@@ -82,7 +82,7 @@ class DrawingLayerTool extends AbstractLayerTool {
    * It returns default tool state.
    */
   createState() {
-    return new DrawingLayerToolState();
+    return new DrawingLayerToolState(this);
   }
 
   /**
@@ -152,7 +152,6 @@ class DrawingLayerTool extends AbstractLayerTool {
           result.layerType = lType;
           if (result.dragging) result.dragging.disable();
           this.getState().addLayer(result);
-          this.applyEventListeners(result);
         }
       });
     }
@@ -188,27 +187,33 @@ class DrawingLayerTool extends AbstractLayerTool {
 
           if (l?._leaflet_id !== selectedLayer?._leaflet_id) {
             let diffFeature = difference(feature, layerFeature);
-            // console.log({ diffFeature });
             if (diffFeature) {
               let coords;
               let latlngs;
               try {
                 coords = diffFeature.geometry.coordinates;
-                // * when substracting you can basically slice polygon in more parts then we have to increase depth by one
+                // * when substracting you can basically slice polygon into more parts then we have to increase depth by one
+                // TODO: split polygon's parts are supposed to be individual
                 let depth = coords.length === 1 ? 1 : 2;
-                latlngs = L.GeoJSON.coordsToLatLngs(coords, depth);
-                let result = new L.polygon(latlngs, {
-                  ...l.options,
+                coords.forEach((coord) => {
+                  latlngs = L.GeoJSON.coordsToLatLngs([coord], depth);
+                  console.log({ latlngs });
+                  let result = new L.polygon(latlngs, {
+                    ...l.options,
+                  });
+                  result?.dragging?.disable();
+                  result.layerType = 'polygon';
+                  result._latlngs = depth === 1 ? result._latlngs : result._latlngs[0];
+                  this.getState().addLayer(result);
+                  this.getState().removeLayer(l);
+                  paintPoly.clearPaintedPolys(l.kIdx);
                 });
-                // console.log({ result });
-                result.layerType = 'polygon';
-                this.getState().addLayer(result);
-                this.getState().removeLayer(l);
-                this.applyEventListeners(result);
-                paintPoly.clearPaintedPolys(l.kIdx);
               } catch (error) {
                 console.error({ coords, latlngs, error });
               }
+            } else {
+              this.getState().removeLayer(l);
+              paintPoly.clearPaintedPolys(l.kIdx);
             }
           }
         });
@@ -219,7 +224,7 @@ class DrawingLayerTool extends AbstractLayerTool {
     let paintPoly = this.getSidebarTabControl().getState().paintPoly;
 
     // * gets only first one because I do not expect MultiPolygon to be created
-    let feature = getUnkinkedFeatFromLayer(layer);
+    let feature = getFeatFromLayer(layer);
     feature = Array.isArray(feature) ? feature[0] : feature;
     let isFeatPoly = isFeaturePoly(feature);
     if (!isFeatPoly) return layer;
@@ -227,7 +232,7 @@ class DrawingLayerTool extends AbstractLayerTool {
     let unifiedFeature = feature;
 
     let selectedLayer = this.getState().selectedLayer;
-    let selectedFeatures = getUnkinkedFeatFromLayer(selectedLayer);
+    let selectedFeatures = getFeatFromLayer(selectedLayer);
     if (!selectedFeatures) return layer;
     selectedFeatures.forEach((selectedFeature) => {
       let isSelectedFeaturePoly = isFeaturePoly(selectedFeature);
@@ -302,7 +307,6 @@ class DrawingLayerTool extends AbstractLayerTool {
             this.getState().removeSelectedLayer(selectedLayer);
             this.getState().selectedLayer = null;
             this.getState().addLayer(result);
-            this.applyEventListeners(result);
           });
         } catch (error) {
           console.error({ coords, latlngs, error });
@@ -394,7 +398,6 @@ class DrawingLayerTool extends AbstractLayerTool {
   createdListener = (e) => {
     let layer = e.layer;
     layer.layerType = e.layerType;
-    // console.log({ layer });
     if (e.keyIndex) layer.kIdx = e.keyIndex;
 
     let prevLayer = this.getState().getPrevLayer();
@@ -420,12 +423,10 @@ class DrawingLayerTool extends AbstractLayerTool {
     }
 
     if (layer.dragging && e.layerType !== 'marker') layer.dragging.disable();
-    // this.getState().removeLayerByIdx(layer.kIdx);
 
     if (e.layerType !== 'knife') {
       this.getState().addLayer(layer);
       this.getState().setCurrEl(layer);
-      this.applyEventListeners(layer);
     }
 
     // * MARKER

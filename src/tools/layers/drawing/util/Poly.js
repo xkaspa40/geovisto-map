@@ -136,16 +136,21 @@ export const convertOptionsToProperties = (options) => {
   return properties;
 };
 
-export const getUnkinkedFeatFromLayer = (layer) => {
+export const getFeatFromLayer = (layer) => {
   if (!layer) return null;
   let drawnGeoJSON = layer.toGeoJSON();
-  let unkinked = turf.unkinkPolygon(drawnGeoJSON);
-  let feature = unkinked.type === 'FeatureCollection' ? unkinked.features : unkinked;
+  let feature;
+  try {
+    let unkinked = turf.unkinkPolygon(drawnGeoJSON);
+    feature = unkinked.type === 'FeatureCollection' ? unkinked.features : unkinked;
+  } catch (error) {
+    feature = drawnGeoJSON.type === 'FeatureCollection' ? drawnGeoJSON.features : drawnGeoJSON;
+    console.error({ error });
+  }
   return feature;
 };
 
 export const isFeaturePoly = (feature) => {
-  console.log({ feature });
   if (!feature) return false;
   if (feature?.type === 'FeatureCollection') {
     let f = feature.features[0];

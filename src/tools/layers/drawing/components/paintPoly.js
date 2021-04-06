@@ -147,14 +147,27 @@ class PaintPoly {
     });
   };
 
+  getShapeIdxs = () => {
+    return Object.keys(this._shapeLayers);
+  };
+
   _fireCreatedShapes = () => {
     // console.log('%cfired', 'color: #085f89');
+    const layerState = this.tabState.getTool().getState();
     Object.keys(this._shapeLayers).forEach((key) => {
-      this._map.fire(L.Draw.Event.CREATED, {
-        layer: this._shapeLayers[key],
-        layerType: 'painted',
-        keyIndex: key,
-      });
+      const found = layerState.getLayerByIdx(key);
+      if (found) {
+        layerState.removeLayer(found);
+        this._shapeLayers[key].kIdx = key;
+        this._shapeLayers[key].layerType = 'painted';
+        layerState.addLayer(this._shapeLayers[key]);
+      } else {
+        this._map.fire(L.Draw.Event.CREATED, {
+          layer: this._shapeLayers[key],
+          layerType: 'painted',
+          keyIndex: key,
+        });
+      }
     });
   };
 
