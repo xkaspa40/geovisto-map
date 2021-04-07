@@ -32,6 +32,12 @@ import 'leaflet-snap';
 import 'leaflet-geometryutil';
 import 'leaflet-draw';
 
+import * as d33 from 'd3-3-5-5';
+import Pather from 'leaflet-pather';
+
+// !inject in rollup config doesn't work and pather throws errors without this line
+window.d3 = d33;
+
 // * as advised in https://github.com/makinacorpus/Leaflet.Snap/issues/52
 L.Draw.Feature.include(L.Evented.prototype);
 L.Draw.Feature.include(L.Draw.Feature.SnapMixin);
@@ -426,11 +432,6 @@ class DrawingLayerTool extends AbstractLayerTool {
     //   layer.editing = new L.Edit.ExtendedPoly(layer);
     // }
 
-    // * SLICE
-    if (e.layerType === 'knife') {
-      this.polySlice(layer);
-    }
-
     if (layer.dragging) layer.dragging.disable();
 
     if (e.layerType !== 'knife' && e.layerType !== 'erased') {
@@ -465,6 +466,27 @@ class DrawingLayerTool extends AbstractLayerTool {
       this.changeVerticesLocation(latlng, oldLatLng, target._leaflet_id);
     });
   }
+
+  createdPath = (e) => {
+    // * get polyline object
+    const layer = e.polyline.polyline;
+
+    // * get Leaflet map
+    const combinedMap = this.getMap();
+    const map = combinedMap.state.map;
+
+    // * get sidebar state and pather object
+    const sidebarState = this.getSidebarTabControl().getState();
+    const pather = sidebarState.pather;
+    // * SLICE
+    this.polySlice(layer);
+
+    // * we do not want path to stay
+    pather.removePath(layer);
+    // * we do not want to keep cutting (drawing)
+    map.removeLayer(pather);
+    sidebarState.setPatherStatus(false);
+  };
 
   /**
    * It creates layer items.
@@ -509,6 +531,9 @@ class DrawingLayerTool extends AbstractLayerTool {
         }
       }
     });
+
+    const pather = this.getSidebarTabControl().getState().pather;
+    pather.on('created', this.createdPath);
 
     const layer = this.getState().featureGroup;
     layer.eachLayer((layer) => {

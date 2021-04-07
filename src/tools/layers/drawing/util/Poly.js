@@ -54,17 +54,28 @@ export const polylineCreate = (map, sidebar) => {
 };
 
 export const slicePoly = (map, sidebar) => {
-  const x = new L.Draw.Slice(map, {
-    shapeOptions: {
-      color: '#333',
-      weight: 3,
-      draggable: true,
-      transform: true,
-    },
-  });
-  x.enable();
-  sidebar.getState().setEnabledEl(x);
-  return x;
+  const pather = sidebar.getState().pather;
+  const patherStatus = sidebar.getState().patherActive;
+  console.log({ pather, patherStatus });
+  if (!patherStatus) {
+    map.addLayer(pather);
+  } else {
+    map.removeLayer(pather);
+  }
+
+  sidebar.getState().setPatherStatus(!patherStatus);
+
+  // const x = new L.Draw.Slice(map, {
+  //   shapeOptions: {
+  //     color: '#333',
+  //     weight: 3,
+  //     draggable: true,
+  //     transform: true,
+  //   },
+  // });
+  // x.enable();
+  // sidebar.getState().setEnabledEl(x);
+  // return x;
 };
 
 export const getGeoJSONFeatureFromLayer = (layer) => {

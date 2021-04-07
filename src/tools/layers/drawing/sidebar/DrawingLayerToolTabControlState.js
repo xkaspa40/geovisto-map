@@ -69,6 +69,19 @@ class DrawingLayerToolTabControlState extends AbstractLayerToolTabControlState {
     this.paintPoly = new PaintPoly({
       tabState: this,
     });
+
+    this.pather = new L.Pather({
+      strokeWidth: 3,
+      smoothFactor: 5,
+      moduleClass: 'leaflet-pather',
+      pathColour: '#333',
+    });
+
+    this.patherActive = false;
+  }
+
+  setPatherStatus(val) {
+    this.patherActive = val;
   }
 
   setConnectActivated(val) {
