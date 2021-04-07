@@ -300,7 +300,6 @@ class ChoroplethLayerTool extends AbstractLayerTool {
             document.documentElement.style.setProperty('--choropleth-item-hover', map.getHoverColor());
             document.documentElement.style.setProperty('--choropleth-item-select', map.getHighlightColor().selected);
             document.documentElement.style.setProperty('--choropleth-item-highlight', map.getHighlightColor().highlight);
-            document.documentElement.style.setProperty('--choropleth-item-deempasize', map.getHighlightColor().deempasize);
         }
         if (event.getType() === TimeChangeEvent.TYPE()) {
             const { data, transitionDuration, transitionDelay } = event.getObject();
@@ -409,37 +408,14 @@ class ChoroplethLayerTool extends AbstractLayerTool {
     }
 
     /**
-     * It returns style for the current template and given feature.
-     *
-     * @deprecated
-     */
-    computeStyle(item) {
-        let feature = item.feature;
-        let hoveredItem = this.getState().getHoveredItem();
-        let selection = this.getSelectionTool() ? this.getSelectionTool().getState().getSelection() : undefined;
-        return {
-            weight: hoveredItem == feature.id ? 4 : 2,
-            opacity: 0.7,
-            color: hoveredItem == feature.id ? "yellow" : "white",
-            dashArray: hoveredItem == feature.id ? '' : '1',
-            fillOpacity: hoveredItem == feature.id ? 0.9 : 0.8,
-            fillColor: selection != null ?
-                (selection.getTool() == this && selection.getSrcIds().includes(feature.id) ? 'orange' :
-                    (selection.getIds().includes(feature.id) ? 'yellow' : '#8c8c8c'))
-                : this.computeColor(feature.value)
-        };
-    }
-
-    /**
      * It returns style classes for the current template and given feature.
      */
     computeStyleClasses(item) {
         let classList = ["leaflet-interactive", "leaflet-choropleth-item-basic"];
 
         let feature = item.feature;
-        var _this = this;
-        let dataMappingModel = _this.getDefaults().getDataMappingModel();
-        let dataMapping = _this.getState().getDataMapping();
+        let dataMappingModel = this.getDefaults().getDataMappingModel();
+        let dataMapping = this.getState().getDataMapping();
         if (dataMapping.strategy == dataMappingModel.strategy.options[0]) {
             if (feature.value == undefined) {
                 item._path.style.fill = "grey";
@@ -455,8 +431,6 @@ class ChoroplethLayerTool extends AbstractLayerTool {
             item._path.style.fillOpacity = null;
             classList.push(this.computeColorClass(feature.value));
         }
-
-        // compute color level
 
         // hovered
         if (this.getState().getHoveredItem() == feature.id) {
@@ -481,7 +455,7 @@ class ChoroplethLayerTool extends AbstractLayerTool {
             }
             else {
                 // de-emphasize others
-                classList.push("leaflet-choropleth-item-deempasize")
+                classList.push("leaflet-choropleth-item-deemphasize")
             }
         }
 

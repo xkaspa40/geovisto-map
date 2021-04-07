@@ -2,17 +2,17 @@
     --choropleth-item-hover: yellow;
     --choropleth-item-select: orange;
     --choropleth-item-highlight: yellow;
-    --choropleth-item-deempasize: #8c8c8c;
 }
 
 .leaflet-choropleth-item-basic {
     stroke-width: 2;
-    opacity: 0.85;
+    opacity: 1;
     stroke: white;
     stroke-dasharray: 0.8;
     stroke-linecap: round;
     stroke-linejoin: round;
-    fill-opacity: 1;
+    fill: grey;
+    fill-opacity: 0.3;
     transition-property: fill, fill-opacity;
     transition-timing-function: ease;
 }
@@ -51,14 +51,12 @@
 
 .leaflet-choropleth-item-highlight {
     fill: var(--choropleth-item-highlight);
+    fill-opacity: 0.85;
 }
 
 .leaflet-choropleth-item-select {
     fill: var(--choropleth-item-select);
-}
-
-.leaflet-choropleth-item-deempasize {
-    fill: var(--choropleth-item-deempasize);
+    fill-opacity: 0.85;
 }
 
 .leaflet-choropleth-item-hover {
@@ -66,7 +64,10 @@
     opacity: 0.7;
     stroke: var(--choropleth-item-hover);
     stroke-dasharray: none;
-    fill-opacity: 0.9;
+}
+
+.leaflet-choropleth-item-deemphasize {
+    fill-opacity: 0.3;
 }
 
 #choropleth-range-input {
