@@ -64,18 +64,6 @@ export const slicePoly = (map, sidebar) => {
   }
 
   sidebar.getState().setPatherStatus(!patherStatus);
-
-  // const x = new L.Draw.Slice(map, {
-  //   shapeOptions: {
-  //     color: '#333',
-  //     weight: 3,
-  //     draggable: true,
-  //     transform: true,
-  //   },
-  // });
-  // x.enable();
-  // sidebar.getState().setEnabledEl(x);
-  // return x;
 };
 
 export const getGeoJSONFeatureFromLayer = (layer) => {
@@ -168,4 +156,27 @@ export const isFeaturePoly = (feature) => {
     return f?.geometry?.type === 'Polygon' || f?.geometry?.type === 'MultiPolygon';
   }
   return feature?.geometry?.type === 'Polygon' || feature?.geometry?.type === 'MultiPolygon';
+};
+
+export const getSimplifiedPoly = (param_latlngs) => {
+  let latlngs = param_latlngs || [];
+  let points;
+  let simplified;
+  let tolerance = 1.005;
+
+  if (latlngs.length) {
+    // latlng to x/y
+    points = latlngs.map((a) => ({
+      x: a.lat,
+      y: a.lng,
+    }));
+
+    // simplified points (needs x/y keys)
+    simplified = L.LineUtil.simplify(points, tolerance);
+
+    // x/y back to latlng
+    latlngs = simplified.map((a) => new L.LatLng(a.x, a.y));
+  }
+
+  return [latlngs];
 };

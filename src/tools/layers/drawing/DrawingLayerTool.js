@@ -15,6 +15,7 @@ import {
   normalStyles,
   getFeatFromLayer,
   isFeaturePoly,
+  getSimplifiedPoly,
 } from './util/Poly';
 
 import 'leaflet/dist/leaflet.css';
@@ -208,7 +209,7 @@ class DrawingLayerTool extends AbstractLayerTool {
                 let depth = coords.length === 1 ? 1 : 2;
                 coords.forEach((coord) => {
                   latlngs = L.GeoJSON.coordsToLatLngs([coord], depth);
-                  console.log({ latlngs });
+                  latlngs = getSimplifiedPoly(...latlngs);
                   let result = new L.polygon(latlngs, {
                     ...l.options,
                   });
@@ -259,7 +260,7 @@ class DrawingLayerTool extends AbstractLayerTool {
       depth = 2;
     }
     let latlngs = L.GeoJSON.coordsToLatLngs(coords, depth);
-
+    latlngs = getSimplifiedPoly(...latlngs);
     let result = new L.polygon(latlngs, {
       ...layer.options,
       draggable: true,
@@ -310,6 +311,7 @@ class DrawingLayerTool extends AbstractLayerTool {
           coords = clipped.geometry.coordinates;
           coords.forEach((coord) => {
             latlngs = L.GeoJSON.coordsToLatLngs(coord, 1);
+            latlngs = getSimplifiedPoly(...latlngs);
             let result = new L.polygon(latlngs, {
               ...selectedLayer.options,
               ...normalStyles,

@@ -5,7 +5,11 @@ import 'leaflet/dist/leaflet.css';
 import circle from '@turf/circle';
 import union from '@turf/union';
 import difference from '@turf/difference';
-import { convertOptionsToProperties, getGeoJSONFeatureFromLayer } from '../util/Poly';
+import {
+  convertOptionsToProperties,
+  getGeoJSONFeatureFromLayer,
+  getSimplifiedPoly,
+} from '../util/Poly';
 
 const DEFAULT_COLOR = '#333333';
 const DEFAULT_RADIUS = 30;
@@ -140,11 +144,13 @@ class PaintPoly {
 
   _redrawShapes = () => {
     Object.keys(this._accumulatedShapes).forEach((key) => {
-      const coords = this._accumulatedShapes[key].geometry.coordinates;
-      const latlngs = L.GeoJSON.coordsToLatLngs(coords, 1);
-      const color = this._accumulatedShapes[key]?.properties?.fill || DEFAULT_COLOR;
+      let coords = this._accumulatedShapes[key].geometry.coordinates;
+      let latlngs = L.GeoJSON.coordsToLatLngs(coords, 1);
+      // TODO: check if it's gonna work
+      latlngs = getSimplifiedPoly(...latlngs);
+      let color = this._accumulatedShapes[key]?.properties?.fill || DEFAULT_COLOR;
 
-      const opts =
+      let opts =
         key === ERASE_KEY
           ? { color: ERASER_COLOR, draggable: false, transform: false }
           : {
