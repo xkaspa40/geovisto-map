@@ -13,29 +13,35 @@ const INPUT_ID_PREFIX = "geovisto-input-" + TYPE;
  * Data mapping model which can be used in the sidebar form.
  */
 const MAPPING_MODEL = {
-    country: {
-        id: INPUT_ID_PREFIX + "-input-country",
-        name: "country",
-        label: "Country",
+    latitude: {
+        id: INPUT_ID_PREFIX + "-input-latitude",
+        name: "latitude",
+        label: "Latitude",
         input: AutocompleteSidebarInput.ID()
     },
-    value: {
-        id: INPUT_ID_PREFIX + "-input-value",
-        name: "value",
-        label: "Value",
-        input: AutocompleteSidebarInput.ID()
-    },
-    aggregation: {
-        id: INPUT_ID_PREFIX + "-input-aggregation",
-        name: "aggregation",
-        label: "Agregation",
-        options: ["count", "sum"],
+    longitude: {
+        id: INPUT_ID_PREFIX + "-input-longitude",
+        name: "longitude",
+        label: "Longitude",
         input: AutocompleteSidebarInput.ID()
     },
     category: {
         id: INPUT_ID_PREFIX + "-input-category",
         name: "category",
         label: "Category",
+        input: AutocompleteSidebarInput.ID()
+    },
+    value: {
+      id: INPUT_ID_PREFIX + "-input-value",
+      name: "value",
+      label: "Value",
+      input: AutocompleteSidebarInput.ID()
+    },
+    aggregation: {
+        id: INPUT_ID_PREFIX + "-input-aggregation",
+        name: "aggregation",
+        label: "Agregation",
+        options: ["count", "sum"],
         input: AutocompleteSidebarInput.ID()
     }
 }
