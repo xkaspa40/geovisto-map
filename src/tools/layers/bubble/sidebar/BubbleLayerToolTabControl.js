@@ -41,10 +41,11 @@ class BubbleLayerToolTabControl extends AbstractLayerToolTabControl {
         let dataMapping = {};
 
         // get selected data domains values
-        dataMapping[model.country.name] = this.inputCountry.getValue();
+        dataMapping[model.latitude.name] = this.inputLatitude.getValue();
+        dataMapping[model.longitude.name] = this.inputLongitude.getValue();
+        dataMapping[model.category.name] = this.inputCategory.getValue();
         dataMapping[model.value.name] = this.inputValue.getValue();
         dataMapping[model.aggregation.name] = this.inputAggregation.getValue();
-        dataMapping[model.category.name] = this.inputCategory.getValue();
 
         return dataMapping;
     }
@@ -59,10 +60,11 @@ class BubbleLayerToolTabControl extends AbstractLayerToolTabControl {
         let model = this.getDefaults().getDataMappingModel();
 
         // update inputs
-        this.inputCountry.setValue(dataMapping[model.country.name]);
+        this.inputLatitude.setValue(dataMapping[model.latitude.name]);
+        this.inputLongitude.setValue(dataMapping[model.longitude.name]);
+        this.inputCategory.setValue(dataMapping[model.category.name]);
         this.inputValue.setValue(dataMapping[model.value.name]);
         this.inputAggregation.setValue(dataMapping[model.aggregation.name]);
-        this.inputCategory.setValue(dataMapping[model.category.name]);
     }
 
     /**
@@ -85,9 +87,17 @@ class BubbleLayerToolTabControl extends AbstractLayerToolTabControl {
         let model = this.getDefaults().getDataMappingModel();
         let dataDomainLabels = this.getTool().getMap().getState().getMapData().getDataDomainLabels();
 
-        // select country
-        this.inputCountry = SidebarInputFactory.createSidebarInput(model.country.input, { label: model.country.label , options: dataDomainLabels, action: changeDimensionAction });
-        elem.appendChild(this.inputCountry.create());
+        // select latitude
+        this.inputLatitude = SidebarInputFactory.createSidebarInput(model.latitude.input, { label: model.latitude.label , options: dataDomainLabels, action: changeDimensionAction });
+        elem.appendChild(this.inputLatitude.create());
+
+        // select longitude
+        this.inputLongitude = SidebarInputFactory.createSidebarInput(model.longitude.input, { label: model.longitude.label , options: dataDomainLabels, action: changeDimensionAction });
+        elem.appendChild(this.inputLongitude.create());
+
+        // select category
+        this.inputCategory = SidebarInputFactory.createSidebarInput(model.category.input, { label: model.category.label, options: dataDomainLabels, action: changeDimensionAction });
+        elem.appendChild(this.inputCategory.create());
 
         // select value
         this.inputValue = SidebarInputFactory.createSidebarInput(model.value.input, { label: model.value.label , options: dataDomainLabels, action: changeDimensionAction });
@@ -97,9 +107,6 @@ class BubbleLayerToolTabControl extends AbstractLayerToolTabControl {
         this.inputAggregation = SidebarInputFactory.createSidebarInput(model.aggregation.input, { label: model.aggregation.label, options: model.aggregation.options, action: changeDimensionAction });
         elem.appendChild(this.inputAggregation.create());
 
-        // select category
-        this.inputCategory = SidebarInputFactory.createSidebarInput(model.category.input, { label: model.category.label, options: dataDomainLabels, action: changeDimensionAction });
-        elem.appendChild(this.inputCategory.create());
 
         this.setInputValues(this.getTool().getState().getDataMapping());
         

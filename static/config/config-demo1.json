@@ -113,7 +113,7 @@
     {
       "type": "geovisto-tool-layer-choropleth",
       "id": "geovisto-tool-layer-choropleth",
-      "enabled": true,
+      "enabled": false,
       "layerName": "Choropleth layer",
       "data": {
         "country": "from",
@@ -128,7 +128,7 @@
     {
       "type": "geovisto-tool-layer-marker",
       "id": "geovisto-tool-layer-marker",
-      "enabled": true,
+      "enabled": false,
       "layerName": "Marker layer",
       "data": {
         "country": "to",
@@ -140,7 +140,7 @@
     {
       "type": "geovisto-tool-layer-connection",
       "id": "geovisto-tool-layer-connection",
-      "enabled": true,
+      "enabled": false,
       "layerName": "Connection layer",
       "data": {
         "from": "from",

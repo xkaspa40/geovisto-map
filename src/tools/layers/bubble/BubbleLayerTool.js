@@ -323,7 +323,8 @@ class BubbleLayerTool extends AbstractLayerTool {
         let mapData = this.getMap().getState().getMapData();
         let dataMappingModel = this.getDefaults().getDataMappingModel();
         let dataMapping = this.getState().getDataMapping();
-        let countryDataDomain = mapData.getDataDomain(dataMapping[dataMappingModel.country.name]);
+        let latitudeDataDomain = mapData.getDataDomain(dataMapping[dataMappingModel.latitude.name]);
+        let longitudeDataDomain = mapData.getDataDomain(dataMapping[dataMappingModel.longitude.name]);
         let valueDataDomain = mapData.getDataDomain(dataMapping[dataMappingModel.value.name]);
         let categoryDataDomain = mapData.getDataDomain(dataMapping[dataMappingModel.category.name]);
         let geoCountry, actResultItem;
@@ -334,59 +335,7 @@ class BubbleLayerTool extends AbstractLayerTool {
         let dataLen = data.length;
         let centroids = this.getState().getCentroids();
         for (let i = 0; i < dataLen; i++) {
-            // find the 'country' properties
-            foundCountries = mapData.getItemValues(countryDataDomain, data[i]);
-            //console.log("search country: ", foundCountries);
 
-            // find the 'value' properties
-            foundValues = mapData.getItemValues(valueDataDomain, data[i]);
-            //console.log("search values: ", foundValues);
-
-            // find the 'category' properties
-            foundCategories = mapData.getItemValues(categoryDataDomain, data[i]);
-            //console.log("search category: ", foundCategories);
-
-            // since the data are flattened we can expect max one found item
-            //console.log("abc", highlightedIds);
-            if (foundCountries.length == 1 && (highlightedIds.length == 0 || highlightedIds.indexOf(foundCountries[0]) >= 0)) {
-                // test if country respects highlighting selection
-                /*if(highlightedIds != undefined) {
-                    console.log(highlightedIds.indexOf(foundCountries[0]) >= 0);
-                }*/
-
-                // test if country exists in the map
-                geoCountry = centroids.find(x => x.id == foundCountries[0]);
-                if (geoCountry != undefined) {
-                    // test if country exists in the results array
-                    actResultItem = workData.find(x => x.id == foundCountries[0]);
-                    if (actResultItem == undefined) {
-                        actResultItem = { id: foundCountries[0], value: 0, subvalues: {} };
-                        workData.push(actResultItem);
-                    }
-                    // initialize category if does not exists yet
-                    if (foundCategories.length == 1) {
-                        if (actResultItem.subvalues[foundCategories[0]] == undefined) {
-                            actResultItem.subvalues[foundCategories[0]] = 0;
-                        }
-                    }
-                    // set value with respect to the aggregation function
-                    if (dataMapping[dataMappingModel.aggregation.name] == "sum") {
-                        // test if value is valid
-                        if (foundValues.length == 1 && foundValues[0] != null && typeof foundValues[0] === 'number') {
-                            actResultItem.value += foundValues[0];
-                            // set category
-                            if (foundCategories.length == 1) {
-                                actResultItem.subvalues[foundCategories[0]] += foundValues[0];
-                            }
-                        }
-                    } else {
-                        // count
-                        actResultItem.value++;
-                        // incerement category value
-                        actResultItem.subvalues[foundCategories[0]]++;
-                    }
-                }
-            }
         }
         //console.log("result: ", preparedData);
         return workData;
