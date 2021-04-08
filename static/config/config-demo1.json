@@ -60,6 +60,13 @@
           "name": "Connection layer settings",
           "icon": "<i class=\"fa fa-road\"></i>",
           "checkButton": true
+        },
+        {
+          "tool": "geovisto-tool-layer-bubble",
+          "enabled": true,
+          "name": "Bubble layer settings",
+          "icon": "<i class=\"fa fa-pie-chart\"></i>",
+          "checkButton": true
         }
       ]
     },
