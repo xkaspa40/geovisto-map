@@ -60,6 +60,13 @@
           "name": "Connection layer settings",
           "icon": "<i class=\"fa fa-road\"></i>",
           "checkButton": true
+        },
+        {
+          "tool": "geovisto-tool-layer-spike",
+          "enabled": true,
+          "name": "Spikemap layer settings",
+          "icon": "<i class=\"fa fa-arrow-up\"></i>",
+          "checkButton": true
         }
       ]
     },
@@ -106,7 +113,7 @@
     {
       "type": "geovisto-tool-layer-choropleth",
       "id": "geovisto-tool-layer-choropleth",
-      "enabled": true,
+      "enabled": false,
       "layerName": "Choropleth layer",
       "data": {
         "country": "from",
@@ -133,7 +140,7 @@
     {
       "type": "geovisto-tool-layer-connection",
       "id": "geovisto-tool-layer-connection",
-      "enabled": true,
+      "enabled": false,
       "layerName": "Connection layer",
       "data": {
         "from": "from",
