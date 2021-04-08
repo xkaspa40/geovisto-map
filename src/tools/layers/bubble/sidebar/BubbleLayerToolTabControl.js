@@ -2,6 +2,8 @@ import BubbleLayerToolTabControlDefaults from "./BubbleLayerToolTabControlDefaul
 import BubbleLayerToolTabControlState from "./BubbleLayerToolTabControlState";
 import AbstractLayerToolTabControl from "../../abstract/sidebar/AbstractLayerToolTabControl";
 import SidebarInputFactory from "../../../../inputs/SidebarInputFactory";
+import TabDOMUtil from "../../../../util/TabDOMUtil";
+import CategoryClassifierSidebarInput from "../../../../inputs/category/CategoryClassifierSidebarInput";
 
 /**
  * This class provides controls for management of the layer sidebar tab.
@@ -107,10 +109,80 @@ class BubbleLayerToolTabControl extends AbstractLayerToolTabControl {
         this.inputAggregation = SidebarInputFactory.createSidebarInput(model.aggregation.input, { label: model.aggregation.label, options: model.aggregation.options, action: changeDimensionAction });
         elem.appendChild(this.inputAggregation.create());
 
+        //category color selector
+        this.categoryClasses = document.createElement('div');
+        this.categoryClasses.setAttribute('class', 'categoryClasses');
+        elem.appendChild(this.categoryClasses);
+
+        // horizontal rule
+        let catClassSeparator = document.createElement('hr');
+        this.categoryClasses.appendChild(catClassSeparator);
+
+        //header text
+        let catClassHeader = document.createElement('h2');
+        catClassHeader.innerText = 'Category colors';
+        this.categoryClasses.appendChild(catClassHeader);
+
+        //button group
+        this.buttonGroup = this.categoryClasses.appendChild(document.createElement('div'));
+        this.buttonGroup.appendChild(TabDOMUtil.createButton("<i class=\"fa fa-plus-circle\"></i>",   () => this.addMappingInputs(), "plusBtn" ));
+        this.buttonGroup.appendChild(TabDOMUtil.createButton("Apply", () => this.applyFilters(),
+            "applyBtn"));
 
         this.setInputValues(this.getTool().getState().getDataMapping());
         
         return tab;
+    }
+
+    addMappingInputs() {
+        let div = this.categoryClasses.insertBefore(document.createElement('div'), this.buttonGroup);
+        div.setAttribute('class', 'categoryClassesGroup');
+
+        let minusButton = TabDOMUtil.createButton("<i class=\"fa fa-minus-circle\"></i>", (e) => {this.removeMappingInput(e)}, "minusBtn");
+        div.appendChild(minusButton);
+
+        const operations = this.filterManager.getOperationLabels();
+        let input = SidebarInputFactory.createSidebarInput(CategoryClassifierSidebarInput.ID(), {
+            operations: {
+                options: operations,
+                action: () => {/**/}
+            },
+            values: {
+                options: [],
+                action: function() { /* do nothing; */ }
+            },
+            colors: {
+                options: []
+            }
+        });
+
+        div.appendChild(input.create());
+        this.colorClassInputs.push({
+            input,
+            container: div
+        });
+    }
+
+    removeMappingInput(e) {
+        let inputGroup = e.target.closest(".categoryClassesGroup");
+        this.colorClassInputs = this.colorClassInputs.filter((item) => item.container !== inputGroup);
+
+        inputGroup.remove();
+    }
+
+    applyFilters() {
+        let rules = [];
+        this.colorClassInputs.forEach((input) => {
+            const data = input.input.getValue();
+            const operation = this.filterManager.getOperation(data.op)[0] ? this.filterManager.getOperation(data.op)[0].match : undefined;
+            data.val && data.color && operation && rules.push({
+                operation,
+                value: data.val,
+                color: data.color
+            });
+        });
+
+        this.getTool().setCategoryFilters(rules);
     }
 
 }
