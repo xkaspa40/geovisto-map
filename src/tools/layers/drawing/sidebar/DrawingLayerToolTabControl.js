@@ -318,27 +318,50 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
   };
 
   createConnectCheck = () => {
-    const onChange = (e) => {
-      const val = e.target.checked;
-      console.log({ val });
-      this.getState().setConnectActivated(val);
-    };
+    const onChange = (val) => this.getState().setConnectActivated(val);
     const { connectActivated } = this.getState();
 
-    const ID = 'connect-check-input';
+    const result = this.createCheck(
+      connectActivated,
+      onChange,
+      'connect',
+      'By creating new marker while having this choice selected, you will create path between newly created marker and selected marker or last created marker via Topology tool',
+    );
+
+    return result;
+  };
+
+  createIntersectionCheck = () => {
+    const onChange = (val) => this.getState().setIntersectActivated(val);
+    const { intersectActivated } = this.getState();
+
+    const result = this.createCheck(
+      intersectActivated,
+      onChange,
+      'intersect',
+      'By selecting the option you can create intersects with selected polygon',
+    );
+    return result;
+  };
+
+  createCheck = (value, onCheck, prefix, label) => {
+    const onChange = (e) => {
+      const val = e.target.checked;
+      onCheck(val);
+    };
+    const ID = prefix + '-check-input';
     const inputWrapper = document.createElement('div');
     inputWrapper.className = ID + '-wrapper';
-    const connectCheck = document.createElement('input');
-    connectCheck.type = 'checkbox';
-    connectCheck.checked = connectActivated;
-    connectCheck.id = ID;
-    connectCheck.onchange = onChange;
-    const connectCheckLabel = document.createElement('label');
-    connectCheckLabel.for = ID;
-    connectCheckLabel.innerText =
-      'By creating new marker while having this choice selected, you will create path between newly created marker and selected marker or last created marker via Topology tool';
-    inputWrapper.appendChild(connectCheck);
-    inputWrapper.appendChild(connectCheckLabel);
+    const check = document.createElement('input');
+    check.type = 'checkbox';
+    check.checked = value;
+    check.id = ID;
+    check.onchange = onChange;
+    const checkLabel = document.createElement('label');
+    checkLabel.for = ID;
+    checkLabel.innerText = label;
+    inputWrapper.appendChild(check);
+    inputWrapper.appendChild(checkLabel);
     return inputWrapper;
   };
 
@@ -388,6 +411,11 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
       value: this.convertDescfromPopText(this._getCurrEl()?.getPopup()?.getContent()),
     });
     elem.appendChild(this.inputDesc.create());
+
+    if (layerType === 'painted' || layerType === 'polygon') {
+      this.inputIntersect = this.createIntersectionCheck();
+      elem.appendChild(this.inputIntersect);
+    }
 
     if (POLYS.includes(layerType)) {
       // select stroke thickness

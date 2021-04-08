@@ -66,6 +66,8 @@ class DrawingLayerToolTabControlState extends AbstractLayerToolTabControlState {
 
     this.connectActivated = false;
 
+    this.intersectActivated = false;
+
     this.paintPoly = new PaintPoly({
       tabState: this,
     });
@@ -86,6 +88,10 @@ class DrawingLayerToolTabControlState extends AbstractLayerToolTabControlState {
 
   setConnectActivated(val) {
     this.connectActivated = val;
+  }
+
+  setIntersectActivated(val) {
+    this.intersectActivated = val;
   }
 
   pushGuideLayer(layer) {

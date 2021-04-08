@@ -162,7 +162,7 @@ export const getSimplifiedPoly = (param_latlngs) => {
   let latlngs = param_latlngs || [];
   let points;
   let simplified;
-  let tolerance = 1.005;
+  let tolerance = 0.505;
 
   if (latlngs.length) {
     // latlng to x/y
@@ -174,6 +174,7 @@ export const getSimplifiedPoly = (param_latlngs) => {
     // simplified points (needs x/y keys)
     simplified = L.LineUtil.simplify(points, tolerance);
 
+    // console.log({ latlngs, simplified, points });
     // x/y back to latlng
     latlngs = simplified.map((a) => new L.LatLng(a.x, a.y));
   }

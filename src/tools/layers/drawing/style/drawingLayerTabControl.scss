@@ -60,6 +60,13 @@
     }
   }
 
+  .intersect-check-input-wrapper {
+    display: flex;
+    & #intersect-check-input {
+      width: 100px;
+    }
+  }
+
   .geovisto-input-autocomplete {
     flex-direction: column;
     align-items: flex-start;

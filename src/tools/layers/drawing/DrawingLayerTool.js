@@ -209,7 +209,7 @@ class DrawingLayerTool extends AbstractLayerTool {
                 let depth = coords.length === 1 ? 1 : 2;
                 coords.forEach((coord) => {
                   latlngs = L.GeoJSON.coordsToLatLngs([coord], depth);
-                  latlngs = getSimplifiedPoly(...latlngs);
+                  // latlngs = getSimplifiedPoly(depth === 2 ? latlngs[0][0] : latlngs[0]);
                   let result = new L.polygon(latlngs, {
                     ...l.options,
                   });
@@ -232,31 +232,33 @@ class DrawingLayerTool extends AbstractLayerTool {
     }
   }
 
-  polyJoin(layer, eKeyIndex) {
+  operateOnSelectedAndCurrectLayer = (layer, eKeyIndex, operation) => {
     let paintPoly = this.getSidebarTabControl().getState().paintPoly;
 
-    // * gets only first one because I do not expect MultiPolygon to be created
     let feature = getFeatFromLayer(layer);
+    // * gets only first one because MultiPolygon is not expected to be created
     feature = Array.isArray(feature) ? feature[0] : feature;
     let isFeatPoly = isFeaturePoly(feature);
     if (!isFeatPoly) return layer;
 
-    let unifiedFeature = feature;
+    let summedFeature = feature;
 
     let selectedLayer = this.getState().selectedLayer;
+    // * this can be multipolygon whenever user joins 2 unconnected polygons
     let selectedFeatures = getFeatFromLayer(selectedLayer);
     if (!selectedFeatures) return layer;
+
     selectedFeatures.forEach((selectedFeature) => {
       let isSelectedFeaturePoly = isFeaturePoly(selectedFeature);
 
       if (isSelectedFeaturePoly) {
-        unifiedFeature = union(selectedFeature, unifiedFeature);
+        summedFeature = operation(selectedFeature, summedFeature);
       }
     });
 
-    let coords = unifiedFeature.geometry.coordinates;
+    let coords = summedFeature.geometry.coordinates;
     let depth = 1;
-    if (unifiedFeature.geometry.type === 'MultiPolygon') {
+    if (summedFeature.geometry.type === 'MultiPolygon') {
       depth = 2;
     }
     let latlngs = L.GeoJSON.coordsToLatLngs(coords, depth);
@@ -270,9 +272,20 @@ class DrawingLayerTool extends AbstractLayerTool {
     layer.layerType = 'polygon';
     if (layer.dragging) layer.dragging.disable();
     paintPoly.clearPaintedPolys(eKeyIndex);
-    this.getState().removeSelectedLayer(selectedLayer);
-    this.getState().setSelectedLayer(layer);
     return layer;
+  };
+
+  polyIntersect(layer, eKeyIndex) {
+    const updatedLayer = this.operateOnSelectedAndCurrectLayer(layer, eKeyIndex, turf.intersect);
+
+    return updatedLayer;
+  }
+
+  polyJoin(layer, eKeyIndex) {
+    const updatedLayer = this.operateOnSelectedAndCurrectLayer(layer, eKeyIndex, union);
+    this.getState().removeSelectedLayer();
+    this.getState().setSelectedLayer(updatedLayer);
+    return updatedLayer;
   }
 
   polySlice(layer) {
@@ -311,7 +324,7 @@ class DrawingLayerTool extends AbstractLayerTool {
           coords = clipped.geometry.coordinates;
           coords.forEach((coord) => {
             latlngs = L.GeoJSON.coordsToLatLngs(coord, 1);
-            latlngs = getSimplifiedPoly(...latlngs);
+            // latlngs = getSimplifiedPoly(...latlngs);
             let result = new L.polygon(latlngs, {
               ...selectedLayer.options,
               ...normalStyles,
@@ -419,9 +432,12 @@ class DrawingLayerTool extends AbstractLayerTool {
     if (prevLayer?.layerType !== e.layerType) this.redrawSidebarTabControl(e.layerType);
     if (e.layerType !== 'painted') this.getSidebarTabControl().getState().setEnabledEl(null);
 
+    const { intersectActivated } = this.getSidebarTabControl().getState();
+
     if (e.layerType === 'polygon' || e.layerType === 'painted') {
       // * JOIN
-      layer = this.polyJoin(layer, e.keyIndex);
+      if (intersectActivated) layer = this.polyIntersect(layer, e.keyIndex);
+      else layer = this.polyJoin(layer, e.keyIndex);
     }
 
     if (e.layerType === 'polygon' || e.layerType === 'painted' || e.layerType === 'erased') {
