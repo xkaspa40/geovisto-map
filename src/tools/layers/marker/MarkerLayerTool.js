@@ -259,7 +259,8 @@ class MarkerLayerTool extends AbstractLayerTool {
         this.getState().setDataMapping(dataMapping);
 
         // redraw the layer items
-        this.redraw(onlyStyle);
+        const data = this.getMap().getState().getCurrentData();
+        this.redraw(data);
         this.getMap().dispatchEvent(new ToolInitializedEvent(MarkerLayerTool.TYPE()))
     }
 
