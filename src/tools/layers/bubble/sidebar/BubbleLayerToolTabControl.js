@@ -16,6 +16,8 @@ class BubbleLayerToolTabControl extends AbstractLayerToolTabControl {
         super(tool);
 
         this.tabContent = undefined;
+        this.filterManager = new FiltersToolDefaults().getFiltersManager();
+        this.colorClassInputs = [];
     }
 
     /**
