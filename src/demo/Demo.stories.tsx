@@ -50,7 +50,7 @@ class Demo extends Component {
     this.centroids = require("/static/geo/country_centroids.json");
 
     // // implicit file
-    const jsonData = require('/static/data/demo1.json');
+    const jsonData = require('/static/data/demo3.json');
 
     // // implicit config
     const jsonConfig = require('/static/config/config-demo1.json');
@@ -191,6 +191,7 @@ class Demo extends Component {
         <div className="demo-toolbar">
           <span>Data file: </span>
           <select id={C_ID_select_data}>
+            <option value="demo3.json">demo3.json</option>
             <option value="demo1.json">demo1.json</option>
             <option value="demo2.json">demo2.json</option>
             <option disabled></option>

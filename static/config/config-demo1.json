@@ -146,6 +146,18 @@
         "from": "from",
         "to": "to"
       }
+    },
+    {
+      "type": "geovisto-tool-layer-bubble",
+      "id": "geovisto-tool-layer-bubble",
+      "enabled": true,
+      "layerName": "Bubble layer",
+      "data": {
+        "latitude": "lat",
+        "longitude": "long",
+        "category": "category",
+        "value": "value"
+      }
     }
   ]
 }
