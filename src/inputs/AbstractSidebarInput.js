@@ -1,53 +1,64 @@
-const ID = "geovisto-input";
+const ID = 'geovisto-input';
 
 /**
  * This class represents abstract sidebar input.
- * 
+ *
  * This class is intended to be extended.
- * 
+ *
  * @author Jiri Hynek
  */
 class AbstractSidebarInput {
+  constructor(settings) {
+    this.action = settings.action;
+    this.input = undefined;
+  }
 
-    constructor(settings) {
-        this.action = settings.action;
-        this.input = undefined;
+  /**
+   * Static function returns identifier of the input type.
+   */
+  static ID() {
+    return ID;
+  }
+
+  /**
+   * It returns input element.
+   *
+   * This function is intended to be extended.
+   */
+  create() {
+    if (this.input == undefined) {
+      this.input = document.createElement('span');
     }
+    return this.input;
+  }
 
-    /**
-     * Static function returns identifier of the input type.
-     */
-    static ID() {
-        return ID;
+  /*
+   * Sets/removes attribute 'disabled' from input box.
+   */
+  setDisabled(disabled) {
+    if (this.input === undefined) return;
+    if (disabled == true) {
+      this.input.setAttribute('disabled', true);
     }
-
-    /**
-     * It returns input element.
-     * 
-     * This function is intended to be extended.
-     */
-    create() {
-        if(this.input == undefined) {
-            this.input = document.createElement("span");
-        }
-        return this.input;
+    if (disabled == false) {
+      this.input.removeAttribute('disabled');
     }
+  }
 
-    /**
-     * It returns value of the input element.
-     */
-    getValue() {
-        return this.input.value;
-    }
+  /**
+   * It returns value of the input element.
+   */
+  getValue() {
+    return this.input.value;
+  }
 
-    /**
-     * It sets value of the input element.
-     * 
-     * @param {*} value 
-     */
-    setValue(value) {
-        this.input.value = value;
-    }
-
+  /**
+   * It sets value of the input element.
+   *
+   * @param {*} value
+   */
+  setValue(value) {
+    this.input.value = value;
+  }
 }
 export default AbstractSidebarInput;

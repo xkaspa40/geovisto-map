@@ -47,6 +47,19 @@ class SelectSidebarInput extends AbstractSidebarInput {
     return this.element;
   }
 
+  /*
+   * Sets/removes attribute 'disabled' from input box.
+   */
+  setDisabled(disabled) {
+    if (this.element === undefined) return;
+    if (disabled == true) {
+      this.element.setAttribute('disabled', true);
+    }
+    if (disabled == false) {
+      this.element.removeAttribute('disabled');
+    }
+  }
+
   /**
    * It returns value of the select element.
    */

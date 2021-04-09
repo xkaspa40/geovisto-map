@@ -232,7 +232,7 @@ class DrawingLayerTool extends AbstractLayerTool {
     }
   }
 
-  operateOnSelectedAndCurrectLayer = (layer, eKeyIndex, operation) => {
+  operateOnSelectedAndCurrectLayer = (layer, eKeyIndex, operation, selectNew = false) => {
     let paintPoly = this.getSidebarTabControl().getState().paintPoly;
 
     let feature = getFeatFromLayer(layer);
@@ -272,6 +272,10 @@ class DrawingLayerTool extends AbstractLayerTool {
     layer.layerType = 'polygon';
     if (layer.dragging) layer.dragging.disable();
     paintPoly.clearPaintedPolys(eKeyIndex);
+    if (selectNew) {
+      this.getState().removeSelectedLayer();
+      this.getState().setSelectedLayer(updatedLayer);
+    }
     return layer;
   };
 
@@ -282,9 +286,7 @@ class DrawingLayerTool extends AbstractLayerTool {
   }
 
   polyJoin(layer, eKeyIndex) {
-    const updatedLayer = this.operateOnSelectedAndCurrectLayer(layer, eKeyIndex, union);
-    this.getState().removeSelectedLayer();
-    this.getState().setSelectedLayer(updatedLayer);
+    const updatedLayer = this.operateOnSelectedAndCurrectLayer(layer, eKeyIndex, union, true);
     return updatedLayer;
   }
 
@@ -385,7 +387,8 @@ class DrawingLayerTool extends AbstractLayerTool {
         poly.addTo(map);
         topologyVertices.push(poly);
         this.state.createdVertices.push(poly);
-        map.fire(L.Draw.Event.CREATED, { layer: poly, layerType: 'vertice' });
+        poly.layerType = 'vertice';
+        this.getState().addLayer(poly);
       }
     }
 

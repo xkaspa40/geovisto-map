@@ -67,7 +67,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     const colorPicker = document.createElement('input');
     colorPicker.setAttribute('type', 'color');
     colorPicker.onchange = (e) => this.changeColorAction(e.target.value);
-    colorPicker.value = this._getCurrEl()?.options?.color || this.getState().getSelectedColor();
+    colorPicker.value = this._getSelected()?.options?.color || this.getState().getSelectedColor();
     inputWrapper.appendChild(colorPicker);
     return inputWrapper;
   }
@@ -82,7 +82,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
 
   createIconPalette() {
     const icons = new Set(this.getState().iconSrcs);
-    const iconUrl = this._getCurrEl()?.options?.icon?.options?.iconUrl;
+    const iconUrl = this._getSelected()?.options?.icon?.options?.iconUrl;
     if (iconUrl) icons.add(iconUrl);
     const activeIcon = this.getState().getSelectedIcon();
     const iconsArr = Array.from(icons);
@@ -136,25 +136,25 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
   }
 
   changeColorAction = (color) => {
-    const currEl = this._getCurrEl();
+    const selectedEl = this._getSelected();
     this.getState().setSelectedColor(color);
-    if (currEl?.setStyle) currEl.setStyle({ color });
-    this.redrawTabContent(currEl?.layerType);
+    if (selectedEl?.setStyle) selectedEl.setStyle({ color });
+    // this.redrawTabContent(selectedEl?.layerType);
   };
 
   changeIconAction = (icon) => {
-    const currEl = this._getCurrEl();
+    const selectedEl = this._getSelected();
     this.getState().setSelectedIcon(icon);
 
-    let oldIconOptions = currEl?.options?.icon?.options || {};
+    let oldIconOptions = selectedEl?.options?.icon?.options || {};
     let newIconOptions = {
       ...oldIconOptions,
       iconUrl: icon,
     };
 
     const marker = new L.Icon(newIconOptions);
-    currEl.setIcon(marker);
-    this.redrawTabContent(currEl?.layerType);
+    if (selectedEl) selectedEl.setIcon(marker);
+    this.redrawTabContent('marker');
   };
 
   changeDescriptionAction = (e) => {
@@ -162,32 +162,32 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
   };
 
   changeDesc = (inputText) => {
-    const currEl = this._getCurrEl();
+    const selectedEl = this._getSelected();
     const modInputText = this.convertDescToPopText(inputText);
 
-    let popup1 = currEl.getPopup();
+    let popup1 = selectedEl.getPopup();
     if (popup1) {
       popup1.setContent(modInputText);
     } else {
-      currEl.bindPopup(modInputText);
+      selectedEl.bindPopup(modInputText);
     }
     // store for import
-    currEl.popupContent = modInputText;
+    selectedEl.popupContent = modInputText;
     // this.getState().setSelectedColor(color);
-    if (currEl?.setStyle) currEl.setStyle(modInputText);
+    if (selectedEl?.setStyle) selectedEl.setStyle(modInputText);
   };
 
   changeWeightAction = (e) => {
     const weight = Number(e.target.value);
-    const currEl = this._getCurrEl();
+    const selectedEl = this._getSelected();
     this.getState().setSelectedStroke(weight);
-    if (currEl?.setStyle) currEl.setStyle({ weight });
+    if (selectedEl?.setStyle) selectedEl.setStyle({ weight });
   };
 
   changeIdentifierAction = (e) => {
     const id = e.target.value;
-    const currEl = this._getCurrEl();
-    if (currEl) currEl.identifier = id;
+    const selectedEl = this._getSelected();
+    if (selectedEl) selectedEl.identifier = id;
 
     const data = this.getTool()?.getState()?.map?.state?.data;
 
@@ -199,20 +199,24 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     });
 
     this.changeDesc(popupText);
-    this.redrawTabContent(currEl?.layerType);
+    this.redrawTabContent(selectedEl?.layerType);
   };
 
   changeWhichIdUseAction = (e) => {
     const id = e.target.value;
-    const currEl = this._getCurrEl();
+    const selectedEl = this._getSelected();
 
     this.state.setIdentifierType(id);
 
-    this.redrawTabContent(currEl?.layerType);
+    this.redrawTabContent(selectedEl?.layerType);
   };
 
   _getCurrEl() {
     return this.getTool().getState().currEl;
+  }
+
+  _getSelected() {
+    return this.getTool().getState().selectedLayer;
   }
 
   createBrushSizeControl = () => {
@@ -244,7 +248,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     const result = SidebarInputFactory.createSidebarInput(model.identifier.input, {
       label: model.identifier.label,
       action: this.changeIdentifierAction,
-      value: this._getCurrEl()?.identifier,
+      value: this._getSelected()?.identifier || '',
       options: idOpts,
       placeholder: 'e.g. CZ',
     });
@@ -312,9 +316,9 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
   addIconAction = (e) => {
     const iconUrl = e.target.value;
 
-    const currEl = this._getCurrEl();
+    const selectedEl = this._getSelected();
     this.getState().appendToIconSrcs(iconUrl);
-    this.redrawTabContent(currEl?.layerType);
+    this.redrawTabContent(selectedEl?.layerType);
   };
 
   createConnectCheck = () => {
@@ -397,20 +401,23 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
       return tab;
     }
 
+    let disableTextFields = !Boolean(this._getSelected());
     // textfield Identifier
     this.inputPickIdentifier = this.createPickIdentifier(model);
     elem.appendChild(this.inputPickIdentifier.create());
+    this.inputPickIdentifier.setDisabled(disableTextFields);
     // textfield Identifier
     this.inputId = this.createIdentifierInput(model);
     elem.appendChild(this.inputId.create());
-
+    this.inputId.setDisabled(disableTextFields);
     // textarea Description
     this.inputDesc = SidebarInputFactory.createSidebarInput(model.description.input, {
       label: model.description.label,
       action: this.changeDescriptionAction,
-      value: this.convertDescfromPopText(this._getCurrEl()?.getPopup()?.getContent()),
+      value: this.convertDescfromPopText(this._getSelected()?.getPopup()?.getContent()),
     });
     elem.appendChild(this.inputDesc.create());
+    this.inputDesc.setDisabled(disableTextFields);
 
     if (layerType === 'painted' || layerType === 'polygon') {
       this.inputIntersect = this.createIntersectionCheck();
@@ -424,7 +431,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
         label: model.strokeThickness.label,
         options: thicknessOpts,
         action: this.changeWeightAction,
-        value: this._getCurrEl()?.options?.weight,
+        value: this._getSelected()?.options?.weight,
       });
       elem.appendChild(this.inputThickness.create());
 
