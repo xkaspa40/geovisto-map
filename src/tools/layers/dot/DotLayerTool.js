@@ -100,7 +100,7 @@ class DotLayerTool extends AbstractLayerTool {
     }
 
     handleZoom(e) {
-       this.zoomLevel = e.target._zoom;
+        this.zoomLevel = e.target._zoom;
         this.redraw(true);
     }
 
@@ -194,18 +194,10 @@ class DotLayerTool extends AbstractLayerTool {
         switch (this.zoomLevel) {
             case 1:
             case 2:
-                this.radius = 1;
-                break;
             case 3:
             case 4:
-                this.radius = 1;
-                break;
             case 5:
-                this.radius = 1;
-                break;
             case 6:
-                this.radius = 1;
-                break;
             case 7:
                 this.radius = 1;
                 break;
@@ -258,6 +250,10 @@ class DotLayerTool extends AbstractLayerTool {
      * It reloads data and redraw the layer.
      */
     redraw(onlyStyle) {
+        if ( ! this.getState().isEnabled()) {
+            return;
+        }
+
         if(this.getState().getLayer()) {
             // delete actual items
             this.deleteLayerItems();
