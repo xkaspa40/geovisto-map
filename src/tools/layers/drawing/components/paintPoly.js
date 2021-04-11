@@ -9,6 +9,8 @@ import {
   convertOptionsToProperties,
   getGeoJSONFeatureFromLayer,
   getSimplifiedPoly,
+  highlightStyles,
+  normalStyles,
 } from '../util/Poly';
 
 const DEFAULT_COLOR = '#333333';
@@ -143,12 +145,15 @@ class PaintPoly {
   };
 
   _redrawShapes = () => {
+    const selectedLayer = this.tabState.getToolState().selectedLayer;
     Object.keys(this._accumulatedShapes).forEach((key) => {
       let coords = this._accumulatedShapes[key].geometry.coordinates;
       let latlngs = L.GeoJSON.coordsToLatLngs(coords, 1);
       // TODO: check if it's gonna work
       latlngs = getSimplifiedPoly(...latlngs);
       let color = this._accumulatedShapes[key]?.properties?.fill || DEFAULT_COLOR;
+
+      let styles = selectedLayer?.kIdx === key ? highlightStyles : normalStyles;
 
       let opts =
         key === ERASE_KEY
@@ -159,7 +164,7 @@ class PaintPoly {
               transform: true,
             };
 
-      let result = new L.polygon(latlngs, opts);
+      let result = new L.polygon(latlngs, { ...opts, ...styles });
 
       result?.dragging?.disable();
 
@@ -173,7 +178,7 @@ class PaintPoly {
 
   _fireCreatedShapes = () => {
     // console.log('%cfired', 'color: #085f89');
-    const layerState = this.tabState.getTool().getState();
+    const layerState = this.tabState.getToolState();
     Object.keys(this._shapeLayers).forEach((key) => {
       const found = layerState.getLayerByIdx(key);
       if (found) {

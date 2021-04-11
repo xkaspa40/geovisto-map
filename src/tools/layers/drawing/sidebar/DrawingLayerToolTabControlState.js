@@ -82,6 +82,10 @@ class DrawingLayerToolTabControlState extends AbstractLayerToolTabControlState {
     this.patherActive = false;
   }
 
+  getToolState() {
+    return this.getTool().getState();
+  }
+
   setPatherStatus(val) {
     this.patherActive = val;
   }

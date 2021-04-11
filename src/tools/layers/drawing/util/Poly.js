@@ -129,6 +129,7 @@ export const convertOptionsToProperties = (options) => {
   let properties = { draggable: true, transform: true };
   properties['stroke-width'] = options.weight || STROKES[1].value;
   properties['fill'] = options.color || COLORS[0];
+  // * so we don't save selected polygon
   properties['fill-opacity'] = normalStyles.fillOpacity;
   properties['stroke-opacity'] = normalStyles.opacity;
 
@@ -175,9 +176,18 @@ export const getSimplifiedPoly = (param_latlngs) => {
     simplified = L.LineUtil.simplify(points, tolerance);
 
     // console.log({ latlngs, simplified, points });
-    // x/y back to latlng
-    latlngs = simplified.map((a) => new L.LatLng(a.x, a.y));
+    try {
+      // x/y back to latlng
+      latlngs = simplified.map((a) => new L.LatLng(a.x, a.y));
+    } catch (error) {
+      console.error({ error, param_latlngs: [...param_latlngs], simplified, points });
+    }
   }
 
   return [latlngs];
+};
+
+export const isLayerPoly = (layer) => {
+  let feature = getGeoJSONFeatureFromLayer(layer);
+  return isFeaturePoly(feature);
 };

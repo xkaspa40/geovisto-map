@@ -29,11 +29,12 @@ class DrawingLayerToolState extends AbstractLayerToolState {
     this.mappedMarkersToVertices = {};
   }
 
+  isConnectMarker = (marker) => {
+    return marker?.layerType === 'marker' && marker?.options?.icon?.options?.connectClick;
+  };
+
   selectedLayerIsConnectMarker = () => {
-    return (
-      this.selectedLayer?.layerType === 'marker' &&
-      this.selectedLayer?.options?.icon?.options?.connectClick
-    );
+    return this.isConnectMarker(this.selectedLayer);
   };
 
   setActiveIndex(idx) {

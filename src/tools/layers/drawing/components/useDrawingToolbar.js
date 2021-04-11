@@ -266,7 +266,7 @@ export default function useDrawingToolbar() {
       }
       let selected = this.options.tool.getState().selectedLayer;
       if (selected) {
-        if (selected.setStyle) selected.setStyle(normalStyles);
+        this.options.tool.normalizeElement(selected);
         this.options.tool.getState().clearSelectedLayer();
         this.options.tool.redrawSidebarTabControl();
         this.setCurrEl(null);
