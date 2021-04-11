@@ -32,6 +32,11 @@ export const STROKES = [
   { label: 'medium', value: 5, selected: true },
   { label: 'bold', value: 7 },
 ];
+export const ADMIN_LEVELS = [
+  { label: 'State', value: 2 },
+  { label: 'Province', value: 4, selected: true },
+  { label: 'Region', value: 6 },
+];
 
 /**
  * This class manages the state of the sidebar tab.
@@ -78,8 +83,22 @@ class DrawingLayerToolTabControlState extends AbstractLayerToolTabControlState {
       moduleClass: 'leaflet-pather',
       pathColour: '#333',
     });
-
     this.patherActive = false;
+
+    this.countries = require('/static/geo/iso3166_countries.json');
+    this.countryCode = '';
+    this.adminLevel = ADMIN_LEVELS[1].value;
+    this.highQuality = false;
+  }
+
+  setCountryCode(val) {
+    this.countryCode = val;
+  }
+  setAdminLevel(val) {
+    this.adminLevel = val;
+  }
+  setHighQuality(val) {
+    this.highQuality = val;
   }
 
   getToolState() {
@@ -148,6 +167,11 @@ class DrawingLayerToolTabControlState extends AbstractLayerToolTabControlState {
 
   appendToIconSrcs(iconUrl) {
     this.iconSrcs = [...this.iconSrcs, iconUrl];
+  }
+
+  getSelectCountries() {
+    const result = this.countries.map((c) => ({ value: c['alpha-2'], label: c['name'] }));
+    return [{ value: '', label: '' }, ...result];
   }
 }
 export default DrawingLayerToolTabControlState;

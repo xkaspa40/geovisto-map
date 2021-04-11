@@ -90,6 +90,7 @@
     "leaflet-snap": "^0.0.4",
     "leaflet.markercluster": "^1.4.1",
     "martinez-polygon-clipping": "^0.7.0",
+    "osmtogeojson": "^3.0.0-beta.4",
     "polygon-clipping": "^0.15.2",
     "rfdc": "^1.1.4"
   }

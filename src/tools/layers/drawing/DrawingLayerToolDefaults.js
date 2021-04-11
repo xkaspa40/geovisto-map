@@ -46,6 +46,18 @@ const MAPPING_MODEL = {
     label: 'Search',
     input: AutocompleteSidebarInput.ID(),
   },
+  searchForArea: {
+    id: INPUT_ID_PREFIX + '-search-for-area',
+    name: 'search-for-area',
+    label: 'Search',
+    input: LabeledSelectSidebarInput.ID(),
+  },
+  adminLevel: {
+    id: INPUT_ID_PREFIX + '-admin-level',
+    name: 'admin-level',
+    label: 'Pick level of administration',
+    input: LabeledSelectSidebarInput.ID(),
+  },
   iconUrl: {
     id: INPUT_ID_PREFIX + '-iconUrl',
     name: 'iconUrl',

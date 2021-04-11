@@ -52,17 +52,15 @@
   & button:hover {
     background-color: #e43e3e;
   }
-
-  .connect-check-input-wrapper {
-    display: flex;
-    & #connect-check-input {
-      width: 100px;
-    }
+  button:disabled,
+  button[disabled] {
+    background-color: #5c5c5c;
+    cursor: default;
   }
 
-  .intersect-check-input-wrapper {
+  .check-wrapper {
     display: flex;
-    & #intersect-check-input {
+    & input {
       width: 100px;
     }
   }

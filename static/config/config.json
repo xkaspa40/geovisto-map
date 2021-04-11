@@ -102,7 +102,7 @@
     {
       "type": "geovisto-tool-layer-choropleth",
       "id": "geovisto-tool-layer-choropleth",
-      "enabled": true,
+      "enabled": false,
       "layerName": "Choropleth layer",
       "data": {
         "country": "",

@@ -1,11 +1,16 @@
 import DrawingLayerToolTabControlDefaults from './DrawingLayerToolTabControlDefaults';
-import DrawingLayerToolTabControlState from './DrawingLayerToolTabControlState';
+import DrawingLayerToolTabControlState, { ADMIN_LEVELS } from './DrawingLayerToolTabControlState';
 import AbstractLayerToolTabControl from '../../abstract/sidebar/AbstractLayerToolTabControl';
 import SidebarInputFactory from '../../../../inputs/SidebarInputFactory';
 
 import '../style/drawingLayerTabControl.scss';
-import { geoSearch, putMarkerOnMap } from '../util/Marker';
+import { geoSearch, iconStarter, putMarkerOnMap } from '../util/Marker';
 import { debounce } from '../util/functionUtils';
+
+import * as osmtogeojson from 'osmtogeojson';
+import * as turf from '@turf/turf';
+
+import { normalStyles } from '../util/Poly';
 
 const POLYS = ['polyline', 'polygon', 'painted', 'vertice'];
 
@@ -348,6 +353,19 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     return result;
   };
 
+  createHighQualityCheck = () => {
+    const onChange = (val) => this.getState().setHighQuality(val);
+    const { highQuality } = this.getState();
+
+    const result = this.createCheck(
+      highQuality,
+      onChange,
+      'high-quality',
+      'By selecting the option displayed polygons will be in higher quality, which however means that some operations will take longer to execute',
+    );
+    return result;
+  };
+
   createCheck = (value, onCheck, prefix, label) => {
     const onChange = (e) => {
       const val = e.target.checked;
@@ -355,7 +373,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     };
     const ID = prefix + '-check-input';
     const inputWrapper = document.createElement('div');
-    inputWrapper.className = ID + '-wrapper';
+    inputWrapper.className = `${ID}-wrapper check-wrapper`;
     const check = document.createElement('input');
     check.type = 'checkbox';
     check.checked = value;
@@ -369,6 +387,69 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     return inputWrapper;
   };
 
+  fetchAreas = async () => {
+    const { countryCode, adminLevel, highQuality } = this.getState();
+
+    if (!countryCode || !adminLevel) return;
+
+    const toolState = this.getTool().getState();
+
+    const endPoint = 'https://overpass-api.de/api/interpreter?data=[out:json];';
+    const query = `area["ISO3166-1"="${countryCode}"]->.searchArea;(relation["admin_level"="${adminLevel}"](area.searchArea););out;>;out skel qt;`;
+
+    document.querySelector('.leaflet-container').style.cursor = 'wait';
+    this.searchForAreasBtn.setAttribute('disabled', true);
+    fetch(endPoint + query)
+      .then((response) => response.json())
+      .then((data) => {
+        const gJSON = osmtogeojson(data);
+
+        const opts = {
+          color: this.getState().selectedColor,
+          draggable: true,
+          transform: true,
+        };
+
+        toolState.featureGroup.eachLayer((layer) => {
+          if (layer.countryCode === countryCode) toolState.removeLayer(layer);
+        });
+
+        gJSON?.features
+          ?.filter((feat) => feat?.geometry?.type === 'Polygon')
+          ?.forEach((feat) => {
+            let coords = feat.geometry.coordinates;
+            if (!highQuality) {
+              let simplified = turf.simplify(feat, { tolerance: 0.01 });
+              coords = simplified.geometry.coordinates;
+            }
+            let latlngs = L.GeoJSON.coordsToLatLngs(coords, 1);
+            let result = new L.polygon(latlngs, { ...opts, ...normalStyles });
+            result?.dragging?.disable();
+            result.layerType = 'polygon';
+            result.countryCode = countryCode;
+            toolState.addLayer(result);
+          });
+
+        document.querySelector('.leaflet-container').style.cursor = '';
+        this.searchForAreasBtn.removeAttribute('disabled');
+      })
+      .catch((err) => {
+        console.error(err);
+        document.querySelector('.leaflet-container').style.cursor = '';
+        this.searchForAreasBtn.removeAttribute('disabled');
+      });
+  };
+
+  searchForAreaAction = (e) => {
+    const val = e.target.value;
+    this.getState().setCountryCode(val);
+  };
+
+  pickAdminLevelAction = (e) => {
+    const val = e.target.value;
+    this.getState().setAdminLevel(val);
+  };
+
   /**
    * It returns the sidebar tab pane.
    */
@@ -377,6 +458,12 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     let tab = document.createElement('div');
     let elem = tab.appendChild(document.createElement('div'));
     elem.classList.add('drawing-sidebar');
+
+    const addHeading = (title) => {
+      let headingTag = document.createElement('h3');
+      headingTag.innerText = title;
+      elem.appendChild(headingTag);
+    };
 
     // get data mapping model
     let model = this.getDefaults().getDataMappingModel();
@@ -387,8 +474,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     if (!layerType) return tab;
 
     if (layerType === 'search') {
-      this.inputConnect = this.createConnectCheck();
-      elem.appendChild(this.inputConnect);
+      addHeading('Search for place');
       // labeld text Search
       this.inputSearch = SidebarInputFactory.createSidebarInput(model.search.input, {
         label: model.search.label,
@@ -398,6 +484,36 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
         setData: this.onInputOptClick,
       });
       elem.appendChild(this.inputSearch.create());
+
+      this.inputConnect = this.createConnectCheck();
+      elem.appendChild(this.inputConnect);
+      elem.appendChild(document.createElement('hr'));
+      addHeading('Search for area');
+
+      this.inputSearchForArea = SidebarInputFactory.createSidebarInput(model.searchForArea.input, {
+        label: model.searchForArea.label,
+        options: this.getState().getSelectCountries(),
+        action: this.searchForAreaAction,
+        value: this.getState().countryCode || '',
+      });
+      elem.appendChild(this.inputSearchForArea.create());
+
+      this.inputAdminLevel = SidebarInputFactory.createSidebarInput(model.adminLevel.input, {
+        label: model.adminLevel.label,
+        options: ADMIN_LEVELS,
+        action: this.pickAdminLevelAction,
+        value: this.getState().adminLevel,
+      });
+      elem.appendChild(this.inputAdminLevel.create());
+
+      const hqCheck = this.createHighQualityCheck();
+      elem.appendChild(hqCheck);
+
+      this.searchForAreasBtn = document.createElement('button');
+      this.searchForAreasBtn.innerText = 'Submit';
+      this.searchForAreasBtn.addEventListener('click', this.fetchAreas);
+      elem.appendChild(this.searchForAreasBtn);
+
       return tab;
     }
 
