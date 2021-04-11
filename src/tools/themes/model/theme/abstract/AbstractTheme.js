@@ -1,6 +1,6 @@
 /**
  * This class wraps a filter operation.
- *
+ * 
  * @author Jiri Hynek
  */
 
@@ -22,7 +22,7 @@ class AbstractTheme {
 
     /**
      * It returns the preferred base map.
-     *
+     * 
      * Override this function.
      */
     getBaseMap() {
@@ -31,7 +31,7 @@ class AbstractTheme {
 
     /**
      * It returns if the styles preferres inversed dark colors.
-     *
+     * 
      * Override this function.
      */
     isDark() {
@@ -59,7 +59,7 @@ class AbstractTheme {
 
     /**
      * It returns primary, secondary and disabled background colors
-     * @return {primary:color, secondary:color, disabled:color}
+     * @return {primary:color, secondary:color, disabled:color}     
      */
     getBackgroundColors() {
         return {
@@ -78,6 +78,7 @@ class AbstractTheme {
         return {
             "selected": "orange",
             "highlight": "yellow",
+            "deempasize": "#8c8c8c",
         };
     }
 
