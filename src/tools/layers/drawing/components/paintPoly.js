@@ -148,9 +148,10 @@ class PaintPoly {
     const selectedLayer = this.tabState.getToolState().selectedLayer;
     Object.keys(this._accumulatedShapes).forEach((key) => {
       let coords = this._accumulatedShapes[key].geometry.coordinates;
-      let latlngs = L.GeoJSON.coordsToLatLngs(coords, 1);
-      // TODO: check if it's gonna work
-      latlngs = getSimplifiedPoly(...latlngs);
+      let isMultiPoly = this._accumulatedShapes[key].geometry.type === 'MultiPolygon';
+      let depth = isMultiPoly ? 2 : 1;
+      let latlngs = L.GeoJSON.coordsToLatLngs(coords, depth);
+      // latlngs = getSimplifiedPoly(depth === 2 ? latlngs[0][0] : latlngs[0]);
       let color = this._accumulatedShapes[key]?.properties?.fill || DEFAULT_COLOR;
 
       let styles = selectedLayer?.kIdx === key ? highlightStyles : normalStyles;

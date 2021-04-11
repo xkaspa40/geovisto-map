@@ -219,8 +219,8 @@ class DrawingLayerTool extends AbstractLayerTool {
           let feature = getGeoJSONFeatureFromLayer(l);
 
           let layerIsNotSelected = l?._leaflet_id !== selectedLayer?._leaflet_id;
-          // let canDiff = !createdIsNotEraser ? true : layerIsNotSelected;
-          if (layerIsNotSelected) {
+          let canDiff = !createdIsEraser ? true : layerIsNotSelected;
+          if (canDiff) {
             let diffFeature = difference(feature, layerFeature);
             console.log({ diffFeature });
             if (diffFeature) {
@@ -294,7 +294,7 @@ class DrawingLayerTool extends AbstractLayerTool {
       depth = 2;
     }
     let latlngs = L.GeoJSON.coordsToLatLngs(coords, depth);
-    latlngs = getSimplifiedPoly(depth === 2 ? latlngs[0][0] : latlngs[0]);
+    // latlngs = getSimplifiedPoly(depth === 2 ? latlngs[0][0] : latlngs[0]);
     let result = new L.polygon(latlngs, {
       ...layer.options,
       draggable: true,
@@ -481,6 +481,7 @@ class DrawingLayerTool extends AbstractLayerTool {
     if (layer.dragging) layer.dragging.disable();
 
     if (e.layerType !== 'knife' && e.layerType !== 'erased') {
+      console.log({ layer });
       this.getState().addLayer(layer);
       this.getState().setCurrEl(layer);
       this.getSidebarTabControl().getState().pushGuideLayer(layer);

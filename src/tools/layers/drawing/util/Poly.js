@@ -140,13 +140,7 @@ export const getFeatFromLayer = (layer) => {
   if (!layer) return null;
   let drawnGeoJSON = layer.toGeoJSON();
   let feature;
-  try {
-    let unkinked = turf.unkinkPolygon(drawnGeoJSON);
-    feature = unkinked.type === 'FeatureCollection' ? unkinked.features : unkinked;
-  } catch (error) {
-    feature = drawnGeoJSON.type === 'FeatureCollection' ? drawnGeoJSON.features : drawnGeoJSON;
-    console.error({ error });
-  }
+  feature = drawnGeoJSON.type === 'FeatureCollection' ? drawnGeoJSON.features : [drawnGeoJSON];
   return feature;
 };
 
