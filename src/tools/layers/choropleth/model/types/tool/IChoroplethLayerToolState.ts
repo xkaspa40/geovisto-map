@@ -1,15 +1,14 @@
-import LayerToolState from "../../../../../../model/internal/layer/LayerToolState";
 import IChoroplethLayerToolConfig from "./IChoroplethLayerToolConfig";
 import IChoroplethLayerToolDimensions from "./IChoroplethLayerToolDimensions";
+import ILayerToolState from "../../../../../../model/types/layer/ILayerToolState";
+import IMapAggregationBucket from "../../../../../../model/types/aggregation/IMapAggregationBucket";
 
 /**
  * This interface declares functions for using the state of the layer tool.
  * 
  * @author Jiri Hynek
  */
-interface IChoroplethLayerToolState extends LayerToolState {
-    getLayer();
-    getDataMapping();
+interface IChoroplethLayerToolState extends ILayerToolState {
 
     /**
      * The metod takes config and deserializes the values.
@@ -114,6 +113,18 @@ interface IChoroplethLayerToolState extends LayerToolState {
      */
     setZIndex(zindex: number): void;
 
-    // TODO
+    /**
+     * It returns the bucket data.
+     * 
+     * @param bucketData 
+     */
+    getBucketData(): Map<string, IMapAggregationBucket>;
+
+    /**
+     * It sets the bucket data.
+     * 
+     * @param bucketData 
+     */
+    setBucketData(bucketData: Map<string, IMapAggregationBucket>): void;
 }
 export default IChoroplethLayerToolState;

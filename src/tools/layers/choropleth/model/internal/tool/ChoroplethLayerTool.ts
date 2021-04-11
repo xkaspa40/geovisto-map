@@ -13,21 +13,13 @@ import IChoroplethLayerToolProps from '../../types/tool/IChoroplethLayerToolProp
 import IChoroplethLayerToolDefaults from '../../types/tool/IChoroplethLayerToolDefaults';
 import IChoroplethLayerToolState from '../../types/tool/IChoroplethLayerToolState';
 import { TOOL as SELECTION_TOOL, ISelectionTool, IMapSelection } from '../../../../../selection';
-import { ILayerToolSidebarTab, ISidebarTab, ISidebarTabControl } from '../../../../../sidebar';
-import IMapDataManager from '../../../../../../model/types/data/IMapDataManager';
-import IMapDataManager from '../../../../../../model/types/data/IMapDataManager';
+import { ILayerToolSidebarTab, ISidebarTabControl } from '../../../../../sidebar';
 import IMapDataDomain from '../../../../../../model/types/data/IMapDataDomain';
 import IChoroplethLayerToolDimensions from '../../types/tool/IChoroplethLayerToolDimensions';
 import IMapAggregationFunction from '../../../../../../model/types/aggregation/IMapAggregationFunction';
 import IMapAggregationBucket from '../../../../../../model/types/aggregation/IMapAggregationBucket';
 import IMapEvent from '../../../../../../model/types/event/IMapEvent';
-
-// TODO: move to defaults
-const COLOR_orange = ['#8c8c8c','#ffffcc','#ffff99','#ffcc99','#ff9966','#ff6600','#ff0000','#cc0000'];
-const COLOR_red = ['#8c8c8c','#FED976','#FEB24C','#FD8D3C','#FC4E2A','#E31A1C','#BD0026','#800026'];
-const COLOR_blue = ['#8c8c8c','#edf8b1','#c7e9b4','#7fcdbb','#41b6c4','#1d91c0','#225ea8','#0c2c84'];
-
-const SCALE = [1, 100, 1000, 10000, 100000, 1000000, 10000000];
+import IMapDataManager from '../../../../../../model/types/data/IMapDataManager';
 
 /**
  * This class represents Choropleth layer tool. It works with geojson polygons representing countries.
@@ -37,8 +29,7 @@ const SCALE = [1, 100, 1000, 10000, 100000, 1000000, 10000000];
 class ChoroplethLayerTool extends AbstractLayerTool implements IChoroplethLayerTool, ISidebarTabControl {
 
     private selectionTool: ISelectionTool | undefined;
-    private sidebarTab: ISidebarTab | undefined;
-    private bucketData: Map<string, IMapAggregationBucket> | undefined;
+    private sidebarTab: ILayerToolSidebarTab | undefined;
 
     /**
      * It creates a new tool with respect to the props.
@@ -54,6 +45,13 @@ class ChoroplethLayerTool extends AbstractLayerTool implements IChoroplethLayerT
      */
     public copy(): IChoroplethLayerTool {
         return new ChoroplethLayerTool(this.getProps());
+    }
+
+    /**
+     * It returns the props given by the programmer.
+     */
+    public getProps(): IChoroplethLayerToolProps {
+        return <IChoroplethLayerToolProps> super.getProps();
     }
 
     /**
@@ -204,7 +202,7 @@ class ChoroplethLayerTool extends AbstractLayerTool implements IChoroplethLayerT
             
                 // create info control that shows country info on hover
                 // TODO specify the types
-                const layerPopup: any = new L.control();
+                const layerPopup: any = L.control();
             
                 // TODO specify the types
                 layerPopup.onAdd = function (map: any) {
@@ -271,6 +269,9 @@ class ChoroplethLayerTool extends AbstractLayerTool implements IChoroplethLayerT
             }
         }
 
+        // updates bucket data
+        this.getState().setBucketData(bucketMap);
+
         return bucketMap;
     }
 
@@ -278,9 +279,8 @@ class ChoroplethLayerTool extends AbstractLayerTool implements IChoroplethLayerT
      * This function is called when layer items are rendered.
      */
     public postCreateLayerItems(): void {
-        if(this.getState().getLayer()) {
-            this.bucketData = this.processData();
-            this.updateStyle(this.bucketData);
+        if(this.getState().getGeoJSONLayer()) {
+            this.updateStyle();
         }
     }
 
@@ -290,11 +290,11 @@ class ChoroplethLayerTool extends AbstractLayerTool implements IChoroplethLayerT
     public redraw(onlyStyle: boolean): void {
         if(!onlyStyle) {
             // combine geo with data
-            this.bucketData = this.processData();
+            this.processData();
         }
 
         // update style
-        this.updateStyle(this.bucketData);
+        this.updateStyle();
     }
 
     /**
@@ -318,124 +318,20 @@ class ChoroplethLayerTool extends AbstractLayerTool implements IChoroplethLayerT
     // ----------------- TODO: refactorization needed
 
     /**
-     * It returns scale.
+     * It updates style of all layer features using the current template.
      */
-    getScale() {
-        return SCALE;
-    }
-
-    /**
-     * It returns color style for the current template.
-     * 
-     * @deprecated
-     */
-    getColors() {
-        let dataMappingModel = this.getDefaults().getDataMappingModel();
-        let dataMapping = this.getState().getDataMapping();
-        if(dataMapping[dataMappingModel.color.name] == 'red') {
-            return COLOR_red;
-        } else if(dataMapping[dataMappingModel.color.name] == 'blue') {
-            return COLOR_blue;
-        }
-            return COLOR_orange;
-    }
-
-    /**
-     * It returns color value for the current template and given value.
-     * 
-     * @deprecated
-     */
-    computeColor(val) {
-        let colors = this.getColors();
-        let scale = this.getScale();
-        return val > scale[6] ? colors[7] :
-                val > scale[5] ? colors[6] :
-                val > scale[4] ? colors[5] :
-                val > scale[3] ? colors[4] :
-                val > scale[2] ? colors[3] :
-                val > scale[1] ? colors[2] :
-                val > scale[0] ? colors[1] :
-                colors[0];
-    }
-
-    /**
-     * It returns color class for the current template and given value.
-     */
-    computeColorClass(val) {
-        let scale = this.getScale();
-        return val > scale[6] ? "leaflet-choropleth-item-clr8" :
-                val > scale[5] ? "leaflet-choropleth-item-clr7" :
-                val > scale[4] ? "leaflet-choropleth-item-clr6" :
-                val > scale[3] ? "leaflet-choropleth-item-clr5" :
-                val > scale[2] ? "leaflet-choropleth-item-clr4" :
-                val > scale[1] ? "leaflet-choropleth-item-clr3" :
-                val > scale[0] ? "leaflet-choropleth-item-clr2" :
-                "leaflet-choropleth-item-clr1";
-    }
-
-    /**
-     * It returns style for the current template and given feature.
-     * 
-     * @deprecated
-     */
-    computeStyle(item) {       
-        let feature = item.feature;
-        let hoveredItem = this.getState().getHoveredItem();
-        let selection = this.getSelectionTool() ? this.getSelectionTool().getState().getSelection() : undefined;
-        return {
-            weight: hoveredItem == feature.id ? 4 : 2,
-            opacity: 0.7,
-            color: hoveredItem == feature.id ? "yellow":"white",
-            dashArray: hoveredItem == feature.id ? '' : '1',
-            fillOpacity: hoveredItem == feature.id ? 0.9 : 0.8,
-            fillColor: selection != null ?
-                        (selection.getTool() == this && selection.getSrcIds().includes(feature.id) ? 'orange' :
-                        (selection.getIds().includes(feature.id) ? 'yellow' : '#8c8c8c'))
-                        : this.computeColor(feature.value)
-        };
-    }
-
-    /**
-     * It returns style classes for the current template and given feature.
-     */
-    computeStyleClasses(item) {
-        let classList = [ "leaflet-interactive", "leaflet-choropleth-item-basic" ];
-
-        let feature = item.feature;
-
-        // compute color level
-        classList.push(this.computeColorClass(feature.value));
-
-        // hovered
-        if(this.getState().getHoveredItem() == feature.id) {
-            classList.push("leaflet-choropleth-item-hover")
-        }
-
-        // selected / highlighted
-        let selection = this.getSelectionTool() ? this.getSelectionTool().getState().getSelection() : undefined;
-        let selectedIds = selection.getIds();
-        if(selection && selectedIds.length > 0) {
-            if(selectedIds.includes(feature.id)) {
-                if(selection.getTool() == this && selection.getSrcIds().includes(feature.id)) {
-                    // selected
-                    classList.push("leaflet-choropleth-item-select")
-                } else {
-                    // affected, highlighted
-                    classList.push("leaflet-choropleth-item-highlight")
-                }
-            } else {
-                // de-emphasize others
-                classList.push("leaflet-choropleth-item-deempasize")
-            }
-        }
-
-        return classList;
+    protected updateStyle(): void {
+        this.getState().getGeoJSONLayer()?.eachLayer((item: L.Layer) => {
+            this.updateItemStyle(item);
+        });
     }
 
     /**
      * It updates style of the given feature using the current template.
+     * 
+     * TODO: specify the type
      */
-    updateItemStyle(item) {
+    protected updateItemStyle(item: any): void {
         //item.setStyle(this.computeStyle(item));
         if(item._path != undefined) {
             // modify classes
@@ -444,15 +340,57 @@ class ChoroplethLayerTool extends AbstractLayerTool implements IChoroplethLayerT
     }
 
     /**
-     * It updates style of all layer features using the current template.
+     * It returns style classes for the current template and given feature.
+     * 
+     * TODO: specify the types.
      */
-    updateStyle() {
-        if(this.getState().getLayer()) {
-            var _this = this;
-            this.getState().getLayer().eachLayer(function(item) {
-                _this.updateItemStyle(item);
-            });
+    protected computeStyleClasses(item: any): string[] {
+        const classList: string[] = [ "leaflet-interactive", "leaflet-choropleth-item-basic" ];
+
+        const feature: any = item.feature;
+
+        // compute color level
+        classList.push(this.computeColorClass(this.getState().getBucketData().get(feature.id)?.getValue() ?? 0));
+
+        // hovered
+        if(this.getState().getHoveredItem() == feature.id) {
+            classList.push("leaflet-choropleth-item-hover");
         }
+
+        // selected / highlighted
+        const selection: IMapSelection | null | undefined = this.getSelectionTool()?.getState().getSelection() ?? undefined;
+        const selectedIds: string[] = selection?.getIds() ?? [];
+        if(selection && selectedIds.length > 0) {
+            if(selectedIds.includes(feature.id)) {
+                if(selection.getTool() == this && selection.getSrcIds().includes(feature.id)) {
+                    // selected
+                    classList.push("leaflet-choropleth-item-select");
+                } else {
+                    // affected, highlighted
+                    classList.push("leaflet-choropleth-item-highlight");
+                }
+            } else {
+                // de-emphasize others
+                classList.push("leaflet-choropleth-item-deempasize");
+            }
+        }
+
+        return classList;
+    }
+
+    /**
+     * It returns color class for the current template and given value.
+     */
+    protected computeColorClass(val: number): string {
+        const scale = this.getDefaults().getScale();
+        return val > scale[6] ? "leaflet-choropleth-item-clr8" :
+                val > scale[5] ? "leaflet-choropleth-item-clr7" :
+                val > scale[4] ? "leaflet-choropleth-item-clr6" :
+                val > scale[3] ? "leaflet-choropleth-item-clr5" :
+                val > scale[2] ? "leaflet-choropleth-item-clr4" :
+                val > scale[1] ? "leaflet-choropleth-item-clr3" :
+                val > scale[0] ? "leaflet-choropleth-item-clr2" :
+                "leaflet-choropleth-item-clr1";
     }
 
 }

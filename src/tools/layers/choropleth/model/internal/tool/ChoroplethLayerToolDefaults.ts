@@ -105,5 +105,12 @@ class ChoroplethLayerToolDefaults extends LayerToolDefaults implements IChorople
     public getZIndex(): number {
         return 350;
     }
+
+    /**
+     * It returns the values scale.
+     */
+    public getScale(): number[] {
+        return [1, 100, 1000, 10000, 100000, 1000000, 10000000];
+    }
 }
 export default ChoroplethLayerToolDefaults;

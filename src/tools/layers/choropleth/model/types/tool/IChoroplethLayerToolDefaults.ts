@@ -10,7 +10,6 @@ import IMapAggregationFunction from "../../../../../../model/types/aggregation/I
  * @author Jiri Hynek
  */
 interface IChoroplethLayerToolDefaults extends ILayerToolDefaults {
-    getDataMappingModel();
 
     /**
      * It returns the map of layer dimensions.
@@ -48,5 +47,10 @@ interface IChoroplethLayerToolDefaults extends ILayerToolDefaults {
      * It returns preferred z index for the choropoleth layer
      */
     getZIndex(): number;
+
+    /**
+     * It returns the values scale.
+     */
+    getScale(): number[];
 }
 export default IChoroplethLayerToolDefaults;

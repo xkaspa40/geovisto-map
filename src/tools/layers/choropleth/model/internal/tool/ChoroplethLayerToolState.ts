@@ -6,6 +6,7 @@ import IChoroplethLayerToolProps from "../../types/tool/IChoroplethLayerToolProp
 import IChoroplethLayerToolDefaults from "../../types/tool/IChoroplethLayerToolDefaults";
 import IMap from "../../../../../../model/types/map/IMap";
 import IChoroplethLayerToolConfig from "../../types/tool/IChoroplethLayerToolConfig";
+import IMapAggregationBucket from "../../../../../../model/types/aggregation/IMapAggregationBucket";
 
 /**
  * This class provide functions for using the state of the layer tool.
@@ -20,6 +21,7 @@ class ChoroplethLayerToolState extends LayerToolState implements IChoroplethLaye
     private polygons: any; // TODO: specify the type
     private hoveredItem: any; // TODO: specify the type
     private zindex: number;
+    private bucketData: Map<string, IMapAggregationBucket>;
 
     /**
      * It creates a tool state.
@@ -45,6 +47,7 @@ class ChoroplethLayerToolState extends LayerToolState implements IChoroplethLaye
         this.polygons = props.polygons == undefined ? defaults.getPolygons() : props.polygons;
         this.hoveredItem = undefined;
         this.zindex = defaults.getZIndex();
+        this.bucketData = new Map<string, IMapAggregationBucket>();
     }
 
     /**
@@ -69,6 +72,7 @@ class ChoroplethLayerToolState extends LayerToolState implements IChoroplethLaye
         this.setPolygons(props.polygons == undefined ? defaults.getPolygons() : props.polygons);
         this.setHoveredItem(undefined);
         this.setZIndex(defaults.getZIndex());
+        this.setBucketData(new Map<string, IMapAggregationBucket>());
     }
 
     /**
@@ -235,6 +239,24 @@ class ChoroplethLayerToolState extends LayerToolState implements IChoroplethLaye
      */
     public setZIndex(zindex: number): any {
         this.zindex = zindex;
+    }
+
+    /**
+     * It returns the bucket data.
+     * 
+     * @param bucketData 
+     */
+    public getBucketData(): Map<string, IMapAggregationBucket> {
+        return this.bucketData;
+    }
+
+    /**
+     * It sets the bucket data.
+     * 
+     * @param bucketData 
+     */
+    public setBucketData(bucketData: Map<string, IMapAggregationBucket>): void {
+        this.bucketData = bucketData;
     }
 }
 export default ChoroplethLayerToolState;
