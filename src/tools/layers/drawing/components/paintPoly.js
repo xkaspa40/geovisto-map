@@ -5,12 +5,15 @@ import 'leaflet/dist/leaflet.css';
 import circle from '@turf/circle';
 import union from '@turf/union';
 import difference from '@turf/difference';
+import * as turf from '@turf/turf';
+
 import {
   convertOptionsToProperties,
   getGeoJSONFeatureFromLayer,
   getSimplifiedPoly,
   highlightStyles,
   normalStyles,
+  simplifyFeature,
 } from '../util/Poly';
 
 const DEFAULT_COLOR = '#333333';
@@ -147,11 +150,11 @@ class PaintPoly {
   _redrawShapes = () => {
     const selectedLayer = this.tabState.getToolState().selectedLayer;
     Object.keys(this._accumulatedShapes).forEach((key) => {
-      let coords = this._accumulatedShapes[key].geometry.coordinates;
+      let simplified = simplifyFeature(this._accumulatedShapes[key]);
+      let coords = simplified.geometry.coordinates;
       let isMultiPoly = this._accumulatedShapes[key].geometry.type === 'MultiPolygon';
       let depth = isMultiPoly ? 2 : 1;
       let latlngs = L.GeoJSON.coordsToLatLngs(coords, depth);
-      // latlngs = getSimplifiedPoly(depth === 2 ? latlngs[0][0] : latlngs[0]);
       let color = this._accumulatedShapes[key]?.properties?.fill || DEFAULT_COLOR;
 
       let styles = selectedLayer?.kIdx === key ? highlightStyles : normalStyles;

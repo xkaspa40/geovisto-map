@@ -35,7 +35,7 @@ export const STROKES = [
 export const ADMIN_LEVELS = [
   { label: 'State', value: 2 },
   { label: 'Province', value: 4, selected: true },
-  { label: 'Region', value: 6 },
+  { label: 'Region (does not work with every country)', value: 6 },
 ];
 
 /**

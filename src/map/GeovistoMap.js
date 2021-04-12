@@ -212,6 +212,7 @@ class GeovistoMap extends AbstractMapObject {
     map.attributionControl.addAttribution(this.getMapAttribution());
 
     this.getState().setLeafletMap(map);
+    window.map = map;
 
     return this.map;
   }

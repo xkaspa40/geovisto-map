@@ -10,7 +10,7 @@ import { debounce } from '../util/functionUtils';
 import * as osmtogeojson from 'osmtogeojson';
 import * as turf from '@turf/turf';
 
-import { normalStyles } from '../util/Poly';
+import { normalStyles, simplifyFeature } from '../util/Poly';
 
 const POLYS = ['polyline', 'polygon', 'painted', 'vertice'];
 
@@ -419,7 +419,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
           ?.forEach((feat) => {
             let coords = feat.geometry.coordinates;
             if (!highQuality) {
-              let simplified = turf.simplify(feat, { tolerance: 0.01 });
+              let simplified = simplifyFeature(feat);
               coords = simplified.geometry.coordinates;
             }
             let latlngs = L.GeoJSON.coordsToLatLngs(coords, 1);

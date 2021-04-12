@@ -17,6 +17,7 @@ import {
   isFeaturePoly,
   getSimplifiedPoly,
   isLayerPoly,
+  simplifyFeature,
 } from './util/Poly';
 
 import 'leaflet/dist/leaflet.css';
@@ -150,7 +151,8 @@ class DrawingLayerTool extends AbstractLayerTool {
         featureToLeafletCoordinates(f.geometry.coordinates, f.geometry.type);
         let result;
         if (lType === 'polygon') {
-          result = new L.polygon(f.geometry.coordinates, opts);
+          let simplified = simplifyFeature(f);
+          result = new L.polygon(simplified.geometry.coordinates, opts);
         } else if (lType === 'polyline' || lType === 'vertice') {
           result = new L.polyline(f.geometry.coordinates, opts);
         } else if (lType === 'marker') {
@@ -288,13 +290,13 @@ class DrawingLayerTool extends AbstractLayerTool {
       }
     });
 
-    let coords = summedFeature.geometry.coordinates;
     let depth = 1;
     if (summedFeature.geometry.type === 'MultiPolygon') {
       depth = 2;
     }
+    let simplified = simplifyFeature(summedFeature);
+    let coords = simplified.geometry.coordinates;
     let latlngs = L.GeoJSON.coordsToLatLngs(coords, depth);
-    // latlngs = getSimplifiedPoly(depth === 2 ? latlngs[0][0] : latlngs[0]);
     let result = new L.polygon(latlngs, {
       ...layer.options,
       draggable: true,
@@ -354,11 +356,11 @@ class DrawingLayerTool extends AbstractLayerTool {
           let thickLineString = turf.lineString(polyCoords);
           let thickLinePolygon = turf.lineToPolygon(thickLineString);
           let clipped = turf.difference(f, thickLinePolygon);
+          clipped = simplifyFeature(clipped);
 
           coords = clipped.geometry.coordinates;
           coords.forEach((coord) => {
             latlngs = L.GeoJSON.coordsToLatLngs(coord, 1);
-            // latlngs = getSimplifiedPoly(...latlngs);
             let result = new L.polygon(latlngs, {
               ...selectedLayer.options,
               ...normalStyles,
@@ -656,12 +658,14 @@ class DrawingLayerTool extends AbstractLayerTool {
   }
 
   removeElement() {
+    const selectedLayer = this.getState().selectedLayer;
     if (this.getState().selectedLayerIsConnectMarker()) {
-      const selectedLayer = this.getState().selectedLayer;
       const markerVertices = this.state.mappedMarkersToVertices[selectedLayer._leaflet_id];
       console.log({ markerVertices });
       markerVertices?.forEach((v) => this.getState().removeLayer(v?.layer));
     }
+    let paintPoly = this.getSidebarTabControl().getState().paintPoly;
+    paintPoly.clearPaintedPolys(selectedLayer.kIdx);
     this.getState().removeSelectedLayer();
   }
 

@@ -181,6 +181,37 @@ export const getSimplifiedPoly = (param_latlngs) => {
   return [latlngs];
 };
 
+// if (zoom <= 19 && zoom >= 15) {
+//     return 0.00001;
+//   }
+
+// TODO: create equation for this
+const getTolerance = (zoom) => {
+  if (zoom >= 15) {
+    return 0.00001;
+  } else if (zoom >= 8) {
+    return 0.0001;
+  } else if (zoom >= 4) {
+    return 0.001;
+  } else {
+    return 0.01;
+  }
+};
+
+export const simplifyFeature = (feature, pixels) => {
+  const map = window.map;
+  const metersPerPixel =
+    (40075016.686 * Math.abs(Math.cos((map.getCenter().lat * Math.PI) / 180))) /
+    Math.pow(2, map.getZoom() + 8);
+  const zoom = map.getZoom();
+
+  const tolerance = pixels || 0.0001;
+  console.log({ tolerance, metersPerPixel, zoom });
+
+  const result = turf.simplify(feature, { tolerance });
+  return result;
+};
+
 export const isLayerPoly = (layer) => {
   let feature = getGeoJSONFeatureFromLayer(layer);
   return isFeaturePoly(feature);
