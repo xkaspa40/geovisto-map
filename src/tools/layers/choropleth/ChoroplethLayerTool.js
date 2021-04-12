@@ -311,7 +311,7 @@ class ChoroplethLayerTool extends AbstractLayerTool {
             });
 
             this.updatePolygons(data);
-            this.updateStyle();
+            this.getState().getLayer().eachLayer((item) => this.updateItemStyle(item));
         }
         if (event.getType() === ToolInitializedEvent.TYPE()) {
             if (event.getSource() === TimelineTool.TYPE()) {

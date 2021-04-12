@@ -15,9 +15,7 @@ import SelectionToolEvent from "../../selection/model/event/SelectionToolEvent";
 import DataChangeEvent from "../../../model/event/basic/DataChangeEvent";
 import TimeChangeEvent from "../../timeline/model/TimeChangeEvent";
 import { createClusterMarkersData, createMarkerPopupContent } from "./utils";
-import { TimeDestroyedEvent } from "../../timeline/model/TimeDestroyedEvent";
 import { ToolInitializedEvent } from "../../../model/event/basic/ToolInitializedEvent";
-import { TimelineTool } from "../../timeline";
 
 /**
  * This class represents custom div icon which is used to mark center of countries.
@@ -455,6 +453,7 @@ class MarkerLayerTool extends AbstractLayerTool {
                 markerData.value,
                 markerData.subvalues
             ))
+            this.getState().getLayer()._flagParentsIconsNeedUpdate([marker]);
         })
 
         this.getState().getLayer()._featureGroup.eachLayer(function (marker) {
