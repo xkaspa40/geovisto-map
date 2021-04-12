@@ -282,7 +282,11 @@ export class TimelineTool extends AbstractLayerTool {
                     { stepTimeLength: this.formState.stepTimeLength }
                 ));
             this.getMap()
-                .dispatchEvent(new TimeChangeEvent(this.data.values.get(this.times[currentTimeIndex])));
+                .dispatchEvent(new TimeChangeEvent({
+                    data: this.data.values.get(this.times[currentTimeIndex]),
+                    transitionDuration: 0,
+                    transitionDelay: 0,
+                }));
         }
     }
 }
