@@ -42,25 +42,21 @@ export default function useDrawingToolbar() {
         toolContainer,
         'Line',
         'fa fa-minus',
+        true,
       );
       this.options.drawingBtns.markerBtn = this.createToolbarBtn(
         'markerBtn',
         toolContainer,
         'Marker',
         'fa fa-map-marker',
+        true,
       );
       this.options.drawingBtns.polygonBtn = this.createToolbarBtn(
         'polygonBtn',
         toolContainer,
         'Polygon',
         'fa fa-star',
-      );
-
-      this.options.drawingBtns.selectBtn = this.createToolbarBtn(
-        'selectBtn',
-        toolContainer,
-        'Select',
-        'fa fa-mouse-pointer',
+        true,
       );
 
       this.options.drawingBtns.deselectBtn = this.createToolbarBtn(
@@ -89,6 +85,7 @@ export default function useDrawingToolbar() {
         toolContainer,
         'Slice polygon',
         'fa fa-cutlery',
+        true,
       );
 
       this.options.drawingBtns.connectBtn = this.createToolbarBtn(
@@ -96,6 +93,7 @@ export default function useDrawingToolbar() {
         toolContainer,
         'Connect',
         'fa fa-sitemap',
+        true,
       );
 
       this.options.drawingBtns.searchBtn = this.createToolbarBtn(
@@ -105,13 +103,13 @@ export default function useDrawingToolbar() {
         'fa fa-search',
       );
 
-      const sidebar = this.options.tool.getSidebarTabControl();
-
-      this.options.drawingBtns.paintBtn = sidebar.getState().paintPoly.renderButton({
-        className: 'paintBtn',
-        btnContainer: toolContainer,
-        map: this.options.map,
-      });
+      this.options.drawingBtns.paintBtn = this.createToolbarBtn(
+        'paintBtn',
+        toolContainer,
+        'Paint',
+        'fa fa-paint-brush',
+        true,
+      );
 
       this.options.drawingBtns.eraserBtn = this.createToolbarBtn(
         'eraseBtn',
@@ -134,25 +132,14 @@ export default function useDrawingToolbar() {
 
     onRemove: function (map) {},
 
-    _dispatchClickEvent: function (btn, sidebar) {
+    _disableDrawing: function (e) {
+      e.stopPropagation();
+      e?.target?.classList?.toggle('hide');
+      const sidebar = this.options.tool.getSidebarTabControl();
       let enabled = sidebar.getState().getEnabledEl();
-      console.log({ enabled });
       if (enabled) {
         enabled.disable();
       }
-      // else if (this.lastClickedBtn && btn !== this.lastClickedBtn) {
-      //   let className = this.lastClickedBtn.className;
-      //   if (UNABLE_TO_CLICK_DISABLE.includes(className)) {
-      //     this.lastClickedBtn = btn;
-      //     return;
-      //   }
-      //   if (className === 'selectBtn' && !this.getSelecting()) {
-      //     this.lastClickedBtn = btn;
-      //     return;
-      //   }
-      //   this.lastClickedBtn.dispatchEvent(new Event('click'));
-      // }
-      // this.lastClickedBtn = btn;
     },
 
     _disableTransform: function () {
@@ -171,7 +158,6 @@ export default function useDrawingToolbar() {
         lineBtn,
         markerBtn,
         polygonBtn,
-        selectBtn,
         transformBtn,
         editBtn,
         sliceBtn,
@@ -185,7 +171,6 @@ export default function useDrawingToolbar() {
       const map = this.options.map;
       const sidebar = this.options.tool.getSidebarTabControl();
 
-      // TODO: think of better solution
       const btnsArr = Object.values(this.options.drawingBtns);
       btnsArr.forEach((btn) => {
         if (btn.className !== 'transformBtn') {
@@ -193,12 +178,23 @@ export default function useDrawingToolbar() {
         }
       });
 
+      const toggleExtra = (e) => {
+        withExtra.forEach((btn) => btn.lastChild.classList.add('hide'));
+        let extraBtn = e.target.lastChild;
+        if (!extraBtn) extraBtn = e.target.nextSibling;
+        extraBtn.classList.toggle('hide');
+        L.DomEvent.on(extraBtn, 'click', this._disableDrawing, this);
+      };
+      const withExtra = [lineBtn, markerBtn, polygonBtn, connectBtn, sliceBtn, paintBtn];
+      withExtra.forEach((btn) => {
+        L.DomEvent.on(btn, 'click', toggleExtra, this);
+      });
+
       L.DomEvent.on(lineBtn, 'click', () => this.initCreatePolyline(map, sidebar), this);
       L.DomEvent.on(markerBtn, 'click', L.DomEvent.stopPropagation)
         .on(markerBtn, 'click', L.DomEvent.preventDefault)
         .on(markerBtn, 'click', () => this.initCreateMarker(map, sidebar), this);
       L.DomEvent.on(polygonBtn, 'click', () => this.initCreatePolygon(map, sidebar), this);
-      L.DomEvent.on(selectBtn, 'click', this.initSelecting, this);
       L.DomEvent.on(transformBtn, 'click', this.initTransform, this);
       L.DomEvent.on(editBtn, 'click', this.initNodeEdit, this);
       L.DomEvent.on(sliceBtn, 'click', () => this.initSlicePoly(map, sidebar), this);
@@ -221,10 +217,11 @@ export default function useDrawingToolbar() {
       paintPoly.erase(evt);
     },
 
-    initPainting: function () {
+    initPainting: function (e) {
       let paintPoly = this.options.tool.getSidebarTabControl().getState().paintPoly;
       let sidebar = this.options.tool.getSidebarTabControl();
-      let paintBtn = this.options.drawingBtns.paintBtn;
+      sidebar.getState().paintPoly.clickDraw(e);
+
       if (paintPoly?.isActive()) {
         sidebar.getState().setEnabledEl(paintPoly);
       } else {
@@ -237,24 +234,16 @@ export default function useDrawingToolbar() {
     },
 
     initCreatePolyline: function (map, sidebar) {
-      let enabled = sidebar.getState().getEnabledEl();
-      if (enabled?.layerType === 'polyline') this._dispatchClickEvent(map, sidebar);
-      else polylineCreate(map, sidebar);
+      polylineCreate(map, sidebar);
     },
     initCreatePolygon: function (map, sidebar) {
-      let enabled = sidebar.getState().getEnabledEl();
-      if (enabled?.layerType === 'polygon') this._dispatchClickEvent(map, sidebar);
-      else polygonCreate(map, sidebar);
+      polygonCreate(map, sidebar);
     },
     initCreateMarker: function (map, sidebar) {
-      let enabled = sidebar.getState().getEnabledEl();
-      if (enabled?.layerType === 'marker') this._dispatchClickEvent(map, sidebar);
-      else markerCreate(map, sidebar);
+      markerCreate(map, sidebar);
     },
     initSlicePoly: function (map, sidebar) {
-      let enabled = sidebar.getState().getEnabledEl();
-      if (enabled?.layerType === 'knife') this._dispatchClickEvent(map, sidebar);
-      else slicePoly(map, sidebar);
+      slicePoly(map, sidebar);
     },
 
     deselect: function () {
@@ -267,6 +256,7 @@ export default function useDrawingToolbar() {
       let selected = this.options.tool.getState().selectedLayer;
       if (selected) {
         this.options.tool.normalizeElement(selected);
+        this.options.tool.initNodeEdit(true);
         this.options.tool.getState().clearSelectedLayer();
         this.options.tool.redrawSidebarTabControl();
         this.setCurrEl(null);
@@ -275,18 +265,7 @@ export default function useDrawingToolbar() {
     },
 
     initNodeEdit: function () {
-      const currEl = this.getCurrEl();
-
-      if (currEl.editing) {
-        // currEl.editing = new L.Edit.ExtendedPoly(currEl);
-        if (currEl.editing._enabled) {
-          currEl.editing.disable();
-          // let paintPoly = this.options.tool.getSidebarTabControl().getState().paintPoly;
-          // paintPoly.updatePaintedPolys(layer.kIdx, layer);
-        } else {
-          currEl.editing.enable();
-        }
-      }
+      this.options.tool.initNodeEdit();
     },
 
     initTransform: function () {
@@ -295,28 +274,16 @@ export default function useDrawingToolbar() {
       this.options.tool.initTransform(currEl);
     },
 
-    initSelecting: function () {
-      this.options.tool.selectElement();
-
-      // this.options.map.on('click', () => {
-      //   const sidebar = this.options.tool.getSidebarTabControl();
-      //   if (Boolean(sidebar.getState().enabledEl) || !this.getSelecting()) return;
-      //   let selected = this.options.tool.getState().selectedLayer;
-      //   if (selected) {
-      //     if (selected.setStyle) selected.setStyle(normalStyles);
-      //     this.options.tool.getState().clearSelectedLayer();
-      //     this.options.tool.redrawSidebarTabControl();
-      //     this.setCurrEl(null);
-      //     document.querySelector('.leaflet-container').style.cursor = '';
-      //   }
-      // });
-    },
-
-    createToolbarBtn: function (className, btnContainer, title, icon) {
-      const returnBtn = L.DomUtil.create('a', className, btnContainer);
+    createToolbarBtn: function (className, btnContainer, title, icon, extra = false) {
+      const returnBtn = L.DomUtil.create('a', `${className} d-side-button`, btnContainer);
       returnBtn.title = title;
       returnBtn.innerHTML = `<i class="${icon}" aria-hidden="true"></i>`;
       returnBtn.role = 'button';
+      if (extra) {
+        const extraBtn = L.DomUtil.create('a', 'extra-btn hide', returnBtn);
+        extraBtn.innerHTML = `Cancel`;
+        extraBtn.role = 'button';
+      }
       return returnBtn;
     },
 

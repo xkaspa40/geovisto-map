@@ -76,6 +76,7 @@ class DrawingLayerToolTabControlState extends AbstractLayerToolTabControlState {
     this.paintPoly = new PaintPoly({
       tabState: this,
     });
+    console.log({ t: this });
 
     this.pather = new L.Pather({
       strokeWidth: 3,
@@ -122,6 +123,7 @@ class DrawingLayerToolTabControlState extends AbstractLayerToolTabControlState {
   }
 
   setEnabledEl(val) {
+    this.enabledEl?.disable();
     this.enabledEl = val;
   }
 

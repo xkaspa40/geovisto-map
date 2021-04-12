@@ -465,7 +465,7 @@ class DrawingLayerTool extends AbstractLayerTool {
 
     let prevLayer = this.getState().getPrevLayer();
     if (prevLayer?.layerType !== e.layerType) this.redrawSidebarTabControl(e.layerType);
-    if (e.layerType !== 'painted') this.getSidebarTabControl().getState().setEnabledEl(null);
+    // if (e.layerType !== 'painted') this.getSidebarTabControl().getState().setEnabledEl(null);
 
     const { intersectActivated } = this.getSidebarTabControl().getState();
 
@@ -483,15 +483,13 @@ class DrawingLayerTool extends AbstractLayerTool {
     if (layer.dragging) layer.dragging.disable();
 
     if (e.layerType !== 'knife' && e.layerType !== 'erased') {
-      console.log({ layer });
       this.getState().addLayer(layer);
       this.getState().setCurrEl(layer);
       this.getSidebarTabControl().getState().pushGuideLayer(layer);
     }
 
     if (e.layerType === 'erased') {
-      const combinedMap = this.getMap();
-      const map = combinedMap.state.map;
+      const map = this.getMap().getState().getLeafletMap();
       map.removeLayer(layer);
       let paintPoly = this.getSidebarTabControl().getState().paintPoly;
       paintPoly.clearPaintedPolys(e.keyIndex);
@@ -539,8 +537,8 @@ class DrawingLayerTool extends AbstractLayerTool {
    */
   createLayerItems() {
     console.log('%c ...creating', 'color: #ff5108');
-    const combinedMap = this.getMap();
-    const map = combinedMap.state.map;
+    const map = this.getMap().getState().getLeafletMap();
+
     map.addControl(L.control.drawingToolbar({ tool: this }));
     // * eventlistener for when object is created
     map.on('draw:created', this.createdListener);
@@ -551,10 +549,11 @@ class DrawingLayerTool extends AbstractLayerTool {
       let selected = this.getState().selectedLayer;
       if (selected) {
         this.normalizeElement(selected);
-        this.getState().clearSelectedLayer();
+        this.initNodeEdit(true);
         this.redrawSidebarTabControl();
         this.getState().setCurrEl(null);
         this.initTransform(selected, true);
+        this.getState().clearSelectedLayer();
         document.querySelector('.leaflet-container').style.cursor = '';
       }
     });
@@ -653,6 +652,21 @@ class DrawingLayerTool extends AbstractLayerTool {
         layer.dragging.disable();
       } else {
         layer.dragging.enable();
+      }
+    }
+  }
+
+  initNodeEdit(disable = false) {
+    const selectedLayer = this.getState().selectedLayer;
+
+    if (selectedLayer.editing) {
+      // selectedLayer.editing = new L.Edit.ExtendedPoly(selectedLayer);
+      if (selectedLayer.editing._enabled || disable) {
+        selectedLayer.editing.disable();
+        // let paintPoly = this.options.tool.getSidebarTabControl().getState().paintPoly;
+        // paintPoly.updatePaintedPolys(layer.kIdx, layer);
+      } else {
+        selectedLayer.editing.enable();
       }
     }
   }

@@ -23,8 +23,8 @@ const ERASER_COLOR = '#ee000055';
 
 class PaintPoly {
   constructor(props) {
-    this._map = null;
     this.tabState = props.tabState;
+    this._map = window.map;
 
     this._action = null;
     this._circle = null;
@@ -239,7 +239,7 @@ class PaintPoly {
     }
   };
 
-  _clickDraw = (event) => {
+  clickDraw = (event) => {
     if (event.type == 'mousedown') {
       L.DomEvent.stop(event);
       return;
@@ -277,16 +277,6 @@ class PaintPoly {
 
   isActive = () => {
     return this._active;
-  };
-
-  renderButton = (options = {}) => {
-    this._map = options.map;
-    const paintBtn = L.DomUtil.create('a', options.className || '', options.btnContainer || '');
-    paintBtn.title = 'Paint';
-    paintBtn.innerHTML = '<i class="fa fa-paint-brush" aria-hidden="true"></i>';
-    paintBtn.role = 'button';
-    L.DomEvent.on(paintBtn, 'click mousedown', this._clickDraw);
-    return paintBtn;
   };
 }
 

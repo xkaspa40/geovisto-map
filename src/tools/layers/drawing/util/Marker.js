@@ -22,12 +22,15 @@ const iconOptions = {
 export const markerCreate = (map, sidebar, connectClick = false) => {
   const additionalOpts = { iconUrl: sidebar.getState().getSelectedIcon(), connectClick };
   const icon = new L.Icon({ ...iconOptions, ...additionalOpts });
+  const { guideLayers } = sidebar.getState();
 
   const x = new L.Draw.Marker(map, {
     icon,
     draggable: true,
     transform: true,
-    // repeatMode: true,
+    repeatMode: true,
+    guideLayers,
+    snapVertices: false,
   });
   if (x) sidebar.getState().setEnabledEl(x);
   x.enable();

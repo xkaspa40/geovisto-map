@@ -30,7 +30,7 @@ export const polygonCreate = (map, sidebar) => {
     },
     guideLayers: sidebar.getState().guideLayers,
     snapDistance: 5,
-    // repeatMode: true,
+    repeatMode: true,
   });
   if (x) sidebar.getState().setEnabledEl(x);
   x.enable();
@@ -46,7 +46,7 @@ export const polylineCreate = (map, sidebar) => {
       transform: true,
     },
     guideLayers: sidebar.getState().guideLayers,
-    // repeatMode: true,
+    repeatMode: true,
   });
   if (x) sidebar.getState().setEnabledEl(x);
   x.enable();
@@ -56,11 +56,17 @@ export const polylineCreate = (map, sidebar) => {
 export const slicePoly = (map, sidebar) => {
   const pather = sidebar.getState().pather;
   const patherStatus = sidebar.getState().patherActive;
-  console.log({ pather, patherStatus });
   if (!patherStatus) {
     map.addLayer(pather);
+    sidebar.getState().setEnabledEl({
+      disable: () => {
+        map.removeLayer(pather);
+        sidebar.getState().setPatherStatus(false);
+      },
+    });
   } else {
     map.removeLayer(pather);
+    sidebar.getState().setEnabledEl(null);
   }
 
   sidebar.getState().setPatherStatus(!patherStatus);
@@ -206,7 +212,8 @@ export const simplifyFeature = (feature, pixels) => {
   const zoom = map.getZoom();
 
   const tolerance = pixels || 0.0001;
-  console.log({ tolerance, metersPerPixel, zoom });
+  // TODO:
+  // console.log({ tolerance, metersPerPixel, zoom });
 
   const result = turf.simplify(feature, { tolerance });
   return result;
