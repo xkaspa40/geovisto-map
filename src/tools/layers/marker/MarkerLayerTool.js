@@ -13,10 +13,7 @@ import AbstractLayerTool from "../abstract/AbstractLayerTool";
 import ThemesToolEvent from "../../themes/model/event/ThemesToolEvent";
 import SelectionToolEvent from "../../selection/model/event/SelectionToolEvent";
 import DataChangeEvent from "../../../model/event/basic/DataChangeEvent";
-import TimeChangeEvent from "../../timeline/model/TimeChangeEvent";
 import { createClusterMarkersData, createMarkerPopupContent } from "./utils";
-import { ToolInitializedEvent } from "../../../model/event/basic/ToolInitializedEvent";
-import { TimeDestroyedEvent } from "../../timeline/model/TimeDestroyedEvent";
 
 /**
  * This class represents custom div icon which is used to mark center of countries.
@@ -253,16 +250,6 @@ class MarkerLayerTool extends AbstractLayerTool {
         return this.selectionTool;
     }
 
-    updateDataMapping(dataMapping, onlyStyle) {
-        // update state
-        this.getState().setDataMapping(dataMapping);
-
-        // redraw the layer items
-        const data = this.getMap().getState().getCurrentData();
-        this.redraw(data);
-        this.getMap().dispatchEvent(new ToolInitializedEvent(MarkerLayerTool.TYPE()))
-    }
-
     /**
      * It creates new tab control.
      */
@@ -318,8 +305,6 @@ class MarkerLayerTool extends AbstractLayerTool {
      * It prepares data for markers.
      */
     prepareMapData(data) {
-        //console.log("updating map data", this);
-
         // prepare data
         let workData = {};
         let mapData = this.getMap().getState().getMapData();
@@ -341,11 +326,6 @@ class MarkerLayerTool extends AbstractLayerTool {
 
             // since the data are flattened we can expect max one found item
             if (foundCountries.length == 1 && (highlightedIds.length == 0 || highlightedIds.indexOf(foundCountries[0]) >= 0)) {
-                // test if country respects highlighting selection
-                /*if(highlightedIds != undefined) {
-                    console.log(highlightedIds.indexOf(foundCountries[0]) >= 0);
-                }*/
-
                 // test if country exists in the map
                 geoCountry = centroids.find(x => x.id == foundCountries[0]);
                 if (geoCountry != undefined) {
@@ -424,20 +404,21 @@ class MarkerLayerTool extends AbstractLayerTool {
     /**
      * It reloads data and redraw the layer.
      */
-    redraw(data) {
+    redraw() {
         if (this.getState().getLayer()) {
             // delete actual items
             this.deleteLayerItems();
             // prepare data
-            let workData = this.prepareMapData(data);
+            const data = this.getMap().getState().getFilteredData();
+
             // update map
-            let markers = this.createMarkers(workData);
-            // update state
+            const markData = this.prepareMapData(data);
+            const markers = this.createMarkers(markData);
             this.getState().setMarkers(markers);
         }
     }
 
-    updateMarkers({ data, transitionDuration, transitionDelay }) {
+    updateMarkers({ data, transitionDuration = 0, transitionDelay = 0}) {
         const markersData = this.prepareMapData(data);
 
         this.getState().getMarkers().forEach((marker) => {
@@ -473,28 +454,20 @@ class MarkerLayerTool extends AbstractLayerTool {
      */
     handleEvent(event) {
         if (event.getType() === DataChangeEvent.TYPE()) {
-            // data change
-            if (event.getSource() !== "timeline") {
-                let data = this.getMap().getState().getCurrentData();
-                this.redraw(data);
+            const { data, options } = event.getObject()
+            if (options.redraw) {
+                this.redraw();
+            } else {
+                const { transitionDuration, transitionDelay } = options;
+                this.updateMarkers({ data, transitionDuration, transitionDelay });
             }
         } else if (event.getType() === SelectionToolEvent.TYPE()) {
-            let data = this.getMap().getState().getCurrentData();
-            this.redraw(data);
-            if (this._timeData && this.getSelectionTool().getState().getSelection().getIds().length === 0) {
-                this.updateMarkers({ data: this._timeData.data, transitionDuration: 0, transitionDelay: 0 });
-            }
+            this.redraw();
         } else if(event.getType() === ThemesToolEvent.TYPE()) {
             var map = event.getObject();
             document.documentElement.style.setProperty('--leaflet-marker-donut1', map.getDataColors().triadic1);
             document.documentElement.style.setProperty('--leaflet-marker-donut2', map.getDataColors().triadic2);
             document.documentElement.style.setProperty('--leaflet-marker-donut3', map.getDataColors().triadic3);
-        } else if (event.getType() === TimeChangeEvent.TYPE()) {
-            const timeData = event.getObject();
-            this._timeData = timeData;
-            this.updateMarkers(timeData);
-        } else if (event.getType() === TimeDestroyedEvent.TYPE()) {
-            this._timeData = null;
         }
     }
 }

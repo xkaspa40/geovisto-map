@@ -13,9 +13,6 @@ import SelectionToolEvent from "../../selection/model/event/SelectionToolEvent";
 import ThemesToolEvent from "../../themes/model/event/ThemesToolEvent";
 import D3PathForceSimulator from "./util/D3PathForceSimulator";
 import ProjectionUtil from "./util/ProjectionUtil";
-import TimeChangeEvent from "../../timeline/model/TimeChangeEvent";
-import { ToolInitializedEvent } from "../../../model/event/basic/ToolInitializedEvent";
-import { TimelineTool } from "../../timeline";
 
 /**
  * This class represents Connection layer tool. It uses SVG layer and D3 to draw the lines.
@@ -298,9 +295,14 @@ class ConnectionLayerTool extends AbstractLayerTool {
      */
     handleEvent(event) {
         if(event.getType() == DataChangeEvent.TYPE()) {
-            if (event.getSource() === "timeline") return;
-            // data change
-            this.redraw();
+            const { data, options } = event.getObject()
+            if (options.redraw) {
+                this.redraw();
+            } else {
+                const { transitionDuration, transitionDelay } = options;
+                this.prepareMapData(data);
+                this.handleTimeChange(transitionDuration, transitionDelay);
+            }
         } else if(event.getType() == SelectionToolEvent.TYPE()) {
             // selection change
             this.onSelectionUpdate(event.getObject())
@@ -309,10 +311,6 @@ class ConnectionLayerTool extends AbstractLayerTool {
             document.documentElement.style.setProperty('--layer-connection', map.getDataColors().lineColor);
             document.documentElement.style.setProperty('--layer-connection-highlight',map.getHighlightColor().highlight);
             document.documentElement.style.setProperty('--layer-connection-other', map.getHighlightColor().deempasize);
-        } else if (event.getType() === TimeChangeEvent.TYPE()) {
-            const { data, transitionDuration, transitionDelay } = event.getObject();
-            this.prepareMapData(data);
-            this.handleTimeChange(transitionDuration, transitionDelay);
         }
     }
 

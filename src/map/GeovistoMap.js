@@ -9,15 +9,15 @@ import GeovistoMapState from './GeovistoMapState';
 
 /**
  * Representation of map wrapper which handles map layers, sidebar and other tools
- * 
+ *
  * @author Jiri Hynek
  */
 class GeovistoMap extends AbstractMapObject {
 
     /**
      * Initializes object.
-     * 
-     * @param {*} props 
+     *
+     * @param {*} props
      */
     constructor(props) {
         super(props);
@@ -75,7 +75,7 @@ class GeovistoMap extends AbstractMapObject {
         // render map and tools
         this.create();
     }
-  
+
     /**
      * Resets variables.
      */
@@ -97,7 +97,7 @@ class GeovistoMap extends AbstractMapObject {
                 tools[i].initialize(this, mapConfig.getToolConfig(tools[i].getId()));
             }
         }
-        
+
         // deserialize remaining tools with respect to the config
         let toolsConfigs = mapConfig.getToolsConfigs();
         if(toolsConfigs != undefined) {
@@ -163,7 +163,7 @@ class GeovistoMap extends AbstractMapObject {
         let mapContainer = document.getElementById(this.getState().getId()).appendChild(document.createElement("div"));
         mapContainer.setAttribute("id", this.getContainerId())
         mapContainer.setAttribute("class", this.getContainerClass())
-        
+
         return mapContainer;
     }
 
@@ -211,7 +211,7 @@ class GeovistoMap extends AbstractMapObject {
 
     /**
      * It returns the map attribution.
-     * 
+     *
      * This function can be overriden;
      */
     getMapAttribution() {
@@ -232,22 +232,25 @@ class GeovistoMap extends AbstractMapObject {
 
     /**
      * It updates data and invokes listeners.
-     * 
+     *
      * @param {[any]} data
      * @param {*} source of the change
      */
-    updateData(data, source) {
+    updateData(data, options = { redraw: true, transitionDelay: 0, transitionDuration: 0 }, source) {
+        if (options.redraw) {
+            this.getState().setFilteredData(data);
+        }
         // update state
         this.getState().setCurrentData(data);
 
         // create and dispatch event
-        this.dispatchEvent(new DataChangeEvent(source, data));
+        this.dispatchEvent(new DataChangeEvent(source, { data, options }));
     }
-    
+
     /**
      * It sends custom event to all listeners (tools)
-     * 
-     * @param {AbstractEvent} event 
+     *
+     * @param {AbstractEvent} event
      */
     dispatchEvent(event) {
         console.log("event: " + event.getType(), event);

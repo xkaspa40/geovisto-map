@@ -10,10 +10,6 @@ import SelectionToolEvent from "../../selection/model/event/SelectionToolEvent";
 import DataChangeEvent from "../../../model/event/basic/DataChangeEvent";
 import MapSelection from "../../selection/model/item/generic/MapSelection";
 import SelectionTool from "../../selection/SelectionTool";
-import TimeChangeEvent from "../../timeline/model/TimeChangeEvent";
-import { TimeDestroyedEvent } from "../../timeline/model/TimeDestroyedEvent";
-import { ToolInitializedEvent } from "../../../model/event/basic/ToolInitializedEvent";
-import { TimelineTool } from "../../timeline";
 
 // TODO: move to defaults
 const COLOR_orange = ['#8c8c8c', '#ffffcc', '#ffff99', '#ffcc99', '#ff9966', '#ff6600', '#ff0000', '#cc0000'];
@@ -66,15 +62,6 @@ class ChoroplethLayerTool extends AbstractLayerTool {
      */
     createState() {
         return new ChoroplethLayerToolState();
-    }
-
-    updateDataMapping(dataMapping, onlyStyle) {
-        // update state
-        this.getState().setDataMapping(dataMapping);
-
-        // redraw the layer items
-        this.redraw(onlyStyle);
-        this.getMap().dispatchEvent(new ToolInitializedEvent(ChoroplethLayerTool.TYPE()))
     }
 
     /**
@@ -289,8 +276,9 @@ class ChoroplethLayerTool extends AbstractLayerTool {
      */
     handleEvent(event) {
         if (event.getType() === DataChangeEvent.TYPE()) {
-            this.updatePolygons(event.getObject());
-            this.updateStyle();
+            const { data, options: { transitionDuration, transitionDelay } } = event.getObject()
+            this.updatePolygons(data);
+            this.updateStyle({ transitionDuration, transitionDelay });
         }
         if (event.getType() === SelectionToolEvent.TYPE()) {
             this.updateStyle();
@@ -300,41 +288,6 @@ class ChoroplethLayerTool extends AbstractLayerTool {
             document.documentElement.style.setProperty('--choropleth-item-hover', map.getHoverColor());
             document.documentElement.style.setProperty('--choropleth-item-select', map.getHighlightColor().selected);
             document.documentElement.style.setProperty('--choropleth-item-highlight', map.getHighlightColor().highlight);
-        }
-        if (event.getType() === TimeChangeEvent.TYPE()) {
-            const { data, transitionDuration, transitionDelay } = event.getObject();
-            this.getState().getLayer().eachLayer((item) => {
-                if (item._path != undefined) {
-                    item._path.style.transitionDuration = `${transitionDuration}ms`;
-                    item._path.style.transitionDelay = `${transitionDelay}ms`;
-                }
-            });
-
-            this.updatePolygons(data);
-            this.getState().getLayer().eachLayer((item) => this.updateItemStyle(item));
-        }
-        if (event.getType() === ToolInitializedEvent.TYPE()) {
-            if (event.getSource() === TimelineTool.TYPE()) {
-                const { transitionDuration } = event.getObject();
-
-                if (this.getState().getLayer()) {
-                    this.getState().getLayer().eachLayer((item) => {
-                        if (item._path != undefined) {
-                            item._path.style.transitionDuration = `${transitionDuration}ms`;
-                        }
-                    });
-                }
-            }
-        }
-        if (event.getType() === TimeDestroyedEvent.TYPE()) {
-            if (this.getState().getLayer()) {
-                this.getState().getLayer().eachLayer((item) => {
-                    if (item._path != null) {
-                        item._path.style.transitionDuration = '0ms';
-                        item._path.style.transitionDelay = '0ms';
-                    }
-                });
-            }
         }
     }
 
@@ -477,7 +430,7 @@ class ChoroplethLayerTool extends AbstractLayerTool {
     /**
      * It updates style of all layer features using the current template.
      */
-    updateStyle() {
+    updateStyle({ transitionDuration = 0, transitionDelay = 0 } = {}) {
         if (this.getState().getLayer()) {
             var _this = this;
             let dataMappingModel = _this.getDefaults().getDataMappingModel();
@@ -540,6 +493,8 @@ class ChoroplethLayerTool extends AbstractLayerTool {
 
 
             this.getState().getLayer().eachLayer(function (item) {
+                item._path.style.transitionDuration = `${transitionDuration}ms`;
+                item._path.style.transitionDelay = `${transitionDelay}ms`;
                 _this.updateItemStyle(item);
             });
         }

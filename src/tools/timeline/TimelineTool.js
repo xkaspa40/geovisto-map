@@ -6,13 +6,8 @@ import AbstractLayerTool from "../layers/abstract/AbstractLayerTool";
 import TimelineToolTabControl from "./sidebar/TimelineToolTabControl";
 import TimelineToolDefaults from "./TimelineToolDefaults";
 import TimelineToolState from "./TimelineToolState";
-import { FiltersTool } from "../filters";
-import TimeChangeEvent from "./model/TimeChangeEvent";
 import { LatLng } from "leaflet";
 import DataChangeEvent from "../../model/event/basic/DataChangeEvent";
-import { ToolInitializedEvent } from "../../model/event/basic/ToolInitializedEvent";
-import { TimeDestroyedEvent } from "./model/TimeDestroyedEvent";
-
 
 export class TimelineTool extends AbstractLayerTool {
     constructor(props, container, config) {
@@ -98,23 +93,8 @@ export class TimelineTool extends AbstractLayerTool {
         };
     }
 
-    setState(enabled) {
-        if (enabled !== this.enabled) {
-            if (enabled) {
-                this.unfilteredActData = this.container.actData;
-            }
-            if (!enabled && this.timelineControl) {
-                this.container.filterData([]);
-                this.container.getMap().removeControl(this.timelineControl);
-                this.timelineControl = null;
-                // this.getMap().updateData(this.unfilteredActData);
-            }
-            this.enabled = enabled;
-        }
-    }
-
     calculateTimes() {
-        const data = this.getMap().getState().getCurrentData();
+        const data = this.getMap().getState().getFilteredData();
         const { timePath, realTimeEnabled, granularity } = this.formState;
         let times = data.map(record => record[timePath]);
         times = [...new Set(times)];
@@ -138,27 +118,16 @@ export class TimelineTool extends AbstractLayerTool {
                 leafletMap.setView(center, story.zoom);
             }
         }
-        this.getMap().dispatchEvent(new TimeChangeEvent({
-            data: this.data.values.get(this.times[currentTimeIndex]),
-            transitionDuration: story && story.transitionDuration ?
-                story.transitionDuration :
-                this.formState.transitionDuration,
-            transitionDelay: story && story.transitionDelay ? story.transitionDelay : 0,
-        }));
-    }
-
-
-    /**
-     * Help function which acquires and returns the filtering tool if available.
-     */
-    getFiltersTool() {
-        if (this.filtersTool == undefined) {
-            let tools = this.getMap().getState().getTools().getByType(FiltersTool.TYPE());
-            if (tools.length > 0) {
-                this.filtersTool = tools[0];
-            }
-        }
-        return this.filtersTool;
+        this.getMap().updateData(
+            this.data.values.get(this.times[currentTimeIndex]),
+            {
+                transitionDuration: story && story.transitionDuration ?
+                    story.transitionDuration :
+                    this.formState.transitionDuration,
+                transitionDelay: story && story.transitionDelay ? story.transitionDelay : 0,
+            },
+            TimelineTool.TYPE()
+        )
     }
 
     createData() {
@@ -173,7 +142,7 @@ export class TimelineTool extends AbstractLayerTool {
                 return timeStamp > time && timeStamp < this.times[index + 1]
             });
         }
-        this.getMap().getState().getCurrentData().forEach((item) => {
+        this.getMap().getState().getFilteredData().forEach((item) => {
             const timeStamp = getTimeStamp(item[this.formState.timePath]);
             values.set(timeStamp, [...values.get(timeStamp), item]);
         });
@@ -238,14 +207,6 @@ export class TimelineTool extends AbstractLayerTool {
             );
         }
         this.timelineService.onStoryChanged.subscribe(this.onStoryChange.bind(this));
-        this.getMap()
-            .dispatchEvent(new ToolInitializedEvent(
-                TimelineTool.TYPE(),
-                {
-                    stepTimeLength: this.formState.stepTimeLength,
-                    transitionDuration: this.formState.transitionDuration
-                }
-            ));
 
         this.timelineService.initialize();
     }
@@ -255,38 +216,15 @@ export class TimelineTool extends AbstractLayerTool {
             this.timelineControl.remove();
             this.timelineControl = null;
         }
-
-        this.getFiltersTool();
-        let mapData = this.getMap().getState().getMapData();
-        const filteredData = this.filtersTool.getState()
-            .getFiltersManager()
-            .filterData(mapData, mapData.getData(), this.filtersTool.getState().getFilterRules())
-        this.getMap().updateData(filteredData);
-        this.getMap().dispatchEvent(new TimeDestroyedEvent())
+        this.getMap().updateData(this.getMap().getState().getFilteredData());
     }
 
     handleEvent(event) {
         if (!this.timelineControl) return;
 
         if (event.getType() === DataChangeEvent.TYPE()) {
-            if (event.getSource() === "timeline") return;
-            this.initializeTimeline(this.formState)
-        }
-        if (event.getType() === ToolInitializedEvent.TYPE()) {
             if (event.getSource() === TimelineTool.TYPE()) return;
-
-            const { currentTimeIndex } = this.timelineService.getState();
-            this.getMap()
-                .dispatchEvent(new ToolInitializedEvent(
-                    TimelineTool.TYPE(),
-                    { stepTimeLength: this.formState.stepTimeLength }
-                ));
-            this.getMap()
-                .dispatchEvent(new TimeChangeEvent({
-                    data: this.data.values.get(this.times[currentTimeIndex]),
-                    transitionDuration: 0,
-                    transitionDelay: 0,
-                }));
+            this.initializeTimeline(this.formState)
         }
     }
 }

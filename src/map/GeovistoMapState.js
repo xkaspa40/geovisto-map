@@ -6,7 +6,7 @@ import AbstractMapConfig from "../model/config/AbstractMapConfig";
 /**
  * This class manages state of the map.
  * It wraps the state since the map can work with state objects which needs to be explicitly serialized.
- * 
+ *
  * @author Jiri Hynek
  */
 class GeovistoMapState extends AbstractMapObjectState {
@@ -20,12 +20,12 @@ class GeovistoMapState extends AbstractMapObjectState {
 
     /**
      * It resets state with respect to initial props. Optionally, defaults can be set if property is undefined.
-     * 
-     * @param {*} defaults 
+     *
+     * @param {*} defaults
      */
     reset(defaults) {
         super.reset(defaults);
-        
+
         let props = this.getProps();
 
         // templates
@@ -51,7 +51,7 @@ class GeovistoMapState extends AbstractMapObjectState {
 
     /**
      * It takes config and desrializes the values.
-     * 
+     *
      * @param {*} config
      */
     deserialize(config) {
@@ -64,8 +64,8 @@ class GeovistoMapState extends AbstractMapObjectState {
 
     /**
      * It serializes the map state. Optionally, a serialed value can be let undefined if it equals the default value.
-     * 
-     * @param {*} defaults 
+     *
+     * @param {*} defaults
      */
     serialize(defaults) {
         // do not serialize the id and type for map
@@ -97,8 +97,8 @@ class GeovistoMapState extends AbstractMapObjectState {
 
     /**
      * It returns the Leaflet map.
-     * 
-     * @param {L.Map} map 
+     *
+     * @param {L.Map} map
      */
     setLeafletMap(map) {
         return this.map = map;
@@ -113,8 +113,8 @@ class GeovistoMapState extends AbstractMapObjectState {
 
     /**
      * It sets tool templates.
-     * 
-     * @param {AbstractToolsManager} toolTemplates 
+     *
+     * @param {AbstractToolsManager} toolTemplates
      */
     setToolTemplates(toolTemplates) {
         this.toolTemplates = toolTemplates;
@@ -129,8 +129,8 @@ class GeovistoMapState extends AbstractMapObjectState {
 
     /**
      * It sets tools.
-     * 
-     * @param {AbstractToolsManager} tools 
+     *
+     * @param {AbstractToolsManager} tools
      */
     setTools(tools) {
         // we use copies of predefined tools due to later multiple imports of configs
@@ -147,12 +147,21 @@ class GeovistoMapState extends AbstractMapObjectState {
     /**
      * It sets the MapData object.
      * note: It also updates the current data.
-     * 
-     * @param {AbstractMapData} mapData 
+     *
+     * @param {AbstractMapData} mapData
      */
     setMapData(mapData) {
         this.mapData = mapData;
+        this.setFilteredData(mapData.getData())
         this.setCurrentData(mapData.getData());
+    }
+
+    setFilteredData(data) {
+        this.filteredData = data;
+    }
+
+    getFilteredData() {
+        return this.filteredData;
     }
 
     /**
@@ -164,7 +173,7 @@ class GeovistoMapState extends AbstractMapObjectState {
 
     /**
      * It sets current data.
-     * 
+     *
      * @param {[any]} data
      */
     setCurrentData(data) {
@@ -180,8 +189,8 @@ class GeovistoMapState extends AbstractMapObjectState {
 
     /**
      * It sets the MapConfig object.
-     * 
-     * @param {AbstractMapConfig} mapData 
+     *
+     * @param {AbstractMapConfig} mapData
      */
     setMapConfig(mapConfig) {
         this.mapConfig = mapConfig;
@@ -196,7 +205,7 @@ class GeovistoMapState extends AbstractMapObjectState {
 
     /**
      * It sets polygons.
-     * 
+     *
      * @param {[any]} polygons
      */
     setPolygons(polygons) {
@@ -212,7 +221,7 @@ class GeovistoMapState extends AbstractMapObjectState {
 
     /**
      * It sets centroids.
-     * 
+     *
      * @param {[any]} centroids
      */
     setCentroids(centroids) {
@@ -228,7 +237,7 @@ class GeovistoMapState extends AbstractMapObjectState {
 
     /**
      * It sets initial zoom level.
-     * 
+     *
      * @param {number} zoom
      */
     setInitialZoom(zoom) {
@@ -244,7 +253,7 @@ class GeovistoMapState extends AbstractMapObjectState {
 
     /**
      * It sets initial map center.
-     * 
+     *
      * @param {*} mapCenter
      */
     setInitialMapCenter(mapCenter) {
@@ -260,7 +269,7 @@ class GeovistoMapState extends AbstractMapObjectState {
 
     /**
      * It sets initial map structure.
-     * 
+     *
      * @param {*} mapStructure
      */
     setInitialMapStructure(mapStructure) {
