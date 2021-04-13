@@ -37,6 +37,8 @@ import 'leaflet-draw';
 
 import * as d33 from 'd3-3-5-5';
 import Pather from 'leaflet-pather';
+import { isEmpty, sortReverseAlpha } from './util/functionUtils';
+import { FIRST, NOT_FOUND, SPACE_BAR } from './util/constants';
 
 // !inject in rollup config doesn't work and pather throws errors without this line
 window.d3 = d33;
@@ -45,8 +47,6 @@ window.d3 = d33;
 L.Draw.Feature.include(L.Evented.prototype);
 L.Draw.Feature.include(L.Draw.Feature.SnapMixin);
 L.Draw.Feature.addInitHook(L.Draw.Feature.SnapMixin._snap_initialize);
-
-const SPACE_BAR = 32;
 
 export const DRAWING_TOOL_LAYER_TYPE = 'geovisto-tool-layer-drawing';
 
@@ -116,73 +116,6 @@ class DrawingLayerTool extends AbstractLayerTool {
     return new DrawingLayerToolTabControl({ tool: this });
   }
 
-  // ? possibly move to state
-  serializeToGeoJSON() {
-    const geo = {
-      type: 'FeatureCollection',
-      features: [],
-    };
-
-    this.getState().featureGroup.eachLayer((l) => {
-      let feature = l.toGeoJSON();
-
-      let properties = convertOptionsToProperties(l.options);
-      feature.properties = properties;
-
-      if (l.popupContent) feature.properties.popupContent = l.popupContent;
-      if (l.identifier) feature.properties.identifier = l.identifier;
-
-      let iconOptions = l?.options?.icon?.options;
-      if (iconOptions) feature.properties.iconOptions = iconOptions;
-
-      geo.features.push(feature);
-    });
-
-    return geo;
-  }
-
-  // ? possibly move to state
-  deserializeGeoJSON(geojson) {
-    // console.log({ geojson });
-    if (geojson.type === 'FeatureCollection' && geojson.features) {
-      geojson.features.forEach((f) => {
-        let opts = convertPropertiesToOptions(f.properties);
-        let lType = getLeafletTypeFromFeature(f);
-        featureToLeafletCoordinates(f.geometry.coordinates, f.geometry.type);
-        let result;
-        if (lType === 'polygon') {
-          let simplified = simplifyFeature(f);
-          result = new L.polygon(simplified.geometry.coordinates, opts);
-        } else if (lType === 'polyline' || lType === 'vertice') {
-          result = new L.polyline(f.geometry.coordinates, opts);
-        } else if (lType === 'marker') {
-          let spreadable = f.properties.iconOptions || {};
-          let options = {
-            ...iconStarter,
-            iconUrl: this.getSidebarTabControl().getState().getSelectedIcon(),
-            ...spreadable,
-          };
-
-          let icon = new L.Icon(options);
-          result = new L.Marker.Touch(f.geometry.coordinates, { icon });
-        }
-        if (result) {
-          result.layerType = lType;
-          if (f.properties.popupContent) {
-            result.popupContent = f.properties.popupContent;
-            result.bindPopup(f.properties.popupContent);
-          }
-          if (f.properties.identifier) {
-            result.identifier = f.properties.identifier;
-          }
-          if (result.dragging) result.dragging.disable();
-          this.getState().addLayer(result);
-        }
-      });
-    }
-    return;
-  }
-
   search() {
     this.redrawSidebarTabControl('search');
   }
@@ -250,7 +183,7 @@ class DrawingLayerTool extends AbstractLayerTool {
                     let result = new L.polygon(latlngs, {
                       ...l.options,
                     });
-                    let newLatLngs = depth === 1 ? result._latlngs : result._latlngs[0];
+                    let newLatLngs = depth === 1 ? result._latlngs : result._latlngs[FIRST];
                     replaceLayer(result, l, newLatLngs);
                   });
                 }
@@ -326,16 +259,16 @@ class DrawingLayerTool extends AbstractLayerTool {
 
   polySlice(layer) {
     let lineFeat = getGeoJSONFeatureFromLayer(layer);
-
     let selectedLayer = this.getState().selectedLayer;
+
     if (selectedLayer) {
       const THICK_LINE_WIDTH = 0.001;
       const THICK_LINE_UNITS = 'kilometers';
       let offsetLine;
-      let f = getGeoJSONFeatureFromLayer(selectedLayer);
+      let selectedFeature = getGeoJSONFeatureFromLayer(selectedLayer);
 
-      let fType = f ? f.geometry.type.toLowerCase() : '';
-      let isFeatPoly = fType === 'polygon' || fType === 'multipolygon';
+      let isFeatPoly = isFeaturePoly(selectedFeature);
+
       if (isFeatPoly) {
         let coords;
         let latlngs;
@@ -345,17 +278,20 @@ class DrawingLayerTool extends AbstractLayerTool {
           });
 
           let polyCoords = [];
+          // * push all of the coordinates of original line
           for (let j = 0; j < lineFeat.geometry.coordinates.length; j++) {
             polyCoords.push(lineFeat.geometry.coordinates[j]);
           }
+          // * push all of the coordinates of offset line
           for (let j = offsetLine.geometry.coordinates.length - 1; j >= 0; j--) {
             polyCoords.push(offsetLine.geometry.coordinates[j]);
           }
+          // * to create linear ring
           polyCoords.push(lineFeat.geometry.coordinates[0]);
 
           let thickLineString = turf.lineString(polyCoords);
           let thickLinePolygon = turf.lineToPolygon(thickLineString);
-          let clipped = turf.difference(f, thickLinePolygon);
+          let clipped = turf.difference(selectedFeature, thickLinePolygon);
           clipped = simplifyFeature(clipped);
 
           coords = clipped.geometry.coordinates;
@@ -433,11 +369,11 @@ class DrawingLayerTool extends AbstractLayerTool {
       .forEach(({ latlng, lId, marker }) => {
         this.state.createdVertices.forEach((layer) => {
           // * used indexing instead of another loop (vertices have only 2 points)
-          let spread = this.state.mappedMarkersToVertices[lId] || [];
+          let spread = this.state.mappedMarkersToVertices[lId] || {};
           if (layer.getLatLngs()[0].equals(latlng)) {
-            this.state.mappedMarkersToVertices[lId] = [...spread, { layer, index: 0 }];
+            this.state.mappedMarkersToVertices[lId] = { ...spread, 0: layer };
           } else if (layer.getLatLngs()[1].equals(latlng)) {
-            this.state.mappedMarkersToVertices[lId] = [...spread, { layer, index: 1 }];
+            this.state.mappedMarkersToVertices[lId] = { ...spread, 1: layer };
           }
         });
       });
@@ -445,16 +381,17 @@ class DrawingLayerTool extends AbstractLayerTool {
 
   changeVerticesLocation(latlng, oldlatlng, markerID) {
     const markerVertices = this.state.mappedMarkersToVertices[markerID];
-    if (!markerVertices || !markerVertices?.length) return;
+    if (!markerVertices) return;
 
     this.setVerticesCoordinates(markerVertices, latlng);
   }
 
   setVerticesCoordinates(markerVertices, latlng) {
-    markerVertices.forEach((vertice) => {
-      let latLngs = L.LatLngUtil.cloneLatLngs(vertice.layer._latlngs);
-      latLngs[vertice.index] = latlng;
-      vertice.layer.setLatLngs(latLngs);
+    Object.keys(markerVertices).forEach((key) => {
+      let vertice = markerVertices[key];
+      let latLngs = L.LatLngUtil.cloneLatLngs(vertice._latlngs);
+      latLngs[key] = latlng;
+      vertice.setLatLngs(latLngs);
     });
   }
 
@@ -462,10 +399,6 @@ class DrawingLayerTool extends AbstractLayerTool {
     let layer = e.layer;
     layer.layerType = e.layerType;
     if (e.keyIndex) layer.kIdx = e.keyIndex;
-
-    let prevLayer = this.getState().getPrevLayer();
-    if (prevLayer?.layerType !== e.layerType) this.redrawSidebarTabControl(e.layerType);
-    // if (e.layerType !== 'painted') this.getSidebarTabControl().getState().setEnabledEl(null);
 
     const { intersectActivated } = this.getSidebarTabControl().getState();
 
@@ -545,6 +478,7 @@ class DrawingLayerTool extends AbstractLayerTool {
 
     map.on('click', () => {
       const sidebar = this.getSidebarTabControl();
+      console.log('got here');
       if (Boolean(sidebar.getState().enabledEl)) return;
       let selected = this.getState().selectedLayer;
       if (selected) {
@@ -681,6 +615,7 @@ class DrawingLayerTool extends AbstractLayerTool {
     let paintPoly = this.getSidebarTabControl().getState().paintPoly;
     paintPoly.clearPaintedPolys(selectedLayer.kIdx);
     this.getState().removeSelectedLayer();
+    this.redrawSidebarTabControl(null);
   }
 
   selectElement() {

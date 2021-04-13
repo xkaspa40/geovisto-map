@@ -11,3 +11,13 @@ export function debounce(func, wait, immediate) {
     if (immediate && !timeout) func.apply(context, args);
   };
 }
+
+export const isEmpty = (obj) => {
+  return typeof obj === 'object' && obj !== null && Object.keys(obj).length === 0;
+};
+
+export const sortReverseAlpha = (a, b) => {
+  if (a < b) return 1;
+  if (a > b) return -1;
+  return 0;
+};

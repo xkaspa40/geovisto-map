@@ -138,7 +138,8 @@ export default function useDrawingToolbar() {
       const sidebar = this.options.tool.getSidebarTabControl();
       let enabled = sidebar.getState().getEnabledEl();
       if (enabled) {
-        enabled.disable();
+        sidebar.getState().setEnabledEl(null);
+        this.redrawSidebar();
       }
     },
 
@@ -201,11 +202,16 @@ export default function useDrawingToolbar() {
       L.DomEvent.on(deselectBtn, 'click', this.deselect, this);
       L.DomEvent.on(connectBtn, 'click', L.DomEvent.stopPropagation)
         .on(connectBtn, 'click', L.DomEvent.preventDefault)
-        .on(connectBtn, 'click', () => connectClick(map, sidebar), this);
+        .on(connectBtn, 'click', () => this.initConnect(map, sidebar), this);
       L.DomEvent.on(searchBtn, 'click', this.initSearch, this);
       L.DomEvent.on(paintBtn, 'click', this.initPainting, this);
       L.DomEvent.on(eraserBtn, 'click', this.initErasing, this);
       L.DomEvent.on(removeBtn, 'click', this.initRemove, this);
+    },
+
+    initConnect: function (map, sidebar) {
+      this.redrawSidebar('marker');
+      connectClick(map, sidebar);
     },
 
     initRemove: function (evt) {
@@ -213,6 +219,7 @@ export default function useDrawingToolbar() {
     },
 
     initErasing: function (evt) {
+      this.redrawSidebar(null);
       let paintPoly = this.options.tool.getSidebarTabControl().getState().paintPoly;
       paintPoly.erase(evt);
     },
@@ -222,11 +229,7 @@ export default function useDrawingToolbar() {
       let sidebar = this.options.tool.getSidebarTabControl();
       sidebar.getState().paintPoly.clickDraw(e);
 
-      if (paintPoly?.isActive()) {
-        sidebar.getState().setEnabledEl(paintPoly);
-      } else {
-        sidebar.getState().setEnabledEl(null);
-      }
+      sidebar.getState().setEnabledEl(paintPoly);
     },
 
     initSearch: function () {
@@ -234,15 +237,19 @@ export default function useDrawingToolbar() {
     },
 
     initCreatePolyline: function (map, sidebar) {
+      this.redrawSidebar('polyline');
       polylineCreate(map, sidebar);
     },
     initCreatePolygon: function (map, sidebar) {
+      this.redrawSidebar('polygon');
       polygonCreate(map, sidebar);
     },
     initCreateMarker: function (map, sidebar) {
+      this.redrawSidebar('marker');
       markerCreate(map, sidebar);
     },
     initSlicePoly: function (map, sidebar) {
+      this.redrawSidebar(null);
       slicePoly(map, sidebar);
     },
 
@@ -258,7 +265,7 @@ export default function useDrawingToolbar() {
         this.options.tool.normalizeElement(selected);
         this.options.tool.initNodeEdit(true);
         this.options.tool.getState().clearSelectedLayer();
-        this.options.tool.redrawSidebarTabControl();
+        this.redrawSidebar();
         this.setCurrEl(null);
         document.querySelector('.leaflet-container').style.cursor = '';
       }
@@ -301,6 +308,10 @@ export default function useDrawingToolbar() {
 
     getSelecting: function () {
       return this.options.tool.getState().getSelecting();
+    },
+
+    redrawSidebar: function (val) {
+      this.options.tool.redrawSidebarTabControl(val);
     },
   });
 

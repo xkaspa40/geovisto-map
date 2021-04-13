@@ -84,7 +84,7 @@ class GeovistoMapState extends AbstractMapObjectState {
     // get drawing tool
     let found = tools.find((t) => t.getState().type === DRAWING_TOOL_LAYER_TYPE);
     if (found) {
-      found.deserializeGeoJSON(geojson);
+      found.getState().deserializeGeoJSON(geojson);
     }
   }
 
@@ -121,7 +121,7 @@ class GeovistoMapState extends AbstractMapObjectState {
     // get drawing tool
     let found = tools.find((t) => t.getState().type === DRAWING_TOOL_LAYER_TYPE);
     if (found) {
-      const config = found.serializeToGeoJSON();
+      const config = found.getState().serializeToGeoJSON();
       return config;
     }
     return {};

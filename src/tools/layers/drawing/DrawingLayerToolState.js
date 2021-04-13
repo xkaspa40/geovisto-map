@@ -1,6 +1,15 @@
 import { AbstractLayerToolState } from '../abstract';
 import L from 'leaflet';
-import { highlightStyles, normalStyles } from './util/Poly';
+import {
+  convertOptionsToProperties,
+  convertPropertiesToOptions,
+  featureToLeafletCoordinates,
+  getLeafletTypeFromFeature,
+  highlightStyles,
+  normalStyles,
+} from './util/Poly';
+import { isEmpty, sortReverseAlpha } from './util/functionUtils';
+import { iconStarter } from './util/Marker';
 
 /**
  * This class provide functions for using the state of the layer tool.
@@ -105,38 +114,158 @@ class DrawingLayerToolState extends AbstractLayerToolState {
     this.selecting = false;
   }
 
+  addMappedVertices = (layer, result) => {
+    let lId = layer._leaflet_id;
+    let mappedVertices = this.mappedMarkersToVertices[lId];
+    let mappedProperty = {};
+    Object.keys(mappedVertices).forEach((key) => {
+      mappedProperty[key] = mappedVertices[key]._leaflet_id;
+    });
+    if (!isEmpty(mappedProperty)) result.mappedVertices = mappedProperty;
+  };
+
+  initMappedMarkersToVertices = (lType, result, source) => {
+    if (lType === 'marker' && source.mappedVertices) {
+      this.mappedMarkersToVertices[result._leaflet_id] = source.mappedVertices;
+    }
+    if (lType === 'polyline' || lType === 'vertice') {
+      // * keys are marker leaflet ids
+      Object.keys(this.mappedMarkersToVertices).forEach((markerId) => {
+        // * values are index of vertice
+        let verticesKeyArr = Object.keys(this.mappedMarkersToVertices[markerId]);
+        // * leaflet id of vertice
+        let vertLeafId = source.mappedVerticeId;
+        let verticesObj = this.mappedMarkersToVertices[markerId];
+        verticesKeyArr.forEach((vertKey) => {
+          if (verticesObj[vertKey] === vertLeafId) {
+            let spreadable = this.mappedMarkersToVertices[markerId] || {};
+            this.mappedMarkersToVertices[markerId] = {
+              ...spreadable,
+              [vertKey]: result,
+            };
+          }
+        });
+      });
+    }
+  };
+
+  serializeToGeoJSON() {
+    const geo = {
+      type: 'FeatureCollection',
+      features: [],
+    };
+
+    this.featureGroup.eachLayer((l) => {
+      let feature = l.toGeoJSON();
+
+      let properties = convertOptionsToProperties(l.options);
+      feature.properties = properties;
+
+      if (l.popupContent) feature.properties.popupContent = l.popupContent;
+      if (l.identifier) feature.id = l.identifier;
+
+      let iconOptions = l?.options?.icon?.options;
+      if (iconOptions) feature.properties.iconOptions = iconOptions;
+
+      if (this.isConnectMarker(l)) {
+        this.addMappedVertices(l, feature.properties);
+      }
+      if (l.layerType === 'vertice') feature.properties.mappedVerticeId = l._leaflet_id;
+
+      geo.features.push(feature);
+    });
+
+    return geo;
+  }
+
+  deserializeGeoJSON(geojson) {
+    // console.log({ geojson });
+    if (geojson.type === 'FeatureCollection' && geojson.features) {
+      geojson.features
+        .sort((a, b) => sortReverseAlpha(a.geometry.type, b.geometry.type))
+        .forEach((f) => {
+          let opts = convertPropertiesToOptions(f.properties);
+          let lType = getLeafletTypeFromFeature(f);
+          featureToLeafletCoordinates(f.geometry.coordinates, f.geometry.type);
+          let result;
+          if (lType === 'polygon') {
+            let simplified = simplifyFeature(f);
+            result = new L.polygon(simplified.geometry.coordinates, opts);
+          } else if (lType === 'polyline') {
+            result = new L.polyline(f.geometry.coordinates, opts);
+          } else if (lType === 'marker') {
+            let spreadable = f.properties.iconOptions || {};
+            let options = {
+              ...iconStarter,
+              iconUrl: this.tool.getSidebarTabControl().getState().getSelectedIcon(),
+              ...spreadable,
+            };
+
+            let icon = new L.Icon(options);
+            result = new L.Marker.Touch(f.geometry.coordinates, { icon });
+          }
+          if (result) {
+            result.layerType = lType;
+            if (f.properties.popupContent) {
+              result.popupContent = f.properties.popupContent;
+              result.bindPopup(f.properties.popupContent);
+            }
+            if (f.id) {
+              result.identifier = f.id;
+            }
+            if (result.dragging) result.dragging.disable();
+            this.addLayer(result);
+          }
+          this.initMappedMarkersToVertices(lType, result, f.properties);
+        });
+    }
+
+    return;
+  }
+
   serialize(defaults) {
     let config = super.serialize(defaults);
 
     const exportSettings = [];
 
-    const pushPolygon = (layer, layerType) => {
+    const pushPolygon = (layer, layerType, extra = {}) => {
       const { options, _latlngs: latlngs, popupContent = '' } = layer;
       exportSettings.push({
         layerType,
         options: { ...options, ...normalStyles, draggable: true, transform: true },
         latlngs,
         popupContent,
+        ...extra,
+      });
+    };
+
+    const pushMarker = (layer, layerType) => {
+      const { popupContent = '' } = layer;
+      let extra = {};
+      if (this.isConnectMarker(layer)) {
+        this.addMappedVertices(layer, extra);
+      }
+      exportSettings.push({
+        layerType,
+        options: { ...layer?.options?.icon?.options, draggable: true, transform: true },
+        latlngs: layer._latlng,
+        popupContent,
+        ...extra,
       });
     };
 
     this.featureGroup.eachLayer((layer) => {
       const { layerType } = layer;
       if (layerType === 'marker') {
-        const { popupContent = '' } = layer;
-        exportSettings.push({
-          layerType,
-          options: { ...layer?.options?.icon?.options, draggable: true, transform: true },
-          latlngs: layer._latlng,
-          popupContent,
-        });
+        pushMarker(layer, layerType);
       } else {
         if (layer._layers) {
           layer.eachLayer((l) => {
             pushPolygon(l, layerType);
           });
         } else {
-          pushPolygon(layer, layerType);
+          let extra = layerType === 'vertice' ? { mappedVerticeId: layer._leaflet_id } : {};
+          pushPolygon(layer, layerType, extra);
         }
       }
     });
@@ -173,7 +302,7 @@ class DrawingLayerToolState extends AbstractLayerToolState {
       } else {
         let _latlng;
         let poly;
-        if (layer.layerType === 'polyline') {
+        if (layer.layerType === 'polyline' || layer.layerType === 'vertice') {
           _latlng = layer.latlngs.map((l) => L.latLng(l.lat, l.lng));
           poly = new L.polyline(_latlng, layer.options);
         }
@@ -192,6 +321,7 @@ class DrawingLayerToolState extends AbstractLayerToolState {
       layerToAdd.layerType = layer.layerType;
       if (layerToAdd.dragging) layerToAdd.dragging.disable();
       this.addLayer(layerToAdd);
+      this.initMappedMarkersToVertices(layer.layerType, layerToAdd, layer);
     });
   }
 }

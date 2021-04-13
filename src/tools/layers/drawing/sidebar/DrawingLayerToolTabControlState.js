@@ -76,7 +76,6 @@ class DrawingLayerToolTabControlState extends AbstractLayerToolTabControlState {
     this.paintPoly = new PaintPoly({
       tabState: this,
     });
-    console.log({ t: this });
 
     this.pather = new L.Pather({
       strokeWidth: 3,

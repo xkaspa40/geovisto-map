@@ -429,12 +429,11 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
             result.countryCode = countryCode;
             toolState.addLayer(result);
           });
-
-        document.querySelector('.leaflet-container').style.cursor = '';
-        this.searchForAreasBtn.removeAttribute('disabled');
       })
       .catch((err) => {
         console.error(err);
+      })
+      .finally(() => {
         document.querySelector('.leaflet-container').style.cursor = '';
         this.searchForAreasBtn.removeAttribute('disabled');
       });
@@ -450,73 +449,55 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     this.getState().setAdminLevel(val);
   };
 
-  /**
-   * It returns the sidebar tab pane.
-   */
-  getTabContent(layerType = null) {
-    // tab content
-    let tab = document.createElement('div');
-    let elem = tab.appendChild(document.createElement('div'));
-    elem.classList.add('drawing-sidebar');
+  addHeading = (title, elem) => {
+    let headingTag = document.createElement('h3');
+    headingTag.innerText = title;
+    elem.appendChild(headingTag);
+  };
 
-    const addHeading = (title) => {
-      let headingTag = document.createElement('h3');
-      headingTag.innerText = title;
-      elem.appendChild(headingTag);
-    };
+  renderSearchInputs = (elem, model) => {
+    this.addHeading('Search for place', elem);
+    // labeld text Search
+    this.inputSearch = SidebarInputFactory.createSidebarInput(model.search.input, {
+      label: model.search.label,
+      action: this.searchAction,
+      options: [],
+      placeholder: 'Press enter for search',
+      setData: this.onInputOptClick,
+    });
+    elem.appendChild(this.inputSearch.create());
 
-    // get data mapping model
-    let model = this.getDefaults().getDataMappingModel();
+    this.inputConnect = this.createConnectCheck();
+    elem.appendChild(this.inputConnect);
+    elem.appendChild(document.createElement('hr'));
+    this.addHeading('Search for area', elem);
 
-    let paintPolyControl = this.createBrushSizeControl();
-    if (paintPolyControl) elem.appendChild(paintPolyControl);
+    this.inputSearchForArea = SidebarInputFactory.createSidebarInput(model.searchForArea.input, {
+      label: model.searchForArea.label,
+      options: this.getState().getSelectCountries(),
+      action: this.searchForAreaAction,
+      value: this.getState().countryCode || '',
+    });
+    elem.appendChild(this.inputSearchForArea.create());
 
-    if (!layerType) return tab;
+    this.inputAdminLevel = SidebarInputFactory.createSidebarInput(model.adminLevel.input, {
+      label: model.adminLevel.label,
+      options: ADMIN_LEVELS,
+      action: this.pickAdminLevelAction,
+      value: this.getState().adminLevel,
+    });
+    elem.appendChild(this.inputAdminLevel.create());
 
-    if (layerType === 'search') {
-      addHeading('Search for place');
-      // labeld text Search
-      this.inputSearch = SidebarInputFactory.createSidebarInput(model.search.input, {
-        label: model.search.label,
-        action: this.searchAction,
-        options: [],
-        placeholder: 'Press enter for search',
-        setData: this.onInputOptClick,
-      });
-      elem.appendChild(this.inputSearch.create());
+    const hqCheck = this.createHighQualityCheck();
+    elem.appendChild(hqCheck);
 
-      this.inputConnect = this.createConnectCheck();
-      elem.appendChild(this.inputConnect);
-      elem.appendChild(document.createElement('hr'));
-      addHeading('Search for area');
+    this.searchForAreasBtn = document.createElement('button');
+    this.searchForAreasBtn.innerText = 'Submit';
+    this.searchForAreasBtn.addEventListener('click', this.fetchAreas);
+    elem.appendChild(this.searchForAreasBtn);
+  };
 
-      this.inputSearchForArea = SidebarInputFactory.createSidebarInput(model.searchForArea.input, {
-        label: model.searchForArea.label,
-        options: this.getState().getSelectCountries(),
-        action: this.searchForAreaAction,
-        value: this.getState().countryCode || '',
-      });
-      elem.appendChild(this.inputSearchForArea.create());
-
-      this.inputAdminLevel = SidebarInputFactory.createSidebarInput(model.adminLevel.input, {
-        label: model.adminLevel.label,
-        options: ADMIN_LEVELS,
-        action: this.pickAdminLevelAction,
-        value: this.getState().adminLevel,
-      });
-      elem.appendChild(this.inputAdminLevel.create());
-
-      const hqCheck = this.createHighQualityCheck();
-      elem.appendChild(hqCheck);
-
-      this.searchForAreasBtn = document.createElement('button');
-      this.searchForAreasBtn.innerText = 'Submit';
-      this.searchForAreasBtn.addEventListener('click', this.fetchAreas);
-      elem.appendChild(this.searchForAreasBtn);
-
-      return tab;
-    }
-
+  renderDataInputs = (elem, model) => {
     let disableTextFields = !Boolean(this._getSelected());
     // textfield Identifier
     this.inputPickIdentifier = this.createPickIdentifier(model);
@@ -534,6 +515,61 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     });
     elem.appendChild(this.inputDesc.create());
     this.inputDesc.setDisabled(disableTextFields);
+  };
+
+  renderPolyInputs = (elem, model) => {
+    // select stroke thickness
+    const thicknessOpts = this.getState().strokes;
+    this.inputThickness = SidebarInputFactory.createSidebarInput(model.strokeThickness.input, {
+      label: model.strokeThickness.label,
+      options: thicknessOpts,
+      action: this.changeWeightAction,
+      value: this._getSelected()?.options?.weight,
+    });
+    elem.appendChild(this.inputThickness.create());
+
+    // palette Colors
+    this.inputColor = this.createColorPicker();
+    elem.appendChild(this.inputColor);
+  };
+
+  renderIconInputs = (elem, model) => {
+    // palette Icons
+    this.inputIcon = this.createIconPalette();
+    elem.appendChild(this.inputIcon);
+
+    this.inputUrl = SidebarInputFactory.createSidebarInput(model.iconUrl.input, {
+      label: model.iconUrl.label,
+      action: this.addIconAction,
+      value: '',
+    });
+    elem.appendChild(this.inputUrl.create());
+  };
+
+  /**
+   * It returns the sidebar tab pane.
+   */
+  getTabContent(layerType = null) {
+    // tab content
+    let tab = document.createElement('div');
+    let elem = tab.appendChild(document.createElement('div'));
+    elem.classList.add('drawing-sidebar');
+
+    // get data mapping model
+    let model = this.getDefaults().getDataMappingModel();
+
+    let paintPolyControl = this.createBrushSizeControl();
+    if (paintPolyControl) elem.appendChild(paintPolyControl);
+
+    if (!layerType) return tab;
+
+    if (layerType === 'search') {
+      this.renderSearchInputs(elem, model);
+
+      return tab;
+    }
+
+    this.renderDataInputs(elem, model);
 
     if (layerType === 'painted' || layerType === 'polygon') {
       this.inputIntersect = this.createIntersectionCheck();
@@ -541,32 +577,11 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     }
 
     if (POLYS.includes(layerType)) {
-      // select stroke thickness
-      const thicknessOpts = this.getState().strokes;
-      this.inputThickness = SidebarInputFactory.createSidebarInput(model.strokeThickness.input, {
-        label: model.strokeThickness.label,
-        options: thicknessOpts,
-        action: this.changeWeightAction,
-        value: this._getSelected()?.options?.weight,
-      });
-      elem.appendChild(this.inputThickness.create());
-
-      // palette Colors
-      this.inputColor = this.createColorPicker();
-      elem.appendChild(this.inputColor);
+      this.renderPolyInputs(elem, model);
     }
 
     if (layerType === 'marker') {
-      // palette Icons
-      this.inputIcon = this.createIconPalette();
-      elem.appendChild(this.inputIcon);
-
-      this.inputUrl = SidebarInputFactory.createSidebarInput(model.iconUrl.input, {
-        label: model.iconUrl.label,
-        action: this.addIconAction,
-        value: '',
-      });
-      elem.appendChild(this.inputUrl.create());
+      this.renderIconInputs(elem, model);
     }
 
     // this.setInputValues(this.getTool().getState().getDataMapping());

@@ -245,11 +245,9 @@ class PaintPoly {
       return;
     }
     if (this._action == 'draw') {
-      this.stop();
-      this._active = false;
+      this.disable();
     } else {
-      this.startPaint();
-      this._active = true;
+      this.enable();
     }
   };
 
@@ -259,20 +257,20 @@ class PaintPoly {
       return;
     }
     if (this._action == 'erase') {
-      this.stop();
-      this._active = false;
+      this.disable();
     } else {
-      this.startErase();
-      this._active = true;
+      this.enable();
     }
   };
 
   enable = () => {
     this.startPaint();
+    this._active = true;
   };
 
   disable = () => {
     this.stop();
+    this._active = false;
   };
 
   isActive = () => {
