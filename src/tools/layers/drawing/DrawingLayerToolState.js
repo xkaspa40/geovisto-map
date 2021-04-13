@@ -11,6 +11,8 @@ import {
 import { isEmpty, sortReverseAlpha } from './util/functionUtils';
 import { iconStarter } from './util/Marker';
 
+const MAX_CHOSEN = 2;
+
 /**
  * This class provide functions for using the state of the layer tool.
  *
@@ -36,7 +38,38 @@ class DrawingLayerToolState extends AbstractLayerToolState {
 
     this.createdVertices = [];
     this.mappedMarkersToVertices = {};
+
+    this.chosenLayers = [];
   }
+
+  chosenLayersMaxed = () => {
+    return this.chosenLayers.length === MAX_CHOSEN;
+  };
+
+  pushChosenLayer = (layer) => {
+    if (this.chosenLayers.length >= MAX_CHOSEN) {
+      this.chosenLayers.shift();
+    }
+    this.tool.highlightElement(layer);
+    this.chosenLayers.push(layer);
+  };
+
+  deselectChosenLayers = () => {
+    this.chosenLayers.forEach((chosen) => this.tool.normalizeElement(chosen));
+    this.chosenLayers = [];
+  };
+
+  clearChosenLayers = () => {
+    this.chosenLayers.forEach((chosen) => this.removeLayer(chosen));
+    this.chosenLayers = [];
+  };
+
+  pushJoinedToChosenLayers = (joined) => {
+    this.clearChosenLayers();
+    this.tool.highlightElement(joined);
+    this.chosenLayers.push(joined);
+    this.addLayer(joined);
+  };
 
   isConnectMarker = (marker) => {
     return marker?.layerType === 'marker' && marker?.options?.icon?.options?.connectClick;
@@ -104,14 +137,11 @@ class DrawingLayerToolState extends AbstractLayerToolState {
 
   setSelectedLayer(layer) {
     this.selectedLayer = layer;
-    this.selecting = false;
-    if (layer.setStyle) layer.setStyle(highlightStyles);
-    else L.DomUtil.addClass(layer._icon, 'highlight-marker');
+    this.tool.highlightElement(layer);
   }
 
   clearSelectedLayer() {
     this.selectedLayer = null;
-    this.selecting = false;
   }
 
   addMappedVertices = (layer, result) => {
@@ -189,8 +219,7 @@ class DrawingLayerToolState extends AbstractLayerToolState {
           featureToLeafletCoordinates(f.geometry.coordinates, f.geometry.type);
           let result;
           if (lType === 'polygon') {
-            let simplified = simplifyFeature(f);
-            result = new L.polygon(simplified.geometry.coordinates, opts);
+            result = new L.polygon(f.geometry.coordinates, opts);
           } else if (lType === 'polyline') {
             result = new L.polyline(f.geometry.coordinates, opts);
           } else if (lType === 'marker') {
@@ -206,7 +235,7 @@ class DrawingLayerToolState extends AbstractLayerToolState {
           }
           if (result) {
             result.layerType = lType;
-            if (f.properties.popupContent) {
+            if (f?.properties?.popupContent) {
               result.popupContent = f.properties.popupContent;
               result.bindPopup(f.properties.popupContent);
             }

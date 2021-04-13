@@ -419,7 +419,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
           ?.forEach((feat) => {
             let coords = feat.geometry.coordinates;
             if (!highQuality) {
-              let simplified = simplifyFeature(feat);
+              let simplified = simplifyFeature(feat, 0.01);
               coords = simplified.geometry.coordinates;
             }
             let latlngs = L.GeoJSON.coordsToLatLngs(coords, 1);
@@ -429,8 +429,10 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
             result.countryCode = countryCode;
             toolState.addLayer(result);
           });
+        this.errorMsg.innerText = '';
       })
       .catch((err) => {
+        this.errorMsg.innerText = 'There was a problem, re-try later.';
         console.error(err);
       })
       .finally(() => {
@@ -457,7 +459,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
 
   renderSearchInputs = (elem, model) => {
     this.addHeading('Search for place', elem);
-    // labeld text Search
+    // * labeled text Search
     this.inputSearch = SidebarInputFactory.createSidebarInput(model.search.input, {
       label: model.search.label,
       action: this.searchAction,
@@ -469,9 +471,11 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
 
     this.inputConnect = this.createConnectCheck();
     elem.appendChild(this.inputConnect);
+    // * divider
     elem.appendChild(document.createElement('hr'));
-    this.addHeading('Search for area', elem);
 
+    this.addHeading('Search for area', elem);
+    // * labeled text Search
     this.inputSearchForArea = SidebarInputFactory.createSidebarInput(model.searchForArea.input, {
       label: model.searchForArea.label,
       options: this.getState().getSelectCountries(),
@@ -491,6 +495,11 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     const hqCheck = this.createHighQualityCheck();
     elem.appendChild(hqCheck);
 
+    this.errorMsg = document.createElement('div');
+    this.errorMsg.className = 'error-text';
+    this.errorMsg.innerText = '';
+    elem.appendChild(this.errorMsg);
+
     this.searchForAreasBtn = document.createElement('button');
     this.searchForAreasBtn.innerText = 'Submit';
     this.searchForAreasBtn.addEventListener('click', this.fetchAreas);
@@ -499,7 +508,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
 
   renderDataInputs = (elem, model) => {
     let disableTextFields = !Boolean(this._getSelected());
-    // textfield Identifier
+    // Select Pick Identifier
     this.inputPickIdentifier = this.createPickIdentifier(model);
     elem.appendChild(this.inputPickIdentifier.create());
     this.inputPickIdentifier.setDisabled(disableTextFields);

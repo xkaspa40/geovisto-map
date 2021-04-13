@@ -123,6 +123,7 @@ export const getLeafletTypeFromFeature = (feature) => {
 
 export const convertPropertiesToOptions = (properties) => {
   let options = { draggable: true, transform: true };
+  if (!properties) return options;
   options.weight = properties['stroke-width'] || STROKES[1].value;
   options.color = properties['fill'] || COLORS[0];
   options.fillOpacity = properties['fill-opacity'] || normalStyles.fillOpacity;
@@ -187,23 +188,6 @@ export const getSimplifiedPoly = (param_latlngs) => {
   return [latlngs];
 };
 
-// if (zoom <= 19 && zoom >= 15) {
-//     return 0.00001;
-//   }
-
-// TODO: create equation for this
-const getTolerance = (zoom) => {
-  if (zoom >= 15) {
-    return 0.00001;
-  } else if (zoom >= 8) {
-    return 0.0001;
-  } else if (zoom >= 4) {
-    return 0.001;
-  } else {
-    return 0.01;
-  }
-};
-
 export const simplifyFeature = (feature, pixels) => {
   const map = window.map;
   const metersPerPixel =
@@ -211,9 +195,10 @@ export const simplifyFeature = (feature, pixels) => {
     Math.pow(2, map.getZoom() + 8);
   const zoom = map.getZoom();
 
-  const tolerance = pixels || 0.0001;
-  // TODO:
-  // console.log({ tolerance, metersPerPixel, zoom });
+  // ! this is tried out, so no real calculation
+  const conditionalTolerance = zoom >= 4 ? 0.0001 * metersPerPixel : 1.5;
+
+  const tolerance = pixels || conditionalTolerance;
 
   const result = turf.simplify(feature, { tolerance });
   return result;
@@ -222,4 +207,22 @@ export const simplifyFeature = (feature, pixels) => {
 export const isLayerPoly = (layer) => {
   let feature = getGeoJSONFeatureFromLayer(layer);
   return isFeaturePoly(feature);
+};
+
+export const morphFeatureToPolygon = (feature, options = {}, simplify = true) => {
+  let depth = 1;
+  if (feature.geometry.type === 'MultiPolygon') {
+    depth = 2;
+  }
+  let simplified = simplify ? simplifyFeature(feature) : feature;
+  let coords = simplified.geometry.coordinates;
+  let latlngs = L.GeoJSON.coordsToLatLngs(coords, depth);
+  let result = new L.polygon(latlngs, {
+    ...options,
+    draggable: true,
+    transform: true,
+  });
+  result.layerType = 'polygon';
+  if (result.dragging) result.dragging.disable();
+  return result;
 };

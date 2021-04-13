@@ -18,6 +18,7 @@ import {
   getSimplifiedPoly,
   isLayerPoly,
   simplifyFeature,
+  morphFeatureToPolygon,
 } from './util/Poly';
 
 import 'leaflet/dist/leaflet.css';
@@ -157,7 +158,7 @@ class DrawingLayerTool extends AbstractLayerTool {
           let canDiff = !createdIsEraser ? true : layerIsNotSelected;
           if (canDiff) {
             let diffFeature = difference(feature, layerFeature);
-            console.log({ diffFeature });
+            // console.log({ diffFeature });
             if (diffFeature) {
               let coords;
               let latlngs;
@@ -223,21 +224,7 @@ class DrawingLayerTool extends AbstractLayerTool {
       }
     });
 
-    let depth = 1;
-    if (summedFeature.geometry.type === 'MultiPolygon') {
-      depth = 2;
-    }
-    let simplified = simplifyFeature(summedFeature);
-    let coords = simplified.geometry.coordinates;
-    let latlngs = L.GeoJSON.coordsToLatLngs(coords, depth);
-    let result = new L.polygon(latlngs, {
-      ...layer.options,
-      draggable: true,
-      transform: true,
-    });
-    layer = result;
-    layer.layerType = 'polygon';
-    if (layer.dragging) layer.dragging.disable();
+    layer = morphFeatureToPolygon(summedFeature, layer.options, false);
     paintPoly.clearPaintedPolys(eKeyIndex);
     if (selectNew) {
       this.getState().removeSelectedLayer();
@@ -292,7 +279,7 @@ class DrawingLayerTool extends AbstractLayerTool {
           let thickLineString = turf.lineString(polyCoords);
           let thickLinePolygon = turf.lineToPolygon(thickLineString);
           let clipped = turf.difference(selectedFeature, thickLinePolygon);
-          clipped = simplifyFeature(clipped);
+          // clipped = simplifyFeature(clipped);
 
           coords = clipped.geometry.coordinates;
           coords.forEach((coord) => {
@@ -463,6 +450,14 @@ class DrawingLayerTool extends AbstractLayerTool {
     // * we do not want to keep cutting (drawing)
     map.removeLayer(pather);
     sidebarState.setPatherStatus(false);
+    // * restore state
+    let enabled = sidebarState.getEnabledEl();
+    if (enabled) {
+      sidebarState.setEnabledEl(null);
+      this.redrawSidebarTabControl();
+    }
+    const knifeBtn = document.querySelector('.drawingtoolbar .sliceBtn .extra-btn');
+    if (knifeBtn) knifeBtn.classList.add('hide');
   };
 
   /**
@@ -478,7 +473,6 @@ class DrawingLayerTool extends AbstractLayerTool {
 
     map.on('click', () => {
       const sidebar = this.getSidebarTabControl();
-      console.log('got here');
       if (Boolean(sidebar.getState().enabledEl)) return;
       let selected = this.getState().selectedLayer;
       if (selected) {
@@ -545,11 +539,60 @@ class DrawingLayerTool extends AbstractLayerTool {
 
   normalizeOnHover(e) {
     if (!this.getState().getSelecting()) return;
+    const { chosenLayers } = this.getState();
+    const isChosen = chosenLayers.map((x) => x._leaflet_id).includes(e.target._leaflet_id);
+    if (isChosen) return;
     this.normalizeElement(e.target);
   }
 
-  initChangeStyle(e) {
+  getSummedFeature = (features) => {
+    if (!features || !Array.isArray(features)) return null;
+
+    let summedFeature = features[0];
+    for (let index = 1; index < features.length; index++) {
+      const feature = features[index];
+      let isfeaturePoly = isFeaturePoly(feature);
+
+      if (isfeaturePoly) {
+        summedFeature = union(feature, summedFeature);
+      }
+    }
+
+    return summedFeature;
+  };
+
+  joinChosen = (drawObject) => {
+    if (!isLayerPoly(drawObject)) return;
+    const layerState = this.getState();
+    layerState.pushChosenLayer(drawObject);
+    if (layerState.chosenLayersMaxed()) {
+      const { chosenLayers } = layerState;
+      const chosenFeatures = chosenLayers
+        .filter((c) => isLayerPoly(c))
+        .map((chosen) => getFeatFromLayer(chosen));
+
+      if (chosenFeatures.length !== chosenLayers.length) return;
+
+      const first = this.getSummedFeature(chosenFeatures[0]);
+      const second = this.getSummedFeature(chosenFeatures[1]);
+
+      const resultFeature = union(first, second);
+      const opts = { ...chosenLayers[0].options, ...chosenLayers[1].options };
+      const result = morphFeatureToPolygon(resultFeature, opts, false);
+      layerState.pushJoinedToChosenLayers(result);
+    }
+
+    this.redrawSidebarTabControl(drawObject.layerType);
+  };
+
+  initChangeStyle = (e) => {
     const drawObject = e.target;
+
+    const selecting = this.getState().getSelecting();
+    if (selecting) {
+      this.joinChosen(drawObject);
+      return;
+    }
 
     let fgLayers = this.getState().featureGroup._layers;
     Object.values(fgLayers).forEach((_) => {
@@ -564,10 +607,10 @@ class DrawingLayerTool extends AbstractLayerTool {
     this.getState().setSelectedLayer(drawObject);
     this.getState().setCurrEl(drawObject);
     this.initTransform(drawObject);
-    this.redrawSidebarTabControl(e.target.layerType);
+    this.redrawSidebarTabControl(drawObject.layerType);
 
     document.querySelector('.leaflet-container').style.cursor = '';
-  }
+  };
 
   initTransform(drawObject, disable = false) {
     const layer = drawObject;
@@ -618,12 +661,12 @@ class DrawingLayerTool extends AbstractLayerTool {
     this.redrawSidebarTabControl(null);
   }
 
-  selectElement() {
+  initSelecting = () => {
     const selecting = this.getState().getSelecting();
     this.getState().setSelecting(!selecting);
     if (!selecting) document.querySelector('.leaflet-container').style.cursor = 'crosshair';
     else document.querySelector('.leaflet-container').style.cursor = '';
-  }
+  };
 
   /**
    * This function is called when layer items are rendered.

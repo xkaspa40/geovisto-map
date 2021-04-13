@@ -247,7 +247,7 @@ class PaintPoly {
     if (this._action == 'draw') {
       this.disable();
     } else {
-      this.enable();
+      this.enablePaint();
     }
   };
 
@@ -259,11 +259,17 @@ class PaintPoly {
     if (this._action == 'erase') {
       this.disable();
     } else {
-      this.enable();
+      this.startErase();
+      this._active = true;
     }
   };
 
-  enable = () => {
+  enableErase = () => {
+    this.startErase();
+    this._active = true;
+  };
+
+  enablePaint = () => {
     this.startPaint();
     this._active = true;
   };

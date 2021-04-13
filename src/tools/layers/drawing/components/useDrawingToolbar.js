@@ -80,6 +80,14 @@ export default function useDrawingToolbar() {
         'fa fa-square',
       );
 
+      this.options.drawingBtns.joinBtn = this.createToolbarBtn(
+        'joinBtn',
+        toolContainer,
+        'Join',
+        'fa fa-plus-circle',
+        true,
+      );
+
       this.options.drawingBtns.sliceBtn = this.createToolbarBtn(
         'sliceBtn',
         toolContainer,
@@ -116,6 +124,7 @@ export default function useDrawingToolbar() {
         toolContainer,
         'Erase',
         'fa fa-eraser',
+        true,
       );
 
       this.options.drawingBtns.removeBtn = this.createToolbarBtn(
@@ -135,7 +144,7 @@ export default function useDrawingToolbar() {
     _disableDrawing: function (e) {
       e.stopPropagation();
       e?.target?.classList?.toggle('hide');
-      const sidebar = this.options.tool.getSidebarTabControl();
+      const sidebar = this.getSidebar();
       let enabled = sidebar.getState().getEnabledEl();
       if (enabled) {
         sidebar.getState().setEnabledEl(null);
@@ -149,7 +158,7 @@ export default function useDrawingToolbar() {
       if (layer?.transform?._enabled) {
         layer.transform.disable();
         layer.dragging.disable();
-        let paintPoly = this.options.tool.getSidebarTabControl().getState().paintPoly;
+        let paintPoly = this.getSidebar().getState().paintPoly;
         paintPoly.updatePaintedPolys(layer.kIdx, layer);
       }
     },
@@ -162,6 +171,7 @@ export default function useDrawingToolbar() {
         transformBtn,
         editBtn,
         sliceBtn,
+        joinBtn,
         deselectBtn,
         connectBtn,
         searchBtn,
@@ -170,7 +180,7 @@ export default function useDrawingToolbar() {
         removeBtn,
       } = this.options.drawingBtns;
       const map = this.options.map;
-      const sidebar = this.options.tool.getSidebarTabControl();
+      const sidebar = this.getSidebar();
 
       const btnsArr = Object.values(this.options.drawingBtns);
       btnsArr.forEach((btn) => {
@@ -186,7 +196,16 @@ export default function useDrawingToolbar() {
         extraBtn.classList.toggle('hide');
         L.DomEvent.on(extraBtn, 'click', this._disableDrawing, this);
       };
-      const withExtra = [lineBtn, markerBtn, polygonBtn, connectBtn, sliceBtn, paintBtn];
+      const withExtra = [
+        lineBtn,
+        markerBtn,
+        polygonBtn,
+        connectBtn,
+        sliceBtn,
+        paintBtn,
+        eraserBtn,
+        joinBtn,
+      ];
       withExtra.forEach((btn) => {
         L.DomEvent.on(btn, 'click', toggleExtra, this);
       });
@@ -200,6 +219,7 @@ export default function useDrawingToolbar() {
       L.DomEvent.on(editBtn, 'click', this.initNodeEdit, this);
       L.DomEvent.on(sliceBtn, 'click', () => this.initSlicePoly(map, sidebar), this);
       L.DomEvent.on(deselectBtn, 'click', this.deselect, this);
+      L.DomEvent.on(joinBtn, 'click', this.initJoin, this);
       L.DomEvent.on(connectBtn, 'click', L.DomEvent.stopPropagation)
         .on(connectBtn, 'click', L.DomEvent.preventDefault)
         .on(connectBtn, 'click', () => this.initConnect(map, sidebar), this);
@@ -207,6 +227,19 @@ export default function useDrawingToolbar() {
       L.DomEvent.on(paintBtn, 'click', this.initPainting, this);
       L.DomEvent.on(eraserBtn, 'click', this.initErasing, this);
       L.DomEvent.on(removeBtn, 'click', this.initRemove, this);
+    },
+
+    initJoin: function (evt) {
+      const sidebar = this.getSidebar();
+      const init = this.options.tool.initSelecting;
+      init();
+      sidebar.getState().setEnabledEl({
+        enable: init,
+        disable: () => {
+          init();
+          this.options.tool.getState().deselectChosenLayers();
+        },
+      });
     },
 
     initConnect: function (map, sidebar) {
@@ -220,16 +253,24 @@ export default function useDrawingToolbar() {
 
     initErasing: function (evt) {
       this.redrawSidebar(null);
-      let paintPoly = this.options.tool.getSidebarTabControl().getState().paintPoly;
-      paintPoly.erase(evt);
+      let sidebar = this.getSidebar();
+      let paintPoly = sidebar.getState().paintPoly;
+      sidebar.getState().paintPoly.erase(evt);
+
+      sidebar
+        .getState()
+        .setEnabledEl({ enable: paintPoly.enableErase, disable: paintPoly.disable });
     },
 
     initPainting: function (e) {
-      let paintPoly = this.options.tool.getSidebarTabControl().getState().paintPoly;
-      let sidebar = this.options.tool.getSidebarTabControl();
+      this.redrawSidebar('painted');
+      let sidebar = this.getSidebar();
+      let paintPoly = sidebar.getState().paintPoly;
       sidebar.getState().paintPoly.clickDraw(e);
 
-      sidebar.getState().setEnabledEl(paintPoly);
+      sidebar
+        .getState()
+        .setEnabledEl({ enable: paintPoly.enablePaint, disable: paintPoly.disable });
     },
 
     initSearch: function () {
@@ -302,16 +343,12 @@ export default function useDrawingToolbar() {
       this.options.tool.getState().setCurrEl(el);
     },
 
-    setSelecting: function (is) {
-      this.options.tool.getState().setSelecting(is);
-    },
-
-    getSelecting: function () {
-      return this.options.tool.getState().getSelecting();
-    },
-
     redrawSidebar: function (val) {
       this.options.tool.redrawSidebarTabControl(val);
+    },
+
+    getSidebar: function () {
+      return this.options.tool.getSidebarTabControl();
     },
   });
 
