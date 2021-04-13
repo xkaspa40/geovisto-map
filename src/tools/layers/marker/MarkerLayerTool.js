@@ -16,6 +16,7 @@ import DataChangeEvent from "../../../model/event/basic/DataChangeEvent";
 import TimeChangeEvent from "../../timeline/model/TimeChangeEvent";
 import { createClusterMarkersData, createMarkerPopupContent } from "./utils";
 import { ToolInitializedEvent } from "../../../model/event/basic/ToolInitializedEvent";
+import { TimeDestroyedEvent } from "../../timeline/model/TimeDestroyedEvent";
 
 /**
  * This class represents custom div icon which is used to mark center of countries.
@@ -480,14 +481,20 @@ class MarkerLayerTool extends AbstractLayerTool {
         } else if (event.getType() === SelectionToolEvent.TYPE()) {
             let data = this.getMap().getState().getCurrentData();
             this.redraw(data);
-            // TODO
+            if (this._timeData && this.getSelectionTool().getState().getSelection().getIds().length === 0) {
+                this.updateMarkers({ data: this._timeData.data, transitionDuration: 0, transitionDelay: 0 });
+            }
         } else if(event.getType() === ThemesToolEvent.TYPE()) {
             var map = event.getObject();
             document.documentElement.style.setProperty('--leaflet-marker-donut1', map.getDataColors().triadic1);
             document.documentElement.style.setProperty('--leaflet-marker-donut2', map.getDataColors().triadic2);
             document.documentElement.style.setProperty('--leaflet-marker-donut3', map.getDataColors().triadic3);
         } else if (event.getType() === TimeChangeEvent.TYPE()) {
-            this.updateMarkers(event.getObject());
+            const timeData = event.getObject();
+            this._timeData = timeData;
+            this.updateMarkers(timeData);
+        } else if (event.getType() === TimeDestroyedEvent.TYPE()) {
+            this._timeData = null;
         }
     }
 }
