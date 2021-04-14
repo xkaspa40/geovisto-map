@@ -1,4 +1,4 @@
-import L from 'leaflet';
+import L, {marker} from 'leaflet';
 import LL from 'leaflet.markercluster';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
@@ -21,144 +21,36 @@ import DataChangeEvent from '../../../model/event/basic/DataChangeEvent';
  * @author Jiri Hynek
  * @override {L.DivIcon}
  */
-var CountryIcon = L.DivIcon.extend({
-
-    _LEVEL: 0,
-    _SUFFIX: 1,
-    _COLOR: 2,
-    levels: [
-        [-Infinity, "N/A", "#CCCCCC"],
-        [1, "", "#CCCCCC"],
-        [1e2, "K", "#AAAAAA"],
-        [1e5, "M", "#555555"],
-        [1e8, "B", "#222222"],
-        [1e11, "t", "#111111"],
-    ],
-
-    // moved to css
-    //donutColors: ["darkred", "goldenrod", "gray"],
-
+let CountryIcon = L.DivIcon.extend({
     options: {
-        sizeBasic: 32,
-        sizeGroup: 36,
-        sizeDonut: 48,
-
-        // It is derived
-        //iconSize: [32,32],
-        //iconAnchor: [32/2,32/2],
-
         className: "div-country-icon",
-        values: {
-            id: "",
-            value: 0,
-            subvalues: {
-                active: 0,
-                mitigated: 0,
-                finished: 0,
-            }
-        },
         isGroup: false,
-        useDonut: true
-    },
-
-    round: function (value, align) {
-        return Math.round(value * align) / align;
-    },
-
-    formatValue: function (value, level) {
-        if (level == undefined || level < 0) {
-            return this.levels[0][this._SUFFIX];
-        } else {
-            if (this.levels[level][this._LEVEL] == -Infinity) {
-                return this.levels[level][this._SUFFIX];
-            } else if (this.levels[level][this._LEVEL] == 1) {
-                return this.round(value, this.levels[level][this._LEVEL]);
-            } else {
-                value = value / (this.levels[level][this._LEVEL] * 10);
-                var align = (value >= 10) ? 1 : 10;
-                return this.round(value, align) + this.levels[level][this._SUFFIX];
-            }
-        }
-    },
-
-    getColor: function (level) {
-        // if (level == null || level < 0) {
-        //     return this.levels[0][this._COLOR];
-        // } else {
-        //     return this.levels[level][this._COLOR];
-        // }
-    },
-
-    getLevel: function (value) {
-        for (var i = this.levels.length - 1; i >= 0; i--) {
-            if (value > this.levels[i][this._LEVEL]) {
-                return i;
-            }
-        }
-        return -1;
     },
 
     createIcon: function (oldIcon) {
-        var div = (oldIcon && oldIcon.tagName === 'DIV') ? oldIcon : document.createElement('div'),
+        let div = (oldIcon && oldIcon.tagName === 'DIV') ? oldIcon : document.createElement('div'),
             options = this.options;
-        var size = options.useDonut ? options.sizeDonut : (options.isGroup ? options.sizeGroup : options.sizeBasic);
+
+        // TODO create slider for size
+        let scale = d3.scaleSqrt().domain([0, options.max]).range([10, 80]);
+        let size = scale(options.values.value);
+        let zoom = options.map().map._zoom;
+        size = size*zoom/4;
 
         options.iconSize = [size, size];
         options.iconAnchor = [size / 2, size / 2];
-        var rCircle = options.sizeBasic / 2;
-        var center = size / 2;
-        // moved to css
-        //var strokeWidth = options.isGroup ? ((options.sizeGroup-options.sizeBasic)/2) : 0;
-        var level = this.getLevel(options.values.value);
+        let divContent = div.appendChild(document.createElement('div'));
 
-        var divContent = div.appendChild(document.createElement('div'));
-        divContent.classList.value =
-            "leaflet-marker-level" + level // level
-            + (options.isGroup ? " leaflet-marker-group" : "") // group of several markers
-            ;
-
-
-        //console.log(size);
-        var element = d3.select(divContent);
-        //console.log(element)
-        var svg = element.append("svg");
+        let element = d3.select(divContent);
+        let svg = element.append("svg");
         svg.attr("width", size).attr("height", size);
-        //svg.classList.add("leaflet-marker-item");
 
-        // // circle
-        // svg.append("circle")
-        //     .attr("cx", center)
-        //     .attr("cy", center)
-        //     .attr("r", rCircle)
-        // // moved to css
-        //.attr("fill", this.getColor(level))
-        //.attr("fill-opacity", 0.9)
-        //.attr("stroke-width", strokeWidth)
-        //.attr("stroke", "black");
-
-        // value label
-        // svg.append("text")
-        //     .html(this.formatValue(options.values.value, level))
-        //     .attr("x", "50%")
-        //     .attr("y", "50%")
-        //     .attr("text-anchor", "middle")
-        //     .attr("font-size", "12px")
-        //     .attr("dy", "0.3em")
-        //     .attr("font-family", "Arial");
-        // moved to css
-        //.attr("fill", "white")
-
-        if (options.values.value != null && options.values.value != 0) {
-            //var values = { a: 0.5, b: 0.3, c: 0.2 };
-            // moved to css
-
-            var pie = d3.pie().value(function (d) { return d[1]; });
-            var values_ready = pie(Object.entries(options.values.subvalues));
-            console.log(values_ready);
-            console.log(options);
+        if (options.values.value != null && options.values.value !== 0) {
+            let pie = d3.pie().value(function (d) { return d[1]; });
+            let values_ready = pie(Object.entries(options.values.subvalues));
             const colors = options.values.colors;
-            //console.log(this);
-            // donut chart
+
+            // pie chart
             svg.append("g")
                 .attr("transform", "translate(" + size / 2 + "," + size / 2 + ")")
                 .selectAll("abc")
@@ -169,32 +61,14 @@ var CountryIcon = L.DivIcon.extend({
                     .innerRadius(0)
                     .outerRadius(size / 2)
                 )
-                // moved to css
-                //.attr('class', function (d, i) { return "leaflet-marker-donut" + (i % 3 + 1); })
                 .attr('fill', (d) => {
                     const key = d.data[0];
-                    console.log(colors);
                     if (colors && colors[key]) {
                         return colors[key];
                     }
-                    return 'yellow';
+                    return 'red';
                 })
-                //.attr("stroke-width", "0px")
-                 .attr("opacity", 0.4)
-                ;
-        }
-
-        /*const icon = <svg width={size} height={size}>
-            <circle cx={center} cy={center} r={rCircle} fill={this.getColor(level)} fillOpacity="0.8" strokeWidth={strokeWidth} stroke="black" />
-            <text x="50%" y="50%" textAnchor="middle" fill="white"
-                fontSize="12px" dy="0.3em" fontFamily="Arial">{this.formatValue(options.countryValue, level)}</text>
-        </svg>;
-        //div.innerHTML = "<b>1</b>";
-        ReactDOM.render(icon, divContent);*/
-
-        if (options.bgPos) {
-            var bgPos = point(options.bgPos);
-            div.style.backgroundPosition = (-bgPos.x) + 'px ' + (-bgPos.y) + 'px';
+                 .attr("opacity", 0.5);
         }
         this._setIconStyles(div, 'icon');
 
@@ -284,28 +158,26 @@ class BubbleLayerTool extends AbstractLayerTool {
      * It creates layer items.
      */
     createLayerItems() {
-        // create layer which clusters points
-        //let layer = L.layerGroup([]);
         let layer = L.markerClusterGroup({
             spiderfyOnMaxZoom: false,
+            maxClusterRadius: 50,       // TODO create slider for parametric clustering radius
             // create cluster icon
-            iconCreateFunction: function (cluster) {
-                var markers = cluster.getAllChildMarkers();
-                let max = 0;
+            iconCreateFunction: (cluster) => {
+                let markers = cluster.getAllChildMarkers();
                 let data = { id: "<Group>", value: 0, subvalues: {} , colors: {}};
-                for (var i = 0; i < markers.length; i++) {
+                let max = 0;
+                let map = markers[0].options.icon.options.map;
+                for (let i = 0; i < markers.length; i++) {
                     data.value += markers[i].options.icon.options.values.value;
-                    max = max > data.value ? max : data.value;
-                    //console.log(markers[i]);
-                    const color = markers[i].options.icon.options.values.color;
+                    max = max === 0 ? markers[i].options.icon.options.max : max;
                     for (let [key, value] of Object.entries(markers[i].options.icon.options.values.subvalues)) {
-                        if (data.subvalues[key] == undefined) {
+                        if (data.subvalues[key] === undefined) {
                             data.subvalues[key] = value;
                         } else {
                             data.subvalues[key] += value;
                         }
-                        if (markers[i].options.icon.options.values.color) {
-                            data.colors[key] = markers[i].options.icon.options.values.color;
+                        if (markers[i].options.icon.options.values.colors) {
+                            data.colors[key] = markers[i].options.icon.options.values.colors[key];
                         }
                     }
                 }
@@ -313,7 +185,7 @@ class BubbleLayerTool extends AbstractLayerTool {
                 return new CountryIcon({
                     countryName: "<Group>",
                     values: data,
-
+                    map: map,   //Geovisto map object
                     max: max,
                     isGroup: true,
                 });
@@ -359,44 +231,35 @@ class BubbleLayerTool extends AbstractLayerTool {
         let longitudeDataDomain = mapData.getDataDomain(dataMapping[dataMappingModel.longitude.name]);
         let valueDataDomain = mapData.getDataDomain(dataMapping[dataMappingModel.value.name]);
         let categoryDataDomain = mapData.getDataDomain(dataMapping[dataMappingModel.category.name]);
-        let geoCountry, actResultItem;
+        let actResultItem;
         let foundLats, foundLongs, foundValues, foundCategories;
-        let highlightedIds = this.getSelectionTool() && this.getSelectionTool().getState().getSelection() ?
-            this.getSelectionTool().getState().getSelection().getIds() : [];
         let data = this.getMap().getState().getCurrentData();
         let dataLen = data.length;
-        let centroids = this.getState().getCentroids();
+        this.max = 0;
 
         for (let i = 0; i < dataLen; i++) {
+            let found = false;
             actResultItem = {};
             foundLats = mapData.getItemValues(latitudeDataDomain, data[i]);
             foundLongs = mapData.getItemValues(longitudeDataDomain, data[i]);
             foundValues = mapData.getItemValues(valueDataDomain, data[i]);
             foundCategories = mapData.getItemValues(categoryDataDomain, data[i]);
 
-            if (foundCategories.length === 1) {
-                actResultItem.category = foundCategories[0];
-                for (let j = 0; j < this.categoryFilters.length; j++) {
-                    const filter = this.categoryFilters[j];
-                    if (filter.operation(actResultItem.category, filter.value)) {
-                        actResultItem.color = filter.color;
-
-                        break;
-                    }
+            if (foundLats.length === 1 && foundLongs.length === 1) {
+                let record = workData.find((x) => x.lat === foundLats[0] && x.long === foundLongs[0]);
+                if (record) {
+                    found = true;
                 }
-            }
-
-            if (foundLats.length === 1) {
+                actResultItem = record ?? actResultItem;
                 actResultItem.lat = foundLats[0];
-            }
-
-            if (foundLongs.length === 1) {
                 actResultItem.long = foundLongs[0];
             }
 
             if (foundValues.length === 1) {
-                actResultItem.value = foundValues[0];
-                actResultItem.subvalues = {};
+                actResultItem.value = actResultItem.value === undefined ? foundValues[0] : actResultItem.value + foundValues[0];
+                actResultItem.subvalues = actResultItem.subvalues ?? {};
+                this.max += foundValues[0];
+
                 if (foundCategories.length === 1) {
                     actResultItem.subvalues[foundCategories[0]] =  foundValues[0];
 
@@ -404,25 +267,21 @@ class BubbleLayerTool extends AbstractLayerTool {
                     for (let j = 0; j < this.categoryFilters.length; j++) {
                         const filter = this.categoryFilters[j];
                         if (filter.operation(actResultItem.category, filter.value)) {
-                            actResultItem.color = filter.color;
-
+                            actResultItem.colors = actResultItem.colors ?? {};
+                            actResultItem.colors[foundCategories[0]] = filter.color;
                             break;
                         }
                     }
+                } else {
+                    actResultItem.subvalues[undefined] = foundValues[0];
                 }
             }
 
-            // if (foundLats.length === 1 && foundLongs.length === 1 && foundValues.length === 1 && foundCategories.length === 1) {
-            //     actResultItem = {id: i, lat: foundLats[0], long: foundLongs[0], value: foundValues[0], subvalues: {}};
-            //     console.log(actResultItem);
-            //     actResultItem.subvalues[foundCategories[0]] =  foundValues[0];
-            //     workData.push(actResultItem);
-            // }
-            if (actResultItem) {
+            if (actResultItem && Object.keys(actResultItem).length !== 0 && foundLongs.length === 1 && foundLats.length === 1 && foundValues.length === 1 && ! found) {
                 workData.push(actResultItem);
             }
         }
-        //console.log("result: ", preparedData);
+
         return workData;
     }
 
@@ -433,14 +292,9 @@ class BubbleLayerTool extends AbstractLayerTool {
         // create markers
         let markers = [];
 
-        let geoCountry;
-        let layer = this.getState().getLayer();
-        let centroids = this.getState().getCentroids();
+        let layer = this.getState().getLayer();;
         for (let i = 0; i < workData.length; i++) {
-            // get centroid
-            // note: the centroid exists since invalid countries has been filtered
-            //geoCountry = centroids.find(x => x.id == workData[i].id);
-            // build message
+
             let point = this.createMarker(workData[i]);
             layer.addLayer(point);
             markers.push(point);
@@ -457,23 +311,24 @@ class BubbleLayerTool extends AbstractLayerTool {
      */
     createMarker(data) {
         function thousands_separator(num) {
-            var num_parts = num.toString().split(".");
+            let num_parts = num.toString().split(".");
             num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
             return num_parts.join(".");
         }
         // build popup message
-         let popupMsg = "<b>" + "centroid.name" + "</b><br>";
-        // popupMsg += (data.value != null ? thousands_separator(data.value) : "N/A") + "<br>";
-        // for (let [key, value] of Object.entries(data.subvalues)) {
-        //     popupMsg += key + ": " + thousands_separator(value) + "<br>";
-        // }
-        console.log(data);
+         let popupMsg = "<b>" + "Detail:" + "</b><br>";
+         popupMsg += (data.value != null ? "Aggregated: " + thousands_separator(data.value) : "N/A") + "<br>";
+         for (let [key, value] of Object.entries(data.subvalues)) {
+             popupMsg += key + ": " + thousands_separator(value) + "<br>";
+         }
         // create marker
         let point = L.marker([data.lat, data.long], {
             // create basic icon 
             id: 'id',
             icon: new CountryIcon({
-                values: data
+                values: data,
+                max: this.max,
+                map: () => this.getMap()
             })
         }).bindPopup(popupMsg);
         return point;
@@ -504,14 +359,14 @@ class BubbleLayerTool extends AbstractLayerTool {
      * @param {AbstractEvent} event 
      */
     handleEvent(event) {
-        if (event.getType() == DataChangeEvent.TYPE()) {
+        if (event.getType() === DataChangeEvent.TYPE()) {
             // data change
             this.redraw();
-        } else if (event.getType() == SelectionToolEvent.TYPE()) {
+        } else if (event.getType() === SelectionToolEvent.TYPE()) {
             this.redraw();
             // TODO
-        } else if(event.getType() == ThemesToolEvent.TYPE()) {
-            var map = event.getObject();
+        } else if(event.getType() === ThemesToolEvent.TYPE()) {
+            let map = event.getObject();
             document.documentElement.style.setProperty('--leaflet-marker-donut1', map.getDataColors().triadic1);
             document.documentElement.style.setProperty('--leaflet-marker-donut2', map.getDataColors().triadic2);
             document.documentElement.style.setProperty('--leaflet-marker-donut3', map.getDataColors().triadic3);

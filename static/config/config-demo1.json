@@ -155,8 +155,8 @@
       "data": {
         "latitude": "lat",
         "longitude": "long",
-        "category": "category",
-        "value": "value"
+        "category": "data.category",
+        "value": "data.value"
       }
     }
   ]

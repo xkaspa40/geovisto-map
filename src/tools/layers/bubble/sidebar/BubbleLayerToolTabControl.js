@@ -4,6 +4,7 @@ import AbstractLayerToolTabControl from "../../abstract/sidebar/AbstractLayerToo
 import SidebarInputFactory from "../../../../inputs/SidebarInputFactory";
 import TabDOMUtil from "../../../../util/TabDOMUtil";
 import CategoryClassifierSidebarInput from "../../../../inputs/category/CategoryClassifierSidebarInput";
+import FiltersToolDefaults from "../../../filters/FiltersToolDefaults";
 
 /**
  * This class provides controls for management of the layer sidebar tab.
