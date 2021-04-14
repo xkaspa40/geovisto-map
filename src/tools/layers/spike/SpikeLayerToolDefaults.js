@@ -13,10 +13,22 @@ const INPUT_ID_PREFIX = "geovisto-input-" + TYPE;
  * Data mapping model which can be used in the sidebar form.
  */
 const MAPPING_MODEL = {
-    country: {
-        id: INPUT_ID_PREFIX + "-input-country",
-        name: "country",
-        label: "Country",
+    latitude: {
+        id: INPUT_ID_PREFIX + "-input-latitude",
+        name: "latitude",
+        label: "Latitude",
+        input: AutocompleteSidebarInput.ID()
+    },
+    longitude: {
+        id: INPUT_ID_PREFIX + "-input-longitude",
+        name: "longitude",
+        label: "Longitude",
+        input: AutocompleteSidebarInput.ID()
+    },
+    category: {
+        id: INPUT_ID_PREFIX + "-input-category",
+        name: "category",
+        label: "Category",
         input: AutocompleteSidebarInput.ID()
     },
     value: {
@@ -30,12 +42,6 @@ const MAPPING_MODEL = {
         name: "aggregation",
         label: "Agregation",
         options: ["count", "sum"],
-        input: AutocompleteSidebarInput.ID()
-    },
-    category: {
-        id: INPUT_ID_PREFIX + "-input-category",
-        name: "category",
-        label: "Category",
         input: AutocompleteSidebarInput.ID()
     }
 }
@@ -77,10 +83,11 @@ class SpikeLayerToolDefaults extends AbstractLayerToolDefaults {
         let dataMappingModel = this.getDataMappingModel();
         let implicitDataDomainLabel = this.getMapObject().getMap().getState().getMapData().getDataDomainLabels()[0];
 
-        dataMapping[dataMappingModel.country.name] = implicitDataDomainLabel;
+        dataMapping[dataMappingModel.latitude.name] = implicitDataDomainLabel;
+        dataMapping[dataMappingModel.longitude.name] = implicitDataDomainLabel;
+        dataMapping[dataMappingModel.category.name] = implicitDataDomainLabel;
         dataMapping[dataMappingModel.value.name] = implicitDataDomainLabel;
         dataMapping[dataMappingModel.aggregation.name] = dataMappingModel.aggregation.options[0];
-        dataMapping[dataMappingModel.category.name] = implicitDataDomainLabel;
 
         return dataMapping;
     }

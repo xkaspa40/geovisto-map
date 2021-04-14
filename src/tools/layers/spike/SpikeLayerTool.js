@@ -22,22 +22,6 @@ import DataChangeEvent from '../../../model/event/basic/DataChangeEvent';
  * @override {L.DivIcon}
  */
 var CountryIcon = L.DivIcon.extend({
-
-    _LEVEL: 0,
-    _SUFFIX: 1,
-    _COLOR: 2,
-    levels: [
-        [-Infinity, "N/A", "#CCCCCC"],
-        [1, "", "#CCCCCC"],
-        [1e2, "K", "#AAAAAA"],
-        [1e5, "M", "#555555"],
-        [1e8, "B", "#222222"],
-        [1e11, "t", "#111111"],
-    ],
-
-    // moved to css
-    //donutColors: ["darkred", "goldenrod", "gray"],
-
     options: {
         sizeBasic: 32,
         sizeGroup: 36,
@@ -48,110 +32,25 @@ var CountryIcon = L.DivIcon.extend({
         //iconAnchor: [32/2,32/2],
 
         className: "div-country-icon",
-        values: {
-            id: "",
-            value: 0,
-            subvalues: {
-                active: 0,
-                mitigated: 0,
-                finished: 0,
-            }
-        },
-        isGroup: false,
-        useDonut: true
     },
 
-    round: function (value, align) {
-        return Math.round(value * align) / align;
-    },
-
-    formatValue: function (value, level) {
-        if (level == undefined || level < 0) {
-            return this.levels[0][this._SUFFIX];
-        } else {
-            if (this.levels[level][this._LEVEL] == -Infinity) {
-                return this.levels[level][this._SUFFIX];
-            } else if (this.levels[level][this._LEVEL] == 1) {
-                return this.round(value, this.levels[level][this._LEVEL]);
-            } else {
-                value = value / (this.levels[level][this._LEVEL] * 10);
-                var align = (value >= 10) ? 1 : 10;
-                return this.round(value, align) + this.levels[level][this._SUFFIX];
-            }
-        }
-    },
-
-    getColor: function (level) {
-        if (level == null || level < 0) {
-            return this.levels[0][this._COLOR];
-        } else {
-            return this.levels[level][this._COLOR];
-        }
-    },
-
-    getLevel: function (value) {
-        for (var i = this.levels.length - 1; i >= 0; i--) {
-            if (value > this.levels[i][this._LEVEL]) {
-                return i;
-            }
-        }
-        return -1;
-    },
 
     createIcon: function (oldIcon) {
         var div = (oldIcon && oldIcon.tagName === 'DIV') ? oldIcon : document.createElement('div'),
             options = this.options;
 
-        var size = options.useDonut ? options.sizeDonut : (options.isGroup ? options.sizeGroup : options.sizeBasic);
-        options.iconSize = [size, size];
-        options.iconAnchor = [size / 2, size / 2];
-        var rCircle = options.sizeBasic / 2;
-        var center = size / 2;
-        // moved to css
-        //var strokeWidth = options.isGroup ? ((options.sizeGroup-options.sizeBasic)/2) : 0;
-        var level = this.getLevel(options.values.value);
-
         var divContent = div.appendChild(document.createElement('div'));
-        divContent.classList.value =
-            "leaflet-marker-level" + level // level
-            + (options.isGroup ? " leaflet-marker-group" : "") // group of several markers
-            ;
-
-
+        let size = 30;
         //console.log(size);
-        var element = d3.select(divContent);
+        let svg = d3.select(divContent).append('svg');
+        svg.attr('width', size);
+        svg.attr('height', size);
+        svg.append('circle')
+            .attr('cx', size/2)
+            .attr('cy', size/2)
+            .attr('r', size/4)
+            .attr('style', 'fill: red');
         //console.log(element)
-        var svg = element.append("svg");
-        svg.append("g").append("path")
-            .attr("fill", "red")
-            .attr("stroke", "red")
-            .attr("d", "M150 0 L146.5 200 L153.5 200 Z");
-        // svg.attr("width", size).attr("height", size);
-        // //svg.classList.add("leaflet-marker-item");
-        //
-        // // circle
-        // svg.append("circle")
-        //     .attr("cx", center)
-        //     .attr("cy", center)
-        //     .attr("r", rCircle)
-        // moved to css
-
-        const spike = (length, width = 7) => `M${-width / 2},0L0,${-length}L${width / 2},0`;
-        const vls = [100, 200, 300, 400];
-        const length = d3.scaleLinear([0, d3.max(vls)], [0, 200]);
-
-       // <g transform="translate(957,590)"><path fill="red" fill-opacity="0.3" stroke="red" d="M-3.5,0L0,-397.726792517367L3.5,0"></path><text dy="1.3em">10M</text></g>
-
-        // svg.append("path")
-        //     .attr("fill", "red")
-        //     .attr("fill-opacity", 0.3)
-        //     .attr("stroke", "red")
-        //     .attr("d", d => {return spike(length(100))});
-        //.attr("fill", this.getColor(level))
-        //.attr("fill-opacity", 0.9)
-        //.attr("stroke-width", strokeWidth)
-        //.attr("stroke", "black");
-
 
         this._setIconStyles(div, 'icon');
         console.log('here');
@@ -289,73 +188,20 @@ class SpikeLayerTool extends AbstractLayerTool {
         let mapData = this.getMap().getState().getMapData();
         let dataMappingModel = this.getDefaults().getDataMappingModel();
         let dataMapping = this.getState().getDataMapping();
-        let countryDataDomain = mapData.getDataDomain(dataMapping[dataMappingModel.country.name]);
+        let latitudeDataDomain = mapData.getDataDomain(dataMapping[dataMappingModel.latitude.name]);
+        let longitudeDataDomain = mapData.getDataDomain(dataMapping[dataMappingModel.longitude.name]);
         let valueDataDomain = mapData.getDataDomain(dataMapping[dataMappingModel.value.name]);
         let categoryDataDomain = mapData.getDataDomain(dataMapping[dataMappingModel.category.name]);
         let geoCountry, actResultItem;
         let foundCountries, foundValues, foundCategories;
-        let highlightedIds = this.getSelectionTool() && this.getSelectionTool().getState().getSelection() ?
-            this.getSelectionTool().getState().getSelection().getIds() : [];
         let data = this.getMap().getState().getCurrentData();
         let dataLen = data.length;
-        let centroids = this.getState().getCentroids();
         for (let i = 0; i < dataLen; i++) {
             // find the 'country' properties
-            foundCountries = mapData.getItemValues(countryDataDomain, data[i]);
-            //console.log("search country: ", foundCountries);
 
-            // find the 'value' properties
-            foundValues = mapData.getItemValues(valueDataDomain, data[i]);
-            //console.log("search values: ", foundValues);
-
-            // find the 'category' properties
-            foundCategories = mapData.getItemValues(categoryDataDomain, data[i]);
-            //console.log("search category: ", foundCategories);
-
-            // since the data are flattened we can expect max one found item
-            //console.log("abc", highlightedIds);
-            if (foundCountries.length == 1 && (highlightedIds.length == 0 || highlightedIds.indexOf(foundCountries[0]) >= 0)) {
-                // test if country respects highlighting selection
-                /*if(highlightedIds != undefined) {
-                    console.log(highlightedIds.indexOf(foundCountries[0]) >= 0);
-                }*/
-
-                // test if country exists in the map
-                geoCountry = centroids.find(x => x.id == foundCountries[0]);
-                if (geoCountry != undefined) {
-                    // test if country exists in the results array
-                    actResultItem = workData.find(x => x.id == foundCountries[0]);
-                    if (actResultItem == undefined) {
-                        actResultItem = { id: foundCountries[0], value: 0, subvalues: {} };
-                        workData.push(actResultItem);
-                    }
-                    // initialize category if does not exists yet
-                    if (foundCategories.length == 1) {
-                        if (actResultItem.subvalues[foundCategories[0]] == undefined) {
-                            actResultItem.subvalues[foundCategories[0]] = 0;
-                        }
-                    }
-                    // set value with respect to the aggregation function
-                    if (dataMapping[dataMappingModel.aggregation.name] == "sum") {
-                        // test if value is valid
-                        if (foundValues.length == 1 && foundValues[0] != null && typeof foundValues[0] === 'number') {
-                            actResultItem.value += foundValues[0];
-                            // set category
-                            if (foundCategories.length == 1) {
-                                actResultItem.subvalues[foundCategories[0]] += foundValues[0];
-                            }
-                        }
-                    } else {
-                        // count
-                        actResultItem.value++;
-                        // incerement category value
-                        actResultItem.subvalues[foundCategories[0]]++;
-                    }
-                }
-            }
         }
         //console.log("result: ", preparedData);
-        return workData;
+        return [{lat:"50.0874654", long:"14.4212535", value: 100}];
     }
 
     /**
@@ -367,13 +213,9 @@ class SpikeLayerTool extends AbstractLayerTool {
 
         let geoCountry;
         let layer = this.getState().getLayer();
-        let centroids = this.getState().getCentroids();
         for (let i = 0; i < workData.length; i++) {
-            // get centroid
-            // note: the centroid exists since invalid countries has been filtered
-            geoCountry = centroids.find(x => x.id == workData[i].id);
             // build message
-            let point = this.createMarker(geoCountry, workData[i]);
+            let point = this.createMarker(workData[i]);
             layer.addLayer(point);
             markers.push(point);
         }
@@ -387,7 +229,7 @@ class SpikeLayerTool extends AbstractLayerTool {
      * @param {*} centroid
      * @param {*} data
      */
-    createMarker(centroid, data) {
+    createMarker(data) {
         function thousands_separator(num) {
             var num_parts = num.toString().split(".");
             num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
@@ -395,21 +237,16 @@ class SpikeLayerTool extends AbstractLayerTool {
         }
 
         // build popup message
-        let popupMsg = "<b>" + centroid.name + "</b><br>";
-        popupMsg += (data.value != null ? thousands_separator(data.value) : "N/A") + "<br>";
-        for (let [key, value] of Object.entries(data.subvalues)) {
-            popupMsg += key + ": " + thousands_separator(value) + "<br>";
-        }
+
 
         // create marker
-        console.log(centroid.lat, centroid.long);
-        let point = L.marker([centroid.lat, centroid.long], {
+
+        let point = L.marker([data.lat, data.long], {
             // create basic icon
-            id: centroid.name,
             icon: new CountryIcon({
                 values: data
             })
-        }).bindPopup(popupMsg);
+        });
         console.log(data);
         //let spike =
         return point;

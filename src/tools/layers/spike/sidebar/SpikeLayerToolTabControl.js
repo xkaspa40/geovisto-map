@@ -2,6 +2,9 @@ import SpikeLayerToolTabControlDefaults from "./SpikeLayerToolTabControlDefaults
 import SpikeLayerToolTabControlState from "./SpikeLayerToolTabControlState";
 import AbstractLayerToolTabControl from "../../abstract/sidebar/AbstractLayerToolTabControl";
 import SidebarInputFactory from "../../../../inputs/SidebarInputFactory";
+import TabDOMUtil from "../../../../util/TabDOMUtil";
+import CategoryClassifierSidebarInput from "../../../../inputs/category/CategoryClassifierSidebarInput";
+import FiltersToolDefaults from "../../../filters/FiltersToolDefaults";
 
 /**
  * This class provides controls for management of the layer sidebar tab.
@@ -14,6 +17,8 @@ class SpikeLayerToolTabControl extends AbstractLayerToolTabControl {
         super(tool);
 
         this.tabContent = undefined;
+        this.filterManager = new FiltersToolDefaults().getFiltersManager();
+        this.colorClassInputs = [];
     }
 
     /**
@@ -41,10 +46,11 @@ class SpikeLayerToolTabControl extends AbstractLayerToolTabControl {
         let dataMapping = {};
 
         // get selected data domains values
-        dataMapping[model.country.name] = this.inputCountry.getValue();
+        dataMapping[model.latitude.name] = this.inputLatitude.getValue();
+        dataMapping[model.longitude.name] = this.inputLongitude.getValue();
+        dataMapping[model.category.name] = this.inputCategory.getValue();
         dataMapping[model.value.name] = this.inputValue.getValue();
         dataMapping[model.aggregation.name] = this.inputAggregation.getValue();
-        dataMapping[model.category.name] = this.inputCategory.getValue();
 
         return dataMapping;
     }
@@ -59,24 +65,23 @@ class SpikeLayerToolTabControl extends AbstractLayerToolTabControl {
         let model = this.getDefaults().getDataMappingModel();
 
         // update inputs
-        this.inputCountry.setValue(dataMapping[model.country.name]);
+        this.inputLatitude.setValue(dataMapping[model.latitude.name]);
+        this.inputLongitude.setValue(dataMapping[model.longitude.name]);
+        this.inputCategory.setValue(dataMapping[model.category.name]);
         this.inputValue.setValue(dataMapping[model.value.name]);
         this.inputAggregation.setValue(dataMapping[model.aggregation.name]);
-        this.inputCategory.setValue(dataMapping[model.category.name]);
     }
 
     /**
      * It returns the sidebar tab pane.
      */
     getTabContent() {
-        var _this = this;
-
         // event handler: change dimension action
-        let changeDimensionAction = function(e) {
+        let changeDimensionAction = (e) => {
             // get selected values and update layer's data mapping
-            _this.getTool().updateDataMapping(_this.getInputValues());
+            this.getTool().updateDataMapping(this.getInputValues());
         }
-        
+
         // tab content
         let tab = document.createElement('div');
         let elem = tab.appendChild(document.createElement('div'));
@@ -85,9 +90,17 @@ class SpikeLayerToolTabControl extends AbstractLayerToolTabControl {
         let model = this.getDefaults().getDataMappingModel();
         let dataDomainLabels = this.getTool().getMap().getState().getMapData().getDataDomainLabels();
 
-        // select country
-        this.inputCountry = SidebarInputFactory.createSidebarInput(model.country.input, { label: model.country.label , options: dataDomainLabels, action: changeDimensionAction });
-        elem.appendChild(this.inputCountry.create());
+        // select latitude
+        this.inputLatitude = SidebarInputFactory.createSidebarInput(model.latitude.input, { label: model.latitude.label , options: dataDomainLabels, action: changeDimensionAction });
+        elem.appendChild(this.inputLatitude.create());
+
+        // select longitude
+        this.inputLongitude = SidebarInputFactory.createSidebarInput(model.longitude.input, { label: model.longitude.label , options: dataDomainLabels, action: changeDimensionAction });
+        elem.appendChild(this.inputLongitude.create());
+
+        // select category
+        this.inputCategory = SidebarInputFactory.createSidebarInput(model.category.input, { label: model.category.label, options: dataDomainLabels, action: changeDimensionAction });
+        elem.appendChild(this.inputCategory.create());
 
         // select value
         this.inputValue = SidebarInputFactory.createSidebarInput(model.value.input, { label: model.value.label , options: dataDomainLabels, action: changeDimensionAction });
@@ -97,13 +110,80 @@ class SpikeLayerToolTabControl extends AbstractLayerToolTabControl {
         this.inputAggregation = SidebarInputFactory.createSidebarInput(model.aggregation.input, { label: model.aggregation.label, options: model.aggregation.options, action: changeDimensionAction });
         elem.appendChild(this.inputAggregation.create());
 
-        // select category
-        this.inputCategory = SidebarInputFactory.createSidebarInput(model.category.input, { label: model.category.label, options: dataDomainLabels, action: changeDimensionAction });
-        elem.appendChild(this.inputCategory.create());
+        //category color selector
+        this.categoryClasses = document.createElement('div');
+        this.categoryClasses.setAttribute('class', 'categoryClasses');
+        elem.appendChild(this.categoryClasses);
+
+        // horizontal rule
+        let catClassSeparator = document.createElement('hr');
+        this.categoryClasses.appendChild(catClassSeparator);
+
+        //header text
+        let catClassHeader = document.createElement('h2');
+        catClassHeader.innerText = 'Category colors';
+        this.categoryClasses.appendChild(catClassHeader);
+
+        //button group
+        this.buttonGroup = this.categoryClasses.appendChild(document.createElement('div'));
+        this.buttonGroup.appendChild(TabDOMUtil.createButton("<i class=\"fa fa-plus-circle\"></i>",   () => this.addMappingInputs(), "plusBtn" ));
+        this.buttonGroup.appendChild(TabDOMUtil.createButton("Apply", () => this.applyFilters(),
+            "applyBtn"));
 
         this.setInputValues(this.getTool().getState().getDataMapping());
-        
+
         return tab;
+    }
+
+    addMappingInputs() {
+        let div = this.categoryClasses.insertBefore(document.createElement('div'), this.buttonGroup);
+        div.setAttribute('class', 'categoryClassesGroup');
+
+        let minusButton = TabDOMUtil.createButton("<i class=\"fa fa-minus-circle\"></i>", (e) => {this.removeMappingInput(e)}, "minusBtn");
+        div.appendChild(minusButton);
+
+        const operations = this.filterManager.getOperationLabels();
+        let input = SidebarInputFactory.createSidebarInput(CategoryClassifierSidebarInput.ID(), {
+            operations: {
+                options: operations,
+                action: () => {/**/}
+            },
+            values: {
+                options: [],
+                action: function() { /* do nothing; */ }
+            },
+            colors: {
+                options: []
+            }
+        });
+
+        div.appendChild(input.create());
+        this.colorClassInputs.push({
+            input,
+            container: div
+        });
+    }
+
+    removeMappingInput(e) {
+        let inputGroup = e.target.closest(".categoryClassesGroup");
+        this.colorClassInputs = this.colorClassInputs.filter((item) => item.container !== inputGroup);
+
+        inputGroup.remove();
+    }
+
+    applyFilters() {
+        let rules = [];
+        this.colorClassInputs.forEach((input) => {
+            const data = input.input.getValue();
+            const operation = this.filterManager.getOperation(data.op)[0] ? this.filterManager.getOperation(data.op)[0].match : undefined;
+            data.val && data.color && operation && rules.push({
+                operation,
+                value: data.val,
+                color: data.color
+            });
+        });
+
+        this.getTool().setCategoryFilters(rules);
     }
 
 }
