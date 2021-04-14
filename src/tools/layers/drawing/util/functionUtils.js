@@ -12,6 +12,12 @@ export function debounce(func, wait, immediate) {
   };
 }
 
+/**
+ * @brief is array or object empty
+ *
+ * @param {Object | Array} obj
+ * @returns {boolean}
+ */
 export const isEmpty = (obj) => {
   return typeof obj === 'object' && obj !== null && Object.keys(obj).length === 0;
 };
@@ -19,5 +25,11 @@ export const isEmpty = (obj) => {
 export const sortReverseAlpha = (a, b) => {
   if (a < b) return 1;
   if (a > b) return -1;
+  return 0;
+};
+
+export const sortAlpha = (a, b) => {
+  if (a < b) return -1;
+  if (a > b) return 1;
   return 0;
 };

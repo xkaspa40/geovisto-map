@@ -38,7 +38,7 @@ import 'leaflet-draw';
 
 import * as d33 from 'd3-3-5-5';
 import Pather from 'leaflet-pather';
-import { isEmpty, sortReverseAlpha } from './util/functionUtils';
+import { isEmpty, sortReverseAlpha, sortAlpha } from './util/functionUtils';
 import { FIRST, NOT_FOUND, SPACE_BAR } from './util/constants';
 
 // !inject in rollup config doesn't work and pather throws errors without this line
@@ -302,32 +302,31 @@ class DrawingLayerTool extends AbstractLayerTool {
   haveSameVertice(current) {
     const found = this.state.createdVertices.find((vertice) => {
       return (
-        (vertice._latlngs[0].equals(current._latlngs[0]) &&
-          vertice._latlngs[1].equals(current._latlngs[1])) ||
-        (vertice._latlngs[0].equals(current._latlngs[1]) &&
-          vertice._latlngs[1].equals(current._latlngs[0]))
+        (vertice.getLatLngs()[0].equals(current.getLatLngs()[0]) &&
+          vertice.getLatLngs()[1].equals(current.getLatLngs()[1])) ||
+        (vertice.getLatLngs()[0].equals(current.getLatLngs()[1]) &&
+          vertice.getLatLngs()[1].equals(current.getLatLngs()[0]))
       );
     });
 
     return Boolean(found);
   }
 
-  plotTopology() {
-    const combinedMap = this.getMap();
-    const map = combinedMap.state.map;
+  plotTopology(chosen = null) {
     const selectedLayer = this.getState().selectedLayer;
 
     const layersObj = this.state.featureGroup._layers;
     const layerArr = [...Object.values(layersObj)];
-    const _markers = layerArr.filter((_) => this.getState().isConnectMarker(_)).reverse();
+    const allConnected = layerArr.filter((_) => this.getState().isConnectMarker(_)).reverse();
+    const _markers = chosen || allConnected;
     // console.log({ _markers });
-    const topologyVertices = [];
     const index = 0;
     const firstMarker = _markers[index];
 
     const selectedLayerIsConnectMarker = this.getState().selectedLayerIsConnectMarker();
 
-    const secondMarker = selectedLayerIsConnectMarker ? selectedLayer : _markers[index + 1];
+    const secondMarker =
+      selectedLayerIsConnectMarker && !chosen ? selectedLayer : _markers[index + 1];
     if (secondMarker) {
       const { lat: fLat, lng: fLng } = firstMarker.getLatLng();
       const { lat: sLat, lng: sLng } = secondMarker.getLatLng();
@@ -338,11 +337,10 @@ class DrawingLayerTool extends AbstractLayerTool {
         weight: 3,
         ...normalStyles,
       });
+      poly.layerType = 'vertice';
       if (!this.haveSameVertice(poly)) {
-        poly.addTo(map);
-        topologyVertices.push(poly);
-        this.state.createdVertices.push(poly);
-        poly.layerType = 'vertice';
+        console.log({ poly });
+        this.state.pushVertice(poly);
         this.getState().addLayer(poly);
       }
     }
@@ -351,22 +349,25 @@ class DrawingLayerTool extends AbstractLayerTool {
   }
 
   mapMarkersToVertices(_markers) {
+    console.log({ _markers, mapped: this.state.mappedMarkersToVertices });
     _markers
       .map((marker) => ({ latlng: marker.getLatLng(), lId: marker._leaflet_id, marker }))
       .forEach(({ latlng, lId, marker }) => {
-        this.state.createdVertices.forEach((layer) => {
+        this.state.createdVertices.forEach((vertice, index) => {
           // * used indexing instead of another loop (vertices have only 2 points)
+
           let spread = this.state.mappedMarkersToVertices[lId] || {};
-          if (layer.getLatLngs()[0].equals(latlng)) {
-            this.state.mappedMarkersToVertices[lId] = { ...spread, 0: layer };
-          } else if (layer.getLatLngs()[1].equals(latlng)) {
-            this.state.mappedMarkersToVertices[lId] = { ...spread, 1: layer };
+          if (vertice.getLatLngs()[0].equals(latlng)) {
+            this.getState().setVerticesToMarker(lId, { ...spread, [`${index}-0`]: vertice });
+          } else if (vertice.getLatLngs()[1].equals(latlng)) {
+            this.getState().setVerticesToMarker(lId, { ...spread, [`${index}-1`]: vertice });
           }
         });
       });
   }
 
   changeVerticesLocation(latlng, oldlatlng, markerID) {
+    console.log({ m: this.state.mappedMarkersToVertices });
     const markerVertices = this.state.mappedMarkersToVertices[markerID];
     if (!markerVertices) return;
 
@@ -376,8 +377,11 @@ class DrawingLayerTool extends AbstractLayerTool {
   setVerticesCoordinates(markerVertices, latlng) {
     Object.keys(markerVertices).forEach((key) => {
       let vertice = markerVertices[key];
-      let latLngs = L.LatLngUtil.cloneLatLngs(vertice._latlngs);
-      latLngs[key] = latlng;
+      let splitKey = key?.split('-');
+      let idx = splitKey ? splitKey[1] : undefined;
+      if (idx === undefined) return;
+      let latLngs = L.LatLngUtil.cloneLatLngs(vertice.getLatLngs());
+      latLngs[idx] = latlng;
       vertice.setLatLngs(latLngs);
     });
   }
@@ -474,6 +478,7 @@ class DrawingLayerTool extends AbstractLayerTool {
     map.on('click', () => {
       const sidebar = this.getSidebarTabControl();
       if (Boolean(sidebar.getState().enabledEl)) return;
+      if (document.querySelector('.leaflet-container').style.cursor === 'wait') return;
       let selected = this.getState().selectedLayer;
       if (selected) {
         this.normalizeElement(selected);
@@ -562,27 +567,40 @@ class DrawingLayerTool extends AbstractLayerTool {
   };
 
   joinChosen = (drawObject) => {
-    if (!isLayerPoly(drawObject)) return;
     const layerState = this.getState();
+    const unfit = !layerState.canPushToChosen(drawObject);
+    if (unfit) return;
     layerState.pushChosenLayer(drawObject);
     if (layerState.chosenLayersMaxed()) {
-      const { chosenLayers } = layerState;
-      const chosenFeatures = chosenLayers
-        .filter((c) => isLayerPoly(c))
-        .map((chosen) => getFeatFromLayer(chosen));
+      if (layerState.chosenLayersArePolys()) {
+        const { chosenLayers } = layerState;
+        const chosenFeatures = chosenLayers
+          .filter((c) => isLayerPoly(c))
+          .map((chosen) => getFeatFromLayer(chosen));
 
-      if (chosenFeatures.length !== chosenLayers.length) return;
+        if (chosenFeatures.length !== chosenLayers.length) return;
 
-      const first = this.getSummedFeature(chosenFeatures[0]);
-      const second = this.getSummedFeature(chosenFeatures[1]);
+        const first = this.getSummedFeature(chosenFeatures[0]);
+        const second = this.getSummedFeature(chosenFeatures[1]);
 
-      const resultFeature = union(first, second);
-      const opts = { ...chosenLayers[0].options, ...chosenLayers[1].options };
-      const result = morphFeatureToPolygon(resultFeature, opts, false);
-      layerState.pushJoinedToChosenLayers(result);
+        const resultFeature = union(first, second);
+        const opts = { ...chosenLayers[0].options, ...chosenLayers[1].options };
+        const result = morphFeatureToPolygon(resultFeature, opts, false);
+        layerState.pushJoinedToChosenLayers(result);
+
+        this.redrawSidebarTabControl(drawObject.layerType);
+      }
+      if (layerState.chosenLayersAreMarkers()) {
+        const { chosenLayers } = layerState;
+
+        this.plotTopology(chosenLayers);
+
+        layerState.deselectChosenLayers();
+        layerState.clearChosenLayers();
+
+        this.redrawSidebarTabControl(null);
+      }
     }
-
-    this.redrawSidebarTabControl(drawObject.layerType);
   };
 
   initChangeStyle = (e) => {
@@ -651,9 +669,10 @@ class DrawingLayerTool extends AbstractLayerTool {
   removeElement() {
     const selectedLayer = this.getState().selectedLayer;
     if (this.getState().selectedLayerIsConnectMarker()) {
-      const markerVertices = this.state.mappedMarkersToVertices[selectedLayer._leaflet_id];
-      console.log({ markerVertices });
-      markerVertices?.forEach((v) => this.getState().removeLayer(v?.layer));
+      this.getState().removeMarkersMappedVertices(selectedLayer._leaflet_id);
+    }
+    if (selectedLayer.layerType === 'vertice') {
+      this.getState().removeGivenVertice(selectedLayer._leaflet_id);
     }
     let paintPoly = this.getSidebarTabControl().getState().paintPoly;
     paintPoly.clearPaintedPolys(selectedLayer.kIdx);

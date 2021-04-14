@@ -6,10 +6,12 @@ import {
   featureToLeafletCoordinates,
   getLeafletTypeFromFeature,
   highlightStyles,
+  isLayerPoly,
   normalStyles,
 } from './util/Poly';
 import { isEmpty, sortReverseAlpha } from './util/functionUtils';
 import { iconStarter } from './util/Marker';
+import { FIRST, NOT_FOUND } from './util/constants';
 
 const MAX_CHOSEN = 2;
 
@@ -79,6 +81,87 @@ class DrawingLayerToolState extends AbstractLayerToolState {
     return this.isConnectMarker(this.selectedLayer);
   };
 
+  canPushToChosen = (layer) => {
+    const acceptableType = this.isConnectMarker(layer) || isLayerPoly(layer);
+    if (isEmpty(this.chosenLayers)) {
+      if (acceptableType) return true;
+    } else {
+      let firstChosen = this.chosenLayers[FIRST];
+      if (this.isConnectMarker(firstChosen) && this.isConnectMarker(layer)) return true;
+      if (isLayerPoly(firstChosen) && isLayerPoly(layer)) return true;
+    }
+
+    return false;
+  };
+
+  chosenLayersArePolys = () => {
+    let firstChosen = this.chosenLayers[FIRST];
+    return isLayerPoly(firstChosen);
+  };
+
+  chosenLayersAreMarkers = () => {
+    let firstChosen = this.chosenLayers[FIRST];
+    return this.isConnectMarker(firstChosen);
+  };
+
+  pushVertice = (vertice) => {
+    this.createdVertices.push(vertice);
+  };
+
+  removeGivenVertice = (lId) => {
+    const idsOfVerticesToRemove = new Set([lId]);
+
+    const result = this.removeMappedVertices(idsOfVerticesToRemove);
+
+    const index = this.createdVertices.map((v) => v._leaflet_id).indexOf(lId);
+    if (index !== NOT_FOUND) {
+      this.createdVertices.splice(index, 1);
+    }
+
+    this.mappedMarkersToVertices = result;
+  };
+
+  /**
+   *
+   * @param {Set} idsOfVerticesToRemove
+   * @returns {Object} mappedMarkersToVertices
+   */
+  removeMappedVertices = (idsOfVerticesToRemove) => {
+    // * copy object
+    const newMapped = { ...this.mappedMarkersToVertices };
+    console.log({ newMapped });
+
+    // *  go through each marker object containing { [index]: vertice } pairs
+    Object.values(newMapped).forEach((vertObj) => {
+      // * now go through each index
+      Object.keys(vertObj).forEach((key) => {
+        let vert = vertObj[key];
+        if (idsOfVerticesToRemove.has(vert._leaflet_id)) {
+          this.removeLayer(vert);
+          delete vertObj[key];
+        }
+      });
+    });
+
+    return newMapped;
+  };
+
+  removeMarkersMappedVertices = (lId) => {
+    const markerVertices = this.mappedMarkersToVertices[lId];
+    console.log({ markerVertices });
+    const idsOfVerticesToRemove = new Set();
+    // * save vertices' ids
+    Object.values(markerVertices)?.forEach((v) => idsOfVerticesToRemove.add(v._leaflet_id));
+    console.log({ idsOfVerticesToRemove });
+    // * remove vertices
+    const newMapped = this.removeMappedVertices(idsOfVerticesToRemove);
+
+    // * marker no longer has vertices, so remove it
+    delete newMapped[lId];
+
+    this.mappedMarkersToVertices = newMapped;
+  };
+
   setActiveIndex(idx) {
     this.activeIndex = idx;
   }
@@ -142,6 +225,10 @@ class DrawingLayerToolState extends AbstractLayerToolState {
 
   clearSelectedLayer() {
     this.selectedLayer = null;
+  }
+
+  setVerticesToMarker(lId, val) {
+    this.mappedMarkersToVertices[lId] = val;
   }
 
   addMappedVertices = (layer, result) => {
@@ -209,6 +296,7 @@ class DrawingLayerToolState extends AbstractLayerToolState {
   }
 
   deserializeGeoJSON(geojson) {
+    const sidebarState = this.tool.getSidebarTabControl().getState();
     // console.log({ geojson });
     if (geojson.type === 'FeatureCollection' && geojson.features) {
       geojson.features
@@ -223,10 +311,11 @@ class DrawingLayerToolState extends AbstractLayerToolState {
           } else if (lType === 'polyline') {
             result = new L.polyline(f.geometry.coordinates, opts);
           } else if (lType === 'marker') {
-            let spreadable = f.properties.iconOptions || {};
+            let spreadable = f?.properties?.iconOptions || {};
+            if (spreadable.iconUrl) sidebarState.appendToIconSrcs(spreadable.iconUrl);
             let options = {
               ...iconStarter,
-              iconUrl: this.tool.getSidebarTabControl().getState().getSelectedIcon(),
+              iconUrl: sidebarState.getSelectedIcon(),
               ...spreadable,
             };
 
@@ -306,6 +395,8 @@ class DrawingLayerToolState extends AbstractLayerToolState {
   deserialize(config) {
     super.deserialize(config);
 
+    const sidebarState = this.tool.getSidebarTabControl().getState();
+
     const { data = [] } = config;
 
     data.forEach((layer) => {
@@ -314,6 +405,7 @@ class DrawingLayerToolState extends AbstractLayerToolState {
       if (layer.layerType === 'marker') {
         let { latlngs } = layer;
         let latlng = L.latLng(latlngs.lat, latlngs.lng);
+        if (layer?.options?.iconUrl) sidebarState.appendToIconSrcs(layer.options.iconUrl);
         let options = {
           ...layer.options,
           iconAnchor: new L.Point(layer.options.iconAnchor.x, layer.options.iconAnchor.y),

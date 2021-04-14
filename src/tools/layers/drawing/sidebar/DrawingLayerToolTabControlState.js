@@ -57,7 +57,7 @@ class DrawingLayerToolTabControlState extends AbstractLayerToolTabControlState {
     this.strokes = STROKES;
     this.selectedStroke = STROKES[1].value;
 
-    this.iconSrcs = ICON_SRCS;
+    this.iconSrcs = new Set(ICON_SRCS);
     this.selectedIcon = ICON_SRCS[0];
 
     // * element/layer that was enabled and not created yet
@@ -167,7 +167,7 @@ class DrawingLayerToolTabControlState extends AbstractLayerToolTabControlState {
   }
 
   appendToIconSrcs(iconUrl) {
-    this.iconSrcs = [...this.iconSrcs, iconUrl];
+    this.iconSrcs.add(iconUrl);
   }
 
   getSelectCountries() {

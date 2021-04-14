@@ -10,7 +10,7 @@ import { debounce } from '../util/functionUtils';
 import * as osmtogeojson from 'osmtogeojson';
 import * as turf from '@turf/turf';
 
-import { normalStyles, simplifyFeature } from '../util/Poly';
+import { highlightStyles, normalStyles, simplifyFeature } from '../util/Poly';
 
 const POLYS = ['polyline', 'polygon', 'painted', 'vertice'];
 
@@ -86,11 +86,11 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
   }
 
   createIconPalette() {
-    const icons = new Set(this.getState().iconSrcs);
+    const iconsSet = this.getState().iconSrcs;
     const iconUrl = this._getSelected()?.options?.icon?.options?.iconUrl;
-    if (iconUrl) icons.add(iconUrl);
+    if (iconUrl) iconsSet.add(iconUrl);
     const activeIcon = this.getState().getSelectedIcon();
-    const iconsArr = Array.from(icons);
+    const iconsArr = Array.from(iconsSet);
     const activeIndex = iconsArr.indexOf(activeIcon);
     const res = this.createPalette('Pick icon', iconsArr, activeIndex, this.changeIconAction, true);
     return res;
@@ -366,6 +366,33 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     return result;
   };
 
+  createChangeConnectCheck = () => {
+    const toolState = this.getTool().getState();
+    const onChange = (connectClick) => {
+      let selected = this._getSelected();
+      let oldIconOptions = selected?.options?.icon?.options || {};
+      let newIconOptions = {
+        ...oldIconOptions,
+        connectClick,
+      };
+
+      const marker = new L.Icon(newIconOptions);
+      if (selected) {
+        selected.setIcon(marker);
+        this.getTool().highlightElement(selected);
+      }
+    };
+    const isConnect = toolState.selectedLayerIsConnectMarker();
+
+    const result = this.createCheck(
+      isConnect,
+      onChange,
+      'change-connect',
+      'By selecting the option marker will be able to create topology',
+    );
+    return result;
+  };
+
   createCheck = (value, onCheck, prefix, label) => {
     const onChange = (e) => {
       const val = e.target.checked;
@@ -553,6 +580,9 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
       value: '',
     });
     elem.appendChild(this.inputUrl.create());
+
+    const changeConnect = this.createChangeConnectCheck();
+    elem.appendChild(changeConnect);
   };
 
   /**

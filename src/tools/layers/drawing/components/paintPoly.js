@@ -24,7 +24,7 @@ const ERASER_COLOR = '#ee000055';
 class PaintPoly {
   constructor(props) {
     this.tabState = props.tabState;
-    this._map = window.map;
+    // this._map = window.map;
 
     this._action = null;
     this._circle = null;
@@ -78,7 +78,7 @@ class PaintPoly {
       color: DEFAULT_COLOR,
     })
       .setRadius(this._circleRadius)
-      .addTo(this._map);
+      .addTo(window.map);
   };
 
   startErase = () => {
@@ -89,7 +89,7 @@ class PaintPoly {
       color: ERASER_COLOR,
     })
       .setRadius(this._circleRadius)
-      .addTo(this._map);
+      .addTo(window.map);
   };
 
   clearPaintedPolys = (kIdx) => {
@@ -118,7 +118,7 @@ class PaintPoly {
   _pixelsToMeters = () => {
     const metersPerPixel =
       (40075016.686 * Math.abs(Math.cos((this._latlng.lat * Math.PI) / 180))) /
-      Math.pow(2, this._map.getZoom() + 8);
+      Math.pow(2, window.map.getZoom() + 8);
 
     return this._circleRadius * metersPerPixel;
   };
@@ -176,7 +176,7 @@ class PaintPoly {
         this._shapeLayers[key].remove();
       }
 
-      this._shapeLayers[key] = result.addTo(this._map);
+      this._shapeLayers[key] = result.addTo(window.map);
     });
   };
 
@@ -191,7 +191,7 @@ class PaintPoly {
         this._shapeLayers[key].layerType = 'painted';
         layerState.addLayer(this._shapeLayers[key]);
       } else {
-        this._map.fire(L.Draw.Event.CREATED, {
+        window.map.fire(L.Draw.Event.CREATED, {
           layer: this._shapeLayers[key],
           layerType: key === ERASE_KEY ? 'erased' : 'painted',
           keyIndex: key,
@@ -202,22 +202,22 @@ class PaintPoly {
 
   // ================= EVENT LISTENERS =================
   _addMouseListener = () => {
-    this._map.on('mousemove', this._onMouseMove);
-    this._map.on('mousedown', this._onMouseDown);
-    this._map.on('mouseup', this._onMouseUp);
+    window.map.on('mousemove', this._onMouseMove);
+    window.map.on('mousedown', this._onMouseDown);
+    window.map.on('mouseup', this._onMouseUp);
   };
   _removeMouseListener = () => {
-    this._map.off('mousemove', this._onMouseMove);
-    this._map.off('mousedown', this._onMouseDown);
-    this._map.off('mouseup', this._onMouseUp);
+    window.map.off('mousemove', this._onMouseMove);
+    window.map.off('mousedown', this._onMouseDown);
+    window.map.off('mouseup', this._onMouseUp);
   };
   _onMouseDown = (event) => {
-    this._map.dragging.disable();
+    window.map.dragging.disable();
     this._mouseDown = true;
     this._onMouseMove(event);
   };
   _onMouseUp = (event) => {
-    this._map.dragging.enable();
+    window.map.dragging.enable();
     this._mouseDown = false;
     this.keyIndex += 1;
     this._fireCreatedShapes();
