@@ -29,7 +29,7 @@ var CountryIcon = L.DivIcon.extend({
 
         // It is derived
         //iconSize: [32,32],
-        //iconAnchor: [32/2,32/2],
+        //iconAnchor: [30/2,30/2],
 
         className: "div-country-icon",
     },
@@ -43,12 +43,16 @@ var CountryIcon = L.DivIcon.extend({
         let size = 30;
         //console.log(size);
         let svg = d3.select(divContent).append('svg');
-        svg.attr('width', size);
-        svg.attr('height', size);
-        svg.append('circle')
-            .attr('cx', size/2)
-            .attr('cy', size/2)
-            .attr('r', size/4)
+        let width = 30;
+        let height = 60;
+        svg.attr('width', width);
+        svg.attr('height', height);
+        svg.append('rect')
+            //.attr("transform", "translate(-" + width / 2 + ",-" + height / 2 + ")")
+            .attr('x', 0)
+            .attr('y', 0)
+            .attr('height', height)
+            .attr('width', width)
             .attr('style', 'fill: red');
         //console.log(element)
 
@@ -244,7 +248,9 @@ class SpikeLayerTool extends AbstractLayerTool {
         let point = L.marker([data.lat, data.long], {
             // create basic icon
             icon: new CountryIcon({
-                values: data
+                values: data,
+                //anchor musi pro spike byt [stred mezi vychozim A a B, vyska spike] aby coords byly uprostred zakladny
+                iconAnchor: [15,60]
             })
         });
         console.log(data);
