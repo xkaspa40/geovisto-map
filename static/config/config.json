@@ -138,9 +138,9 @@
             "enabled": true,
             "layerName": "Dot layer",
             "data": {
-                "latitude": "",
-                "longitude": "",
-                "category": ""
+                "latitude": "lat",
+                "longitude": "long",
+                "category": "city"
             }
         }
     ]

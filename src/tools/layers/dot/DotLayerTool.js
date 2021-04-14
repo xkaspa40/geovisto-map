@@ -184,8 +184,8 @@ class DotLayerTool extends AbstractLayerTool {
             renderer: renderer,
             radius: this.radius,
             weight: 0,
-            fillOpacity: 1.0,
-            color: data.color ?? 'green'
+            fillOpacity: 0.5,
+            color: data.color ?? 'red'
         });
         return point;
     }
