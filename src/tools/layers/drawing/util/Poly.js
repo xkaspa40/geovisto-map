@@ -189,16 +189,7 @@ export const getSimplifiedPoly = (param_latlngs) => {
 };
 
 export const simplifyFeature = (feature, pixels) => {
-  const map = window.map;
-  const metersPerPixel =
-    (40075016.686 * Math.abs(Math.cos((map.getCenter().lat * Math.PI) / 180))) /
-    Math.pow(2, map.getZoom() + 8);
-  const zoom = map.getZoom();
-
-  // ! this is tried out, so no real calculation
-  const conditionalTolerance = zoom >= 4 ? 0.0001 * metersPerPixel : 1.5;
-
-  const tolerance = pixels || conditionalTolerance;
+  const tolerance = pixels || window.customTolerance;
 
   const result = turf.simplify(feature, { tolerance });
   return result;

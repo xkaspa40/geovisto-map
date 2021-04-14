@@ -65,6 +65,8 @@ class DrawingLayerTool extends AbstractLayerTool {
   constructor(props) {
     super(props);
     useDrawingToolbar();
+
+    this.setGlobalSimplificationTolerance();
   }
 
   /**
@@ -93,6 +95,17 @@ class DrawingLayerTool extends AbstractLayerTool {
    */
   createState() {
     return new DrawingLayerToolState(this);
+  }
+
+  setGlobalSimplificationTolerance() {
+    const map = window.map;
+    const metersPerPixel =
+      (40075016.686 * Math.abs(Math.cos((map.getCenter().lat * Math.PI) / 180))) /
+      Math.pow(2, map.getZoom() + 8);
+    const zoom = map.getZoom();
+
+    // ! this is tried out, so no real calculation
+    window.customTolerance = zoom >= 4 ? 0.0001 * metersPerPixel : 1.5;
   }
 
   /**
@@ -339,7 +352,6 @@ class DrawingLayerTool extends AbstractLayerTool {
       });
       poly.layerType = 'vertice';
       if (!this.haveSameVertice(poly)) {
-        console.log({ poly });
         this.state.pushVertice(poly);
         this.getState().addLayer(poly);
       }

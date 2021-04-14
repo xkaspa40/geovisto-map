@@ -5,12 +5,13 @@ import SidebarInputFactory from '../../../../inputs/SidebarInputFactory';
 
 import '../style/drawingLayerTabControl.scss';
 import { geoSearch, iconStarter, putMarkerOnMap } from '../util/Marker';
+import { highlightStyles, normalStyles, simplifyFeature } from '../util/Poly';
 import { debounce } from '../util/functionUtils';
+import { createIntervalInput, createCheck } from '../components/inputs';
 
 import * as osmtogeojson from 'osmtogeojson';
 import * as turf from '@turf/turf';
-
-import { highlightStyles, normalStyles, simplifyFeature } from '../util/Poly';
+import { FIRST } from '../util/constants';
 
 const POLYS = ['polyline', 'polygon', 'painted', 'vertice'];
 
@@ -231,15 +232,18 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
 
     let { maxBrushSize, minBrushSize } = paintPoly.getBrushSizeConstraints();
 
-    const controlWrapper = document.createElement('div');
-    controlWrapper.appendChild(document.createTextNode('Brush size: '));
-    const brushSizeControl = document.createElement('input');
-    brushSizeControl.setAttribute('type', 'range');
-    brushSizeControl.setAttribute('min', minBrushSize);
-    brushSizeControl.setAttribute('max', maxBrushSize);
-    brushSizeControl.onchange = (e) => paintPoly.resizeBrush(e.target.value);
-    brushSizeControl.value = paintPoly.getBrushSize();
-    controlWrapper.appendChild(brushSizeControl);
+    const controlWrapper = createIntervalInput(
+      'Brush size: ',
+      minBrushSize,
+      maxBrushSize,
+      paintPoly.resizeBrush,
+      paintPoly.getBrushSize(),
+    );
+
+    const customToleranceCheck = this.createCustomToleranceCheck();
+    controlWrapper.appendChild(customToleranceCheck);
+    this.customToleranceInput = document.createElement('div');
+    controlWrapper.appendChild(this.customToleranceInput);
     return controlWrapper;
   };
 
@@ -330,7 +334,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     const onChange = (val) => this.getState().setConnectActivated(val);
     const { connectActivated } = this.getState();
 
-    const result = this.createCheck(
+    const result = createCheck(
       connectActivated,
       onChange,
       'connect',
@@ -344,7 +348,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     const onChange = (val) => this.getState().setIntersectActivated(val);
     const { intersectActivated } = this.getState();
 
-    const result = this.createCheck(
+    const result = createCheck(
       intersectActivated,
       onChange,
       'intersect',
@@ -357,7 +361,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     const onChange = (val) => this.getState().setHighQuality(val);
     const { highQuality } = this.getState();
 
-    const result = this.createCheck(
+    const result = createCheck(
       highQuality,
       onChange,
       'high-quality',
@@ -384,7 +388,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     };
     const isConnect = toolState.selectedLayerIsConnectMarker();
 
-    const result = this.createCheck(
+    const result = createCheck(
       isConnect,
       onChange,
       'change-connect',
@@ -393,25 +397,33 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     return result;
   };
 
-  createCheck = (value, onCheck, prefix, label) => {
-    const onChange = (e) => {
-      const val = e.target.checked;
-      onCheck(val);
+  createCustomToleranceCheck = () => {
+    const onChange = (check) => {
+      if (check) {
+        const toleranceChange = (val) => (window.customTolerance = val);
+        const customTolerance = createIntervalInput(
+          'Custom tolerance',
+          0.1,
+          3.0,
+          toleranceChange,
+          window.customTolerance || '',
+          0.1,
+        );
+        this.customToleranceInput.appendChild(customTolerance);
+      } else {
+        let firstChild = this.customToleranceInput.childNodes[FIRST];
+        if (firstChild) this.customToleranceInput.removeChild(firstChild);
+        this.getTool().setGlobalSimplificationTolerance();
+      }
     };
-    const ID = prefix + '-check-input';
-    const inputWrapper = document.createElement('div');
-    inputWrapper.className = `${ID}-wrapper check-wrapper`;
-    const check = document.createElement('input');
-    check.type = 'checkbox';
-    check.checked = value;
-    check.id = ID;
-    check.onchange = onChange;
-    const checkLabel = document.createElement('label');
-    checkLabel.for = ID;
-    checkLabel.innerText = label;
-    inputWrapper.appendChild(check);
-    inputWrapper.appendChild(checkLabel);
-    return inputWrapper;
+
+    const result = createCheck(
+      '',
+      onChange,
+      'custom-tolerance',
+      'By selecting the option you can custom level of detail for brush strokes',
+    );
+    return result;
   };
 
   fetchAreas = async () => {

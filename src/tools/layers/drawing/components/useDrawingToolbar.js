@@ -252,7 +252,6 @@ export default function useDrawingToolbar() {
     },
 
     initErasing: function (evt) {
-      this.redrawSidebar(null);
       let sidebar = this.getSidebar();
       let paintPoly = sidebar.getState().paintPoly;
       sidebar.getState().paintPoly.erase(evt);
@@ -260,10 +259,10 @@ export default function useDrawingToolbar() {
       sidebar
         .getState()
         .setEnabledEl({ enable: paintPoly.enableErase, disable: paintPoly.disable });
+      this.redrawSidebar(null);
     },
 
     initPainting: function (e) {
-      this.redrawSidebar('painted');
       let sidebar = this.getSidebar();
       let paintPoly = sidebar.getState().paintPoly;
       sidebar.getState().paintPoly.clickDraw(e);
@@ -271,6 +270,7 @@ export default function useDrawingToolbar() {
       sidebar
         .getState()
         .setEnabledEl({ enable: paintPoly.enablePaint, disable: paintPoly.disable });
+      this.redrawSidebar('painted');
     },
 
     initSearch: function () {
