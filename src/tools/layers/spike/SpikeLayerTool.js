@@ -255,6 +255,7 @@ class SpikeLayerTool extends AbstractLayerTool {
             // create spike icon
             icon: new SpikeIcon({
                 iconAnchor: [SPIKE_WIDTH/2,height],
+                popupAnchor: [SPIKE_WIDTH/2, -height],
                 iconSize: [SPIKE_WIDTH, height],
                 height: height,
                 value: data.value,
