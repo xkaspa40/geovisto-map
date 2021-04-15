@@ -43,17 +43,24 @@ var CountryIcon = L.DivIcon.extend({
         let size = 30;
         //console.log(size);
         let svg = d3.select(divContent).append('svg');
-        let width = 30;
-        let height = 60;
+        console.log(options);
+        let width = 8;
+        let height = 15;
         svg.attr('width', width);
         svg.attr('height', height);
-        svg.append('rect')
-            //.attr("transform", "translate(-" + width / 2 + ",-" + height / 2 + ")")
-            .attr('x', 0)
-            .attr('y', 0)
-            .attr('height', height)
-            .attr('width', width)
-            .attr('style', 'fill: red');
+        svg.append('g')
+            .attr('transform', `translate(0,${height})`)
+            .append('path')
+            .attr('d', `M 0 0 L${width/2} -${height} L ${width} 0`);
+
+
+        // svg.append('rect')
+        //     //.attr("transform", "translate(-" + width / 2 + ",-" + height / 2 + ")")
+        //     .attr('x', 0)
+        //     .attr('y', 0)
+        //     .attr('height', height)
+        //     .attr('width', width)
+        //     .attr('style', 'fill: red');
         //console.log(element)
 
         this._setIconStyles(div, 'icon');
@@ -250,7 +257,7 @@ class SpikeLayerTool extends AbstractLayerTool {
             icon: new CountryIcon({
                 values: data,
                 //anchor musi pro spike byt [stred mezi vychozim A a B, vyska spike] aby coords byly uprostred zakladny
-                iconAnchor: [15,60]
+                iconAnchor: [5,15]
             })
         });
         console.log(data);
