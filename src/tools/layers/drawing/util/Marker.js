@@ -7,6 +7,12 @@ import { ICON_SRCS } from '../sidebar/DrawingLayerToolTabControlState';
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
 import { MapLayerTool } from '../../map';
 
+L.Draw.ExtendedMarker = L.Draw.Marker.extend({
+  setIconOptions: function (iconOpts) {
+    this.options.icon = iconOpts;
+  },
+});
+
 export const iconStarter = {
   shadowUrl: null,
   iconAnchor: new L.Point(12, 12),
@@ -24,7 +30,7 @@ export const markerCreate = (map, sidebar, connectClick = false) => {
   const icon = new L.Icon({ ...iconOptions, ...additionalOpts });
   const { guideLayers } = sidebar.getState();
 
-  const x = new L.Draw.Marker(map, {
+  const x = new L.Draw.ExtendedMarker(map, {
     icon,
     draggable: true,
     transform: true,

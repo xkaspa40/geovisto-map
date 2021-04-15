@@ -38,7 +38,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
    * It creates new state of the tab control.
    */
   createState() {
-    return new DrawingLayerToolTabControlState();
+    return new DrawingLayerToolTabControlState(this);
   }
 
   createPalette(label, opts, activeIdx, changeAction, img = false) {
@@ -72,7 +72,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     inputWrapper.appendChild(document.createTextNode('Pick color: '));
     const colorPicker = document.createElement('input');
     colorPicker.setAttribute('type', 'color');
-    colorPicker.onchange = (e) => this.changeColorAction(e.target.value);
+    colorPicker.onchange = (e) => this.getState().changeColorAction(e.target.value);
     colorPicker.value = this._getSelected()?.options?.color || this.getState().getSelectedColor();
     inputWrapper.appendChild(colorPicker);
     return inputWrapper;
@@ -82,7 +82,12 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     const colors = this.getState().colors;
     const activeColor = this.getState().getSelectedColor();
     const activeIndex = colors.indexOf(activeColor);
-    const res = this.createPalette('Pick color', colors, activeIndex, this.changeColorAction);
+    const res = this.createPalette(
+      'Pick color',
+      colors,
+      activeIndex,
+      this.getState().changeColorAction,
+    );
     return res;
   }
 
@@ -93,7 +98,13 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     const activeIcon = this.getState().getSelectedIcon();
     const iconsArr = Array.from(iconsSet);
     const activeIndex = iconsArr.indexOf(activeIcon);
-    const res = this.createPalette('Pick icon', iconsArr, activeIndex, this.changeIconAction, true);
+    const res = this.createPalette(
+      'Pick icon',
+      iconsArr,
+      activeIndex,
+      this.getState().changeIconAction,
+      true,
+    );
     return res;
   }
 
@@ -126,7 +137,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     this.inputId.setValue(dataMapping[model.identifier.name]);
   }
 
-  redrawTabContent(layerType) {
+  redrawTabContent(layerType, enabled = false) {
     console.log('redrawing sidebar...');
     // get rendered sidebar tab
     let tabElement = document.getElementById(this.getState().getId());
@@ -138,87 +149,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
       tabContent.removeChild(tabContent.firstChild);
     }
 
-    tabContent.appendChild(this.getTabContent(layerType));
-  }
-
-  changeColorAction = (color) => {
-    const selectedEl = this._getSelected();
-    this.getState().setSelectedColor(color);
-    if (selectedEl?.setStyle) selectedEl.setStyle({ color });
-    // this.redrawTabContent(selectedEl?.layerType);
-  };
-
-  changeIconAction = (icon) => {
-    const selectedEl = this._getSelected();
-    this.getState().setSelectedIcon(icon);
-
-    let oldIconOptions = selectedEl?.options?.icon?.options || {};
-    let newIconOptions = {
-      ...oldIconOptions,
-      iconUrl: icon,
-    };
-
-    const marker = new L.Icon(newIconOptions);
-    if (selectedEl) selectedEl.setIcon(marker);
-    this.redrawTabContent('marker');
-  };
-
-  changeDescriptionAction = (e) => {
-    this.changeDesc(e.target.value);
-  };
-
-  changeDesc = (inputText) => {
-    const selectedEl = this._getSelected();
-    const modInputText = this.convertDescToPopText(inputText);
-
-    let popup1 = selectedEl.getPopup();
-    if (popup1) {
-      popup1.setContent(modInputText);
-    } else {
-      selectedEl.bindPopup(modInputText);
-    }
-    // store for import
-    selectedEl.popupContent = modInputText;
-    // this.getState().setSelectedColor(color);
-    if (selectedEl?.setStyle) selectedEl.setStyle(modInputText);
-  };
-
-  changeWeightAction = (e) => {
-    const weight = Number(e.target.value);
-    const selectedEl = this._getSelected();
-    this.getState().setSelectedStroke(weight);
-    if (selectedEl?.setStyle) selectedEl.setStyle({ weight });
-  };
-
-  changeIdentifierAction = (e) => {
-    const id = e.target.value;
-    const selectedEl = this._getSelected();
-    if (selectedEl) selectedEl.identifier = id;
-
-    const data = this.getTool()?.getState()?.map?.state?.data;
-
-    const found = data.find(({ identifier }) => identifier === id);
-
-    let popupText = '';
-    Object.keys(found).forEach((key) => {
-      popupText += `${key}: ${found[key]}<br />`;
-    });
-
-    this.changeDesc(popupText);
-    this.redrawTabContent(selectedEl?.layerType);
-  };
-
-  changeWhichIdUseAction = (e) => {
-    const id = e.target.value;
-    const selectedEl = this._getSelected();
-
-    this.state.setIdentifierType(id);
-
-    this.redrawTabContent(selectedEl?.layerType);
-  };
-
-  _getCurrEl() {
-    return this.getTool().getState().currEl;
+    tabContent.appendChild(this.getTabContent(layerType, enabled));
   }
 
   _getSelected() {
@@ -232,16 +163,19 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
 
     let { maxBrushSize, minBrushSize } = paintPoly.getBrushSizeConstraints();
 
-    const controlWrapper = createIntervalInput(
+    const controlWrapper = document.createElement('div');
+    const brushControl = createIntervalInput(
       'Brush size: ',
       minBrushSize,
       maxBrushSize,
       paintPoly.resizeBrush,
       paintPoly.getBrushSize(),
     );
+    controlWrapper.appendChild(brushControl);
 
     const customToleranceCheck = this.createCustomToleranceCheck();
     controlWrapper.appendChild(customToleranceCheck);
+
     this.customToleranceInput = document.createElement('div');
     controlWrapper.appendChild(this.customToleranceInput);
     return controlWrapper;
@@ -256,7 +190,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
 
     const result = SidebarInputFactory.createSidebarInput(model.identifier.input, {
       label: model.identifier.label,
-      action: this.changeIdentifierAction,
+      action: this.getState().changeIdentifierAction,
       value: this._getSelected()?.identifier || '',
       options: idOpts,
       placeholder: 'e.g. CZ',
@@ -272,7 +206,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
 
     const result = SidebarInputFactory.createSidebarInput(model.idKey.input, {
       label: model.idKey.label,
-      action: this.changeWhichIdUseAction,
+      action: this.getState().changeWhichIdUseAction,
       value: this.state.getIdentifierType(),
       options: [{ value: '', label: '' }, ...idOpts],
     });
@@ -288,46 +222,6 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
   convertDescfromPopText = (popText) => {
     if (!popText) return '';
     return popText.replaceAll('<br />', '\n');
-  };
-
-  searchAction = async (e) => {
-    const value = e.target.value;
-    const featureGroup = this.getTool()?.getState().featureGroup;
-
-    const opts = await geoSearch(featureGroup, value);
-
-    this.getState().setSearchOpts(opts);
-    this.inputSearch.changeOptions(opts ? opts.map((opt) => opt.label || '') : []);
-    // this.inputSearch.redrawMenu();
-  };
-
-  onInputOptClick = (value) => {
-    const featureGroup = this.getTool()?.getState().featureGroup;
-    const { searchOpts: opts, connectActivated } = this.getState();
-
-    const found = opts.find((opt) => opt.label === value);
-
-    let latlng = L.latLng(0, 0);
-    latlng.lat = found?.y || 0;
-    latlng.lng = found?.x || 0;
-    const iconUrl = found?.raw?.icon || ICON_SRCS[0];
-    const marker = putMarkerOnMap(featureGroup, latlng, found?.label, iconUrl, connectActivated);
-    this.getTool().applyEventListeners(marker);
-    this.getTool().applyTopologyMarkerListeners(marker);
-    this.getState().setSelectedIcon(iconUrl);
-    this.getState().appendToIconSrcs(iconUrl);
-    if (connectActivated) {
-      this.getTool().plotTopology();
-    }
-    this.redrawTabContent('search');
-  };
-
-  addIconAction = (e) => {
-    const iconUrl = e.target.value;
-
-    const selectedEl = this._getSelected();
-    this.getState().appendToIconSrcs(iconUrl);
-    this.redrawTabContent(selectedEl?.layerType);
   };
 
   createConnectCheck = () => {
@@ -373,16 +267,9 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
   createChangeConnectCheck = () => {
     const toolState = this.getTool().getState();
     const onChange = (connectClick) => {
-      let selected = this._getSelected();
-      let oldIconOptions = selected?.options?.icon?.options || {};
-      let newIconOptions = {
-        ...oldIconOptions,
-        connectClick,
-      };
+      let selected = this.getState().changeIconOpts({ connectClick });
 
-      const marker = new L.Icon(newIconOptions);
       if (selected) {
-        selected.setIcon(marker);
         this.getTool().highlightElement(selected);
       }
     };
@@ -426,69 +313,27 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     return result;
   };
 
-  fetchAreas = async () => {
-    const { countryCode, adminLevel, highQuality } = this.getState();
+  createIconAnchorSlider = (coordinate) => {
+    const selectedEl = this._getSelected();
 
-    if (!countryCode || !adminLevel) return;
+    let iconOptions = selectedEl?.options?.icon?.options || {};
+    const iconAnchor = iconOptions.iconAnchor || iconStarter.iconAnchor;
+    const value = iconAnchor[coordinate] || '';
 
-    const toolState = this.getTool().getState();
+    const customAnchor = createIntervalInput(
+      `Icon '${coordinate.toUpperCase()}' anchor`,
+      0,
+      50,
+      (val) => this.getState().changeIconAnchor(val, coordinate),
+      value,
+      1,
+    );
 
-    const endPoint = 'https://overpass-api.de/api/interpreter?data=[out:json];';
-    const query = `area["ISO3166-1"="${countryCode}"]->.searchArea;(relation["admin_level"="${adminLevel}"](area.searchArea););out;>;out skel qt;`;
-
-    document.querySelector('.leaflet-container').style.cursor = 'wait';
-    this.searchForAreasBtn.setAttribute('disabled', true);
-    fetch(endPoint + query)
-      .then((response) => response.json())
-      .then((data) => {
-        const gJSON = osmtogeojson(data);
-
-        const opts = {
-          color: this.getState().selectedColor,
-          draggable: true,
-          transform: true,
-        };
-
-        toolState.featureGroup.eachLayer((layer) => {
-          if (layer.countryCode === countryCode) toolState.removeLayer(layer);
-        });
-
-        gJSON?.features
-          ?.filter((feat) => feat?.geometry?.type === 'Polygon')
-          ?.forEach((feat) => {
-            let coords = feat.geometry.coordinates;
-            if (!highQuality) {
-              let simplified = simplifyFeature(feat, 0.01);
-              coords = simplified.geometry.coordinates;
-            }
-            let latlngs = L.GeoJSON.coordsToLatLngs(coords, 1);
-            let result = new L.polygon(latlngs, { ...opts, ...normalStyles });
-            result?.dragging?.disable();
-            result.layerType = 'polygon';
-            result.countryCode = countryCode;
-            toolState.addLayer(result);
-          });
-        this.errorMsg.innerText = '';
-      })
-      .catch((err) => {
-        this.errorMsg.innerText = 'There was a problem, re-try later.';
-        console.error(err);
-      })
-      .finally(() => {
-        document.querySelector('.leaflet-container').style.cursor = '';
-        this.searchForAreasBtn.removeAttribute('disabled');
-      });
+    return customAnchor;
   };
 
-  searchForAreaAction = (e) => {
-    const val = e.target.value;
-    this.getState().setCountryCode(val);
-  };
-
-  pickAdminLevelAction = (e) => {
-    const val = e.target.value;
-    this.getState().setAdminLevel(val);
-  };
+  createXAnchorSlider = () => this.createIconAnchorSlider('x');
+  createYAnchorSlider = () => this.createIconAnchorSlider('y');
 
   addHeading = (title, elem) => {
     let headingTag = document.createElement('h3');
@@ -541,7 +386,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
 
     this.searchForAreasBtn = document.createElement('button');
     this.searchForAreasBtn.innerText = 'Submit';
-    this.searchForAreasBtn.addEventListener('click', this.fetchAreas);
+    this.searchForAreasBtn.addEventListener('click', this.getState().fetchAreas);
     elem.appendChild(this.searchForAreasBtn);
   };
 
@@ -558,7 +403,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     // textarea Description
     this.inputDesc = SidebarInputFactory.createSidebarInput(model.description.input, {
       label: model.description.label,
-      action: this.changeDescriptionAction,
+      action: this.getState().changeDescriptionAction,
       value: this.convertDescfromPopText(this._getSelected()?.getPopup()?.getContent()),
     });
     elem.appendChild(this.inputDesc.create());
@@ -571,7 +416,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     this.inputThickness = SidebarInputFactory.createSidebarInput(model.strokeThickness.input, {
       label: model.strokeThickness.label,
       options: thicknessOpts,
-      action: this.changeWeightAction,
+      action: this.getState().changeWeightAction,
       value: this._getSelected()?.options?.weight,
     });
     elem.appendChild(this.inputThickness.create());
@@ -588,19 +433,27 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
 
     this.inputUrl = SidebarInputFactory.createSidebarInput(model.iconUrl.input, {
       label: model.iconUrl.label,
-      action: this.addIconAction,
+      action: this.getState().addIconAction,
       value: '',
     });
+
     elem.appendChild(this.inputUrl.create());
 
     const changeConnect = this.createChangeConnectCheck();
     elem.appendChild(changeConnect);
+
+    elem.appendChild(this.createXAnchorSlider());
+    elem.appendChild(this.createYAnchorSlider());
   };
 
   /**
    * It returns the sidebar tab pane.
+   *
+   * @param {string} layerType
+   * @param {boolean} enabled
+   * @returns
    */
-  getTabContent(layerType = null) {
+  getTabContent(layerType = null, enabled = false) {
     // tab content
     let tab = document.createElement('div');
     let elem = tab.appendChild(document.createElement('div'));

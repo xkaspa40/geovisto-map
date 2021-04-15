@@ -65,8 +65,6 @@ class DrawingLayerTool extends AbstractLayerTool {
   constructor(props) {
     super(props);
     useDrawingToolbar();
-
-    this.setGlobalSimplificationTolerance();
   }
 
   /**
@@ -97,17 +95,6 @@ class DrawingLayerTool extends AbstractLayerTool {
     return new DrawingLayerToolState(this);
   }
 
-  setGlobalSimplificationTolerance() {
-    const map = window.map;
-    const metersPerPixel =
-      (40075016.686 * Math.abs(Math.cos((map.getCenter().lat * Math.PI) / 180))) /
-      Math.pow(2, map.getZoom() + 8);
-    const zoom = map.getZoom();
-
-    // ! this is tried out, so no real calculation
-    window.customTolerance = zoom >= 4 ? 0.0001 * metersPerPixel : 1.5;
-  }
-
   /**
    * It returns a tab control.
    */
@@ -118,9 +105,9 @@ class DrawingLayerTool extends AbstractLayerTool {
     return this.tabControl;
   }
 
-  redrawSidebarTabControl(layerType) {
+  redrawSidebarTabControl(layerType, enabled = false) {
     if (this.tabControl == undefined) return;
-    this.tabControl.redrawTabContent(layerType);
+    this.tabControl.redrawTabContent(layerType, enabled);
   }
 
   /**
@@ -483,6 +470,8 @@ class DrawingLayerTool extends AbstractLayerTool {
     console.log('%c ...creating', 'color: #ff5108');
     const map = this.getMap().getState().getLeafletMap();
 
+    this.setGlobalSimplificationTolerance();
+
     map.addControl(L.control.drawingToolbar({ tool: this }));
     // * eventlistener for when object is created
     map.on('draw:created', this.createdListener);
@@ -531,6 +520,17 @@ class DrawingLayerTool extends AbstractLayerTool {
       this.applyEventListeners(layer);
     });
     return [layer];
+  }
+
+  setGlobalSimplificationTolerance() {
+    const map = window.map;
+    const metersPerPixel =
+      (40075016.686 * Math.abs(Math.cos((map.getCenter().lat * Math.PI) / 180))) /
+      Math.pow(2, map.getZoom() + 8);
+    const zoom = map.getZoom();
+
+    // ! this is tried out, so no real calculation
+    window.customTolerance = zoom >= 4 ? 0.0001 * metersPerPixel : 1.5;
   }
 
   highlightElement(el) {

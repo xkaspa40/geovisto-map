@@ -1,14 +1,28 @@
 export const createIntervalInput = (label, min, max, onChange, value, step = 1) => {
   const controlWrapper = document.createElement('div');
-  controlWrapper.appendChild(document.createTextNode(label));
+  controlWrapper.style.display = 'flex';
+  controlWrapper.style.justifyContent = 'space-between';
+  controlWrapper.style.alignItems = 'center';
+
+  const inputWrapper = document.createElement('div');
+  inputWrapper.appendChild(document.createTextNode(label));
   const control = document.createElement('input');
   control.setAttribute('type', 'range');
   control.setAttribute('min', min);
   control.setAttribute('max', max);
   control.setAttribute('step', step);
-  control.onchange = (e) => onChange(e.target.value);
+  control.onchange = (e) => {
+    onChange(e.target.value);
+    displayAmount.innerText = e.target.value;
+  };
   control.value = value;
-  controlWrapper.appendChild(control);
+  inputWrapper.appendChild(control);
+
+  controlWrapper.appendChild(inputWrapper);
+
+  const displayAmount = document.createElement('span');
+  displayAmount.innerText = value;
+  controlWrapper.appendChild(displayAmount);
 
   return controlWrapper;
 };

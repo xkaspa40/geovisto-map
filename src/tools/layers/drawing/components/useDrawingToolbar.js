@@ -243,7 +243,7 @@ export default function useDrawingToolbar() {
     },
 
     initConnect: function (map, sidebar) {
-      this.redrawSidebar('marker');
+      this.redrawSidebar('marker', true);
       connectClick(map, sidebar);
     },
 
@@ -286,7 +286,7 @@ export default function useDrawingToolbar() {
       polygonCreate(map, sidebar);
     },
     initCreateMarker: function (map, sidebar) {
-      this.redrawSidebar('marker');
+      this.redrawSidebar('marker', true);
       markerCreate(map, sidebar);
     },
     initSlicePoly: function (map, sidebar) {
@@ -343,8 +343,8 @@ export default function useDrawingToolbar() {
       this.options.tool.getState().setCurrEl(el);
     },
 
-    redrawSidebar: function (val) {
-      this.options.tool.redrawSidebarTabControl(val);
+    redrawSidebar: function (val, enabled = false) {
+      this.options.tool.redrawSidebarTabControl(val, enabled);
     },
 
     getSidebar: function () {

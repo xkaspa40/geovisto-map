@@ -1,6 +1,16 @@
 import AbstractLayerToolTabControlState from '../../abstract/sidebar/AbstractLayerToolTabControlState';
 import PaintPoly from '../components/paintPoly';
 
+import '../style/drawingLayerTabControl.scss';
+import { geoSearch, iconStarter, putMarkerOnMap } from '../util/Marker';
+import { highlightStyles, normalStyles, simplifyFeature } from '../util/Poly';
+import { debounce } from '../util/functionUtils';
+import { createIntervalInput, createCheck } from '../components/inputs';
+
+import * as osmtogeojson from 'osmtogeojson';
+import * as turf from '@turf/turf';
+import { FIRST } from '../util/constants';
+
 export const ICON_SRCS = [
   'https://upload.wikimedia.org/wikipedia/commons/0/0a/Marker_location.png',
   'https://icons.iconarchive.com/icons/icons-land/vista-map-markers/32/Map-Marker-Flag-1-Right-Azure-icon.png',
@@ -48,8 +58,9 @@ class DrawingLayerToolTabControlState extends AbstractLayerToolTabControlState {
   /**
    * It creates a tab control state.
    */
-  constructor() {
+  constructor(tabControl) {
     super();
+    this.tabControl = tabControl;
 
     this.colors = COLORS;
     this.selectedColor = COLORS[0];
@@ -173,6 +184,213 @@ class DrawingLayerToolTabControlState extends AbstractLayerToolTabControlState {
   getSelectCountries() {
     const result = this.countries.map((c) => ({ value: c['alpha-2'], label: c['name'] }));
     return [{ value: '', label: '' }, ...result];
+  }
+
+  changeColorAction = (color) => {
+    const selectedEl = this._getSelected();
+    this.setSelectedColor(color);
+    if (selectedEl?.setStyle) selectedEl.setStyle({ color });
+    // this.tabControl.redrawTabContent(selectedEl?.layerType);
+  };
+
+  changeIconOpts = (iconOpt = {}) => {
+    const { enabledEl } = this;
+
+    let selectedEl = this._getSelected();
+    let marker = selectedEl;
+
+    if (enabledEl?.type === 'marker') {
+      selectedEl = enabledEl;
+      marker = enabledEl._marker;
+    }
+
+    let oldIconOptions = selectedEl?.options?.icon?.options || {};
+    let newIconOptions = {
+      ...oldIconOptions,
+      ...iconOpt,
+    };
+
+    const markerIcon = new L.Icon(newIconOptions);
+    if (marker) marker.setIcon(markerIcon);
+    if (enabledEl?.type === 'marker') enabledEl.setIconOptions(markerIcon);
+
+    return marker;
+  };
+
+  changeIconAction = (icon) => {
+    this.changeIconOpts({ iconUrl: icon });
+
+    this.setSelectedIcon(icon);
+    this.tabControl.redrawTabContent('marker');
+  };
+
+  changeDescriptionAction = (e) => {
+    this.changeDesc(e.target.value);
+  };
+
+  changeDesc = (inputText) => {
+    const selectedEl = this._getSelected();
+    const modInputText = this.tabControl.convertDescToPopText(inputText);
+
+    let popup1 = selectedEl.getPopup();
+    if (popup1) {
+      popup1.setContent(modInputText);
+    } else {
+      selectedEl.bindPopup(modInputText);
+    }
+    // store for import
+    selectedEl.popupContent = modInputText;
+    // this.setSelectedColor(color);
+    if (selectedEl?.setStyle) selectedEl.setStyle(modInputText);
+  };
+
+  changeWeightAction = (e) => {
+    const weight = Number(e.target.value);
+    const selectedEl = this._getSelected();
+    this.setSelectedStroke(weight);
+    if (selectedEl?.setStyle) selectedEl.setStyle({ weight });
+  };
+
+  changeIdentifierAction = (e) => {
+    const id = e.target.value;
+    const selectedEl = this._getSelected();
+    if (selectedEl) selectedEl.identifier = id;
+
+    const data = this.getTool()?.getState()?.map?.state?.data;
+
+    const found = data.find(({ identifier }) => identifier === id);
+
+    let popupText = '';
+    Object.keys(found).forEach((key) => {
+      popupText += `${key}: ${found[key]}<br />`;
+    });
+
+    this.changeDesc(popupText);
+    this.tabControl.redrawTabContent(selectedEl?.layerType);
+  };
+
+  changeWhichIdUseAction = (e) => {
+    const id = e.target.value;
+    const selectedEl = this._getSelected();
+
+    this.setIdentifierType(id);
+
+    this.tabControl.redrawTabContent(selectedEl?.layerType);
+  };
+
+  searchAction = async (e) => {
+    const value = e.target.value;
+    const featureGroup = this.getTool()?.getState()?.featureGroup;
+
+    const opts = await geoSearch(featureGroup, value);
+
+    this.setSearchOpts(opts);
+    this.tabControl.inputSearch.changeOptions(opts ? opts.map((opt) => opt.label || '') : []);
+    // this.inputSearch.redrawMenu();
+  };
+
+  onInputOptClick = (value) => {
+    const featureGroup = this.getTool()?.getState().featureGroup;
+    const { searchOpts: opts, connectActivated } = this;
+
+    const found = opts.find((opt) => opt.label === value);
+
+    let latlng = L.latLng(0, 0);
+    latlng.lat = found?.y || 0;
+    latlng.lng = found?.x || 0;
+    const iconUrl = found?.raw?.icon || ICON_SRCS[0];
+    const marker = putMarkerOnMap(featureGroup, latlng, found?.label, iconUrl, connectActivated);
+    this.getTool().applyEventListeners(marker);
+    this.getTool().applyTopologyMarkerListeners(marker);
+    this.setSelectedIcon(iconUrl);
+    this.appendToIconSrcs(iconUrl);
+    if (connectActivated) {
+      this.getTool().plotTopology();
+    }
+    this.tabControl.redrawTabContent('search');
+  };
+
+  addIconAction = (e) => {
+    const iconUrl = e.target.value;
+    this.appendToIconSrcs(iconUrl);
+    this.tabControl.redrawTabContent('marker');
+  };
+
+  fetchAreas = async () => {
+    const { countryCode, adminLevel, highQuality } = this;
+
+    if (!countryCode || !adminLevel) return;
+
+    const toolState = this.getTool().getState();
+
+    const endPoint = 'https://overpass-api.de/api/interpreter?data=[out:json];';
+    const query = `area["ISO3166-1"="${countryCode}"]->.searchArea;(relation["admin_level"="${adminLevel}"](area.searchArea););out;>;out skel qt;`;
+
+    document.querySelector('.leaflet-container').style.cursor = 'wait';
+    this.tabControl.searchForAreasBtn.setAttribute('disabled', true);
+
+    fetch(endPoint + query)
+      .then((response) => response.json())
+      .then((data) => {
+        const gJSON = osmtogeojson(data);
+
+        const opts = {
+          color: this.selectedColor,
+          draggable: true,
+          transform: true,
+        };
+
+        toolState.featureGroup.eachLayer((layer) => {
+          if (layer.countryCode === countryCode) toolState.removeLayer(layer);
+        });
+
+        gJSON?.features
+          ?.filter((feat) => feat?.geometry?.type === 'Polygon')
+          ?.forEach((feat) => {
+            let coords = feat.geometry.coordinates;
+            if (!highQuality) {
+              let simplified = simplifyFeature(feat, 0.01);
+              coords = simplified.geometry.coordinates;
+            }
+            let latlngs = L.GeoJSON.coordsToLatLngs(coords, 1);
+            let result = new L.polygon(latlngs, { ...opts, ...normalStyles });
+            result?.dragging?.disable();
+            result.layerType = 'polygon';
+            result.countryCode = countryCode;
+            toolState.addLayer(result);
+          });
+        this.tabControl.errorMsg.innerText = '';
+      })
+      .catch((err) => {
+        this.tabControl.errorMsg.innerText = 'There was a problem, re-try later.';
+        console.error(err);
+      })
+      .finally(() => {
+        document.querySelector('.leaflet-container').style.cursor = '';
+        this.tabControl.searchForAreasBtn.removeAttribute('disabled');
+      });
+  };
+
+  searchForAreaAction = (e) => {
+    const val = e.target.value;
+    this.setCountryCode(val);
+  };
+
+  pickAdminLevelAction = (e) => {
+    const val = e.target.value;
+    this.setAdminLevel(val);
+  };
+
+  changeIconAnchor = (val, coordinate) => {
+    const selectedEl = this.enabledEl || this._getSelected();
+    let iconOptions = selectedEl?.options?.icon?.options || {};
+    const iconAnchor = iconOptions.iconAnchor || iconStarter.iconAnchor;
+    iconAnchor[coordinate] = val;
+    this.changeIconOpts({ iconAnchor });
+  };
+
+  _getSelected() {
+    return this.getTool().getState().selectedLayer;
   }
 }
 export default DrawingLayerToolTabControlState;
