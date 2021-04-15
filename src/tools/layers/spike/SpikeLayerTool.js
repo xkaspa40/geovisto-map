@@ -14,6 +14,8 @@ import ThemesToolEvent from '../../themes/model/event/ThemesToolEvent';
 import SelectionToolEvent from '../../selection/model/event/SelectionToolEvent';
 import DataChangeEvent from '../../../model/event/basic/DataChangeEvent';
 
+const SPIKE_WIDTH = 7;
+
 /**
  * This class represents custom div icon which is used to mark center of countries.
  * It overrides L.DivIcon.
@@ -21,50 +23,31 @@ import DataChangeEvent from '../../../model/event/basic/DataChangeEvent';
  * @author Jiri Hynek
  * @override {L.DivIcon}
  */
-var CountryIcon = L.DivIcon.extend({
+var SpikeIcon = L.DivIcon.extend({
     options: {
-        sizeBasic: 32,
-        sizeGroup: 36,
-        sizeDonut: 48,
-
-        // It is derived
-        //iconSize: [32,32],
-        //iconAnchor: [30/2,30/2],
-
-        className: "div-country-icon",
+        className: "div-spike-icon",
     },
 
+    createIcon: function () {
+        const div = document.createElement('div');
 
-    createIcon: function (oldIcon) {
-        var div = (oldIcon && oldIcon.tagName === 'DIV') ? oldIcon : document.createElement('div'),
-            options = this.options;
-
-        var divContent = div.appendChild(document.createElement('div'));
-        let size = 30;
-        //console.log(size);
+        const divContent = div.appendChild(document.createElement('div'));
         let svg = d3.select(divContent).append('svg');
-        console.log(options);
-        let width = 8;
-        let height = 15;
+
+        const height = this.options.height;
+        const width = this.options.width;
         svg.attr('width', width);
         svg.attr('height', height);
         svg.append('g')
+            .attr("fill", this.options.color ?? 'red')
+            .attr("stroke", this.options.color ?? 'red')
             .attr('transform', `translate(0,${height})`)
             .append('path')
-            .attr('d', `M 0 0 L${width/2} -${height} L ${width} 0`);
-
-
-        // svg.append('rect')
-        //     //.attr("transform", "translate(-" + width / 2 + ",-" + height / 2 + ")")
-        //     .attr('x', 0)
-        //     .attr('y', 0)
-        //     .attr('height', height)
-        //     .attr('width', width)
-        //     .attr('style', 'fill: red');
-        //console.log(element)
+            .attr('d', `M 0 0 L${width/2} -${height} L ${width} 0`)
+            .append('title')
+            .text(this.options.value);
 
         this._setIconStyles(div, 'icon');
-        console.log('here');
         return div;
     },
 });
@@ -83,6 +66,9 @@ class SpikeLayerTool extends AbstractLayerTool {
      */
     constructor(props) {
         super(props);
+        this.workData = [];
+        this.categoryFilters = [];
+        this.max = 0;
     }
 
     /**
@@ -114,6 +100,16 @@ class SpikeLayerTool extends AbstractLayerTool {
     }
 
     /**
+     * Sets rules for category colors
+     *
+     * @param rules
+     */
+    setCategoryFilters(rules) {
+        this.categoryFilters = rules;
+        this.redraw();
+    }
+
+    /**
      * Help function which acquires and returns the selection tool if available.
      */
     getSelectionTool() {
@@ -138,36 +134,14 @@ class SpikeLayerTool extends AbstractLayerTool {
      */
     createLayerItems() {
         // create layer which clusters points
-        //let layer = L.layerGroup([]);
-        let layer = L.markerClusterGroup({
-
-            // create cluster icon
-            iconCreateFunction: function (cluster) {
-                var markers = cluster.getAllChildMarkers();
-                let data = { id: "<Group>", value: 0, subvalues: {} };
-                for (var i = 0; i < markers.length; i++) {
-                    data.value += markers[i].options.icon.options.values.value;
-                    for (let [key, value] of Object.entries(markers[i].options.icon.options.values.subvalues)) {
-                        if (data.subvalues[key] == undefined) {
-                            data.subvalues[key] = value;
-                        } else {
-                            data.subvalues[key] += value;
-                        }
-                    }
-                }
-                // create custom icon
-                return new CountryIcon({
-                    countryName: "<Group>",
-                    values: data,
-                    isGroup: true,
-                });
-            }
-        });
+        let layer = L.layerGroup([]);
 
         // update state
         this.getState().setLayer(layer);
 
         this.redraw();
+
+        this.getMap().addEventListener('zoomend', () => this.redraw(true));
 
         return [layer];
     }
@@ -176,7 +150,6 @@ class SpikeLayerTool extends AbstractLayerTool {
      * It deletes layer items.
      */
     deleteLayerItems() {
-        //console.log("marker");
         let markers = this.getState().getMarkers();
 
         // delete the 'value' property of every geo feature object if defined
@@ -192,8 +165,6 @@ class SpikeLayerTool extends AbstractLayerTool {
      * It prepares data for markers.
      */
     prepareMapData() {
-        //console.log("updating map data", this);
-
         // prepare data
         let workData = [];
         let mapData = this.getMap().getState().getMapData();
@@ -203,16 +174,53 @@ class SpikeLayerTool extends AbstractLayerTool {
         let longitudeDataDomain = mapData.getDataDomain(dataMapping[dataMappingModel.longitude.name]);
         let valueDataDomain = mapData.getDataDomain(dataMapping[dataMappingModel.value.name]);
         let categoryDataDomain = mapData.getDataDomain(dataMapping[dataMappingModel.category.name]);
-        let geoCountry, actResultItem;
-        let foundCountries, foundValues, foundCategories;
+        let actResultItem;
+        let foundLats, foundLongs, foundValues, foundCategories;
         let data = this.getMap().getState().getCurrentData();
         let dataLen = data.length;
+        this.max = 0;
         for (let i = 0; i < dataLen; i++) {
-            // find the 'country' properties
+            foundLats = mapData.getItemValues(latitudeDataDomain, data[i]);
+            foundLongs = mapData.getItemValues(longitudeDataDomain, data[i]);
+            foundValues = mapData.getItemValues(valueDataDomain, data[i]);
+            foundCategories = mapData.getItemValues(categoryDataDomain, data[i]);
+
+            if (foundLats.length !== 1 || foundLongs.length !== 1 || foundValues.length !== 1) {
+                return [];
+            }
+
+            if (isNaN(foundLats) || isNaN(foundLongs) || isNaN(foundValues)) {
+                return [];
+            }
+
+            actResultItem = workData.find((record) => record.lat === foundLats[0] && record.long === foundLongs[0] && record.category === foundCategories[0]);
+            if ( ! actResultItem) {
+                actResultItem = {lat: foundLats[0], long: foundLongs[0], value: 0, category: foundCategories[0]};
+                workData.push(actResultItem);
+            }
+
+            if (dataMapping[dataMappingModel.aggregation.name] !== "count") {
+                actResultItem.value += foundValues[0];
+                this.max = this.max > foundValues[0] ? this.max : foundValues[0];
+            } else {
+                actResultItem.value++;
+                this.max++;
+            }
+
+            if (foundCategories.length === 1) {
+                for (let j = 0; j < this.categoryFilters.length; j++) {
+                    const filter = this.categoryFilters[j];
+                    if (filter.operation(actResultItem.category, filter.value)) {
+                        actResultItem.color = filter.color;
+
+                        break;
+                    }
+                }
+            }
 
         }
-        //console.log("result: ", preparedData);
-        return [{lat:"50.0874654", long:"14.4212535", value: 100}];
+
+        return workData;
     }
 
     /**
@@ -222,7 +230,6 @@ class SpikeLayerTool extends AbstractLayerTool {
         // create markers
         let markers = [];
 
-        let geoCountry;
         let layer = this.getState().getLayer();
         for (let i = 0; i < workData.length; i++) {
             // build message
@@ -235,53 +242,54 @@ class SpikeLayerTool extends AbstractLayerTool {
     }
 
     /**
-     * It creates one marker with respect to the given centroid and data.
+     * It creates one marker with respect to given data.
      *
-     * @param {*} centroid
      * @param {*} data
      */
     createMarker(data) {
-        function thousands_separator(num) {
-            var num_parts = num.toString().split(".");
-            num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-            return num_parts.join(".");
-        }
-
-        // build popup message
-
-
-        // create marker
-
-        let point = L.marker([data.lat, data.long], {
-            // create basic icon
-            icon: new CountryIcon({
-                values: data,
-                //anchor musi pro spike byt [stred mezi vychozim A a B, vyska spike] aby coords byly uprostred zakladny
-                iconAnchor: [5,15]
+        //create linear scale accepting values from 0 to 100 which maps them to values from 4 to 48
+        const scale = d3.scaleLinear().domain([0, this.max]).range([4, 48]);
+        const height = this.calculateHeight(scale(data.value));
+        const popup = `<b>${data.value}</b>`
+        return L.marker([data.lat, data.long], {
+            // create spike icon
+            icon: new SpikeIcon({
+                iconAnchor: [SPIKE_WIDTH/2,height],
+                iconSize: [SPIKE_WIDTH, height],
+                height: height,
+                value: data.value,
+                color: data.color,
+                width: SPIKE_WIDTH
             })
-        });
-        console.log(data);
-        //let spike =
-        return point;
+        }).bindPopup(popup);
+    }
+
+    calculateHeight(height) {
+        const currentZoom = this.getMap().map._zoom;
+        return height*currentZoom/2;
     }
 
     /**
      * It reloads data and redraw the layer.
      */
     redraw(onlyStyle) {
-        if (this.getState().getLayer()) {
-            // delete actual items
-            this.deleteLayerItems();
-
-            // prepare data
-            let workData = this.prepareMapData();
-
-            // update map
-            let markers = this.createMarkers(workData);
-
-            // update state
-            this.getState().setMarkers(markers);
+        if ( ! this.getState().isEnabled() || ! this.getState().getLayer()) {
+            return;
         }
+
+        // delete actual items
+        this.deleteLayerItems();
+
+        if ( ! onlyStyle) {
+            // prepare data
+            this.workData = this.prepareMapData();
+        }
+
+        // update map
+        let markers = this.createMarkers(this.workData);
+
+        // update state
+        this.getState().setMarkers(markers);
     }
 
     /**

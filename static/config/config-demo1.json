@@ -146,6 +146,18 @@
         "from": "from",
         "to": "to"
       }
+    },
+    {
+      "type": "geovisto-tool-layer-spike",
+      "id": "geovisto-tool-layer-spike",
+      "enabled": true,
+      "layerName": "Spike layer",
+      "data": {
+        "latitude": "lat",
+        "longitude": "long",
+        "category": "data.category",
+        "value": "data.value"
+      }
     }
   ]
 }

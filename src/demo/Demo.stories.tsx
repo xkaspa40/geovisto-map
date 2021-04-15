@@ -50,7 +50,7 @@ class Demo extends Component {
     this.centroids = require("/static/geo/country_centroids.json");
 
     // // implicit file
-    const jsonData = require('/static/data/demo1.json');
+    const jsonData = require('/static/data/covid19_okresy.json');
 
     // // implicit config
     const jsonConfig = require('/static/config/config-demo1.json');
