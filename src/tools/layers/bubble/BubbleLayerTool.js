@@ -68,7 +68,9 @@ let CountryIcon = L.DivIcon.extend({
                     }
                     return 'red';
                 })
-                 .attr("opacity", 0.5);
+                 .attr("opacity", 0.5)
+                .append('title')
+                .text(options.values.value);
         }
         this._setIconStyles(div, 'icon');
 
@@ -78,15 +80,15 @@ let CountryIcon = L.DivIcon.extend({
 
 /**
  * This class represents Marker layer. It works with geojson polygons representing countries.
- * 
+ *
  * @author Jiri Hynek
  */
 class BubbleLayerTool extends AbstractLayerTool {
 
     /**
      * It creates a new tool with respect to the props.
-     * 
-     * @param {*} props 
+     *
+     * @param {*} props
      */
     constructor(props) {
         super(props);
@@ -160,7 +162,7 @@ class BubbleLayerTool extends AbstractLayerTool {
     createLayerItems() {
         let layer = L.markerClusterGroup({
             spiderfyOnMaxZoom: false,
-            maxClusterRadius: 50,       // TODO create slider for parametric clustering radius
+            maxClusterRadius: 65,       // TODO create slider for parametric clustering radius
             // create cluster icon
             iconCreateFunction: (cluster) => {
                 let markers = cluster.getAllChildMarkers();
@@ -245,40 +247,43 @@ class BubbleLayerTool extends AbstractLayerTool {
             foundValues = mapData.getItemValues(valueDataDomain, data[i]);
             foundCategories = mapData.getItemValues(categoryDataDomain, data[i]);
 
-            if (foundLats.length === 1 && foundLongs.length === 1) {
-                let record = workData.find((x) => x.lat === foundLats[0] && x.long === foundLongs[0]);
-                if (record) {
-                    found = true;
-                }
-                actResultItem = record ?? actResultItem;
-                actResultItem.lat = foundLats[0];
-                actResultItem.long = foundLongs[0];
+            if (foundLats.length !== 1 || foundLongs.length !== 1 || foundValues.length !== 1) {
+                return [];
             }
 
-            if (foundValues.length === 1) {
-                actResultItem.value = actResultItem.value === undefined ? foundValues[0] : actResultItem.value + foundValues[0];
-                actResultItem.subvalues = actResultItem.subvalues ?? {};
-                this.max += foundValues[0];
-
-                if (foundCategories.length === 1) {
-                    actResultItem.subvalues[foundCategories[0]] =  foundValues[0];
-
-                    actResultItem.category = foundCategories[0];
-                    for (let j = 0; j < this.categoryFilters.length; j++) {
-                        const filter = this.categoryFilters[j];
-                        if (filter.operation(actResultItem.category, filter.value)) {
-                            actResultItem.colors = actResultItem.colors ?? {};
-                            actResultItem.colors[foundCategories[0]] = filter.color;
-                            break;
-                        }
-                    }
-                } else {
-                    actResultItem.subvalues[undefined] = foundValues[0];
-                }
+            if (isNaN(foundLats[0]) || isNaN(foundLongs[0]) || isNaN(foundValues[0])) {
+                return [];
             }
 
-            if (actResultItem && Object.keys(actResultItem).length !== 0 && foundLongs.length === 1 && foundLats.length === 1 && foundValues.length === 1 && ! found) {
+            actResultItem = workData.find((x) => x.lat === foundLats[0] && x.long === foundLongs[0]);
+            if ( ! actResultItem) {
+                actResultItem = {lat: foundLats[0], long: foundLongs[0], value: 0, subvalues: {}, colors: {}};
                 workData.push(actResultItem);
+            }
+
+            if (dataMapping[dataMappingModel.aggregation.name] !== "count") {
+                actResultItem.value += foundValues[0];
+                this.max += foundValues[0];
+            } else {
+                actResultItem.value++;
+                this.max++;
+            }
+
+
+            if (foundCategories.length === 1) {
+                actResultItem.subvalues[foundCategories[0]] = foundValues[0];
+                actResultItem.category = foundCategories[0];
+
+                for (let j = 0; j < this.categoryFilters.length; j++) {
+                    const filter = this.categoryFilters[j];
+                    if (filter.operation(actResultItem.category, filter.value)) {
+                        actResultItem.colors = actResultItem.colors ?? {};
+                        actResultItem.colors[foundCategories[0]] = filter.color;
+                        break;
+                    }
+                }
+            } else {
+                actResultItem.subvalues[undefined] = foundValues[0];
             }
         }
 
