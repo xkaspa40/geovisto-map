@@ -262,31 +262,31 @@ class MarkerLayerTool extends AbstractLayerTool {
      */
     createLayerItems() {
         // create layer which clusters points
-        let layer = L.layerGroup([]);
-        // let layer = L.markerClusterGroup({
-        //
-        //     // create cluster icon
-        //     iconCreateFunction: function (cluster) {
-        //         var markers = cluster.getAllChildMarkers();
-        //         let data = { id: "<Group>", value: 0, subvalues: {} };
-        //         for (var i = 0; i < markers.length; i++) {
-        //             data.value += markers[i].options.icon.options.values.value;
-        //             for (let [key, value] of Object.entries(markers[i].options.icon.options.values.subvalues)) {
-        //                 if (data.subvalues[key] == undefined) {
-        //                     data.subvalues[key] = value;
-        //                 } else {
-        //                     data.subvalues[key] += value;
-        //                 }
-        //             }
-        //         }
-        //         // create custom icon
-        //         return new CountryIcon({
-        //             countryName: "<Group>",
-        //             values: data,
-        //             isGroup: true,
-        //         });
-        //     }
-        // });
+        //let layer = L.layerGroup([]);
+        let layer = L.markerClusterGroup({
+
+            // create cluster icon
+            iconCreateFunction: function (cluster) {
+                var markers = cluster.getAllChildMarkers();
+                let data = { id: "<Group>", value: 0, subvalues: {} };
+                for (var i = 0; i < markers.length; i++) {
+                    data.value += markers[i].options.icon.options.values.value;
+                    for (let [key, value] of Object.entries(markers[i].options.icon.options.values.subvalues)) {
+                        if (data.subvalues[key] == undefined) {
+                            data.subvalues[key] = value;
+                        } else {
+                            data.subvalues[key] += value;
+                        }
+                    }
+                }
+                // create custom icon
+                return new CountryIcon({
+                    countryName: "<Group>",
+                    values: data,
+                    isGroup: true,
+                });
+            }
+        });
 
         // update state
         this.getState().setLayer(layer);
