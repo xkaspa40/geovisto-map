@@ -279,10 +279,14 @@ class MarkerLayerTool extends AbstractLayerTool {
         // update state
         this.getState().setLayer(layer);
 
-        const data = this.getMap().getState().getCurrentData();
-        this.redraw(data);
+        this.redraw();
 
         return [layer];
+    }
+
+    postCreateLayerItems() {
+        const data = this.getMap().getState().getCurrentData();
+        this.updateMarkers({ data, transitionDuration: 0, transitionDelay: 0 });
     }
 
     /**
@@ -319,6 +323,7 @@ class MarkerLayerTool extends AbstractLayerTool {
             this.getSelectionTool().getState().getSelection().getIds() : [];
         let dataLen = data.length;
         let centroids = this.getState().getCentroids();
+        const categories = new Set();
         for (let i = 0; i < dataLen; i++) {
             foundCountries = mapData.getItemValues(countryDataDomain, data[i]);
             foundValues = mapData.getItemValues(valueDataDomain, data[i]);
@@ -339,6 +344,7 @@ class MarkerLayerTool extends AbstractLayerTool {
                     if (foundCategories.length == 1) {
                         if (actResultItem.subvalues[foundCategories[0]] == undefined) {
                             actResultItem.subvalues[foundCategories[0]] = 0;
+                            categories.add(foundCategories[0]);
                         }
                     }
                     // set value with respect to the aggregation function
@@ -360,7 +366,12 @@ class MarkerLayerTool extends AbstractLayerTool {
                 }
             }
         }
-        //console.log("result: ", preparedData);
+
+        Object.keys(workData).forEach((item) => {
+            const emptySubValues = [...categories].reduce((acc, item) => ({ ...acc, [item]: null }), {});
+            workData[item].subvalues = { ...emptySubValues ,...workData[item].subvalues}
+        });
+
         return workData;
     }
 
@@ -463,6 +474,7 @@ class MarkerLayerTool extends AbstractLayerTool {
             }
         } else if (event.getType() === SelectionToolEvent.TYPE()) {
             this.redraw();
+            this.postCreateLayerItems();
         } else if(event.getType() === ThemesToolEvent.TYPE()) {
             var map = event.getObject();
             document.documentElement.style.setProperty('--leaflet-marker-donut1', map.getDataColors().triadic1);

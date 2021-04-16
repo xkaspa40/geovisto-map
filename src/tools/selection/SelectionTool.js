@@ -4,20 +4,21 @@ import SelectionToolEvent from "./model/event/SelectionToolEvent";
 import SelectionToolDefaults from "./SelectionToolDefaults";
 import MapSelection from "./model/item/generic/MapSelection";
 import SelectionToolTabFragment from "./sidebar/SelectionToolTabFragment";
+import DataChangeEvent from "../../model/event/basic/DataChangeEvent";
 
 /**
  * This class provides the selection tool.
- * 
+ *
  * TODO: exclude defaults and state variables
- * 
+ *
  * @author Jiri Hynek
  */
 class SelectionTool extends AbstractTool {
 
     /**
      * It creates a new tool with respect to the props.
-     * 
-     * @param {*} props 
+     *
+     * @param {*} props
      */
     constructor(props) {
         super(props);
@@ -34,7 +35,7 @@ class SelectionTool extends AbstractTool {
     }
 
     /**
-     * 
+     *
      */
     static EMPTY_SELECTION() {
         return new MapSelection(undefined, []);
@@ -71,8 +72,8 @@ class SelectionTool extends AbstractTool {
     }
 
     /**
-     * 
-     * @param {*} selection 
+     *
+     * @param {*} selection
      */
     setSelection(selection) {
         if (selection != undefined) {
@@ -83,6 +84,16 @@ class SelectionTool extends AbstractTool {
 
                 // dispatch event
                 this.getMap().dispatchEvent(new SelectionToolEvent(this, selection));
+            }
+        }
+    }
+
+    handleEvent(event) {
+        if (event.getType() === DataChangeEvent.TYPE()) {
+            const { options: { redraw } } = event.getObject()
+            const selection = this.getState().getSelection();
+            if (!redraw && selection.getSrcIds().length !== 0) {
+                this.setSelection(SelectionTool.EMPTY_SELECTION());
             }
         }
     }
@@ -99,7 +110,7 @@ class SelectionTool extends AbstractTool {
 
     /**
      * It creates new tab control.
-     * 
+     *
      * This function can be extended.
      */
     createSidebarTabFragment() {
