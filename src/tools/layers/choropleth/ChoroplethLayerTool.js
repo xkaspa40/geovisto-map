@@ -370,7 +370,7 @@ class ChoroplethLayerTool extends AbstractLayerTool {
         let dataMappingModel = this.getDefaults().getDataMappingModel();
         let dataMapping = this.getState().getDataMapping();
         if (dataMapping.strategy == dataMappingModel.strategy.options[0]) {
-            if (feature.value == undefined) {
+            if (feature.value == undefined || feature.value < DYNAMIC_SCALE[0]) {
                 item._path.style.fill = "grey";
                 item._path.style.fillOpacity = 0.3;
             }
@@ -430,26 +430,31 @@ class ChoroplethLayerTool extends AbstractLayerTool {
     /**
      * It updates style of all layer features using the current template.
      */
-    updateStyle({ transitionDuration = 0, transitionDelay = 0 } = {}) {
+    updateStyle(options = {}) {
         if (this.getState().getLayer()) {
-            var _this = this;
-            let dataMappingModel = _this.getDefaults().getDataMappingModel();
-            let dataMapping = _this.getState().getDataMapping();
+            let dataMappingModel = this.getDefaults().getDataMappingModel();
+            let dataMapping = this.getState().getDataMapping();
             var rangeInputValue = dataMapping.range;
             var nonSortedValues = []
             DYNAMIC_SCALE = [];
             //getting all values
-            this.getState().getLayer().eachLayer(function (item) {
-                nonSortedValues.push(item.feature.value);
-            });
+            this.getState().getLayer().eachLayer((item) => nonSortedValues.push(item.feature.value));
             //filter 'undefined' values from array
-            var filteredValues = nonSortedValues.filter(function (e) {
-                return e != undefined;
-            });
+            const filteredValues = nonSortedValues
+                .filter((value) => value != undefined)
+                .sort((a, b) => a - b);
 
-
+            if (this.getState().getDataMapping().useCustomMinMax) {
+                const minValue = this.getState().getDataMapping().minValue;
+                const maxValue = this.getState().getDataMapping().maxValue;
+                const step = (maxValue - minValue) / rangeInputValue;
+                DYNAMIC_SCALE.push(minValue);
+                for (let i = 1; i < rangeInputValue; i++) {
+                    DYNAMIC_SCALE.push(step * i);
+                }
+            }
             //relative [0-max]
-            if (dataMapping.scaling == dataMappingModel.scaling.options[1]) {
+            else if (dataMapping.scaling == dataMappingModel.scaling.options[1]) {
                 filteredValues.sort(function (a, b) { return a - b });
                 var step = filteredValues[filteredValues.length - 1] / rangeInputValue;
                 DYNAMIC_SCALE.push(0);
@@ -491,11 +496,11 @@ class ChoroplethLayerTool extends AbstractLayerTool {
 
             //getting dynamic scales: [0], [length/7*1], [length/7*2], [length/7*3], [length/7*4], [length/7*5], [length/7*6]
 
-
-            this.getState().getLayer().eachLayer(function (item) {
+            const { transitionDuration = 0, transitionDelay = 0 } = options;
+            this.getState().getLayer().eachLayer((item) => {
                 item._path.style.transitionDuration = `${transitionDuration}ms`;
                 item._path.style.transitionDelay = `${transitionDelay}ms`;
-                _this.updateItemStyle(item);
+                this.updateItemStyle(item);
             });
         }
     }

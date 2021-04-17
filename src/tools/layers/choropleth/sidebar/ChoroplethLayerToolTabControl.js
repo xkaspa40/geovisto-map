@@ -5,7 +5,7 @@ import SidebarInputFactory from "../../../../inputs/SidebarInputFactory";
 
 /**
  * This class provides controls for management of the layer sidebar tab.
- * 
+ *
  * @author Jiri Hynek
  */
 class ChoropolethLayerToolTabControl extends AbstractLayerToolTabControl {
@@ -48,16 +48,17 @@ class ChoropolethLayerToolTabControl extends AbstractLayerToolTabControl {
         dataMapping[model.range.name] = this.inputRange.getValue();
         dataMapping[model.strategy.name] = this.colorStrategy.getValue();
         dataMapping[model.color.name] = this.colorPicker.getValue();
-        // deprecated
-        // dataMapping[model.color.name] = this.inputColor.getValue();
+        dataMapping[model.useCustomMinMax.name] = this.useCustomMinMax.getValue();
+        dataMapping[model.minValue.name] = this.minValue.getValue();
+        dataMapping[model.maxValue.name] = this.maxValue.getValue();
 
         return dataMapping;
     }
 
     /**
      * It updates selected input values according to the given data mapping.
-     * 
-     * @param {*} dataMapping 
+     *
+     * @param {*} dataMapping
      */
     setInputValues(dataMapping) {
         // get data model
@@ -71,8 +72,9 @@ class ChoropolethLayerToolTabControl extends AbstractLayerToolTabControl {
         this.inputRange.setValue(dataMapping[model.range.name]);
         this.colorStrategy.setValue(dataMapping[model.strategy.name]);
         this.colorPicker.setValue(dataMapping[model.color.name]);
-        // deprecated
-        //this.inputColor.setValue(dataMapping[model.color.name]);
+        this.useCustomMinMax.setValue(dataMapping[model.useCustomMinMax.name]);
+        this.minValue.setValue(dataMapping[model.minValue.name]);
+        this.maxValue.setValue(dataMapping[model.maxValue.name]);
     }
 
     /**
@@ -103,39 +105,57 @@ class ChoropolethLayerToolTabControl extends AbstractLayerToolTabControl {
 
         // select country
         this.inputCountry = SidebarInputFactory.createSidebarInput(model.country.input, { label: model.country.label, options: dataDomainLabels, action: changeDimensionAction });
-        elem.appendChild(this.inputCountry.create());
-
         // select value
         this.inputValue = SidebarInputFactory.createSidebarInput(model.value.input, { label: model.value.label, options: dataDomainLabels, action: changeDimensionAction });
-        elem.appendChild(this.inputValue.create());
-
         // select aggregation
         this.inputAggregation = SidebarInputFactory.createSidebarInput(model.aggregation.input, { label: model.aggregation.label, options: model.aggregation.options, action: changeDimensionAction });
-        elem.appendChild(this.inputAggregation.create());
-
-
         //color strategy
         this.colorStrategy = SidebarInputFactory.createSidebarInput(model.strategy.input, { label: model.strategy.label, options: model.strategy.options, action: changeDimensionAction });
-        elem.appendChild(this.colorStrategy.create());
-
         //color strategy
         this.colorPicker = SidebarInputFactory.createSidebarInput(model.color.input, { input: this.colorStrategy, label: model.color.label, options: model.color.options, action: changeDimensionAction });
-        elem.appendChild(this.colorPicker.create());
-
+        // range
+        this.inputRange = SidebarInputFactory.createSidebarInput(model.range.input, { min: 1, max: 7, default: 4, label: model.range.label, action: changeDimensionAction, elem: elem });
         // scaling type
         this.scaling = SidebarInputFactory.createSidebarInput(model.scaling.input, { label: model.scaling.label, options: model.scaling.options, action: changeDimensionAction });
-        elem.appendChild(this.scaling.create());
 
-        // range 
-        this.inputRange = SidebarInputFactory.createSidebarInput(model.range.input, { min: 1, max: 7, default: 4, label: model.range.label, action: changeDimensionAction, elem: elem });
+        this.useCustomMinMax = SidebarInputFactory.createSidebarInput(
+            model.useCustomMinMax.input,
+            {
+                label: model.useCustomMinMax.label,
+                action: (e) => {
+                    const { checked } = e.target;
+                    this.minValue.setDisabled(!checked);
+                    this.maxValue.setDisabled(!checked);
+
+                    changeDimensionAction(e);
+                }
+            }
+        );
+        this.minValue = SidebarInputFactory.createSidebarInput(
+            model.minValue.input,
+            { label: model.minValue.label, type: "number", action: changeDimensionAction }
+        );
+        this.maxValue = SidebarInputFactory.createSidebarInput(
+            model.maxValue.input,
+            { label: model.maxValue.label, type: "number", action: changeDimensionAction }
+        );
+
+        elem.appendChild(this.inputCountry.create());
+        elem.appendChild(this.inputValue.create());
+        elem.appendChild(this.inputAggregation.create());
+        elem.appendChild(this.colorStrategy.create());
+        elem.appendChild(this.colorPicker.create());
         elem.appendChild(this.inputRange.create());
-
-        // select color scheme
-        // deprecated
-        /*this.inputColor = SidebarInputFactory.createSidebarInput(model.color.input, { label: model.color.label, options: model.color.options, action: changeColorAction });
-        elem.appendChild(this.inputColor.create());*/
+        elem.appendChild(this.scaling.create());
+        elem.appendChild(this.useCustomMinMax.create());
+        elem.appendChild(this.minValue.create());
+        elem.appendChild(this.maxValue.create());
 
         this.setInputValues(this.getTool().getState().getDataMapping());
+
+        const { useCustomMinMax } = this.getInputValues();
+        this.minValue.setDisabled(!useCustomMinMax);
+        this.maxValue.setDisabled(!useCustomMinMax);
 
         return tab;
     }

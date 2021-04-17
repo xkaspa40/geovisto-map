@@ -3,6 +3,8 @@ import AbstractLayerToolDefaults from "../abstract/AbstractLayerToolDefaults";
 import AutocompleteSidebarInput from "../../../inputs/input/AutocompleteSidebarInput";
 import RangeSliderInput from "../../../inputs/input/RangeSliderInput";
 import ColorPickerInput from "../../../inputs/input/ColorPickerInput";
+import CheckboxSidebarInput from "../../../inputs/input/CheckboxSidebarInput";
+import LabeledTextSidebarInput from "../../../inputs/input/LabeledTextSidebarInput";
 /**
  * TODO: refactorization needed!
  */
@@ -33,13 +35,6 @@ const MAPPING_MODEL = {
         options: ["count", "sum"],
         input: AutocompleteSidebarInput.ID()
     },
-    scaling: {
-        id: INPUT_ID_PREFIX + "-scaling",
-        name: "scaling",
-        label: "Scaling style",
-        options: ["absolute (static scale)", "relative [0-max]", "irelative [min-max]", "median (sorted values)"],
-        input: AutocompleteSidebarInput.ID()
-    },
     range: {
         id: INPUT_ID_PREFIX + "-range",
         name: "range",
@@ -59,12 +54,37 @@ const MAPPING_MODEL = {
         name: "color",
         label: "Fill color",
         input: ColorPickerInput.ID()
-    }
+    },
+    scaling: {
+        id: INPUT_ID_PREFIX + "-scaling",
+        name: "scaling",
+        label: "Scaling style",
+        options: ["absolute (static scale)", "relative [0-max]", "irelative [min-max]", "median (sorted values)"],
+        input: AutocompleteSidebarInput.ID()
+    },
+    useCustomMinMax: {
+        id: `${INPUT_ID_PREFIX}-use_custom_min_max`,
+        name: "useCustomMinMax",
+        label: "Use custom min/max",
+        input: CheckboxSidebarInput.ID()
+    },
+    minValue: {
+        id: `${INPUT_ID_PREFIX}-min_value`,
+        name: "minValue",
+        label: "Min",
+        input: LabeledTextSidebarInput.ID()
+    },
+    maxValue: {
+        id: `${INPUT_ID_PREFIX}-max_value`,
+        name: "maxValue",
+        label: "Max",
+        input: LabeledTextSidebarInput.ID()
+    },
 }
 
 /**
  * This class provide functions which return the default state values.
- * 
+ *
  * @author Jiri Hynek
  */
 class ChoroplethLayerToolDefaults extends AbstractLayerToolDefaults {
@@ -103,6 +123,9 @@ class ChoroplethLayerToolDefaults extends AbstractLayerToolDefaults {
         dataMapping[dataMappingModel.value.name] = implicitDataDomainLabel;
         dataMapping[dataMappingModel.aggregation.name] = dataMappingModel.aggregation.options[0];
         dataMapping[dataMappingModel.scaling.name] = dataMappingModel.scaling.options[0];
+        dataMapping[dataMappingModel.range.name] = dataMappingModel.range.options[0];
+        dataMapping[dataMappingModel.range.name] = dataMappingModel.range.options[0];
+        dataMapping[dataMappingModel.range.name] = dataMappingModel.range.options[0];
         dataMapping[dataMappingModel.range.name] = dataMappingModel.range.options[0];
         return dataMapping;
     }
