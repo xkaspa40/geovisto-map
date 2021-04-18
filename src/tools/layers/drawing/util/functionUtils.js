@@ -33,3 +33,23 @@ export const sortAlpha = (a, b) => {
   if (a > b) return 1;
   return 0;
 };
+
+export const isInt = (n) => Number(n) === n && n % 1 === 0;
+
+export const isFloat = (n) => Number(n) === n && n % 1 !== 0;
+
+export const getIntervalStep = (n) => {
+  if (!n) return 0.0;
+  let split = String(n).split('.');
+  if (split.length === 2) {
+    let after = split[1];
+    let length = after.length - 1 < 0 ? 0 : after.length;
+    let allZeros = [...Array(length)].join('0');
+
+    if (length === 1) return 0.01;
+    else if (length === 0) return 0.1;
+    else return Number(`0.${allZeros}1`);
+  }
+
+  return 0.0;
+};

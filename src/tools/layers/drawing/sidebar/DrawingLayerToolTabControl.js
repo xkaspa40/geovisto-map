@@ -6,7 +6,7 @@ import SidebarInputFactory from '../../../../inputs/SidebarInputFactory';
 import '../style/drawingLayerTabControl.scss';
 import { geoSearch, iconStarter, putMarkerOnMap } from '../util/Marker';
 import { highlightStyles, normalStyles, simplifyFeature } from '../util/Poly';
-import { debounce } from '../util/functionUtils';
+import { debounce, getIntervalStep, isFloat } from '../util/functionUtils';
 import { createIntervalInput, createCheck } from '../components/inputs';
 
 import * as osmtogeojson from 'osmtogeojson';
@@ -285,20 +285,43 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
   };
 
   createCustomToleranceCheck = () => {
+    const { paintPoly } = this.getState();
+    const toleranceChange = (val) => {
+      window.customTolerance = val;
+      paintPoly.clearAllAccumulated();
+    };
+
+    window.map.on('zoomend', () => {
+      let firstChild = this.customToleranceInput.firstChild;
+      if (firstChild) {
+        let interval = firstChild.firstChild.lastChild;
+        let display = firstChild.lastChild;
+        let val = window.customTolerance;
+        if (display) display.innerText = val;
+        if (interval) {
+          interval.value = val;
+          let step = getIntervalStep(val);
+          interval.step = step;
+          interval.max = val * 2;
+        }
+      }
+    });
+
     const onChange = (check) => {
       if (check) {
-        const toleranceChange = (val) => (window.customTolerance = val);
+        let val = window.customTolerance;
+        let step = getIntervalStep(val);
         const customTolerance = createIntervalInput(
           'Custom tolerance',
-          0.1,
-          3.0,
+          0.0,
+          val * 2,
           toleranceChange,
-          window.customTolerance || '',
-          0.1,
+          val || '',
+          step,
         );
         this.customToleranceInput.appendChild(customTolerance);
       } else {
-        let firstChild = this.customToleranceInput.childNodes[FIRST];
+        let firstChild = this.customToleranceInput.firstChild;
         if (firstChild) this.customToleranceInput.removeChild(firstChild);
         this.getTool().setGlobalSimplificationTolerance();
       }
@@ -346,10 +369,10 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     // * labeled text Search
     this.inputSearch = SidebarInputFactory.createSidebarInput(model.search.input, {
       label: model.search.label,
-      action: this.searchAction,
+      action: this.getState().searchAction,
       options: [],
       placeholder: 'Press enter for search',
-      setData: this.onInputOptClick,
+      setData: this.getState().onInputOptClick,
     });
     elem.appendChild(this.inputSearch.create());
 
@@ -417,7 +440,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
       label: model.strokeThickness.label,
       options: thicknessOpts,
       action: this.getState().changeWeightAction,
-      value: this._getSelected()?.options?.weight,
+      value: this._getSelected()?.options?.weight || this.getState().getSelectedStroke(),
     });
     elem.appendChild(this.inputThickness.create());
 

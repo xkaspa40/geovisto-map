@@ -35,6 +35,8 @@ import './components/Edit';
 import 'leaflet-snap';
 import 'leaflet-geometryutil';
 import 'leaflet-draw';
+import 'proj4leaflet';
+import proj4 from 'proj4';
 
 import * as d33 from 'd3-3-5-5';
 import Pather from 'leaflet-pather';
@@ -50,6 +52,8 @@ L.Draw.Feature.include(L.Draw.Feature.SnapMixin);
 L.Draw.Feature.addInitHook(L.Draw.Feature.SnapMixin._snap_initialize);
 
 export const DRAWING_TOOL_LAYER_TYPE = 'geovisto-tool-layer-drawing';
+
+// proj4.defs('urn:ogc:def:crs:EPSG::3857', '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs ');
 
 /**
  * This class represents Drawing layer tool.
@@ -158,7 +162,7 @@ class DrawingLayerTool extends AbstractLayerTool {
           let canDiff = !createdIsEraser ? true : layerIsNotSelected;
           if (canDiff) {
             let diffFeature = difference(feature, layerFeature);
-            // console.log({ diffFeature });
+
             if (diffFeature) {
               let coords;
               let latlngs;
@@ -475,6 +479,8 @@ class DrawingLayerTool extends AbstractLayerTool {
     map.addControl(L.control.drawingToolbar({ tool: this }));
     // * eventlistener for when object is created
     map.on('draw:created', this.createdListener);
+
+    map.on('zoomend', () => this.setGlobalSimplificationTolerance());
 
     map.on('click', () => {
       const sidebar = this.getSidebarTabControl();

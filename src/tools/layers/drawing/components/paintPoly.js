@@ -16,6 +16,8 @@ import {
   simplifyFeature,
 } from '../util/Poly';
 
+import { STROKES } from '../sidebar/DrawingLayerToolTabControlState';
+
 const DEFAULT_COLOR = '#333333';
 const DEFAULT_RADIUS = 30;
 const ERASE_KEY = 'X';
@@ -102,6 +104,12 @@ class PaintPoly {
     delete this._accumulatedShapes[kIdx];
   };
 
+  clearAllAccumulated = () => {
+    Object.keys(this._accumulatedShapes).forEach((key) => {
+      delete this._accumulatedShapes[key];
+    });
+  };
+
   updatePaintedPolys = (kIdx, layer) => {
     if (kIdx === undefined) return;
 
@@ -125,6 +133,7 @@ class PaintPoly {
 
   drawCircle = (erase) => {
     const brushColor = this.tabState.getSelectedColor() || DEFAULT_COLOR;
+    const brushStroke = this.tabState.getSelectedStroke() || STROKES[1].value;
     const turfCircle = circle([this._latlng.lng, this._latlng.lat], this._pixelsToMeters(), {
       steps: 16,
       units: 'meters',
@@ -138,7 +147,7 @@ class PaintPoly {
       this._accumulatedShapes[kIdx] = union(this._accumulatedShapes[kIdx], turfCircle);
     }
 
-    this._accumulatedShapes[kIdx].properties = { fill: brushColor };
+    this._accumulatedShapes[kIdx].properties = { fill: brushColor, 'stroke-width': brushStroke };
     // console.log({
     //   accShapes: this._accumulatedShapes,
     //   shape: this._accumulatedShapes[kIdx],
@@ -156,6 +165,7 @@ class PaintPoly {
       let depth = isMultiPoly ? 2 : 1;
       let latlngs = L.GeoJSON.coordsToLatLngs(coords, depth);
       let color = this._accumulatedShapes[key]?.properties?.fill || DEFAULT_COLOR;
+      let weight = this._accumulatedShapes[key]?.properties['stroke-width'] || STROKES[1].value;
 
       let styles = selectedLayer?.kIdx === key ? highlightStyles : normalStyles;
 
@@ -164,6 +174,7 @@ class PaintPoly {
           ? { color: ERASER_COLOR, draggable: false, transform: false }
           : {
               color,
+              weight,
               draggable: true,
               transform: true,
             };
