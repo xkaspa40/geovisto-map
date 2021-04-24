@@ -236,7 +236,7 @@ class DrawingLayerToolTabControlState extends AbstractLayerToolTabControlState {
     if (popup1) {
       popup1.setContent(modInputText);
     } else {
-      selectedEl.bindPopup(modInputText);
+      selectedEl.bindPopup(modInputText, { closeOnClick: false, autoClose: false });
     }
     // store for import
     selectedEl.popupContent = modInputText;

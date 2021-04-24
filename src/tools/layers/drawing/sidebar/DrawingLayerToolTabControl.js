@@ -386,7 +386,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     this.inputSearchForArea = SidebarInputFactory.createSidebarInput(model.searchForArea.input, {
       label: model.searchForArea.label,
       options: this.getState().getSelectCountries(),
-      action: this.searchForAreaAction,
+      action: this.getState().searchForAreaAction,
       value: this.getState().countryCode || '',
     });
     elem.appendChild(this.inputSearchForArea.create());
@@ -394,7 +394,7 @@ class DrawingLayerToolTabControl extends AbstractLayerToolTabControl {
     this.inputAdminLevel = SidebarInputFactory.createSidebarInput(model.adminLevel.input, {
       label: model.adminLevel.label,
       options: ADMIN_LEVELS,
-      action: this.pickAdminLevelAction,
+      action: this.getState().pickAdminLevelAction,
       value: this.getState().adminLevel,
     });
     elem.appendChild(this.inputAdminLevel.create());

@@ -56,7 +56,7 @@ export const putMarkerOnMap = (featureGroup, latlng, popup, iconUrl, connectClic
 
   let marker = new L.Marker.Touch(latlng, { icon });
   if (popup) {
-    marker.bindPopup(popup);
+    marker.bindPopup(popup, { closeOnClick: false, autoClose: false });
     marker.popupContent = popup;
   }
 

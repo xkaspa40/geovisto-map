@@ -326,7 +326,10 @@ class DrawingLayerToolState extends AbstractLayerToolState {
             result.layerType = lType;
             if (f?.properties?.popupContent) {
               result.popupContent = f.properties.popupContent;
-              result.bindPopup(f.properties.popupContent);
+              result.bindPopup(f.properties.popupContent, {
+                closeOnClick: false,
+                autoClose: false,
+              });
             }
             if (f.id) {
               result.identifier = f.id;
@@ -436,7 +439,7 @@ class DrawingLayerToolState extends AbstractLayerToolState {
       }
 
       if (layer.popupContent) {
-        layerToAdd.bindPopup(layer.popupContent);
+        layerToAdd.bindPopup(layer.popupContent, { closeOnClick: false, autoClose: false });
         layerToAdd.popupContent = layer.popupContent;
       }
       layerToAdd.layerType = layer.layerType;
