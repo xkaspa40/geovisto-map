@@ -148,8 +148,13 @@ class DotLayerTool extends AbstractLayerTool {
             foundCategories = mapData.getItemValues(categoryDataDomain, data[i]);
 
             let resultItem;
+
             if (foundLats.length === 1 && foundLongs.length === 1) {
                 resultItem = {lat: foundLats[0], long: foundLongs[0]};
+            }
+
+            if (isNaN(foundLats[0]) || isNaN(foundLongs[0])) {
+                continue;
             }
 
             if (foundCategories.length === 1) {
