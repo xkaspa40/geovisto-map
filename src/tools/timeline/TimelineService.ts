@@ -29,9 +29,7 @@ export type StoryState = {
 export type Story = Map<number, StoryState>
 
 export class TimelineService {
-    onCurrentTimeIndexChanged = new Subject<{ currentTimeIndex: number, defaultTransitionDuration: number, story: StoryState | undefined }>();
-    onStartTimeIndexChanged = new Subject<number>();
-    onEndTimeIndexChanged = new Subject<number>();
+    onCurrentTimeIndexChanged = new Subject<{ currentTimeIndex: number, story: StoryState | undefined }>();
     onTimeStateChanged = new Subject<TimeState>();
     onIsPlayingChanged = new Subject<boolean>();
     onStoryChanged = new Subject<Story>();
@@ -39,7 +37,6 @@ export class TimelineService {
     private readonly times: number[];
     private readonly data: TimeData;
     private readonly stepTimeLength: number;
-    private readonly transitionDuration: number;
     private story?: Story;
     private timeState: TimeState = {
         current: START_INDEX,
@@ -58,13 +55,11 @@ export class TimelineService {
 
     constructor({
         stepTimeLength,
-        transitionDuration = 0,
         times,
         data,
-    }: { stepTimeLength: number, transitionDuration: number, times: number[], data: TimeData }) {
+    }: { stepTimeLength: number, times: number[], data: TimeData }) {
         this.times = times;
         this.stepTimeLength = stepTimeLength;
-        this.transitionDuration = transitionDuration;
         this.timeState.end = times.length - 1;
         this.data = data;
     }
@@ -72,7 +67,6 @@ export class TimelineService {
     initialize() {
         this.onCurrentTimeIndexChanged.notify({
             currentTimeIndex: this.timeState.current,
-            defaultTransitionDuration: this.transitionDuration,
             story: this.story?.get(this.times[this.timeState.current]),
         });
     }
@@ -82,7 +76,6 @@ export class TimelineService {
             this.timeState.current = currentTimeIndex;
             this.onCurrentTimeIndexChanged.notify({
                 currentTimeIndex,
-                defaultTransitionDuration: this.transitionDuration,
                 story: this.story?.get(this.times[currentTimeIndex]),
             });
         }
@@ -164,7 +157,6 @@ export class TimelineService {
         if (hasCurrentTimeIndexChanged) {
             this.onCurrentTimeIndexChanged.notify({
                 currentTimeIndex: timeState.current,
-                defaultTransitionDuration: this.transitionDuration,
                 story: this.story?.get(this.times[timeState.current]),
             });
         }
