@@ -31,7 +31,6 @@ class DotLayerTool extends AbstractLayerTool {
         this.zoomLevel = undefined;
         this.workData = [];
         this.radius = 10;
-        this.categoryFilters = [];
     }
 
     /**
@@ -137,6 +136,7 @@ class DotLayerTool extends AbstractLayerTool {
         let foundLats, foundLongs, foundCategories;
         let data = this.getMap().getState().getCurrentData();
         let dataLen = data.length;
+        const categoryFilters = this.getState().getCategoryFilters();
         for (let i = 0; i < dataLen; i++) {
             // find the 'lat' properties
             foundLats = mapData.getItemValues(latDataDomain, data[i]);
@@ -159,8 +159,8 @@ class DotLayerTool extends AbstractLayerTool {
 
             if (foundCategories.length === 1) {
                 resultItem.category = foundCategories[0];
-                for (let j = 0; j < this.categoryFilters.length; j++) {
-                    const filter = this.categoryFilters[j];
+                for (let j = 0; j < categoryFilters.length; j++) {
+                    const filter = categoryFilters[j];
                     if (filter.operation(resultItem.category, filter.value)) {
                         resultItem.color = filter.color;
 
@@ -274,16 +274,6 @@ class DotLayerTool extends AbstractLayerTool {
             // update state
             this.getState().setMarkers(markers);
         }
-    }
-
-    /**
-     * Sets rules for category colors
-     *
-     * @param rules
-     */
-    setCategoryFilters(rules) {
-        this.categoryFilters = rules;
-        this.redraw();
     }
 
     /**

@@ -13,6 +13,7 @@ class DotLayerToolState extends AbstractLayerToolState {
      */
     constructor() {
         super();
+        this.categoryFilters = [];
     }
 
     /**
@@ -33,9 +34,6 @@ class DotLayerToolState extends AbstractLayerToolState {
      */
     resetMapVariables(map, defaults) {
         super.resetMapVariables(map, defaults);
-        
-        let props = this.getProps();
-        this.setCentroids(props.centroids == undefined && defaults && map ? defaults.getCentroids() : props.centroids);
     }
 
     /**
@@ -59,8 +57,6 @@ class DotLayerToolState extends AbstractLayerToolState {
         let config = super.serialize(defaults);
 
         // serialize the layer tool properties
-        // TODO
-
         return config;
     }
 
@@ -80,21 +76,6 @@ class DotLayerToolState extends AbstractLayerToolState {
         this.layer = layer;
     }
 
-    /**
-     * It returns the centroids.
-     */
-    getCentroids() {
-        return this.centroids;
-    }
-
-    /**
-     * It sets the centroids.
-     * 
-     * @param {*} centroids 
-     */
-    setCentroids(centroids) {
-        this.centroids = centroids;
-    }
 
     /**
      * It returns the markers.
@@ -110,6 +91,24 @@ class DotLayerToolState extends AbstractLayerToolState {
      */
     setMarkers(markers) {
         this.markers = markers;
+    }
+
+    /**
+     * Sets rules for category colors
+     *
+     * @param rules
+     */
+    setCategoryFilters(rules) {
+        this.categoryFilters = rules;
+    }
+
+    /**
+     * Gets rules for color coding of categories
+     *
+     * @returns {[]}
+     */
+    getCategoryFilters() {
+        return this.categoryFilters;
     }
 
     // TODO

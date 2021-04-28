@@ -72,7 +72,6 @@ class DotLayerToolDefaults extends AbstractLayerToolDefaults {
         
         dataMapping[dataMappingModel.latitude.name] = implicitDataDomainLabel;
         dataMapping[dataMappingModel.longitude.name] = implicitDataDomainLabel;
-        // dataMapping[dataMappingModel.aggregation.name] = dataMappingModel.aggregation.options[0];
         dataMapping[dataMappingModel.category.name] = implicitDataDomainLabel;
 
         return dataMapping;

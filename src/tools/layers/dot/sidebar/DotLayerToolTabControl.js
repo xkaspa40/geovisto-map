@@ -173,7 +173,8 @@ class DotLayerToolTabControl extends AbstractLayerToolTabControl {
             });
         });
 
-        this.getTool().setCategoryFilters(rules);
+        this.getTool().getState().setCategoryFilters(rules);
+        this.getTool().redraw();
     }
 }
 export default DotLayerToolTabControl;
