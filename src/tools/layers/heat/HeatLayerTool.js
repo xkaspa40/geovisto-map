@@ -17,7 +17,9 @@ import DataChangeEvent from '../../../model/event/basic/DataChangeEvent';
 
 const GRADIENT_DEFAULT = {0.4:"#0000FF", 0.6:"#00FFFF", 0.7:"#00FF00", 0.8:"#FFFF00", 0.9:"#FF0000"};
 
-const GRADIENT_PROTAN_DEUTRAN = { 0.4: "#7CB3F5", 0.6: "#648FFF", 0.7: "#DCC112", 0.8: "#A97821", 0.9: "#5F320C"};
+const GRADIENT_PROTANO_DEUTRAN_A = { 0.4: "#00B9F1", 0.6: "#00A875", 0.7: "#ECDE38", 0.8: "#F7931D", 0.9: "#F15A22"};
+
+const GRADIENT_PROTAN_DEUTRAN_B = { 0.4: "#7CB3F5", 0.6: "#648FFF", 0.7: "#DCC112", 0.8: "#A97821", 0.9: "#5F320C"};
 
 const GRADIENT_TRITAN = { 0.4: "#00e6e6", 0.6: "#009999", 0.7: "#C38D87", 0.8: "#FF0000", 0.9: "#660004"};
 
@@ -38,7 +40,8 @@ const ZOOM_LEVELS = [
 
 const GRADIENTS = [
     {name: "Default", values: GRADIENT_DEFAULT},
-    {name: "Protanopia/Deuteranopia", values: GRADIENT_PROTAN_DEUTRAN},
+    {name: "Protanopia/Deuteranopia A", values: GRADIENT_PROTANO_DEUTRAN_A},
+    {name: "Protanopia/Deuteranopia B", values: GRADIENT_PROTAN_DEUTRAN_B},
     {name: "Tritanopia", values: GRADIENT_TRITAN},
     {name: "Monochromatic", values: GRADIENT_MONOCHROMATIC}
 ]
