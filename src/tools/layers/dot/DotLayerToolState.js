@@ -1,5 +1,6 @@
 import AbstractLayerToolState from "../abstract/AbstractLayerToolState";
 import DotLayerToolDefaults from "./DotLayerToolDefaults";
+import FiltersToolDefaults from "../../filters/FiltersToolDefaults";
 
 /**
  * This class provide functions for using the state of the layer tool.
@@ -14,6 +15,7 @@ class DotLayerToolState extends AbstractLayerToolState {
     constructor() {
         super();
         this.categoryFilters = [];
+        this.filterManager = new FiltersToolDefaults().getFiltersManager();
     }
 
     /**
@@ -43,7 +45,23 @@ class DotLayerToolState extends AbstractLayerToolState {
      */
     deserialize(config) {
         super.deserialize(config);
+        if ( ! config.categoryFilters) {
+            return;
+        }
 
+        let filters = [];
+        config.categoryFilters.forEach((filter) => {
+            const operation = this.getFilterManager().getOperation(filter.operation)[0];
+            if (operation) {
+                filters.push({
+                    operation,
+                    value: filter.value,
+                    color: filter.color
+                });
+            }
+        })
+        config.categoryFilters = filters;
+        this.setCategoryFilters(config.categoryFilters);
         // the layer tool config
         // TODO
     }
@@ -55,8 +73,16 @@ class DotLayerToolState extends AbstractLayerToolState {
      */
     serialize(defaults) {
         let config = super.serialize(defaults);
+        config.categoryFilters = [];
 
-        // serialize the layer tool properties
+        this.categoryFilters.forEach((filter) => {
+            config.categoryFilters.push({
+                operation: filter.operation.toString(),
+                value: filter.value,
+                color: filter.color
+            });
+        })
+
         return config;
     }
 
@@ -94,12 +120,21 @@ class DotLayerToolState extends AbstractLayerToolState {
     }
 
     /**
+     * Filter manager getter
+     *
+     * @returns {FiltersManager}
+     */
+    getFilterManager() {
+        return this.filterManager;
+    }
+
+    /**
      * Sets rules for category colors
      *
      * @param rules
      */
     setCategoryFilters(rules) {
-        this.categoryFilters = rules;
+        this.categoryFilters = rules ?? [];
     }
 
     /**
@@ -110,7 +145,5 @@ class DotLayerToolState extends AbstractLayerToolState {
     getCategoryFilters() {
         return this.categoryFilters;
     }
-
-    // TODO
 }
 export default DotLayerToolState;

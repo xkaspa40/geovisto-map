@@ -1,6 +1,7 @@
 import DotLayerTool from "./DotLayerTool";
 import AbstractLayerToolDefaults from "../abstract/AbstractLayerToolDefaults";
 import AutocompleteSidebarInput from "../../../inputs/input/AutocompleteSidebarInput";
+import FiltersToolDefaults from "../../filters/FiltersToolDefaults";
 
 /**
  * TODO: refactorization needed!

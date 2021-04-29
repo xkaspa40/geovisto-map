@@ -161,7 +161,7 @@ class DotLayerTool extends AbstractLayerTool {
                 resultItem.category = foundCategories[0];
                 for (let j = 0; j < categoryFilters.length; j++) {
                     const filter = categoryFilters[j];
-                    if (filter.operation(resultItem.category, filter.value)) {
+                    if (filter.operation.match(resultItem.category, filter.value)) {
                         resultItem.color = filter.color;
 
                         break;
