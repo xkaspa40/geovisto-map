@@ -21,7 +21,7 @@ import DataChangeEvent from '../../../model/event/basic/DataChangeEvent';
  * @author Jiri Hynek
  * @override {L.DivIcon}
  */
-let CountryIcon = L.DivIcon.extend({
+let BubbleIcon = L.DivIcon.extend({
     options: {
         className: "div-country-icon",
         isGroup: false,
@@ -184,7 +184,7 @@ class BubbleLayerTool extends AbstractLayerTool {
                     }
                 }
                 // create custom icon
-                return new CountryIcon({
+                return new BubbleIcon({
                     countryName: "<Group>",
                     values: data,
                     map: map,   //Geovisto map object
@@ -283,7 +283,9 @@ class BubbleLayerTool extends AbstractLayerTool {
                     }
                 }
             } else {
-                actResultItem.subvalues[undefined] = foundValues[0];
+                let sub = actResultItem.subvalues[undefined];
+                sub = sub !== undefined ? sub + foundValues[0] : 0;
+                actResultItem.subvalues[undefined] = sub;
             }
         }
 
@@ -324,13 +326,15 @@ class BubbleLayerTool extends AbstractLayerTool {
          let popupMsg = "<b>" + "Detail:" + "</b><br>";
          popupMsg += (data.value != null ? "Aggregated: " + thousands_separator(data.value) : "N/A") + "<br>";
          for (let [key, value] of Object.entries(data.subvalues)) {
-             popupMsg += key + ": " + thousands_separator(value) + "<br>";
+             if (key !== 'undefined') {
+                 popupMsg += key + ": " + thousands_separator(value) + "<br>";
+             }
          }
         // create marker
         let point = L.marker([data.lat, data.long], {
             // create basic icon 
             id: 'id',
-            icon: new CountryIcon({
+            icon: new BubbleIcon({
                 values: data,
                 max: this.max,
                 map: () => this.getMap()
