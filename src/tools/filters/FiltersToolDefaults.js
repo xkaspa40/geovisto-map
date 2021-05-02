@@ -4,6 +4,8 @@ import NeqFilterOperation from "./model/basic/NeqFilterOperation";
 import RegFilterOperation from "./model/basic/RegFilterOperation";
 import AbstractToolDefaults from "../../model/tool/abstract/AbstractToolDefaults";
 import FiltersTool from "./FiltersTool";
+import GreaterFilterOperation from "./model/basic/GreaterFilterOperation";
+import LesserFilterOperation from "./model/basic/LesserFilterOperation";
 
 /**
  * This class provide functions which return the default state values.
@@ -40,7 +42,9 @@ class FiltersToolDefaults extends AbstractToolDefaults {
         return new FiltersManager([
             new EqFilterOperation(),
             new NeqFilterOperation(),
-            new RegFilterOperation()
+            new RegFilterOperation(),
+            new GreaterFilterOperation(),
+            new LesserFilterOperation()
         ]);
     }
 
