@@ -57,7 +57,7 @@ class DynamicClassifierSidebarInput extends AbstractSidebarInput {
 
         this.input.appendChild(this.opInput.create());
         this.input.appendChild(this.valInput.create());
-        this.input.appendChild(this.dynamicModel.create());
+        this.input.appendChild(this.dynamicInput.create());
 
         return this.input;
     }
@@ -81,7 +81,7 @@ class DynamicClassifierSidebarInput extends AbstractSidebarInput {
     setValue(value) {
         this.opInput.setValue(value.operation);
         this.valInput.setValue(value.value);
-        this.dynamicInput.setValue(value.color);
+        this.dynamicInput.setValue(value[this.dynamicModel.key]);
     }
 }
 
