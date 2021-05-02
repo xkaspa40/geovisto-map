@@ -67,7 +67,6 @@ class SpikeLayerTool extends AbstractLayerTool {
     constructor(props) {
         super(props);
         this.workData = [];
-        this.categoryFilters = [];
         this.max = 0;
     }
 
@@ -99,15 +98,6 @@ class SpikeLayerTool extends AbstractLayerTool {
         return new SpikeLayerToolState();
     }
 
-    /**
-     * Sets rules for category colors
-     *
-     * @param rules
-     */
-    setCategoryFilters(rules) {
-        this.categoryFilters = rules;
-        this.redraw();
-    }
 
     /**
      * Help function which acquires and returns the selection tool if available.
@@ -179,6 +169,8 @@ class SpikeLayerTool extends AbstractLayerTool {
         let data = this.getMap().getState().getCurrentData();
         let dataLen = data.length;
         this.max = 0;
+        const categoryFilters = this.getState().getCategoryFilters();
+
         for (let i = 0; i < dataLen; i++) {
             foundLats = mapData.getItemValues(latitudeDataDomain, data[i]);
             foundLongs = mapData.getItemValues(longitudeDataDomain, data[i]);
@@ -208,9 +200,9 @@ class SpikeLayerTool extends AbstractLayerTool {
             }
 
             if (foundCategories.length === 1) {
-                for (let j = 0; j < this.categoryFilters.length; j++) {
-                    const filter = this.categoryFilters[j];
-                    if (filter.operation(actResultItem.category, filter.value)) {
+                for (let j = 0; j < categoryFilters.length; j++) {
+                    const filter = categoryFilters[j];
+                    if (filter.operation.match(actResultItem.category, filter.value)) {
                         actResultItem.color = filter.color;
 
                         break;
@@ -250,7 +242,7 @@ class SpikeLayerTool extends AbstractLayerTool {
         //create linear scale accepting values from 0 to 100 which maps them to values from 4 to 48
         const scale = d3.scaleLinear().domain([0, this.max]).range([4, 48]);
         const height = this.calculateHeight(scale(data.value));
-        const popup = `<b>${data.value}</b>`
+        const popup = `<b>${data.category}: ${data.value}</b>`
         return L.marker([data.lat, data.long], {
             // create spike icon
             icon: new SpikeIcon({

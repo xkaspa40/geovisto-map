@@ -191,7 +191,7 @@ class Demo extends Component {
         <div className="demo-toolbar">
           <span>Data file: </span>
           <select id={C_ID_select_data}>
-            <option value="demo1.json">demo1.json</option>
+            <option value="covid19_okresy.json">covid19_okresy.json</option>
             <option value="demo2.json">demo2.json</option>
             <option disabled></option>
           </select>

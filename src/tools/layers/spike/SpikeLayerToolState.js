@@ -1,5 +1,6 @@
 import AbstractLayerToolState from "../abstract/AbstractLayerToolState";
 import SpikeLayerToolDefaults from "./SpikeLayerToolDefaults";
+import FiltersToolDefaults from "../../filters/FiltersToolDefaults";
 
 /**
  * This class provide functions for using the state of the layer tool.
@@ -13,6 +14,8 @@ class SpikeLayerToolState extends AbstractLayerToolState {
      */
     constructor() {
         super();
+        this.categoryFilters = [];
+        this.filterManager = new FiltersToolDefaults().getFiltersManager();
     }
 
     /**
@@ -35,7 +38,6 @@ class SpikeLayerToolState extends AbstractLayerToolState {
         super.resetMapVariables(map, defaults);
 
         let props = this.getProps();
-        this.setCentroids(props.centroids == undefined && defaults && map ? defaults.getCentroids() : props.centroids);
     }
 
     /**
@@ -46,8 +48,23 @@ class SpikeLayerToolState extends AbstractLayerToolState {
     deserialize(config) {
         super.deserialize(config);
 
-        // the layer tool config
-        // TODO
+        if ( ! config.categoryFilters) {
+            return;
+        }
+
+        let filters = [];
+        config.categoryFilters.forEach((filter) => {
+            const operation = this.getFilterManager().getOperation(filter.operation)[0];
+            if (operation) {
+                filters.push({
+                    operation,
+                    value: filter.value,
+                    color: filter.color
+                });
+            }
+        })
+        config.categoryFilters = filters;
+        this.setCategoryFilters(config.categoryFilters);
     }
 
     /**
@@ -57,9 +74,15 @@ class SpikeLayerToolState extends AbstractLayerToolState {
      */
     serialize(defaults) {
         let config = super.serialize(defaults);
+        config.categoryFilters = [];
 
-        // serialize the layer tool properties
-        // TODO
+        this.categoryFilters.forEach((filter) => {
+            config.categoryFilters.push({
+                operation: filter.operation.toString(),
+                value: filter.value,
+                color: filter.color
+            });
+        })
 
         return config;
     }
@@ -81,22 +104,6 @@ class SpikeLayerToolState extends AbstractLayerToolState {
     }
 
     /**
-     * It returns the centroids.
-     */
-    getCentroids() {
-        return this.centroids;
-    }
-
-    /**
-     * It sets the centroids.
-     * 
-     * @param {*} centroids 
-     */
-    setCentroids(centroids) {
-        this.centroids = centroids;
-    }
-
-    /**
      * It returns the markers.
      */
     getMarkers() {
@@ -112,6 +119,32 @@ class SpikeLayerToolState extends AbstractLayerToolState {
         this.markers = markers;
     }
 
-    // TODO
+    /**
+     * Filter manager getter
+     *
+     * @returns {FiltersManager}
+     */
+    getFilterManager() {
+        return this.filterManager;
+    }
+
+    /**
+     * Sets rules for category colors
+     *
+     * @param rules
+     */
+    setCategoryFilters(rules) {
+        this.categoryFilters = rules;
+        this.categoryFilters = rules ?? [];
+    }
+
+    /**
+     * Gets rules for category colors
+     *
+     * @returns {[]}
+     */
+    getCategoryFilters() {
+        return this.categoryFilters;
+    }
 }
 export default SpikeLayerToolState;
