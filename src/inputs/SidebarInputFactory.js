@@ -6,9 +6,9 @@ import LabeledSelectSidebarInput from "./select/LabeledSelectSidebarInput";
 import FilterSelectSidebarInput from "./filter/FilterSelectSidebarInput";
 import FilterAutocompleteSidebarInput from "./filter/FilterAutocompleteSidebarInput";
 import AutocompleteSidebarInput from "./input/AutocompleteSidebarInput";
-import CategoryClassifierSidebarInput from "./category/CategoryClassifierSidebarInput";
 import RangeSliderInput from "./input/RangeSliderInput";
 import ColorPickerInput from "./input/ColorPickerInput";
+import DynamicClassifierSidebarInput from "./category/DynamicClassifierSidebarInput";
 
 /**
  * Factory for sidebar inputs.
@@ -38,15 +38,15 @@ class SidebarInputFactory {
             element = new RangeSliderInput(settings);
         } else if (id == ColorPickerInput.ID()) {
             element = new ColorPickerInput(settings);
+        } else if (id == DynamicClassifierSidebarInput.ID()) {
+            element = new DynamicClassifierSidebarInput(settings);
         }
         else if (id == AutocompleteSidebarInput.ID()) {
             element = new AutocompleteSidebarInput(settings);
         } else if (id == FilterAutocompleteSidebarInput.ID()) {
             element = new FilterAutocompleteSidebarInput(settings);
-        } else if (id == CategoryClassifierSidebarInput.ID()) {
-            element = new CategoryClassifierSidebarInput(settings);
         }
-        
+
         else {
             element = new AbstractSidebarInput(settings);
         }
