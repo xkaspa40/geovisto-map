@@ -34,7 +34,7 @@ let BubbleIcon = L.DivIcon.extend({
         // TODO create slider for size
         let scale = d3.scaleSqrt().domain([0, options.max]).range([10, 80]);
         let size = scale(options.values.value);
-        let zoom = options.map().map._zoom;
+        let zoom = options.map().getState().getLeafletMap()._zoom;
         size = size*zoom/4;
 
         options.iconSize = [size, size];
@@ -157,6 +157,31 @@ class BubbleLayerTool extends AbstractLayerTool {
     }
 
     /**
+     * Gets values of clustered markers
+     *
+     * @param childMarkers
+     * @returns {{id: string, value: number, subvalues: {}, colors: {}}}
+     */
+    getClusterValues(childMarkers) {
+        let data = { id: "<Group>", value: 0, subvalues: {} , colors: {}};
+        for (let i = 0; i < childMarkers.length; i++) {
+            data.value += childMarkers[i].options.icon.options.values.value;
+            for (let [key, value] of Object.entries(childMarkers[i].options.icon.options.values.subvalues)) {
+                if (data.subvalues[key] === undefined) {
+                    data.subvalues[key] = value;
+                } else {
+                    data.subvalues[key] += value;
+                }
+                if (childMarkers[i].options.icon.options.values.colors) {
+                    data.colors[key] = childMarkers[i].options.icon.options.values.colors[key];
+                }
+            }
+        }
+
+        return data;
+    }
+
+    /**
      * It creates layer items.
      */
     createLayerItems() {
@@ -166,32 +191,35 @@ class BubbleLayerTool extends AbstractLayerTool {
             // create cluster icon
             iconCreateFunction: (cluster) => {
                 let markers = cluster.getAllChildMarkers();
-                let data = { id: "<Group>", value: 0, subvalues: {} , colors: {}};
-                let max = 0;
                 let map = markers[0].options.icon.options.map;
-                for (let i = 0; i < markers.length; i++) {
-                    data.value += markers[i].options.icon.options.values.value;
-                    max = max === 0 ? markers[i].options.icon.options.max : max;
-                    for (let [key, value] of Object.entries(markers[i].options.icon.options.values.subvalues)) {
-                        if (data.subvalues[key] === undefined) {
-                            data.subvalues[key] = value;
-                        } else {
-                            data.subvalues[key] += value;
-                        }
-                        if (markers[i].options.icon.options.values.colors) {
-                            data.colors[key] = markers[i].options.icon.options.values.colors[key];
-                        }
-                    }
-                }
+                const data = this.getClusterValues(markers);
+                const max = this.max;
+
                 // create custom icon
                 return new BubbleIcon({
                     countryName: "<Group>",
                     values: data,
-                    map: map,   //Geovisto map object
+                    map: map,   // getMap function
                     max: max,
                     isGroup: true,
                 });
             }
+        });
+
+        const map = this.getMap().getState().getLeafletMap();
+        // create handlers for cluster popups
+        layer.on('clustermouseover', (c) => {
+            const markers = c.layer.getAllChildMarkers();
+            const data = this.getClusterValues(markers);
+            const popupMsg = this.createPopupMessage(data);
+            L.popup()
+                .setLatLng(c.layer.getLatLng())
+                .setContent(popupMsg)
+                .openOn(map);
+        }).on('clustermouseout', function() {
+            map.closePopup();
+        }).on('clusterclick', function() {
+            map.closePopup();
         });
 
         // update state
@@ -317,19 +345,9 @@ class BubbleLayerTool extends AbstractLayerTool {
      * @param {*} data 
      */
     createMarker(data) {
-        function thousands_separator(num) {
-            let num_parts = num.toString().split(".");
-            num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-            return num_parts.join(".");
-        }
-        // build popup message
-         let popupMsg = "<b>" + "Detail:" + "</b><br>";
-         popupMsg += (data.value != null ? "Aggregated: " + thousands_separator(data.value) : "N/A") + "<br>";
-         for (let [key, value] of Object.entries(data.subvalues)) {
-             if (key !== 'undefined') {
-                 popupMsg += key + ": " + thousands_separator(value) + "<br>";
-             }
-         }
+        //get popup message
+        const popupMsg = this.createPopupMessage(data);
+
         // create marker
         let point = L.marker([data.lat, data.long], {
             // create basic icon 
@@ -340,7 +358,39 @@ class BubbleLayerTool extends AbstractLayerTool {
                 map: () => this.getMap()
             })
         }).bindPopup(popupMsg);
+
+        point.on('mouseover', function() {
+             this.openPopup();
+        }).on('mouseout', function () {
+             this.closePopup();
+        });
+
         return point;
+    }
+
+    /**
+     * Creates content of popup
+     *
+     * @param data
+     * @returns {string}
+     */
+    createPopupMessage(data) {
+        function thousands_separator(num) {
+            let num_parts = num.toString().split(".");
+            num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            return num_parts.join(".");
+        }
+
+        // build popup message
+        let popupMsg = "<b>" + "Detail:" + "</b><br>";
+        popupMsg += (data.value != null ? "Aggregated: " + thousands_separator(data.value) : "N/A") + "<br>";
+        for (let [key, value] of Object.entries(data.subvalues)) {
+            if (key !== 'undefined') {
+                popupMsg += key + ": " + thousands_separator(value) + "<br>";
+            }
+        }
+
+        return popupMsg;
     }
 
     /**

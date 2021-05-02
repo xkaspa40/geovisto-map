@@ -205,7 +205,6 @@ class GeovistoMap extends AbstractMapObject {
         map.attributionControl.addAttribution(this.getMapAttribution());
 
         this.getState().setLeafletMap(map);
-        this.map = map;
 
         return this.map;
     }
