@@ -8,8 +8,7 @@ import FilterAutocompleteSidebarInput from "./filter/FilterAutocompleteSidebarIn
 import AutocompleteSidebarInput from "./input/AutocompleteSidebarInput";
 import RangeSliderInput from "./input/RangeSliderInput";
 import ColorPickerInput from "./input/ColorPickerInput";
-import DynamicClassifierSidebarInput from "./category/DynamicClassifierSidebarInput";
-
+import DynamicClassifierSidebarInput from "./dynamic/DynamicClassifierSidebarInput";
 /**
  * Factory for sidebar inputs.
  * 
