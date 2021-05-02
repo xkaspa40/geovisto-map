@@ -3,7 +3,7 @@ import SpikeLayerToolTabControlState from "./SpikeLayerToolTabControlState";
 import AbstractLayerToolTabControl from "../../abstract/sidebar/AbstractLayerToolTabControl";
 import SidebarInputFactory from "../../../../inputs/SidebarInputFactory";
 import TabDOMUtil from "../../../../util/TabDOMUtil";
-import DynamicClassifierSidebarInput from "../../../../inputs/category/DynamicClassifierSidebarInput";
+import DynamicClassifierSidebarInput from "../../../../inputs/dynamic/DynamicClassifierSidebarInput";
 import ColorPickerInput from "../../../../inputs/input/ColorPickerInput";
 
 /**
