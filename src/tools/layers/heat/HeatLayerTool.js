@@ -5,7 +5,6 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import './style/heatLayer.scss';
-import * as d3 from "d3";
 import HeatLayerToolTabControl from './sidebar/HeatLayerToolTabControl';
 import HeatLayerToolDefaults from './HeatLayerToolDefaults';
 import HeatLayerToolState from './HeatLayerToolState';
@@ -29,6 +28,7 @@ class HeatLayerTool extends AbstractLayerTool {
      */
     constructor(props) {
         super(props);
+        this.workData = {data: []}
         this.maxValue = undefined;
     }
 
@@ -91,6 +91,8 @@ class HeatLayerTool extends AbstractLayerTool {
 
         this.redraw();
 
+        this.getMap().addEventListener('zoomend', (e) => this.changeHeatRadius(e, this.workData))
+
         return [ layer ];
     }
 
@@ -115,7 +117,7 @@ class HeatLayerTool extends AbstractLayerTool {
      */
     prepareMapData() {
         // prepare data
-        let workData = {data: []};
+        let workData = this.workData;
         let mapData = this.getMap().getState().getMapData();
         let dataMappingModel = this.getDefaults().getDataMappingModel();
         let dataMapping = this.getState().getDataMapping();
@@ -180,8 +182,11 @@ class HeatLayerTool extends AbstractLayerTool {
             this.deleteLayerItems();
 
             // prepare data
-            let workData = this.prepareMapData();
-            const layers = this.createHeatLayers(workData);
+            if ( ! onlyStyle) {
+                this.workData = this.prepareMapData();
+            }
+
+            const layers = this.createHeatLayers(this.workData);
             const toolLayer = this.getState().getLayer();
 
             layers.forEach((layer) => {
@@ -224,6 +229,26 @@ class HeatLayerTool extends AbstractLayerTool {
         );
 
         return layers;
+    }
+
+    changeHeatRadius(e, workData) {
+        const zoom = e.target._zoom;
+        const heatLayer = this.getState().getLayers()[0];
+        if ( ! workData.blur || ! workData.radius || ! workData.gradient || ! workData.zoom) {
+            return;
+        }
+
+        //TODO create adaptive radius form and react to it's values
+        heatLayer.setOptions({
+            radius: workData.radius,
+            maxZoom: workData.zoom,
+            blur: workData.blur,
+            minOpacity: 0.4,
+            gradient: workData.gradient,
+            max: this.maxValue,
+        });
+
+        heatLayer.redraw();
     }
 
     /**

@@ -19,7 +19,6 @@ class NominatimGeocodingService {
         from = encodeURIComponent(from);
         const response = await fetch(`https://nominatim.openstreetmap.org/search.php?q=${from}&format=json`);
 
-
         return await response.json();
     }
 
@@ -33,14 +32,15 @@ class NominatimGeocodingService {
      * @returns {Promise<*>}
      */
     async getLatLng(from) {
-        if (this.geoCodingMap.from) {
-            console.log('already have');
+        if (this.geoCodingMap[from]) {
+            console.log('already have result for ' + from);
             return this.geoCodingMap.from;
         }
 
         const result = await this.fetchFromApi(from);
-        this.geoCodingMap.from = [result[0].lat, result[0].lon];
-        return this.geoCodingMap.from;
+        this.geoCodingMap[from] = [result[0].lat, result[0].lon];
+
+        return this.geoCodingMap[from];
     }
 
 } export default NominatimGeocodingService;
