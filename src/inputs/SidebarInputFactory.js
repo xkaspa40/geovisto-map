@@ -8,8 +8,9 @@ import FilterAutocompleteSidebarInput from "./filter/FilterAutocompleteSidebarIn
 import AutocompleteSidebarInput from "./input/AutocompleteSidebarInput";
 import RangeSliderInput from "./input/RangeSliderInput";
 import ColorPickerInput from "./input/ColorPickerInput";
+import DynamicClassifierSidebarInput from "./category/DynamicClassifierSidebarInput";
 import CheckboxSidebarInput from "./checkbox/CheckboxSidebarInput";
-import CategoryClassifierSidebarInput from "./category/CategoryClassifierSidebarInput";
+
 /**
  * Factory for sidebar inputs.
  * 
@@ -38,8 +39,8 @@ class SidebarInputFactory {
             element = new RangeSliderInput(settings);
         } else if (id == ColorPickerInput.ID()) {
             element = new ColorPickerInput(settings);
-        } else if (id == CategoryClassifierSidebarInput.ID()) {
-            element = new CategoryClassifierSidebarInput(settings);
+        } else if (id == DynamicClassifierSidebarInput.ID()) {
+            element = new DynamicClassifierSidebarInput(settings);
         }
         else if (id == AutocompleteSidebarInput.ID()) {
             element = new AutocompleteSidebarInput(settings);
