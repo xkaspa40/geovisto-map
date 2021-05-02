@@ -15,37 +15,6 @@ import ThemesToolEvent from '../../themes/model/event/ThemesToolEvent';
 import SelectionToolEvent from '../../selection/model/event/SelectionToolEvent';
 import DataChangeEvent from '../../../model/event/basic/DataChangeEvent';
 
-const GRADIENT_DEFAULT = {0.4:"#0000FF", 0.6:"#00FFFF", 0.7:"#00FF00", 0.8:"#FFFF00", 0.9:"#FF0000"};
-
-const GRADIENT_PROTANO_DEUTRAN_A = { 0.4: "#00B9F1", 0.6: "#00A875", 0.7: "#ECDE38", 0.8: "#F7931D", 0.9: "#F15A22"};
-
-const GRADIENT_PROTAN_DEUTRAN_B = { 0.4: "#7CB3F5", 0.6: "#648FFF", 0.7: "#DCC112", 0.8: "#A97821", 0.9: "#5F320C"};
-
-const GRADIENT_TRITAN = { 0.4: "#00e6e6", 0.6: "#009999", 0.7: "#C38D87", 0.8: "#FF0000", 0.9: "#660004"};
-
-const GRADIENT_MONOCHROMATIC = { 0.4: "#BDBDBD", 0.6: "#888888", 0.7: "#565656", 0.8: "#353535", 0.9: "#000000"};
-
-const BLUR_DEFAULT = 10;
-const RADIUS_DEFAULT = 10;
-
-const ZOOM_MIN = 1;
-const ZOOM_NORMAL = 7;
-const ZOOM_MAX = undefined;
-
-const ZOOM_LEVELS = [
-    {name: "min", value: ZOOM_MIN},
-    {name: "normal", value: ZOOM_NORMAL},
-    {name: "max", value: ZOOM_MAX}
-]
-
-const GRADIENTS = [
-    {name: "Default", values: GRADIENT_DEFAULT},
-    {name: "Protanopia/Deuteranopia A", values: GRADIENT_PROTANO_DEUTRAN_A},
-    {name: "Protanopia/Deuteranopia B", values: GRADIENT_PROTAN_DEUTRAN_B},
-    {name: "Tritanopia", values: GRADIENT_TRITAN},
-    {name: "Monochromatic", values: GRADIENT_MONOCHROMATIC}
-]
-
 /**
  * This class represents Heatmap layer.
  * 
@@ -61,11 +30,6 @@ class HeatLayerTool extends AbstractLayerTool {
     constructor(props) {
         super(props);
         this.maxValue = undefined;
-        this.radius = RADIUS_DEFAULT;
-        this.blur = BLUR_DEFAULT;
-        this.gradient = GRADIENT_DEFAULT;
-        this.zoom = ZOOM_NORMAL;
-        this.opacity = undefined;
     }
 
     /**
@@ -94,59 +58,6 @@ class HeatLayerTool extends AbstractLayerTool {
      */
     createState() {
         return new HeatLayerToolState();
-    }
-
-    /**
-     * Radius setter
-     *
-     * @param radius
-     */
-    setRadius(radius) {
-        if (isNaN(radius) || radius === '') {
-            this.radius = undefined;
-
-            return;
-        }
-        let rad = parseInt(radius);
-        this.radius = rad > 100 ? 100 : rad;
-    }
-
-    getGradients() {
-        return GRADIENTS.map(gradient => gradient.name);
-    }
-
-    setGradient(gradient) {
-        for (let i = 0; i < GRADIENTS.length; i++) {
-            if(gradient === GRADIENTS[i].name) {
-                this.gradient = GRADIENTS[i].values;
-                return;
-            }
-        }
-    }
-
-    setBlur(blur) {
-        if (isNaN(blur) || blur === '') {
-            this.blur = undefined;
-
-            return;
-        }
-        let bl = parseInt(blur);
-        bl = bl > 100 ? 100 : bl;
-        bl = bl < 5 ? 5 : bl;
-        this.blur = bl;
-    }
-
-    getZoomLevels() {
-        return ZOOM_LEVELS.map(zoom => zoom.name);
-    }
-
-    setZoomLevel(value) {
-       for (let i = 0; i < ZOOM_LEVELS.length; i++) {
-           if(value === ZOOM_LEVELS[i].name) {
-               this.zoom = ZOOM_LEVELS[i].value;
-               return;
-           }
-       }
     }
 
     /**
@@ -203,10 +114,8 @@ class HeatLayerTool extends AbstractLayerTool {
      * It prepares data for markers.
      */
     prepareMapData() {
-        //console.log("updating map data", this);
-
         // prepare data
-        let workData = [];
+        let workData = {data: []};
         let mapData = this.getMap().getState().getMapData();
         let dataMappingModel = this.getDefaults().getDataMappingModel();
         let dataMapping = this.getState().getDataMapping();
@@ -217,6 +126,26 @@ class HeatLayerTool extends AbstractLayerTool {
         let data = this.getMap().getState().getCurrentData();
         let dataLen = data.length;
         this.maxValue = 0;
+
+        let radius = dataMapping[dataMappingModel.radius.name];
+        if (isNaN(radius) || radius === '') {
+            return workData;
+        }
+        radius = parseInt(radius);
+
+        let blur = dataMapping[dataMappingModel.blur.name];
+        if (isNaN(blur) || blur === '') {
+            return workData;
+        }
+        blur = parseInt(blur);
+
+        const gradient = this.getState().getGradient(dataMapping[dataMappingModel.gradient.name]);
+        const zoom = this.getState().getZoomLevel(dataMapping[dataMappingModel.zoom.name]);
+        if ( ! gradient || ! zoom) {
+            return workData;
+        }
+        workData = {radius, blur, gradient, zoom, data: []};
+
         for (let i = 0; i < dataLen; i++) {
             foundLats = mapData.getItemValues(latitudeDataDoman, data[i]);
             if (foundLats.length !== 1 || isNaN(foundLats[0])) {
@@ -232,7 +161,7 @@ class HeatLayerTool extends AbstractLayerTool {
             }
 
             if (foundLats.length === 1 && foundLongs.length === 1 && foundIntensity.length === 1) {
-                workData.push({lat: foundLats[0], long: foundLongs[0], intensity: foundIntensity[0]});
+                workData.data.push({lat: foundLats[0], long: foundLongs[0], intensity: foundIntensity[0]});
             }
             if (foundIntensity.length === 1 && foundIntensity[0] > this.maxValue) {
                 this.maxValue = foundIntensity[0];
@@ -274,30 +203,25 @@ class HeatLayerTool extends AbstractLayerTool {
     createHeatLayers(workData) {
         let layers = [];
 
-        if ( ! workData.length || ! this.radius || ! this.blur) {
+        if ( ! workData.data.length) {
             return layers;
         }
 
-        // If radius is static there is no point in drawing multiple heat layers for each data set
-        if (this.radius) {
-            let data = [];
+        let data = [];
+        workData.data.forEach((item) => {
+            data.push([item.lat, item.long, item.intensity])
+        });
 
-            workData.forEach((item) => {
-                data.push([item.lat, item.long, item.intensity])
-            });
-            layers.push(L.heatLayer(data,
-                {
-                    radius: this.radius, //min
-                    maxZoom: this.zoom,
-                    blur: this.blur,
-                    minOpacity: 0.4,
-                    gradient: this.gradient,
-                    max: this.maxValue,
-                })
-            );
-
-            return layers;
-        }
+        layers.push(L.heatLayer(data,
+            {
+                radius: workData.radius,
+                maxZoom: workData.zoom,
+                blur: workData.blur,
+                minOpacity: 0.4,
+                gradient: workData.gradient,
+                max: this.maxValue,
+            })
+        );
 
         return layers;
     }

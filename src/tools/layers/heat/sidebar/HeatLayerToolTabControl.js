@@ -44,6 +44,10 @@ class HeatLayerToolTabControl extends AbstractLayerToolTabControl {
         dataMapping[model.latitude.name] = this.inputLatitude.getValue();
         dataMapping[model.longitude.name] = this.inputLongitude.getValue();
         dataMapping[model.intensity.name] = this.inputIntensity.getValue();
+        dataMapping[model.radius.name] = this.inputRadius.getValue();
+        dataMapping[model.blur.name] = this.inputBlur.getValue();
+        dataMapping[model.gradient.name] = this.inputGradient.getValue();
+        dataMapping[model.zoom.name] = this.inputZoom.getValue();
 
         return dataMapping;
     }
@@ -92,31 +96,31 @@ class HeatLayerToolTabControl extends AbstractLayerToolTabControl {
         //select radius
         this.inputRadius = SidebarInputFactory.createSidebarInput(model.radius.input, {
             label: model.radius.label,
-            action: (e) => {this.changeRadiusAction(e.target.value)},
-            placeholder: "(1-100)|default 10:",
+            action: () => {this.changeDimensionAction()},
+            placeholder: "insert number)",
             static: true
         });
         elem.appendChild(this.inputRadius.create());
 
         this.inputGradient = SidebarInputFactory.createSidebarInput(model.gradient.input, {
             label: model.gradient.label,
-            action: (e) => {this.changeGradientAction(e.target.value)},
-            options: this.getTool().getGradients(),
+            action: () => {this.changeDimensionAction()},
+            options: this.getTool().getState().getGradients(),
             placeholder: "select gradient:",
         });
         elem.appendChild(this.inputGradient.create());
 
         this.inputBlur = SidebarInputFactory.createSidebarInput(model.blur.input, {
             label: model.blur.label,
-            action: (e) => {this.changeBlurAction(e.target.value)},
-            placeholder: "(5 - 100)|default 10:"
+            action: () => {this.changeDimensionAction()},
+            placeholder: "insert number"
         });
         elem.appendChild(this.inputBlur.create());
 
         this.inputZoom = SidebarInputFactory.createSidebarInput(model.zoom.input, {
             label: model.zoom.label,
-            action: (e) => {this.changeZoomAction(e.target.value)},
-            options: this.getTool().getZoomLevels(),
+            action: () => {this.changeDimensionAction()},
+            options: this.getTool().getState().getZoomLevels(),
             placeholder: "choose ratio: "
         });
         elem.appendChild(this.inputZoom.create());
@@ -132,31 +136,6 @@ class HeatLayerToolTabControl extends AbstractLayerToolTabControl {
     changeDimensionAction() {
         // get selected values and update layer's data mapping
         this.getTool().updateDataMapping(this.getInputValues());
-    }
-
-    /**
-     * Event handler: change radius action
-     *
-     * @param value
-     */
-    changeRadiusAction(value) {
-        this.getTool().setRadius(value);
-        this.changeDimensionAction();
-    }
-
-    changeGradientAction(value) {
-        this.getTool().setGradient(value);
-        this.changeDimensionAction();
-    }
-
-    changeBlurAction(value) {
-        this.getTool().setBlur(value);
-        this.changeDimensionAction();
-    }
-
-    changeZoomAction(value) {
-        this.getTool().setZoomLevel(value);
-        this.changeDimensionAction();
     }
 
     /**

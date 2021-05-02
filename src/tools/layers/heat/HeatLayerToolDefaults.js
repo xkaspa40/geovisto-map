@@ -12,6 +12,8 @@ const TYPE = 'heat';
 
 const INPUT_ID_PREFIX = "geovisto-input-" + TYPE;
 
+const ZOOM_DEFAULT = 'normal';
+
 /**
  * Data mapping model which can be used in the sidebar form.
  */
@@ -107,10 +109,10 @@ class HeatLayerToolDefaults extends AbstractLayerToolDefaults {
         dataMapping[dataMappingModel.latitude.name] = implicitDataDomainLabel;
         dataMapping[dataMappingModel.longitude.name] = implicitDataDomainLabel;
         dataMapping[dataMappingModel.intensity.name] = implicitDataDomainLabel;
-        dataMapping[dataMappingModel.radius.name] = '';
-        dataMapping[dataMappingModel.gradient.name] = '';
-        dataMapping[dataMappingModel.blur.name] = '';
-        dataMapping[dataMappingModel.zoom.name] = '';
+        dataMapping[dataMappingModel.radius.name] = '10';
+        dataMapping[dataMappingModel.gradient.name] = 'Default';
+        dataMapping[dataMappingModel.blur.name] = '10';
+        dataMapping[dataMappingModel.zoom.name] = ZOOM_DEFAULT;
 
         return dataMapping;
     }
@@ -120,13 +122,6 @@ class HeatLayerToolDefaults extends AbstractLayerToolDefaults {
      */
     getDataMappingModel() {
         return MAPPING_MODEL;
-    }
-    
-    /**
-     * It returns default centroids.
-     */
-    getCentroids() {
-        return JSON.parse(JSON.stringify(this.getMapObject().getMap().getState().getCentroids()));
     }
 }
 export default HeatLayerToolDefaults;
