@@ -70,6 +70,17 @@ class CategoryClassifierSidebarInput extends AbstractSidebarInput {
             color: this.colorInput.getValue()
         };
     }
+
+    /**
+     * Sets value for all three inputs
+     *
+     * @param value - object
+     */
+    setValue(value) {
+        this.opInput.setValue(value.operation);
+        this.valInput.setValue(value.value);
+        this.colorInput.setValue(value.color);
+    }
 }
 
 export default CategoryClassifierSidebarInput;
