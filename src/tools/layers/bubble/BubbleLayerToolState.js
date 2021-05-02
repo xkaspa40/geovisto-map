@@ -1,5 +1,6 @@
 import AbstractLayerToolState from "../abstract/AbstractLayerToolState";
 import BubbleLayerToolDefaults from "./BubbleLayerToolDefaults";
+import FiltersToolDefaults from "../../filters/FiltersToolDefaults";
 
 /**
  * This class provide functions for using the state of the layer tool.
@@ -13,6 +14,8 @@ class BubbleLayerToolState extends AbstractLayerToolState {
      */
     constructor() {
         super();
+        this.categoryFilters = [];
+        this.filterManager = new FiltersToolDefaults().getFiltersManager();
     }
 
     /**
@@ -35,7 +38,6 @@ class BubbleLayerToolState extends AbstractLayerToolState {
         super.resetMapVariables(map, defaults);
 
         let props = this.getProps();
-        this.setCentroids(props.centroids == undefined && defaults && map ? defaults.getCentroids() : props.centroids);
     }
 
     /**
@@ -46,6 +48,23 @@ class BubbleLayerToolState extends AbstractLayerToolState {
     deserialize(config) {
         super.deserialize(config);
 
+        if ( ! config.categoryFilters) {
+            return;
+        }
+
+        let filters = [];
+        config.categoryFilters.forEach((filter) => {
+            const operation = this.getFilterManager().getOperation(filter.operation)[0];
+            if (operation) {
+                filters.push({
+                    operation,
+                    value: filter.value,
+                    color: filter.color
+                });
+            }
+        })
+        config.categoryFilters = filters;
+        this.setCategoryFilters(config.categoryFilters);
         // the layer tool config
         // TODO
     }
@@ -58,8 +77,15 @@ class BubbleLayerToolState extends AbstractLayerToolState {
     serialize(defaults) {
         let config = super.serialize(defaults);
 
-        // serialize the layer tool properties
-        // TODO
+        config.categoryFilters = [];
+
+        this.categoryFilters.forEach((filter) => {
+            config.categoryFilters.push({
+                operation: filter.operation.toString(),
+                value: filter.value,
+                color: filter.color
+            });
+        })
 
         return config;
     }
@@ -81,22 +107,6 @@ class BubbleLayerToolState extends AbstractLayerToolState {
     }
 
     /**
-     * It returns the centroids.
-     */
-    getCentroids() {
-        return this.centroids;
-    }
-
-    /**
-     * It sets the centroids.
-     * 
-     * @param {*} centroids 
-     */
-    setCentroids(centroids) {
-        this.centroids = centroids;
-    }
-
-    /**
      * It returns the markers.
      */
     getMarkers() {
@@ -112,6 +122,32 @@ class BubbleLayerToolState extends AbstractLayerToolState {
         this.markers = markers;
     }
 
-    // TODO
+    /**
+     * Filter manager getter
+     *
+     * @returns {FiltersManager}
+     */
+    getFilterManager() {
+        return this.filterManager;
+    }
+
+    /**
+     * Sets rules for category colors
+     *
+     * @param rules
+     */
+    setCategoryFilters(rules) {
+        this.categoryFilters = rules;
+        this.categoryFilters = rules ?? [];
+    }
+
+    /**
+     * Gets rules for category colors
+     *
+     * @returns {[]}
+     */
+    getCategoryFilters() {
+        return this.categoryFilters;
+    }
 }
 export default BubbleLayerToolState;

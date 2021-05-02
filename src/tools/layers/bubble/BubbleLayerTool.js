@@ -93,7 +93,6 @@ class BubbleLayerTool extends AbstractLayerTool {
     constructor(props) {
         super(props);
         this.max = 0;
-        this.categoryFilters = [];
     }
 
     /**
@@ -124,16 +123,6 @@ class BubbleLayerTool extends AbstractLayerTool {
      */
     createState() {
         return new BubbleLayerToolState();
-    }
-
-    /**
-     * Sets rules for category colors
-     *
-     * @param rules
-     */
-    setCategoryFilters(rules) {
-        this.categoryFilters = rules;
-        this.redraw();
     }
 
     /**
@@ -266,6 +255,7 @@ class BubbleLayerTool extends AbstractLayerTool {
         let data = this.getMap().getState().getCurrentData();
         let dataLen = data.length;
         this.max = 0;
+        const categoryFilters = this.getState().getCategoryFilters();
 
         for (let i = 0; i < dataLen; i++) {
             let found = false;
@@ -302,9 +292,9 @@ class BubbleLayerTool extends AbstractLayerTool {
                 actResultItem.subvalues[foundCategories[0]] = foundValues[0];
                 actResultItem.category = foundCategories[0];
 
-                for (let j = 0; j < this.categoryFilters.length; j++) {
-                    const filter = this.categoryFilters[j];
-                    if (filter.operation(actResultItem.category, filter.value)) {
+                for (let j = 0; j < categoryFilters.length; j++) {
+                    const filter = categoryFilters[j];
+                    if (filter.operation.match(actResultItem.category, filter.value)) {
                         actResultItem.colors = actResultItem.colors ?? {};
                         actResultItem.colors[foundCategories[0]] = filter.color;
                         break;

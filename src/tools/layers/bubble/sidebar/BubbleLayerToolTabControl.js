@@ -17,7 +17,6 @@ class BubbleLayerToolTabControl extends AbstractLayerToolTabControl {
         super(tool);
 
         this.tabContent = undefined;
-        this.filterManager = new FiltersToolDefaults().getFiltersManager();
         this.colorClassInputs = [];
     }
 
@@ -69,7 +68,7 @@ class BubbleLayerToolTabControl extends AbstractLayerToolTabControl {
         this.inputLongitude.setValue(dataMapping[model.longitude.name]);
         this.inputCategory.setValue(dataMapping[model.category.name]);
         this.inputValue.setValue(dataMapping[model.value.name]);
-        this.inputAggregation.setValue(dataMapping[model.aggregation.name]);
+        this.inputAggregation.setValue(dataMapping[model.aggregation.name] ?? 'sum');
     }
 
     /**
@@ -132,7 +131,9 @@ class BubbleLayerToolTabControl extends AbstractLayerToolTabControl {
         this.buttonGroup.appendChild(TabDOMUtil.createButton("Apply", () => this.applyFilters(),
             "applyBtn"));
 
-        this.setInputValues(this.getTool().getState().getDataMapping());
+        const state = this.getTool().getState();
+        this.setInputValues(state.getDataMapping());
+        this.setFilterRules(state.getCategoryFilters());
         
         return tab;
     }
@@ -144,7 +145,7 @@ class BubbleLayerToolTabControl extends AbstractLayerToolTabControl {
         let minusButton = TabDOMUtil.createButton("<i class=\"fa fa-minus-circle\"></i>", (e) => {this.removeMappingInput(e)}, "minusBtn");
         div.appendChild(minusButton);
 
-        const operations = this.filterManager.getOperationLabels();
+        const operations = this.getTool().getState().getFilterManager().getOperationLabels();
         let input = SidebarInputFactory.createSidebarInput(CategoryClassifierSidebarInput.ID(), {
             operations: {
                 options: operations,
@@ -166,6 +167,11 @@ class BubbleLayerToolTabControl extends AbstractLayerToolTabControl {
         });
     }
 
+    /**
+     * Removes set of inputs used for category color coding
+     *
+     * @param e
+     */
     removeMappingInput(e) {
         let inputGroup = e.target.closest(".categoryClassesGroup");
         this.colorClassInputs = this.colorClassInputs.filter((item) => item.container !== inputGroup);
@@ -173,11 +179,15 @@ class BubbleLayerToolTabControl extends AbstractLayerToolTabControl {
         inputGroup.remove();
     }
 
+    /**
+     * Applies color coding and raises redraw
+     */
     applyFilters() {
         let rules = [];
         this.colorClassInputs.forEach((input) => {
             const data = input.input.getValue();
-            const operation = this.filterManager.getOperation(data.op)[0] ? this.filterManager.getOperation(data.op)[0].match : undefined;
+            const manager = this.getTool().getState().getFilterManager();
+            const operation = manager.getOperation(data.op)[0] ? manager.getOperation(data.op)[0] : undefined;
             data.val && data.color && operation && rules.push({
                 operation,
                 value: data.val,
@@ -185,8 +195,23 @@ class BubbleLayerToolTabControl extends AbstractLayerToolTabControl {
             });
         });
 
-        this.getTool().setCategoryFilters(rules);
+        this.getTool().getState().setCategoryFilters(rules);
+        this.getTool().redraw();
     }
 
+    /**
+     * Creates and sets filters
+     */
+    setFilterRules(filters) {
+        filters.forEach((filter, index) => {
+            this.addMappingInputs();
+            const values = {
+                operation: filter.operation.toString(),
+                value: filter.value,
+                color: filter.color
+            }
+            this.colorClassInputs[index].input.setValue(values);
+        });
+    }
 }
 export default BubbleLayerToolTabControl;
