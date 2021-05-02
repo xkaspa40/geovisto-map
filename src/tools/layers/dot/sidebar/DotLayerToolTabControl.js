@@ -3,8 +3,8 @@ import DotLayerToolTabControlState from "./DotLayerToolTabControlState";
 import AbstractLayerToolTabControl from "../../abstract/sidebar/AbstractLayerToolTabControl";
 import SidebarInputFactory from "../../../../inputs/SidebarInputFactory";
 import TabDOMUtil from "../../../../util/TabDOMUtil";
-import CategoryClassifierSidebarInput from "../../../../inputs/category/CategoryClassifierSidebarInput";
-import FiltersToolDefaults from "../../../filters/FiltersToolDefaults";
+import DynamicClassifierSidebarInput from "../../../../inputs/category/DynamicClassifierSidebarInput";
+import ColorPickerInput from "../../../../inputs/input/ColorPickerInput";
 
 /**
  * This class provides controls for management of the layer sidebar tab.
@@ -137,7 +137,7 @@ class DotLayerToolTabControl extends AbstractLayerToolTabControl {
         div.appendChild(minusButton);
 
         const operations = this.getTool().getState().getFilterManager().getOperationLabels();
-        let input = SidebarInputFactory.createSidebarInput(CategoryClassifierSidebarInput.ID(), {
+        let input = SidebarInputFactory.createSidebarInput(DynamicClassifierSidebarInput.ID(), {
             operations: {
                 options: operations,
                 action: () => {/**/}
@@ -146,7 +146,11 @@ class DotLayerToolTabControl extends AbstractLayerToolTabControl {
                 options: [],
                 action: function() { /* do nothing; */ }
             },
-            colors: {
+            dynamic: {
+                input: ColorPickerInput.ID(),
+                label: 'Color',
+                key: 'color',
+                action: () => {/**/},
                 options: []
             }
         });
