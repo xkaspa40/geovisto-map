@@ -3,7 +3,7 @@ import AutocompleteSidebarInput from "../input/AutocompleteSidebarInput";
 import LabeledTextSidebarInput from "../input/LabeledTextSidebarInput";
 import SidebarInputFactory from "../SidebarInputFactory";
 
-const ID = "geovisto-input-category-classifier";
+const ID = "geovisto-input-dynamic-classifier";
 
 const COMPONENT_DIV_CLASS = ID;
 
