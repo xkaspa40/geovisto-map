@@ -100,7 +100,7 @@ class HeatLayerToolTabControl extends AbstractLayerToolTabControl {
         this.inputRadius = SidebarInputFactory.createSidebarInput(model.radius.input, {
             label: model.radius.label,
             action: () => {this.changeDimensionAction(true)},
-            placeholder: "insert number)",
+            placeholder: "insert number",
             static: true
         });
         elem.appendChild(this.inputRadius.create());

@@ -197,7 +197,8 @@ class HeatLayerTool extends AbstractLayerTool {
             }
 
             let data = this.workData;
-            if (this.options === {}) {
+            if ( ! Object.keys(this.options).length) {
+
                 // don't put any points on map if heat map options aren't specified
                 data = [];
             }
@@ -232,7 +233,7 @@ class HeatLayerTool extends AbstractLayerTool {
         let data = workData.data;
         const zoom = this.getMap().getState().getLeafletMap()._zoom;
         const radius = this.getRadius(zoom, workData);
-
+        console.log(workData);
         layers.push(L.heatLayer(data,
             {
                 radius: radius,
