@@ -38,13 +38,13 @@ class DynamicClassifierSidebarInput extends AbstractSidebarInput {
         this.input.classList.add(COMPONENT_DIV_CLASS);
 
         this.opInput = new AutocompleteSidebarInput({
-            label: "Operation",
+            label: this.opModel.label ?? "Operation",
             options: this.opModel.options,
             action: this.opModel.action,
             placeholder: "choose operation"
         });
         this.valInput = new LabeledTextSidebarInput({
-            label: "Value",
+            label: this.valModel.label ?? "Value",
             action: this.valModel.action,
             placeholder: "enter value"
         });
