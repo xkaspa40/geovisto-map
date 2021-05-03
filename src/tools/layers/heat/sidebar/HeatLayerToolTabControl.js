@@ -152,6 +152,7 @@ class HeatLayerToolTabControl extends AbstractLayerToolTabControl {
         let zoomInput = this.currentZoom.create();
         this.reactiveRadius.appendChild(zoomInput);
         zoomInput.classList.add('zoomLevelWindow');
+        this.currentZoom.setValue(this.getTool().getMap().getState().getLeafletMap()._zoom);
 
         this.getTool().getMap().addEventListener(('zoomend'), (e) => this.setCurrentZoom(e));
 
@@ -162,12 +163,12 @@ class HeatLayerToolTabControl extends AbstractLayerToolTabControl {
             "applyBtn"));
 
         this.setInputValues(this.getTool().getState().getDataMapping());
+        this.setFilterRules(this.getTool().getState().getReactiveRadiusRules());
         
         return tab;
     }
 
     setCurrentZoom(e) {
-        console.log(e);
         this.currentZoom.setValue(e.target._zoom);
     }
 
@@ -216,6 +217,7 @@ class HeatLayerToolTabControl extends AbstractLayerToolTabControl {
             },
             values: {
                 options: [],
+                label: "Zoom level",
                 action: function() { /* do nothing; */ }
             },
             dynamic: {
@@ -256,15 +258,16 @@ class HeatLayerToolTabControl extends AbstractLayerToolTabControl {
             const data = input.input.getValue();
             const manager = this.getTool().getState().getFilterManager();
             const operation = manager.getOperation(data.op)[0] ? manager.getOperation(data.op)[0] : undefined;
-            data.val && data.color && operation && rules.push({
+            data.val = isNaN(data.val) ? undefined : parseInt(data.val);
+            data.radius = isNaN(data.radius) ? undefined : parseInt(data.radius);
+            data.val && data.radius && operation && rules.push({
                 operation,
                 value: data.val,
                 radius: data.radius
             });
         });
 
-        this.getTool().getState().setCategoryFilters(rules);
-        this.getTool().redraw();
+        this.getTool().getState().setReactiveRadiusRules(rules);
     }
 
     /**

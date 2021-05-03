@@ -73,6 +73,24 @@ class HeatLayerToolState extends AbstractLayerToolState {
      */
     deserialize(config) {
         super.deserialize(config);
+
+        let rules = [];
+        if ( ! config.radiusRules) {
+            return;
+        }
+
+        config.radiusRules.forEach((filter) => {
+            const operation = this.getFilterManager().getOperation(filter.operation)[0];
+            if (operation) {
+                rules.push({
+                    operation,
+                    value: filter.value,
+                    radius: filter.radius
+                });
+            }
+        })
+        config.radiusRules = rules;
+        this.setReactiveRadiusRules(config.radiusRules);
     }
 
     /**
@@ -83,8 +101,14 @@ class HeatLayerToolState extends AbstractLayerToolState {
     serialize(defaults) {
         let config = super.serialize(defaults);
 
-        // serialize the layer tool properties
-        // TODO
+        config.radiusRules = [];
+        this.radiusRules.forEach((filter) => {
+            config.radiusRules.push({
+                operation: filter.operation.toString(),
+                value: filter.value,
+                radius: filter.radius
+            });
+        })
 
         return config;
     }
@@ -168,6 +192,14 @@ class HeatLayerToolState extends AbstractLayerToolState {
                 return ZOOM_LEVELS[i].value;
             }
         }
+    }
+
+    setReactiveRadiusRules(rules) {
+        this.radiusRules = rules;
+    }
+
+    getReactiveRadiusRules() {
+        return this.radiusRules;
     }
 }
 export default HeatLayerToolState;

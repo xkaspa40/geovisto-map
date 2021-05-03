@@ -237,10 +237,17 @@ class HeatLayerTool extends AbstractLayerTool {
         if ( ! workData.blur || ! workData.radius || ! workData.gradient || ! workData.zoom) {
             return;
         }
+        let rules = this.getState().getReactiveRadiusRules();
+        rules = rules.filter(rule => rule.operation.match(zoom, rule.value));
 
-        //TODO create adaptive radius form and react to it's values
+        let radius = workData.radius;
+        if (rules.length) {
+            //get last value of all rulesets that match
+            radius = rules[rules.length - 1].radius;
+        }
+
         heatLayer.setOptions({
-            radius: workData.radius,
+            radius: radius,
             maxZoom: workData.zoom,
             blur: workData.blur,
             minOpacity: 0.4,
