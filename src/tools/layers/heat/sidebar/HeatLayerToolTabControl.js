@@ -99,7 +99,7 @@ class HeatLayerToolTabControl extends AbstractLayerToolTabControl {
         //select radius
         this.inputRadius = SidebarInputFactory.createSidebarInput(model.radius.input, {
             label: model.radius.label,
-            action: () => {this.changeDimensionAction()},
+            action: () => {this.changeDimensionAction(true)},
             placeholder: "insert number)",
             static: true
         });
@@ -107,7 +107,7 @@ class HeatLayerToolTabControl extends AbstractLayerToolTabControl {
 
         this.inputGradient = SidebarInputFactory.createSidebarInput(model.gradient.input, {
             label: model.gradient.label,
-            action: () => {this.changeDimensionAction()},
+            action: () => {this.changeDimensionAction(true)},
             options: this.getTool().getState().getGradients(),
             placeholder: "select gradient:",
         });
@@ -115,14 +115,14 @@ class HeatLayerToolTabControl extends AbstractLayerToolTabControl {
 
         this.inputBlur = SidebarInputFactory.createSidebarInput(model.blur.input, {
             label: model.blur.label,
-            action: () => {this.changeDimensionAction()},
+            action: () => {this.changeDimensionAction(true)},
             placeholder: "insert number"
         });
         elem.appendChild(this.inputBlur.create());
 
         this.inputZoom = SidebarInputFactory.createSidebarInput(model.zoom.input, {
             label: model.zoom.label,
-            action: () => {this.changeDimensionAction()},
+            action: () => {this.changeDimensionAction(true)},
             options: this.getTool().getState().getZoomLevels(),
             placeholder: "choose ratio: "
         });
@@ -175,9 +175,9 @@ class HeatLayerToolTabControl extends AbstractLayerToolTabControl {
     /**
      * Event handler: change dimension action
      */
-    changeDimensionAction() {
+    changeDimensionAction(onlyStyle = false) {
         // get selected values and update layer's data mapping
-        this.getTool().updateDataMapping(this.getInputValues());
+        this.getTool().updateDataMapping(this.getInputValues(), onlyStyle);
     }
 
     /**
@@ -268,6 +268,8 @@ class HeatLayerToolTabControl extends AbstractLayerToolTabControl {
         });
 
         this.getTool().getState().setReactiveRadiusRules(rules);
+        // this is needed so the change takes place immediately, not after zoom change
+        this.getTool().redraw(true);
     }
 
     /**

@@ -28,7 +28,8 @@ class HeatLayerTool extends AbstractLayerTool {
      */
     constructor(props) {
         super(props);
-        this.workData = {data: []}
+        this.workData = [];
+        this.options = {};
         this.maxValue = undefined;
     }
 
@@ -91,7 +92,7 @@ class HeatLayerTool extends AbstractLayerTool {
 
         this.redraw();
 
-        this.getMap().addEventListener('zoomend', (e) => this.changeHeatRadius(e, this.workData))
+        this.getMap().addEventListener('zoomend', (e) => this.changeHeatRadius(e, this.options))
 
         return [ layer ];
     }
@@ -112,12 +113,37 @@ class HeatLayerTool extends AbstractLayerTool {
         this.getState().setLayers([]);
     }
 
+    prepareHeatmapOptions() {
+        let options = {};
+        const dataMapping = this.getState().getDataMapping();
+        const dataMappingModel = this.getDefaults().getDataMappingModel();
+        let radius = dataMapping[dataMappingModel.radius.name];
+        if (isNaN(radius) || radius === '') {
+            return options;
+        }
+        radius = parseInt(radius);
+
+        let blur = dataMapping[dataMappingModel.blur.name];
+        if (isNaN(blur) || blur === '') {
+            return options;
+        }
+        blur = parseInt(blur);
+
+        const gradient = this.getState().getGradient(dataMapping[dataMappingModel.gradient.name]);
+        const zoom = this.getState().getZoomLevel(dataMapping[dataMappingModel.zoom.name]);
+        if ( ! gradient || ! zoom) {
+            return options;
+        }
+        options = {radius, blur, gradient, zoom};
+
+        return options;
+    }
+
     /**
      * It prepares data for markers.
      */
     prepareMapData() {
         // prepare data
-        let workData = this.workData;
         let mapData = this.getMap().getState().getMapData();
         let dataMappingModel = this.getDefaults().getDataMappingModel();
         let dataMapping = this.getState().getDataMapping();
@@ -128,25 +154,7 @@ class HeatLayerTool extends AbstractLayerTool {
         let data = this.getMap().getState().getCurrentData();
         let dataLen = data.length;
         this.maxValue = 0;
-
-        let radius = dataMapping[dataMappingModel.radius.name];
-        if (isNaN(radius) || radius === '') {
-            return workData;
-        }
-        radius = parseInt(radius);
-
-        let blur = dataMapping[dataMappingModel.blur.name];
-        if (isNaN(blur) || blur === '') {
-            return workData;
-        }
-        blur = parseInt(blur);
-
-        const gradient = this.getState().getGradient(dataMapping[dataMappingModel.gradient.name]);
-        const zoom = this.getState().getZoomLevel(dataMapping[dataMappingModel.zoom.name]);
-        if ( ! gradient || ! zoom) {
-            return workData;
-        }
-        workData = {radius, blur, gradient, zoom, data: []};
+        let workData = [];
 
         for (let i = 0; i < dataLen; i++) {
             foundLats = mapData.getItemValues(latitudeDataDoman, data[i]);
@@ -163,7 +171,7 @@ class HeatLayerTool extends AbstractLayerTool {
             }
 
             if (foundLats.length === 1 && foundLongs.length === 1 && foundIntensity.length === 1) {
-                workData.data.push({lat: foundLats[0], long: foundLongs[0], intensity: foundIntensity[0]});
+                workData.push([foundLats[0],foundLongs[0], foundIntensity[0]]);
             }
             if (foundIntensity.length === 1 && foundIntensity[0] > this.maxValue) {
                 this.maxValue = foundIntensity[0];
@@ -181,12 +189,21 @@ class HeatLayerTool extends AbstractLayerTool {
             // delete actual items
             this.deleteLayerItems();
 
-            // prepare data
+            // prepare heat map options
+            this.options = this.prepareHeatmapOptions();
             if ( ! onlyStyle) {
+                // prepare data
                 this.workData = this.prepareMapData();
             }
 
-            const layers = this.createHeatLayers(this.workData);
+            let data = this.workData;
+            if (this.options === {}) {
+                // don't put any points on map if heat map options aren't specified
+                data = [];
+            }
+
+            const workData = {...this.options, data: data};
+            const layers = this.createHeatLayers(workData);
             const toolLayer = this.getState().getLayer();
 
             layers.forEach((layer) => {
@@ -212,14 +229,13 @@ class HeatLayerTool extends AbstractLayerTool {
             return layers;
         }
 
-        let data = [];
-        workData.data.forEach((item) => {
-            data.push([item.lat, item.long, item.intensity])
-        });
+        let data = workData.data;
+        const zoom = this.getMap().getState().getLeafletMap()._zoom;
+        const radius = this.getRadius(zoom, workData);
 
         layers.push(L.heatLayer(data,
             {
-                radius: workData.radius,
+                radius: radius,
                 maxZoom: workData.zoom,
                 blur: workData.blur,
                 minOpacity: 0.4,
@@ -231,31 +247,37 @@ class HeatLayerTool extends AbstractLayerTool {
         return layers;
     }
 
-    changeHeatRadius(e, workData) {
+    changeHeatRadius(e, options) {
         const zoom = e.target._zoom;
         const heatLayer = this.getState().getLayers()[0];
-        if ( ! workData.blur || ! workData.radius || ! workData.gradient || ! workData.zoom) {
+        if ( ! options.blur || ! options.radius || ! options.gradient || ! options.zoom) {
             return;
         }
+        const radius = this.getRadius(zoom, options);
+
+        heatLayer.setOptions({
+            radius: radius,
+            maxZoom: options.zoom,
+            blur: options.blur,
+            minOpacity: 0.4,
+            gradient: options.gradient,
+            max: this.maxValue,
+        });
+
+        heatLayer.redraw();
+    }
+
+    getRadius(zoom, options) {
         let rules = this.getState().getReactiveRadiusRules();
         rules = rules.filter(rule => rule.operation.match(zoom, rule.value));
 
-        let radius = workData.radius;
+        let radius = options.radius;
         if (rules.length) {
             //get last value of all rulesets that match
             radius = rules[rules.length - 1].radius;
         }
 
-        heatLayer.setOptions({
-            radius: radius,
-            maxZoom: workData.zoom,
-            blur: workData.blur,
-            minOpacity: 0.4,
-            gradient: workData.gradient,
-            max: this.maxValue,
-        });
-
-        heatLayer.redraw();
+        return radius;
     }
 
     /**
