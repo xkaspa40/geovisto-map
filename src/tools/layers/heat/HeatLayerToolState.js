@@ -1,5 +1,6 @@
 import AbstractLayerToolState from "../abstract/AbstractLayerToolState";
 import HeatLayerToolDefaults from "./HeatLayerToolDefaults";
+import FiltersToolDefaults from "../../filters/FiltersToolDefaults";
 
 const GRADIENT_DEFAULT = {0.4:"#0000FF", 0.6:"#00FFFF", 0.7:"#00FF00", 0.8:"#FFFF00", 0.9:"#FF0000"};
 
@@ -41,6 +42,8 @@ class HeatLayerToolState extends AbstractLayerToolState {
      */
     constructor() {
         super();
+        this.radiusRules = [];
+        this.filterManager = new FiltersToolDefaults().getFiltersManager();
     }
 
     /**
@@ -118,7 +121,9 @@ class HeatLayerToolState extends AbstractLayerToolState {
         this.layers = layers;
     }
 
-
+    getFilterManager() {
+        return this.filterManager;
+    }
 
     /**
      * Gets array of all gradients

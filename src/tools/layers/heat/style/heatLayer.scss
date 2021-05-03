@@ -15,3 +15,30 @@
     display: flex;
     margin-bottom: 10px;
 }
+
+.radiusSelector hr{
+    border-top: 1px solid rgba(73, 175, 193, 0.8);
+    border-bottom: 1px solid rgba(73, 175, 193, 0.8);
+}
+
+.radiusSelector h2 {
+    color: #585555;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.radiusSelector button {
+    margin: 0 10px 3px 0;
+}
+
+.radiusSelectorGroup {
+    margin-bottom: 5px;
+}
+
+.zoomLevelWindow {
+    margin-bottom: 5px;
+}
+
+.radiusSelector .zoomLevelWindow .geovisto-input-text-labeled-value {
+    width: 25%;
+}

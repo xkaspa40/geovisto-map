@@ -2,6 +2,9 @@ import HeatLayerToolTabControlDefaults from "./HeatLayerToolTabControlDefaults";
 import HeatLayerToolTabControlState from "./HeatLayerToolTabControlState";
 import AbstractLayerToolTabControl from "../../abstract/sidebar/AbstractLayerToolTabControl";
 import SidebarInputFactory from "../../../../inputs/SidebarInputFactory";
+import TabDOMUtil from "../../../../util/TabDOMUtil";
+import DynamicClassifierSidebarInput from "../../../../inputs/dynamic/DynamicClassifierSidebarInput";
+import LabeledTextSidebarInput from "../../../../inputs/input/LabeledTextSidebarInput";
 
 /**
  * This class provides controls for management of the layer sidebar tab.
@@ -12,7 +15,7 @@ class HeatLayerToolTabControl extends AbstractLayerToolTabControl {
 
     constructor(tool) {
         super(tool);
-
+        this.reactiveRadiusInputs = [];
         this.tabContent = undefined;
     }
 
@@ -125,9 +128,47 @@ class HeatLayerToolTabControl extends AbstractLayerToolTabControl {
         });
         elem.appendChild(this.inputZoom.create());
 
+        //category color selector
+        this.reactiveRadius = document.createElement('div');
+        this.reactiveRadius.setAttribute('class', 'radiusSelector');
+        elem.appendChild(this.reactiveRadius);
+
+        // horizontal rule
+        let catClassSeparator = document.createElement('hr');
+        this.reactiveRadius.appendChild(catClassSeparator);
+
+        //header text
+        let catClassHeader = document.createElement('h2');
+        catClassHeader.innerText = 'Reactive radius settings';
+        this.reactiveRadius.appendChild(catClassHeader);
+
+        // disabled input with current zoom
+        this.currentZoom = SidebarInputFactory.createSidebarInput(LabeledTextSidebarInput.ID(), {
+            label: 'Current zoom:',
+            action: () => {/**/},
+            placeholder: '',
+            disabled: true
+        });
+        let zoomInput = this.currentZoom.create();
+        this.reactiveRadius.appendChild(zoomInput);
+        zoomInput.classList.add('zoomLevelWindow');
+
+        this.getTool().getMap().addEventListener(('zoomend'), (e) => this.setCurrentZoom(e));
+
+        //button group
+        this.buttonGroup = this.reactiveRadius.appendChild(document.createElement('div'));
+        this.buttonGroup.appendChild(TabDOMUtil.createButton("<i class=\"fa fa-plus-circle\"></i>",   () => this.addMappingInputs(), "plusBtn" ));
+        this.buttonGroup.appendChild(TabDOMUtil.createButton("Apply", () => this.applyFilters(),
+            "applyBtn"));
+
         this.setInputValues(this.getTool().getState().getDataMapping());
         
         return tab;
+    }
+
+    setCurrentZoom(e) {
+        console.log(e);
+        this.currentZoom.setValue(e.target._zoom);
     }
 
     /**
@@ -156,5 +197,90 @@ class HeatLayerToolTabControl extends AbstractLayerToolTabControl {
             action: () => this.changeDimensionAction()
         });
     }
+
+    /**
+     * Creates set of inputs used for creating rules for reactive radius
+     */
+    addMappingInputs() {
+        let div = this.reactiveRadius.insertBefore(document.createElement('div'), this.buttonGroup);
+        div.setAttribute('class', 'radiusSelectorGroup');
+
+        let minusButton = TabDOMUtil.createButton("<i class=\"fa fa-minus-circle\"></i>", (e) => {this.removeMappingInput(e)}, "minusBtn");
+        div.appendChild(minusButton);
+
+        const operations = this.getTool().getState().getFilterManager().getOperationLabels();
+        let input = SidebarInputFactory.createSidebarInput(DynamicClassifierSidebarInput.ID(), {
+            operations: {
+                options: operations,
+                action: () => {/**/}
+            },
+            values: {
+                options: [],
+                action: function() { /* do nothing; */ }
+            },
+            dynamic: {
+                input: LabeledTextSidebarInput.ID(),
+                label: 'Radius Value',
+                placeholder: 'enter value',
+                key: 'radius',
+                action: () => {/**/},
+                options: []
+            }
+        });
+
+        div.appendChild(input.create());
+        this.reactiveRadiusInputs.push({
+            input,
+            container: div
+        });
+    }
+
+    /**
+     * Removes set of inputs used for category color coding
+     *
+     * @param e
+     */
+    removeMappingInput(e) {
+        let inputGroup = e.target.closest(".radiusSelectorGroup");
+        this.reactiveRadiusInputs = this.reactiveRadiusInputs.filter((item) => item.container !== inputGroup);
+
+        inputGroup.remove();
+    }
+
+    /**
+     * Applies color coding and raises redraw
+     */
+    applyFilters() {
+        let rules = [];
+        this.reactiveRadiusInputs.forEach((input) => {
+            const data = input.input.getValue();
+            const manager = this.getTool().getState().getFilterManager();
+            const operation = manager.getOperation(data.op)[0] ? manager.getOperation(data.op)[0] : undefined;
+            data.val && data.color && operation && rules.push({
+                operation,
+                value: data.val,
+                radius: data.radius
+            });
+        });
+
+        this.getTool().getState().setCategoryFilters(rules);
+        this.getTool().redraw();
+    }
+
+    /**
+     * Creates and sets filters
+     */
+    setFilterRules(filters) {
+        filters.forEach((filter, index) => {
+            this.addMappingInputs();
+            const values = {
+                operation: filter.operation.toString(),
+                value: filter.value,
+                radius: filter.radius
+            }
+            this.reactiveRadiusInputs[index].input.setValue(values);
+        });
+    }
+
 }
 export default HeatLayerToolTabControl;
