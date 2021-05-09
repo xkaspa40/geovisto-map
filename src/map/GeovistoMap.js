@@ -210,16 +210,6 @@ class GeovistoMap extends AbstractMapObject {
     }
 
     /**
-     * This function serves tools as a means to register handlers for generic map events such as 'zoom'
-     *
-     * @param type      type of event
-     * @param handler   event handler
-     */
-    addEventListener(type, handler) {
-        this.map.on(type, (e) => handler(e));
-    }
-
-    /**
      * It returns the map attribution.
      * 
      * This function can be overriden;
