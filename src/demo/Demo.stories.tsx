@@ -18,6 +18,7 @@ import ConnectionLayerTool from "../tools/layers/connection/ConnectionLayerTool"
 import HeatLayerTool from "../tools/layers/heat/HeatLayerTool";
 import DotLayerTool from "../tools/layers/dot/DotLayerTool";
 import BubbleLayerTool from "../tools/layers/bubble/BubbleLayerTool";
+import SpikeLayerTool from "../tools/layers/spike/SpikeLayerTool";
 import Dark1Theme from "../tools/themes/model/theme/basic/dark1/Dark1Theme";
 import Dark2Theme from "../tools/themes/model/theme/basic/dark2/Dark2Theme";
 import Dark3Theme from "../tools/themes/model/theme/basic/dark3/Dark3Theme";
@@ -250,7 +251,8 @@ class Demo extends Component {
               new ConnectionLayerTool({ id: "geovisto-tool-layer-connection" }),
               new HeatLayerTool({id: "geovisto-tool-layer-heat"}),
               new DotLayerTool({id: "geovisto-tool-layer-dot"}),
-              new BubbleLayerTool({ id: "geovisto-tool-layer-bubble" })
+              new BubbleLayerTool({ id: "geovisto-tool-layer-bubble" }),
+              new SpikeLayerTool({id: "geovisto-tool-layer-spike"})
             ])}
           />
         </div>
