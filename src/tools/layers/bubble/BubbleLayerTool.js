@@ -57,6 +57,7 @@ let BubbleIcon = L.DivIcon.extend({
                 .data(values_ready)
                 .enter()
                 .append("path")
+                .attr('class', 'bubble')
                 .attr("d", d3.arc()
                     .innerRadius(0)
                     .outerRadius(size / 2)
@@ -73,6 +74,7 @@ let BubbleIcon = L.DivIcon.extend({
                 .text(options.values.value);
         }
         this._setIconStyles(div, 'icon');
+       // div.classList.add('bubble');
 
         return div;
     },

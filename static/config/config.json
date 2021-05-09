@@ -29,7 +29,7 @@
             },
             {
                 "tool": "geovisto-tool-filters",
-                "enabled": true,
+                "enabled": false,
                 "name": "Filters",
                 "icon": "<i class=\"fa fa-filter\"></i>",
                 "checkButton": true
@@ -43,21 +43,21 @@
             },
             {
                 "tool": "geovisto-tool-layer-choropleth",
-                "enabled": true,
+                "enabled": false,
                 "name": "Choropleth layer settings",
                 "icon": "<i class=\"fa fa-th-large\"></i>",
                 "checkButton": true
             },
             {
                 "tool": "geovisto-tool-layer-marker",
-                "enabled": true,
+                "enabled": false,
                 "name": "Marker layer settings",
                 "icon": "<i class=\"fa fa-map-marker\"></i>",
                 "checkButton": true
             },
             {
                 "tool": "geovisto-tool-layer-connection",
-                "enabled": true,
+                "enabled": false,
                 "name": "Connection layer settings",
                 "icon": "<i class=\"fa fa-road\"></i>",
                 "checkButton": true
@@ -81,6 +81,13 @@
                 "enabled": true,
                 "name": "Bubble layer settings",
                 "icon": "<i class=\"fa fa-pie-chart\"></i>",
+                "checkButton": true
+            },
+            {
+                "tool": "geovisto-tool-layer-spike",
+                "enabled": true,
+                "name": "Spikemap layer settings",
+                "icon": "<i class=\"fa fa-arrow-up\"></i>",
                 "checkButton": true
             }
             ]
@@ -127,7 +134,7 @@
         {
             "type": "geovisto-tool-layer-marker",
             "id": "geovisto-tool-layer-marker",
-            "enabled": true,
+            "enabled": false,
             "layerName": "Marker layer",
             "data": {
             "country": "",
@@ -139,7 +146,7 @@
         {
             "type": "geovisto-tool-layer-connection",
             "id": "geovisto-tool-layer-connection",
-            "enabled": true,
+            "enabled": false,
             "layerName": "Connection layer",
             "data": {
             "from": "",
@@ -177,6 +184,18 @@
             "id": "geovisto-tool-layer-bubble",
             "enabled": true,
             "layerName": "Bubble layer",
+            "data": {
+                "latitude": "lat",
+                "longitude": "long",
+                "category": "data.category",
+                "value": "data.value"
+            }
+        },
+        {
+            "type": "geovisto-tool-layer-spike",
+            "id": "geovisto-tool-layer-spike",
+            "enabled": true,
+            "layerName": "Spike layer",
             "data": {
                 "latitude": "lat",
                 "longitude": "long",

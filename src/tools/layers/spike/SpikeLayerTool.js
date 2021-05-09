@@ -44,6 +44,7 @@ var SpikeIcon = L.DivIcon.extend({
             .attr('transform', `translate(0,${height})`)
             .append('path')
             .attr('d', `M 0 0 L${width/2} -${height} L ${width} 0`)
+            .attr('class', 'spike')
             .append('title')
             .text(this.options.value);
 
