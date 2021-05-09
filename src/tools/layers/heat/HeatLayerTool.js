@@ -92,7 +92,7 @@ class HeatLayerTool extends AbstractLayerTool {
 
         this.redraw();
 
-        this.getMap().addEventListener('zoomend', (e) => this.changeHeatRadius(e, this.options))
+        this.getMap().getState().getLeafletMap().on('zoomend', (e) => this.changeHeatRadius(e, this.options));
 
         return [ layer ];
     }
