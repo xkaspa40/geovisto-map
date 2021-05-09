@@ -91,7 +91,7 @@ class DotLayerTool extends AbstractLayerTool {
         // update state
         this.getState().setLayer(layer);
 
-        this.getMap().addEventListener('zoom', (e) => this.handleZoom(e));
+        this.getMap().getState().getLeafletMap().on('zoom', (e) => this.handleZoom(e));
 
         this.redraw();
 
