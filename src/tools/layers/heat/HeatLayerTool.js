@@ -249,8 +249,11 @@ class HeatLayerTool extends AbstractLayerTool {
     }
 
     changeHeatRadius(e, options) {
-        const zoom = e.target._zoom;
         const heatLayer = this.getState().getLayers()[0];
+        if ( ! this.getState().isEnabled() || ! heatLayer) {
+            return;
+        }
+        const zoom = e.target._zoom;
         if ( ! options.blur || ! options.radius || ! options.gradient || ! options.zoom) {
             return;
         }

@@ -151,7 +151,7 @@ class Demo extends Component {
 
       // process config json
       if(!document.getElementById(C_ID_check_config).checked || config.json == undefined) {
-        config.json = require('/static/config/config-demo1.json');
+        config.json = _this.state.config;
       }
 
       // update state
@@ -193,8 +193,8 @@ class Demo extends Component {
         <div className="demo-toolbar">
           <span>Data file: </span>
           <select id={C_ID_select_data}>
-            <option value="covid19_czech.json">covid19_czech.json</option>
-            <option value="covid19_okresy.json">covid</option>
+            <option value="covid19_czech.json">HEAT_DOT_covid19.json</option>
+            <option value="covid19_okresy.json">BUBBLE_SPIKE_covid19_okresy.json</option>
             <option value="demo1.json">demo1.json</option>
             <option value="demo2.json">demo2.json</option>
             <option disabled></option>
@@ -249,7 +249,7 @@ class Demo extends Component {
               new MarkerLayerTool({ id: "geovisto-tool-layer-marker" }),
               new ConnectionLayerTool({ id: "geovisto-tool-layer-connection" }),
               new HeatLayerTool({id: "geovisto-tool-layer-heat"}),
-              new DotLayerTool({id: "geovisto-tool-layer-dot"})
+              new DotLayerTool({id: "geovisto-tool-layer-dot"}),
               new BubbleLayerTool({ id: "geovisto-tool-layer-bubble" })
             ])}
           />

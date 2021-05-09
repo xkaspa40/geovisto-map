@@ -75,6 +75,13 @@
               "name": "Heatmap layer settings",
               "icon": "<i class=\"fa fa-fire\"></i>",
               "checkButton": true
+            },
+            {
+                "tool": "geovisto-tool-layer-bubble",
+                "enabled": true,
+                "name": "Bubble layer settings",
+                "icon": "<i class=\"fa fa-pie-chart\"></i>",
+                "checkButton": true
             }
             ]
         },
@@ -164,6 +171,18 @@
             "blur": "10",
             "zoom": "normal"
           }
+        },
+        {
+            "type": "geovisto-tool-layer-bubble",
+            "id": "geovisto-tool-layer-bubble",
+            "enabled": true,
+            "layerName": "Bubble layer",
+            "data": {
+                "latitude": "lat",
+                "longitude": "long",
+                "category": "data.category",
+                "value": "data.value"
+            }
         }
     ]
 }
