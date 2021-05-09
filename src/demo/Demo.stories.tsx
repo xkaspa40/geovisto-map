@@ -17,6 +17,7 @@ import MarkerLayerTool from "../tools/layers/marker/MarkerLayerTool";
 import ConnectionLayerTool from "../tools/layers/connection/ConnectionLayerTool";
 import HeatLayerTool from "../tools/layers/heat/HeatLayerTool";
 import DotLayerTool from "../tools/layers/dot/DotLayerTool";
+import BubbleLayerTool from "../tools/layers/bubble/BubbleLayerTool";
 import Dark1Theme from "../tools/themes/model/theme/basic/dark1/Dark1Theme";
 import Dark2Theme from "../tools/themes/model/theme/basic/dark2/Dark2Theme";
 import Dark3Theme from "../tools/themes/model/theme/basic/dark3/Dark3Theme";
@@ -193,6 +194,7 @@ class Demo extends Component {
           <span>Data file: </span>
           <select id={C_ID_select_data}>
             <option value="covid19_czech.json">covid19_czech.json</option>
+            <option value="covid19_okresy.json">covid</option>
             <option value="demo1.json">demo1.json</option>
             <option value="demo2.json">demo2.json</option>
             <option disabled></option>
@@ -248,6 +250,7 @@ class Demo extends Component {
               new ConnectionLayerTool({ id: "geovisto-tool-layer-connection" }),
               new HeatLayerTool({id: "geovisto-tool-layer-heat"}),
               new DotLayerTool({id: "geovisto-tool-layer-dot"})
+              new BubbleLayerTool({ id: "geovisto-tool-layer-bubble" })
             ])}
           />
         </div>
