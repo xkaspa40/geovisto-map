@@ -196,8 +196,6 @@ class Demo extends Component {
           <select id={C_ID_select_data}>
             <option value="covid19_czech.json">HEAT_DOT_covid19.json</option>
             <option value="covid19_okresy.json">BUBBLE_SPIKE_covid19_okresy.json</option>
-            <option value="demo1.json">demo1.json</option>
-            <option value="demo2.json">demo2.json</option>
             <option disabled></option>
           </select>
 
