@@ -131,7 +131,7 @@ class SpikeLayerTool extends AbstractLayerTool {
 
         this.redraw();
 
-        this.getMap().addEventListener('zoomend', () => this.redraw(true));
+        this.getMap().getState().getLeafletMap().on('zoomend', () => this.redraw(true));
 
         return [layer];
     }
@@ -258,7 +258,7 @@ class SpikeLayerTool extends AbstractLayerTool {
     }
 
     calculateHeight(height) {
-        const currentZoom = this.getMap().map._zoom;
+        const currentZoom = this.getMap().getState().getLeafletMap()._zoom;
         return height*currentZoom/2;
     }
 
