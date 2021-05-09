@@ -154,7 +154,7 @@ class HeatLayerToolTabControl extends AbstractLayerToolTabControl {
         zoomInput.classList.add('zoomLevelWindow');
         this.currentZoom.setValue(this.getTool().getMap().getState().getLeafletMap()._zoom);
 
-        this.getTool().getMap().addEventListener(('zoomend'), (e) => this.setCurrentZoom(e));
+        this.getTool().getMap().getState().getLeafletMap().on(('zoomend'), (e) => this.setCurrentZoom(e));
 
         //button group
         this.buttonGroup = this.reactiveRadius.appendChild(document.createElement('div'));
