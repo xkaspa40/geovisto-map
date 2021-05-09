@@ -167,7 +167,7 @@ class AbstractLayerTool extends AbstractTool {
     updateDataMapping(dataMapping, onlyStyle) {
         // update state
         this.getState().setDataMapping(dataMapping);
-
+        console.log(onlyStyle);
         // redraw the layer items
         this.redraw(onlyStyle);
     }

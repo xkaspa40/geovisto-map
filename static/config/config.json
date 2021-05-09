@@ -63,11 +63,18 @@
                 "checkButton": true
             },
             {
-                "tool": "geovisto-tool-layer-heat",
+                "tool": "geovisto-tool-layer-dot",
                 "enabled": true,
-                "name": "Heatmap layer settings",
-                "icon": "<i class=\"fa fa-fire\"></i>",
+                "name": "Dot layer settings",
+                "icon": "<i class=\"fa fa-dot-circle-o\"></i>",
                 "checkButton": true
+            },
+            {
+              "tool": "geovisto-tool-layer-heat",
+              "enabled": true,
+              "name": "Heatmap layer settings",
+              "icon": "<i class=\"fa fa-fire\"></i>",
+              "checkButton": true
             }
             ]
         },
@@ -133,19 +140,30 @@
             }
         },
         {
-            "type": "geovisto-tool-layer-heat",
-            "id": "geovisto-tool-layer-heat",
+            "type": "geovisto-tool-layer-dot",
+            "id": "geovisto-tool-layer-dot",
             "enabled": true,
-            "layerName": "Heat layer",
+            "layerName": "Dot layer",
             "data": {
                 "latitude": "lat",
                 "longitude": "long",
-                "radius": "10",
-                "intensity": "cases",
-                "gradient": "Default",
-                "blur": "10",
-                "zoom": "normal"
+                "category": "city"
             }
+        },
+        {
+          "type": "geovisto-tool-layer-heat",
+          "id": "geovisto-tool-layer-heat",
+          "enabled": true,
+          "layerName": "Heat layer",
+          "data": {
+            "latitude": "lat",
+            "longitude": "long",
+            "radius": "10",
+            "intensity": "cases",
+            "gradient": "Default",
+            "blur": "10",
+            "zoom": "normal"
+          }
         }
     ]
 }

@@ -211,7 +211,7 @@ class GeovistoMap extends AbstractMapObject {
 
     /**
      * It returns the map attribution.
-     * 
+     *
      * This function can be overriden;
      */
     getMapAttribution() {
