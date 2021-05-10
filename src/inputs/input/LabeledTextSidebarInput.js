@@ -14,7 +14,7 @@ const COMPONENT_INPUT_PLACEHOLDER = "choose dimension";
 /**
  * This class represents labeled text sidebar input.
  *
- * @author Jiri Hynek
+ * @author Petr Kaspar
  */
 class LabeledTextSidebarInput extends TextSidebarInput {
 
