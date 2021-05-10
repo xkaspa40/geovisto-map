@@ -9,7 +9,7 @@ import LabeledTextSidebarInput from "../../../../inputs/input/LabeledTextSidebar
 /**
  * This class provides controls for management of the layer sidebar tab.
  * 
- * @author Jiri Hynek
+ * @author Petr Kaspar
  */
 class HeatLayerToolTabControl extends AbstractLayerToolTabControl {
 

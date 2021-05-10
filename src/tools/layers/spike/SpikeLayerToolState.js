@@ -5,7 +5,7 @@ import FiltersToolDefaults from "../../filters/FiltersToolDefaults";
 /**
  * This class provide functions for using the state of the layer tool.
  * 
- * @author Jiri Hynek
+ * @author Petr Kaspar
  */
 class SpikeLayerToolState extends AbstractLayerToolState {
 

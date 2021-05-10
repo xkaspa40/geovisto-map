@@ -3,9 +3,6 @@ import AbstractLayerToolDefaults from "../abstract/AbstractLayerToolDefaults";
 import AutocompleteSidebarInput from "../../../inputs/input/AutocompleteSidebarInput";
 import FiltersToolDefaults from "../../filters/FiltersToolDefaults";
 
-/**
- * TODO: refactorization needed!
- */
 const TYPE = 'dot';
 
 const INPUT_ID_PREFIX = "geovisto-input-" + TYPE;
@@ -37,7 +34,7 @@ const MAPPING_MODEL = {
 /**
  * This class provide functions which return the default state values.
  * 
- * @author Jiri Hynek
+ * @author Petr Kaspar
  */
 class DotLayerToolDefaults extends AbstractLayerToolDefaults {
 

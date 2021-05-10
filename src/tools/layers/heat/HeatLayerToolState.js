@@ -56,7 +56,6 @@ class HeatLayerToolState extends AbstractLayerToolState {
 
         // the layer tool properties
         this.setLayers([]);
-        // TODO
     }
 
     /**
@@ -194,10 +193,20 @@ class HeatLayerToolState extends AbstractLayerToolState {
         }
     }
 
+    /**
+     * Sets radius rules
+     *
+     * @param rules
+     */
     setReactiveRadiusRules(rules) {
         this.radiusRules = rules;
     }
 
+    /**
+     * Gets radius rules
+     *
+     * @returns {[]}
+     */
     getReactiveRadiusRules() {
         return this.radiusRules;
     }

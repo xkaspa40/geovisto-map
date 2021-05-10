@@ -113,6 +113,11 @@ class HeatLayerTool extends AbstractLayerTool {
         this.getState().setLayers([]);
     }
 
+    /**
+     * Prepares map options based on user input
+     *
+     * @returns {{gradient: *, blur: number, zoom: number, radius: number}|{}}
+     */
     prepareHeatmapOptions() {
         let options = {};
         const dataMapping = this.getState().getDataMapping();
@@ -233,7 +238,7 @@ class HeatLayerTool extends AbstractLayerTool {
         let data = workData.data;
         const zoom = this.getMap().getState().getLeafletMap()._zoom;
         const radius = this.getRadius(zoom, workData);
-        console.log(workData);
+
         layers.push(L.heatLayer(data,
             {
                 radius: radius,
@@ -248,6 +253,12 @@ class HeatLayerTool extends AbstractLayerTool {
         return layers;
     }
 
+    /**
+     * Redraws heat map with new radius value
+     *
+     * @param e
+     * @param options
+     */
     changeHeatRadius(e, options) {
         const heatLayer = this.getState().getLayers()[0];
         if ( ! this.getState().isEnabled() || ! heatLayer) {
@@ -271,6 +282,13 @@ class HeatLayerTool extends AbstractLayerTool {
         heatLayer.redraw();
     }
 
+    /**
+     * Gets radius value based on user defined ruleset
+     *
+     * @param zoom
+     * @param options
+     * @returns {*}
+     */
     getRadius(zoom, options) {
         let rules = this.getState().getReactiveRadiusRules();
         rules = rules.filter(rule => rule.operation.match(zoom, rule.value));

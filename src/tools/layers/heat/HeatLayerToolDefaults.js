@@ -5,9 +5,6 @@ import TextSidebarInput from "../../../inputs/input/TextSidebarInput";
 import LabeledTextSidebarInput from "../../../inputs/input/LabeledTextSidebarInput";
 import LabeledSelectSidebarInput from "../../../inputs/select/LabeledSelectSidebarInput";
 
-/**
- * TODO: refactorization needed!
- */
 const TYPE = 'heat';
 
 const INPUT_ID_PREFIX = "geovisto-input-" + TYPE;
@@ -72,7 +69,7 @@ const MAPPING_MODEL = {
 /**
  * This class provide functions which return the default state values.
  * 
- * @author Jiri Hynek
+ * @author Petr Kaspar
  */
 class HeatLayerToolDefaults extends AbstractLayerToolDefaults {
 

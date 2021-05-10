@@ -2,9 +2,6 @@ import SpikeLayerTool from "./SpikeLayerTool";
 import AbstractLayerToolDefaults from "../abstract/AbstractLayerToolDefaults";
 import AutocompleteSidebarInput from "../../../inputs/input/AutocompleteSidebarInput";
 
-/**
- * TODO: refactorization needed!
- */
 const TYPE = 'marker';
 
 const INPUT_ID_PREFIX = "geovisto-input-" + TYPE;
@@ -49,7 +46,7 @@ const MAPPING_MODEL = {
 /**
  * This class provide functions which return the default state values.
  * 
- * @author Jiri Hynek
+ * @author Petr Kaspar
  */
 class SpikeLayerToolDefaults extends AbstractLayerToolDefaults {
 

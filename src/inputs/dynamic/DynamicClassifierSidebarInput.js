@@ -10,7 +10,7 @@ const COMPONENT_DIV_CLASS = ID;
 /**
  * This class wraps inputs used for color codification of categories.
  *
- * @author Petr Kašpar
+ * @author Petr Kaspar
  */
 class DynamicClassifierSidebarInput extends AbstractSidebarInput {
 

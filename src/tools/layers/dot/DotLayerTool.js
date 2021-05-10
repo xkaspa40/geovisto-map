@@ -16,8 +16,8 @@ import DataChangeEvent from '../../../model/event/basic/DataChangeEvent';
 
 /**
  * This class represents Marker layer. It works with geojson polygons representing countries.
- * 
- * @author Jiri Hynek
+ *
+ * @author Petr Kaspar
  */
 class DotLayerTool extends AbstractLayerTool {
 

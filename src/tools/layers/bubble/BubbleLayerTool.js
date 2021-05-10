@@ -18,7 +18,7 @@ import DataChangeEvent from '../../../model/event/basic/DataChangeEvent';
  * This class represents custom div icon which is used to mark center of countries.
  * It overrides L.DivIcon.
  * 
- * @author Jiri Hynek
+ * @author Petr Kaspar
  * @override {L.DivIcon}
  */
 let BubbleIcon = L.DivIcon.extend({
@@ -74,7 +74,6 @@ let BubbleIcon = L.DivIcon.extend({
                 .text(options.values.value);
         }
         this._setIconStyles(div, 'icon');
-       // div.classList.add('bubble');
 
         return div;
     },
@@ -83,7 +82,7 @@ let BubbleIcon = L.DivIcon.extend({
 /**
  * This class represents Marker layer. It works with geojson polygons representing countries.
  *
- * @author Jiri Hynek
+ * @author Petr Kaspar
  */
 class BubbleLayerTool extends AbstractLayerTool {
 
@@ -178,7 +177,7 @@ class BubbleLayerTool extends AbstractLayerTool {
     createLayerItems() {
         let layer = L.markerClusterGroup({
             spiderfyOnMaxZoom: false,
-            maxClusterRadius: 65,       // TODO create slider for parametric clustering radius
+            maxClusterRadius: 65,       // TODO: create slider for parametric clustering radius
             // create cluster icon
             iconCreateFunction: (cluster) => {
                 let markers = cluster.getAllChildMarkers();

@@ -20,7 +20,7 @@ const SPIKE_WIDTH = 7;
  * This class represents custom div icon which is used to mark center of countries.
  * It overrides L.DivIcon.
  *
- * @author Jiri Hynek
+ * @author Petr Kaspar
  * @override {L.DivIcon}
  */
 var SpikeIcon = L.DivIcon.extend({
@@ -56,7 +56,7 @@ var SpikeIcon = L.DivIcon.extend({
 /**
  * This class represents Marker layer. It works with geojson polygons representing countries.
  *
- * @author Jiri Hynek
+ * @author Petr Kaspar
  */
 class SpikeLayerTool extends AbstractLayerTool {
 

@@ -4,7 +4,7 @@ import AbstractLayerToolTabControlDefaults from "../../abstract/sidebar/Abstract
 /**
  * This class provide functions which return the default state values.
  * 
- * @author Jiri Hynek
+ * @author Petr Kaspar
  */
 class SpikeLayerToolTabControlDefaults extends AbstractLayerToolTabControlDefaults {
 

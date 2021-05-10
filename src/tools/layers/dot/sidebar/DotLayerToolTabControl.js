@@ -9,7 +9,7 @@ import ColorPickerInput from "../../../../inputs/input/ColorPickerInput";
 /**
  * This class provides controls for management of the layer sidebar tab.
  * 
- * @author Jiri Hynek
+ * @author Petr Kaspar
  */
 class DotLayerToolTabControl extends AbstractLayerToolTabControl {
 
