@@ -1,0 +1,208 @@
+{
+    "zoom": 2,
+    "center": {
+      "lat": 50.064191736659104,
+      "lng": 0
+    },
+    "tools": [
+        {
+            "type": "geovisto-tool-sidebar",
+            "id": "geovisto-tool-sidebar",
+            "enabled": true,
+            "tabs": [
+            {
+                "tool": "geovisto-tool-settings",
+                "enabled": true,
+                "name": "General settings",
+                "icon": "<i class=\"fa fa-gear\"></i>",
+                "checkButton": false,
+                "fragments": [
+                {
+                    "tool": "geovisto-tool-themes",
+                    "enabled": true
+                },
+                {
+                    "tool": "geovisto-tool-selection",
+                    "enabled": true
+                }
+                ]
+            },
+            {
+                "tool": "geovisto-tool-filters",
+                "enabled": false,
+                "name": "Filters",
+                "icon": "<i class=\"fa fa-filter\"></i>",
+                "checkButton": true
+            },
+            {
+                "tool": "geovisto-tool-layer-map",
+                "enabled": false,
+                "name": "Map layer settings",
+                "icon": "<i class=\"fa fa-globe\"></i>",
+                "checkButton": true
+            },
+            {
+                "tool": "geovisto-tool-layer-choropleth",
+                "enabled": false,
+                "name": "Choropleth layer settings",
+                "icon": "<i class=\"fa fa-th-large\"></i>",
+                "checkButton": true
+            },
+            {
+                "tool": "geovisto-tool-layer-marker",
+                "enabled": false,
+                "name": "Marker layer settings",
+                "icon": "<i class=\"fa fa-map-marker\"></i>",
+                "checkButton": true
+            },
+            {
+                "tool": "geovisto-tool-layer-connection",
+                "enabled": false,
+                "name": "Connection layer settings",
+                "icon": "<i class=\"fa fa-road\"></i>",
+                "checkButton": true
+            },
+            {
+                "tool": "geovisto-tool-layer-dot",
+                "enabled": true,
+                "name": "Dot layer settings",
+                "icon": "<i class=\"fa fa-dot-circle-o\"></i>",
+                "checkButton": true
+            },
+            {
+              "tool": "geovisto-tool-layer-heat",
+              "enabled": true,
+              "name": "Heatmap layer settings",
+              "icon": "<i class=\"fa fa-fire\"></i>",
+              "checkButton": true
+            },
+            {
+                "tool": "geovisto-tool-layer-bubble",
+                "enabled": true,
+                "name": "Bubble layer settings",
+                "icon": "<i class=\"fa fa-pie-chart\"></i>",
+                "checkButton": true
+            },
+            {
+                "tool": "geovisto-tool-layer-spike",
+                "enabled": true,
+                "name": "Spikemap layer settings",
+                "icon": "<i class=\"fa fa-arrow-up\"></i>",
+                "checkButton": true
+            }
+            ]
+        },
+        {
+            "type": "geovisto-tool-settings",
+            "id": "geovisto-tool-settings",
+            "enabled": true
+        },
+        {
+            "type": "geovisto-tool-filters",
+            "id": "geovisto-tool-filters",
+            "enabled": true,
+            "filterRules": []
+        },
+        {
+            "type": "geovisto-tool-themes",
+            "id": "geovisto-tool-themes",
+            "enabled": true,
+            "theme": "light1"
+        },
+        {
+            "type": "geovisto-tool-selection",
+            "id": "geovisto-tool-selection",
+            "enabled": true
+        },
+        {
+            "type": "geovisto-tool-layer-map",
+            "id": "geovisto-tool-layer-map",
+            "enabled": true,
+            "layerName": "Map layer"
+        },
+        {
+            "type": "geovisto-tool-layer-choropleth",
+            "id": "geovisto-tool-layer-choropleth",
+            "enabled": false,
+            "layerName": "Choropleth layer",
+            "data": {
+            "country": "",
+            "value": "",
+            "aggregation": ""
+            }
+        },
+        {
+            "type": "geovisto-tool-layer-marker",
+            "id": "geovisto-tool-layer-marker",
+            "enabled": false,
+            "layerName": "Marker layer",
+            "data": {
+            "country": "",
+            "value": "",
+            "aggregation": "",
+            "category": ""
+            }
+        },
+        {
+            "type": "geovisto-tool-layer-connection",
+            "id": "geovisto-tool-layer-connection",
+            "enabled": false,
+            "layerName": "Connection layer",
+            "data": {
+            "from": "",
+            "to": ""
+            }
+        },
+        {
+            "type": "geovisto-tool-layer-dot",
+            "id": "geovisto-tool-layer-dot",
+            "enabled": true,
+            "layerName": "Dot layer",
+            "data": {
+                "latitude": "lat",
+                "longitude": "long",
+                "category": "city"
+            }
+        },
+        {
+          "type": "geovisto-tool-layer-heat",
+          "id": "geovisto-tool-layer-heat",
+          "enabled": true,
+          "layerName": "Heat layer",
+          "data": {
+            "latitude": "lat",
+            "longitude": "long",
+            "radius": "10",
+            "intensity": "cases",
+            "gradient": "Default",
+            "blur": "10",
+            "zoom": "normal"
+          }
+        },
+        {
+            "type": "geovisto-tool-layer-bubble",
+            "id": "geovisto-tool-layer-bubble",
+            "enabled": true,
+            "layerName": "Bubble layer",
+            "data": {
+                "latitude": "lat",
+                "longitude": "long",
+                "category": "data.category",
+                "value": "data.value"
+            }
+        },
+        {
+            "type": "geovisto-tool-layer-spike",
+            "id": "geovisto-tool-layer-spike",
+            "enabled": true,
+            "layerName": "Spike layer",
+            "data": {
+                "latitude": "lat",
+                "longitude": "long",
+                "category": "data.category",
+                "value": "data.value"
+            }
+        }
+    ]
+}
+  

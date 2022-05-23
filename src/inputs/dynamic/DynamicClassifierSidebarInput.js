@@ -1,18 +1,18 @@
 import AbstractSidebarInput from "../AbstractSidebarInput";
 import AutocompleteSidebarInput from "../input/AutocompleteSidebarInput";
 import LabeledTextSidebarInput from "../input/LabeledTextSidebarInput";
-import ColorPickerInput from "../input/ColorPickerInput";
+import SidebarInputFactory from "../SidebarInputFactory";
 
-const ID = "geovisto-input-category-classifier";
+const ID = "geovisto-input-dynamic-classifier";
 
 const COMPONENT_DIV_CLASS = ID;
 
 /**
  * This class wraps inputs used for color codification of categories.
  *
- * @author Petr Kašpar
+ * @author Petr Kaspar
  */
-class CategoryClassifierSidebarInput extends AbstractSidebarInput {
+class DynamicClassifierSidebarInput extends AbstractSidebarInput {
 
     constructor(params) {
         super(params);
@@ -20,13 +20,13 @@ class CategoryClassifierSidebarInput extends AbstractSidebarInput {
         //data models
         this.opModel = params.operations;
         this.valModel = params.values;
-        this.colorModel = params.colors;
+        this.dynamicModel = params.dynamic;
 
         //inputs
         this.input = undefined;
         this.opInput = undefined;
         this.valInput = undefined;
-        this.colorInput = undefined;
+        this.dynamicInput = undefined;
     }
 
     create() {
@@ -38,24 +38,26 @@ class CategoryClassifierSidebarInput extends AbstractSidebarInput {
         this.input.classList.add(COMPONENT_DIV_CLASS);
 
         this.opInput = new AutocompleteSidebarInput({
-            label: "Operation",
+            label: this.opModel.label ?? "Operation",
             options: this.opModel.options,
             action: this.opModel.action,
             placeholder: "choose operation"
         });
         this.valInput = new LabeledTextSidebarInput({
-            label: "Value",
+            label: this.valModel.label ?? "Value",
             action: this.valModel.action,
             placeholder: "enter value"
         });
-        this.colorInput = new ColorPickerInput({
-            label: "Color",
-            options: this.colorModel.options,
+        this.dynamicInput = SidebarInputFactory.createSidebarInput(this.dynamicModel.input, {
+            label: this.dynamicModel.label,
+            action: this.dynamicModel.action,
+            options: this.dynamicModel.options,
+            placeholder: this.dynamicModel.placeholder
         });
 
         this.input.appendChild(this.opInput.create());
         this.input.appendChild(this.valInput.create());
-        this.input.appendChild(this.colorInput.create());
+        this.input.appendChild(this.dynamicInput.create());
 
         return this.input;
     }
@@ -67,9 +69,20 @@ class CategoryClassifierSidebarInput extends AbstractSidebarInput {
         return {
             op: this.opInput.getValue(),
             val: this.valInput.getValue(),
-            color: this.colorInput.getValue()
+            [this.dynamicModel.key ?? 'dynamic']: this.dynamicInput.getValue()
         };
+    }
+
+    /**
+     * Sets value for all three inputs
+     *
+     * @param value - object
+     */
+    setValue(value) {
+        this.opInput.setValue(value.operation);
+        this.valInput.setValue(value.value);
+        this.dynamicInput.setValue(value[this.dynamicModel.key] ?? 'dynamic');
     }
 }
 
-export default CategoryClassifierSidebarInput;
+export default DynamicClassifierSidebarInput;

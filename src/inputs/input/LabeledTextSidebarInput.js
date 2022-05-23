@@ -14,7 +14,7 @@ const COMPONENT_INPUT_PLACEHOLDER = "choose dimension";
 /**
  * This class represents labeled text sidebar input.
  *
- * @author Jiri Hynek
+ * @author Petr Kaspar
  */
 class LabeledTextSidebarInput extends TextSidebarInput {
 
@@ -22,6 +22,7 @@ class LabeledTextSidebarInput extends TextSidebarInput {
         super(settings);
         this.label = settings.label;
         this.placeholder = settings.placeholder ?? COMPONENT_INPUT_PLACEHOLDER;
+        this.disabled = settings.disabled ?? false;
         this.formDiv = undefined;
     }
 
@@ -63,6 +64,10 @@ class LabeledTextSidebarInput extends TextSidebarInput {
         TabDOMUtil.setAttributes(this.input,
             [ "class", "type", 'placeholder', 'type' ],
             [ COMPONENT_INPUT_CLASS, "text", this.placeholder, 'hidden' ]);
+
+        if (this.disabled) {
+            this.input.disabled = true;
+        }
 
         // construct elements
         this.formDiv.appendChild(labelDiv);

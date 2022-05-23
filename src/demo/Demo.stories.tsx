@@ -15,6 +15,10 @@ import MapLayerTool from "../tools/layers/map/MapLayerTool";
 import ChoroplethLayerTool from "../tools/layers/choropleth/ChoroplethLayerTool";
 import MarkerLayerTool from "../tools/layers/marker/MarkerLayerTool";
 import ConnectionLayerTool from "../tools/layers/connection/ConnectionLayerTool";
+import HeatLayerTool from "../tools/layers/heat/HeatLayerTool";
+import DotLayerTool from "../tools/layers/dot/DotLayerTool";
+import BubbleLayerTool from "../tools/layers/bubble/BubbleLayerTool";
+import SpikeLayerTool from "../tools/layers/spike/SpikeLayerTool";
 import Dark1Theme from "../tools/themes/model/theme/basic/dark1/Dark1Theme";
 import Dark2Theme from "../tools/themes/model/theme/basic/dark2/Dark2Theme";
 import Dark3Theme from "../tools/themes/model/theme/basic/dark3/Dark3Theme";
@@ -49,10 +53,10 @@ class Demo extends Component {
     this.centroids = require("/static/geo/country_centroids.json");
 
     // // implicit file
-    const jsonData = require('/static/data/demo1.json');
+    const jsonData = require('/static/data/covid19_czech.json');
 
     // // implicit config
-    const jsonConfig = require('/static/config/config-demo1.json');
+    const jsonConfig = require('/static/config/config.json');
 
     // reference to the rendered map
     this.map = React.createRef();
@@ -148,7 +152,7 @@ class Demo extends Component {
 
       // process config json
       if(!document.getElementById(C_ID_check_config).checked || config.json == undefined) {
-        config.json = require('/static/config/config-demo1.json');
+        config.json = _this.state.config;
       }
 
       // update state
@@ -190,8 +194,8 @@ class Demo extends Component {
         <div className="demo-toolbar">
           <span>Data file: </span>
           <select id={C_ID_select_data}>
-            <option value="demo1.json">demo1.json</option>
-            <option value="demo2.json">demo2.json</option>
+            <option value="covid19_czech.json">HEAT_DOT_covid19.json</option>
+            <option value="covid19_okresy.json">BUBBLE_SPIKE_covid19_okresy.json</option>
             <option disabled></option>
           </select>
 
@@ -243,6 +247,10 @@ class Demo extends Component {
               new ChoroplethLayerTool({ id: "geovisto-tool-layer-choropleth" }),
               new MarkerLayerTool({ id: "geovisto-tool-layer-marker" }),
               new ConnectionLayerTool({ id: "geovisto-tool-layer-connection" }),
+              new HeatLayerTool({id: "geovisto-tool-layer-heat"}),
+              new DotLayerTool({id: "geovisto-tool-layer-dot"}),
+              new BubbleLayerTool({ id: "geovisto-tool-layer-bubble" }),
+              new SpikeLayerTool({id: "geovisto-tool-layer-spike"})
             ])}
           />
         </div>
